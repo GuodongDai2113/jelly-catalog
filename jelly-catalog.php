@@ -25,12 +25,18 @@ if (!function_exists('is_plugin_active')) {
 }
 
 if (!is_plugin_active('woocommerce/woocommerce.php')) {
+	define('JELLY_CATALOG_WC_ACTIVE', false);
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-post-types.php';
-
-	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-post-meta-box.php';
-
-	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-admin.php';
-
-	new JC_Admin();
-	new JC_Post_Meta_Box();
+}else{
+	define('JELLY_CATALOG_WC_ACTIVE', true);
 }
+
+require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-post-meta-box.php';
+require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-admin.php';
+
+if (is_plugin_active('advanced-custom-fields/acf.php')) {
+	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-acf.php';
+}
+
+new JC_Admin();
+new JC_Post_Meta_Box();

@@ -1,94 +1,80 @@
-#product_images_container .product_images {
-    display: flex;
-    flex-wrap: wrap;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 8px;
+@charset "UTF-8";
+#jelly_product_images_container .product_images {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 8px;
+  /* 拖拽时的占位符样式（参考 WooCommerce） */
+}
+#jelly_product_images_container .product_images li.image {
+  position: relative;
+  cursor: move;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+#jelly_product_images_container .product_images li.image img {
+  width: 75px;
+  height: 75px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  display: block;
+}
+#jelly_product_images_container .product_images li.image .actions {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  height: 18px;
+  width: 18px;
+  line-height: 18px;
+  font-size: 12px;
+  border-radius: 99px;
+  text-align: center;
+  border: 1px solid var(--jelly-color-border, #ccc);
+  background: #fff;
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 2px;
+}
+#jelly_product_images_container .product_images li.image .actions a {
+  text-decoration: none;
+  color: var(--jelly-color-title, #141414);
+}
+#jelly_product_images_container .product_images li.image:hover {
+  /* 图片容器悬停效果 */
+  background: #fff;
+}
+#jelly_product_images_container .product_images li.image:hover .actions {
+  display: block;
+}
+#jelly_product_images_container .product_images .ui-sortable-placeholder {
+  border: 2px dashed #bbb;
+  background-color: #f5f5f5;
+  visibility: visible !important;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+#jelly_product_images_container .product_images .ui-sortable-helper {
+  transform: rotate(5deg);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-#product_images_container .product_images li.image {
-    position: relative;
-    cursor: move;
-    background: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    /* overflow: hidden; */
+.attachment.disabled-featured {
+  position: relative;
+  opacity: 0.4;
 }
-
-#product_images_container .product_images li.image img {
-    width: 75px;
-    height: 75px;
-    object-fit: cover;
-    display: block;
-}
-
-#product_images_container .product_images li.image .actions {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    height: 18px;
-    width: 18px;
-    line-height: 18px;
-    font-size: 12px;
-    border-radius: 99px;
-    text-align: center;
-    border: 1px solid var(--jelly-color-border,#ccc);
-    background: #fff;
-    display: none;
-    list-style: none;
-    margin: 0;
-    padding: 2px;
-}
-
-#product_images_container .product_images li.image .actions a {
-    text-decoration: none;
-    color: var(--jelly-color-title,#141414);
-}
-
-#product_images_container .product_images li.image:hover .actions {
-    display: block;
-}
-
-/* 拖拽时的占位符样式（参考 WooCommerce） */
-#product_images_container .product_images .ui-sortable-placeholder {
-    border: 2px dashed #bbb;
-    background-color: #f5f5f5;
-    visibility: visible !important;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-#product_images_container .product_images .ui-sortable-helper {
-    transform: rotate(5deg);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-}
-
-/* 图片容器悬停效果 */
-#product_images_container .product_images li.image:hover {
-    /* border-color: #999; */
-    background: #fff;
-}
-
-/* .add_product_images {
-    margin-top: 10px;
-    clear: both;
-}
-
-.add_product_images a {
-    display: inline-block;
-    padding: 8px 12px;
-    background: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    text-decoration: none;
-    color: #555;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.add_product_images a:hover {
-    background: #e5e5e5;
-    border-color: #999;
-    color: #333;
-} */
+.attachment.disabled-featured:after {
+  content: "Invalid image";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 2px 6px;
+  font-size: 12px;
+  border-radius: 3px;
+}/*# sourceMappingURL=admin.css.map */
