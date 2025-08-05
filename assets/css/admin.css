@@ -62,19 +62,77 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-.attachment.disabled-featured {
-  position: relative;
-  opacity: 0.4;
+.jelly-product-description {
+  display: flex;
+  flex-direction: row-reverse;
 }
-.attachment.disabled-featured:after {
-  content: "Invalid image";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 2px 6px;
-  font-size: 12px;
-  border-radius: 3px;
+.jelly-product-description #wp-content-wrap {
+  padding: 0;
+  margin: 0;
+  width: 80%;
+}
+
+.post-type-product #wpbody-content {
+  padding-bottom: 120px;
+}
+.post-type-product #postexcerpt .inside {
+  display: flex;
+  flex-direction: row-reverse;
+  padding: 0;
+  margin: 0;
+}
+.post-type-product #postexcerpt.closed .inside {
+  display: none;
+}
+.post-type-product .edit-description {
+  /* display: flex; */
+  background: #f9f9f9;
+  border-color: #e1e1e1;
+  border-style: solid;
+  border-width: 0 1px 0 0;
+  width: 20%;
+  padding: 12px;
+  box-sizing: border-box;
+}
+.post-type-product .edit-description ol {
+  color: var(--jelly-color-text-secondary);
+  margin-left: 16px;
+  line-height: 1.5;
+}
+.post-type-product .edit-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--jelly-color-warning);
+}
+.post-type-product #postexcerpt #wp-excerpt-wrap {
+  width: 80%;
+  padding: 12px;
+}
+.post-type-product .postbox-header label {
+  font-weight: 600;
+}
+
+#post-body-content #acf_after_title-sortables.meta-box-sortables {
+  margin: 20px 0;
+}
+
+@media screen and (max-width: 782px) {
+  .jelly-product-description,
+  .post-type-product #postexcerpt .inside {
+    flex-direction: column-reverse;
+  }
+  .jelly-product-description #wp-content-wrap,
+  .post-type-product #postexcerpt #wp-excerpt-wrap {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+  }
+  .post-type-product .edit-description {
+    width: 100%;
+    box-sizing: border-box;
+  }
 }/*# sourceMappingURL=admin.css.map */

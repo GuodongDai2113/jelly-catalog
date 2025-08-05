@@ -19,6 +19,7 @@ class JC_Admin
     public function __construct()
     {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+        add_action('wp_ajax_update_category_image', array($this, 'update_category_image'));
     }
 
     public function enqueue_admin_assets($hook)
@@ -39,6 +40,41 @@ class JC_Admin
             JELLY_CATALOG_VERSION,
             true
         );
+
+        // 只有当 'jelly-ajax' 脚本已经注册时，才执行本地化操作
+        if (!wp_script_is('jelly-ajax', 'registered')) {
+            wp_localize_script('jelly-ajax', 'jelly_ajax_object', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce'    => wp_create_nonce('jelly_nonce')
+            ));
+        }
     }
 
+    /**
+     * 更新分类图片
+     * 
+     * @since 1.3.0
+     * 
+     * @return void
+     */
+    public function update_category_image()
+    {
+        // 验证 nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'jelly_nonce')) {
+            wp_send_json_error(__('Security verification failed', 'jelly-catalog'));
+        }
+
+        // 获取分类ID和图片ID
+        $category_id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
+        $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
+
+        if (!$category_id || !$image_id) {
+            wp_send_json_error(__('Missing required parameter', 'jelly-catalog'));
+        }
+
+        // 更新分类图片
+        update_term_meta($category_id, 'thumbnail_id', $image_id);
+
+        wp_send_json_success(__('Category image updated successfully', 'jelly-catalog'));
+    }
 }

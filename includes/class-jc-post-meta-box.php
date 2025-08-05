@@ -31,7 +31,6 @@ class JC_Post_Meta_Box
         add_meta_box('product_faq_metabox', __('Product FAQ', 'jelly-frame'), array($this, 'product_faq_metabox'), 'product', 'normal', 'default');
     }
 
-
     public function short_description_box($post)
     {
 
