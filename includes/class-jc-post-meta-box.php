@@ -50,7 +50,7 @@ class JC_Post_Meta_Box
     public function product_images_box($post)
     {
         // 获取产品画廊图片ID数组
-        $gallery_image_ids = get_post_meta($post->ID, '_jelly_product_image_gallery', true);
+        $gallery_image_ids = get_post_meta($post->ID, '_product_image_gallery', true);
         $gallery_image_ids = !empty($gallery_image_ids) ? explode(',', $gallery_image_ids) : array();
 
         // wp_nonce_field('product_gallery_save', 'product_gallery_nonce');
@@ -83,7 +83,7 @@ class JC_Post_Meta_Box
               data-text="' . esc_attr__('Delete', 'jelly_catalog') . '">'
             . __('Add product gallery images', 'jelly_catalog') . '</a></p>';
         echo '</div>';
-        echo '<input type="hidden" id="jelly_product_image_gallery" name="jelly_product_image_gallery" value="' . esc_attr(implode(',', $gallery_image_ids)) . '" />';
+        echo '<input type="hidden" id="product_image_gallery" name="product_image_gallery" value="' . esc_attr(implode(',', $gallery_image_ids)) . '" />';
         echo '</div>';
     }
 
@@ -129,9 +129,9 @@ class JC_Post_Meta_Box
         // }
 
         // 保存产品画廊图片
-        if (isset($_POST['jelly_product_image_gallery'])) {
-            $gallery_images = sanitize_text_field($_POST['jelly_product_image_gallery']);
-            update_post_meta($post_id, '_jelly_product_image_gallery', $gallery_images);
+        if (isset($_POST['product_image_gallery'])) {
+            $gallery_images = sanitize_text_field($_POST['product_image_gallery']);
+            update_post_meta($post_id, '_product_image_gallery', $gallery_images);
         }
 
         // 保存FAQ
