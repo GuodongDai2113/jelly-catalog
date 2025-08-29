@@ -37,11 +37,11 @@ class JC_ACF
 
         $product_category_field_group = array(
             'key' => 'group_product_category',
-            'title' => esc_html__('Product Category Field Group', 'jelly_catalog'),
+            'title' => esc_html__('Product Category Field Group', 'jelly-catalog'),
             'fields' => array(
                 array(
                     'key' => 'field_category_content',
-                    'label' => esc_html__('Category Content', 'jelly_catalog'),
+                    'label' => esc_html__('Category Content', 'jelly-catalog'),
                     'name' => 'category_content',
                     'aria-label' => '',
                     'type' => 'wysiwyg',
@@ -134,7 +134,7 @@ class JC_ACF
 
         $product_field_group =  array(
             'key' => 'group_product_field',
-            'title' => esc_html__('Product Field Group', 'jelly-catalog'),
+            'title' => esc_html__('Product Download', 'jelly-catalog'),
             'fields' => array(
                 array(
                     'key' => 'field_product_file',

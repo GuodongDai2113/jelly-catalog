@@ -16,9 +16,9 @@
      */
     initModules() {
       this.initProductGallery();
-      this.initProductFAQ();
-      this.initProductDescriptionModule();
+      // this.initProductFAQ();
       this.initProductCategoryImageModule();
+      this.resetProductEditor();
     }
 
     /**
@@ -137,16 +137,16 @@
      * 初始化产品FAQ模块
      */
     initProductFAQ() {
-      const faqContainer = $(".jelly-faq-wrapper");
+      const faqContainer = $(".jelly-kv-wrapper");
 
-      $("#jelly-add-faq").on("click", () => {
-        const index = faqContainer.find(".faq-item").length;
+      $("add-faq").on("click", () => {
+        const index = faqContainer.find(".kv-item").length;
         const html = this.getFaqItemTemplate(index);
         faqContainer.append(html);
       });
 
-      faqContainer.on("click", ".faq-item__remove .remove-item", function () {
-        $(this).closest(".faq-item").remove();
+      faqContainer.on("click", ".kv-item__remove .remove-item", function () {
+        $(this).closest(".kv-item").remove();
       });
     }
 
@@ -155,50 +155,29 @@
      */
     getFaqItemTemplate(index) {
       return `
-        <div class="faq-item">
-          <div class="faq-item__question">
+        <div class="kv-item">
+          <div class="kv-item__key">
             <label for="product_faqs[${index}][question]">Question:</label>
             <input
-              class="faq-item__question-input"
+              class="kv-item__key-input"
               type="text"
               id="product_faqs[${index}][question]"
               name="product_faqs[${index}][question]"
             />
           </div>
-          <div class="faq-item__answer">
+          <div class="kv-item__value">
             <label for="product_faqs[${index}][answer]">Answer:</label>
             <textarea
-              class="faq-item__answer-input"
+              class="kv-item__value-input"
               id="product_faqs[${index}][answer]"
               name="product_faqs[${index}][answer]"
             ></textarea>
           </div>
-          <div class="faq-item__remove">
+          <div class="kv-item__remove">
             <button type="button" class="button remove-item">Remove FAQ</button>
           </div>
         </div>
       `;
-    }
-
-    /**
-     * 初始化产品描述模块
-     */
-    initProductDescriptionModule() {
-      const productWrap = $(".post-type-product #wp-content-wrap");
-
-      if (productWrap.length) {
-        this.wrapProductDescription(productWrap);
-        this.addShortDescriptionTips();
-        this.addContentDescriptionTips();
-      }
-    }
-
-    /**
-     * 包装产品描述区域
-     */
-    wrapProductDescription(productWrap) {
-      const content = $('<div class="jelly-product-description"></div>');
-      productWrap.wrap(content);
     }
 
     /**
@@ -217,7 +196,7 @@
           </ol>
         </div>
       `;
-      $(".post-type-product #postexcerpt .inside").append(tipsShort);
+      $("#tab-postexcerpt").prepend(tipsShort);
     }
 
     /**
@@ -235,7 +214,7 @@
           </ol>
         </div>
       `;
-      $(".post-type-product .jelly-product-description").append(tipsContent);
+      $("#tab-postdivrich").prepend(tipsContent);
     }
 
     /**
@@ -291,6 +270,117 @@
         error: () => {
           jellyShowError("请求失败，请重试");
         },
+      });
+    }
+
+    resetProductEditor() {
+      const titlediv = $("#poststuff #titlediv");
+      const metaboxs = [
+        "postexcerpt",
+        "postdivrich",
+        "product_catdiv",
+        "tagsdiv-product_tag",
+        "acf-group_product_field",
+        "product_faq_metabox",
+        "product_attributes_metabox",
+        "product_video_url",
+        "rank_math_metabox",
+      ];
+
+      // 创建 tab 容器
+      const tabContainer = $(
+        `<div class="jelly-product-tabs"><div class="nav-tab-wrapper"></div><div class="tab-content"></div></div>`
+      );
+
+      titlediv.after(tabContainer);
+
+      // 生成 tabs
+      this.generateTabs(metaboxs, tabContainer);
+
+      // 绑定 tab 切换事件
+      this.bindTabEvents();
+
+      $("#wp-content-editor-tools");
+    }
+
+    /**
+     * 根据 metabox ID 生成 tabs
+     */
+    generateTabs(metaboxs, tabContainer) {
+      const navWrapper = tabContainer.find(".nav-tab-wrapper");
+      const contentWrapper = tabContainer.find(".tab-content");
+
+      metaboxs.forEach((metaboxId, index) => {
+        const metabox = $("#" + metaboxId);
+
+        // 检查 metabox 是否存在
+        if (metabox.length) {
+          // 创建 tab 标题
+          const isActive = index === 0 ? "nav-tab-active" : "";
+          let tabTitle = metabox.find("h2.hndle").text() || metaboxId;
+          if (metaboxId === "postdivrich") {
+            tabTitle = "Product Description";
+          }
+
+          const tabLink = $(
+            `<a href="#" class="nav-tab ${isActive}" data-tab="${metaboxId}">${tabTitle}</a>`
+          );
+          navWrapper.append(tabLink);
+
+          // 创建 tab 内容面板
+          const isActiveClass = index === 0 ? "active" : "";
+          const tabPane = $(
+            `<div class="tab-pane ${isActiveClass}" id="tab-${metaboxId}"></div>`
+          );
+          let metaboxContent = null;
+          // 将 metabox 内容移动到 tab 面板中
+          if (metaboxId !== "postdivrich") {
+            metaboxContent = metabox.find(".inside").children();
+          } else {
+            metaboxContent = metabox;
+          }
+          tabPane.append(metaboxContent);
+
+          contentWrapper.append(tabPane);
+          if (metaboxId !== "postdivrich") {
+            metabox.remove();
+          }
+        }
+      });
+      this.addShortDescriptionTips();
+      this.addContentDescriptionTips();
+    }
+
+    /**
+     * 绑定 tab 切换事件
+     */
+    bindTabEvents() {
+      $(".jelly-product-tabs").on("click", ".nav-tab", function (e) {
+        e.preventDefault();
+
+        const tabId = $(this).data("tab");
+
+        // 更新 tab 激活状态
+        $(this).siblings(".nav-tab").removeClass("nav-tab-active");
+        $(this).addClass("nav-tab-active");
+
+        // 显示对应的内容面板
+        $(".tab-pane").removeClass("active");
+        $("#tab-" + tabId).addClass("active");
+
+        if (tabId === "postdivrich") {
+          // 延迟执行以确保 DOM 更新完成
+          const editorContainer = $("#wp-content-editor-container");
+          const editorTools = $("#wp-content-editor-tools");
+          const mceToolbarGrp = $(".mce-toolbar-grp");
+
+          if (editorContainer.length && editorTools.length) {
+            // 获取编辑器容器的宽度并应用到工具条
+            const containerWidth = editorContainer.width();
+            editorTools.css("width", containerWidth);
+            mceToolbarGrp.css("width", containerWidth);
+          }
+        }
       });
     }
   }

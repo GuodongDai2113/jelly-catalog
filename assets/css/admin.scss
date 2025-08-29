@@ -70,40 +70,8 @@
   }
 }
 
-.jelly-product-description {
-  display: flex;
-  flex-direction: row-reverse;
-  #wp-content-wrap {
-    padding: 0;
-    margin: 0;
-    width: 80%;
-  }
-}
-
-.post-type-product {
-  #wpbody-content {
-    padding-bottom: 120px;
-  }
-  #postexcerpt .inside {
-    display: flex;
-    flex-direction: row-reverse;
-    padding: 0;
-    margin: 0;
-  }
-  #postexcerpt.closed .inside {
-    display: none;
-  }
-  .edit-description {
-    /* display: flex; */
-    background: #f9f9f9;
-    border-color: #e1e1e1;
-    border-style: solid;
-    border-width: 0 1px 0 0;
-    width: 20%;
-    padding: 12px;
-    box-sizing: border-box;
-  }
-  .edit-description ol {
+.edit-description {
+  ol {
     color: var(--jelly-color-text-secondary);
     margin-left: 16px;
     line-height: 1.5;
@@ -117,18 +85,77 @@
     font-weight: 600;
     color: var(--jelly-color-warning);
   }
-  #postexcerpt #wp-excerpt-wrap {
-    width: 80%;
-    padding: 12px;
-  }
-  .postbox-header label {
-    font-weight: 600;
-  }
 }
 
 // ACF 兼容
 #post-body-content #acf_after_title-sortables.meta-box-sortables {
   margin: 20px 0;
+}
+
+.jelly-product-tabs {
+  margin: 20px 0;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: row;
+
+  .nav-tab-wrapper {
+    border-bottom: none;
+    border-right: 1px solid #c3c4c7;
+    padding: 0;
+    background: #f0f0f1;
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+
+    .nav-tab {
+      margin: 0;
+      border: none;
+      border-bottom: 1px solid #c3c4c7;
+      background: #f0f0f1;
+      font-weight: 600;
+      border-radius: 0;
+      padding: 12px 10px;
+      text-align: left;
+      text-transform: capitalize;
+      &.nav-tab-active {
+        background: #fff;
+        border-right: 1px solid #fff;
+        border-bottom: 1px solid #c3c4c7;
+        color: #1d2327;
+        margin-right: -1px;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  .tab-content {
+    padding: 20px;
+    flex: 1;
+  }
+
+  .tab-pane {
+    display: none;
+
+    &.active {
+      display: block;
+    }
+
+    > div {
+      margin-bottom: 20px;
+    }
+  }
+
+  // 确保原有的 metabox 内容在 tab 中正常显示
+  .product_images,
+  .jelly-faq-wrapper,
+  #product_image_gallery {
+    margin: 0;
+  }
 }
 
 @media screen and (max-width: 782px) {
@@ -147,5 +174,27 @@
   .post-type-product .edit-description {
     width: 100%;
     box-sizing: border-box;
+  }
+
+  .jelly-product-tabs {
+    flex-direction: column;
+
+    .nav-tab-wrapper {
+      border-right: none;
+      border-bottom: 1px solid #c3c4c7;
+      min-width: auto;
+
+      .nav-tab {
+        border-bottom: 1px solid #c3c4c7;
+        border-right: none;
+
+        &.nav-tab-active {
+          border-right: none;
+          border-bottom: 1px solid #c3c4c7;
+          margin-right: 0;
+          margin-bottom: -1px;
+        }
+      }
+    }
   }
 }

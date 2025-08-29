@@ -25,10 +25,12 @@ class JC_Post_Meta_Box
     function add_meta_boxes()
     {
         if (!JELLY_CATALOG_WC_ACTIVE) {
-            add_meta_box('postexcerpt', __('Product short description', 'jelly_catalog'), array($this, 'short_description_box'), 'product', 'normal');
-            add_meta_box('product-images', __('Product gallery', 'jelly_catalog'), array($this, 'product_images_box'), 'product', 'side', 'low');
+            add_meta_box('postexcerpt', __('Product Short Description', 'jelly-catalog'), array($this, 'short_description_box'), 'product', 'normal');
+            add_meta_box('product-images', __('Product Gallery', 'jelly-catalog'), array($this, 'product_images_box'), 'product', 'side', 'low');
+            add_meta_box('product_attributes_metabox', __('Product Attributes', 'jelly-catalog'), array($this, 'product_attributes_metabox'), 'product', 'normal', 'default');
         }
-        add_meta_box('product_faq_metabox', __('Product FAQ', 'jelly-frame'), array($this, 'product_faq_metabox'), 'product', 'normal', 'default');
+        add_meta_box('product_faq_metabox', __('Product FAQ', 'jelly-catalog'), array($this, 'product_faq_metabox'), 'product', 'normal', 'default');
+        add_meta_box('product_video_url', __('Product Video', 'jelly-catalog'), array($this, 'product_video_url_box'), 'product', 'normal', 'default');
     }
 
     public function short_description_box($post)
@@ -67,7 +69,7 @@ class JC_Post_Meta_Box
                         echo '<li class="image" data-attachment_id="' . esc_attr($image_id) . '">';
                         echo '<img src="' . esc_url($image_url) . '" alt="" />';
                         echo '<ul class="actions">';
-                        echo '<li><a href="#" class="delete" title="' . esc_attr__('Delete image', 'jelly_catalog') . '">X</a></li>';
+                        echo '<li><a href="#" class="delete" title="' . esc_attr__('Delete image', 'jelly-catalog') . '">X</a></li>';
                         echo '</ul>';
                         echo '</li>';
                     }
@@ -77,11 +79,11 @@ class JC_Post_Meta_Box
 
         echo '</ul>';
         echo '<div class="jelly_add_product_images hide-if-no-js">';
-        echo '<p><a href="#" data-choose="' . esc_attr__('Add Images to Product Gallery', 'jelly_catalog') . '" 
-              data-update="' . esc_attr__('Add to gallery', 'jelly_catalog') . '" 
-              data-delete="' . esc_attr__('Delete image', 'jelly_catalog') . '" 
-              data-text="' . esc_attr__('Delete', 'jelly_catalog') . '">'
-            . __('Add product gallery images', 'jelly_catalog') . '</a></p>';
+        echo '<p><a href="#" data-choose="' . esc_attr__('Add Images to Product Gallery', 'jelly-catalog') . '" 
+              data-update="' . esc_attr__('Add to gallery', 'jelly-catalog') . '" 
+              data-delete="' . esc_attr__('Delete image', 'jelly-catalog') . '" 
+              data-text="' . esc_attr__('Delete', 'jelly-catalog') . '">'
+            . __('Add product gallery images', 'jelly-catalog') . '</a></p>';
         echo '</div>';
         echo '<input type="hidden" id="product_image_gallery" name="product_image_gallery" value="' . esc_attr(implode(',', $gallery_image_ids)) . '" />';
         echo '</div>';
@@ -94,39 +96,76 @@ class JC_Post_Meta_Box
 
         // wp_nonce_field('save_product_faqs', 'product_faqs_nonce');
 
-        echo '<div class="jelly-faq-wrapper">';
+        echo '<div class="jelly-kv-wrapper" data-key="product_faqs"  data-key-name="name">';
         foreach ($faqs as $index => $faq) {
-            echo '<div class="faq-item">';
+            echo '<div class="kv-item">';
             echo '<span class="item-number">' . esc_html($index) . '</span>';
-            echo '<div class="faq-item__question">';
-            echo '<label for="product_faqs[' . $index . '][question]">';
+            echo '<div class="kv-item__key">';
+            echo '<label for="product_faqs[' . $index . '][name]">';
             esc_html_e('Question:', 'jelly-frame');
             echo '</label>';
-            echo '<input class="faq-item__question-input" type="text" id="product_faqs[' . $index . '][question]" name="product_faqs[' . $index . '][question]" value="' . esc_attr($faq['question']) . '" />';
+            echo '<input class="kv-item__key-input" type="text" id="product_faqs[' . $index . '][name]" name="product_faqs[' . $index . '][name]" value="' . esc_attr($faq['name']) . '" />';
             echo '</div>';
-            echo '<div class="faq-item__answer">';
-            echo '<label for="product_faqs[' . $index . '][answer]">';
+            echo '<div class="kv-item__value">';
+            echo '<label for="product_faqs[' . $index . '][value]">';
             esc_html_e('Answer:', 'jelly-frame');
             echo '</label>';
-            echo '<textarea class="faq-item__answer-input" id="product_faqs[' . $index . '][answer]" name="product_faqs[' . $index . '][answer]">' . esc_textarea($faq['answer']) . '</textarea>';
-            echo '</div>';
-            echo '<div class="faq-item__remove">';
-            echo '<button type="button" class="button remove-item">';
-            esc_html_e('Remove FAQ', 'jelly-frame');
-            echo '</button>';
+            echo '<textarea class="kv-item__value-input" id="product_faqs[' . $index . '][value]" name="product_faqs[' . $index . '][value]">' . esc_textarea($faq['value']) . '</textarea>';
             echo '</div>';
             echo '</div>';
         }
         echo '</div>';
-        echo '<button type="button" class="button" id="jelly-add-faq">' . __('添加 FAQ') . '</button>';
     }
-    
+
+    public function product_video_url_box($post)
+    {
+        $video_url = get_post_meta($post->ID, 'video_url', true);
+        wp_nonce_field('save_product_video_url', 'product_video_url_nonce');
+
+        echo '<p>';
+        echo '<label for="product_video_url">' . __('Video URL', 'jelly-catalog') . ':</label>';
+        echo '<input type="url" id="product_video_url" name="product_video_url" value="' . esc_url($video_url) . '" class="large-text" />';
+        echo '<span class="description">' . __('Enter the full URL to your product video (YouTube, Vimeo, etc.)', 'jelly-catalog') . '</span>';
+        echo '</p>';
+    }
+
+    /**
+     * 显示产品属性 metabox
+     */
+    public function product_attributes_metabox($post)
+    {
+        $attributes = get_post_meta($post->ID, '_product_attributes', true);
+        $attributes = is_array($attributes) ? $attributes : [];
+
+        wp_nonce_field('save_product_attributes', 'product_attributes_nonce');
+
+        echo '<div class="jelly-kv-wrapper" data-key="product_attributes" data-key-name="name">';
+        echo '<p class="description">' . __('添加产品的属性信息，如尺寸、重量、材质等。', 'jelly-catalog') . '</p>';
+        foreach ($attributes as $index => $attribute) {
+            echo '<div class="kv-item">';
+            echo '<div class="kv-item__key">';
+            echo '<label for="product_attributes[' . $index . '][key]">';
+            esc_html_e('属性名称:', 'jelly-catalog');
+            echo '</label>';
+            echo '<input class="kv-item__key-input" type="text" id="product_attributes[' . $index . '][name]" name="product_attributes[' . $index . '][name]" value="' . esc_attr($attribute['name']) . '" />';
+            echo '</div>';
+            echo '<div class="kv-item__value">';
+            echo '<label for="product_attributes[' . $index . '][value]">';
+            esc_html_e('属性值:', 'jelly-catalog');
+            echo '</label>';
+            echo '<input class="kv-item__value-input" type="text" id="product_attributes[' . $index . '][value]" name="product_attributes[' . $index . '][value]" value="' . esc_attr($attribute['value']) . '" />';
+            echo '</div>';
+            echo '</div>';
+        }
+        echo '</div>';
+    }
+
     public function save_meta_boxes($post_id)
     {
-        // 验证nonce
-        // if (!isset($_POST['product_gallery_nonce']) || !wp_verify_nonce($_POST['product_gallery_nonce'], 'product_gallery_save')) {
-        //     return;
-        // }
+
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+
+        if (!current_user_can('edit_post', $post_id)) return;
 
         // 保存产品画廊图片
         if (isset($_POST['product_image_gallery'])) {
@@ -134,26 +173,39 @@ class JC_Post_Meta_Box
             update_post_meta($post_id, '_product_image_gallery', $gallery_images);
         }
 
-        // 保存FAQ
-        // if (!isset($_POST['product_faqs_nonce']) || !wp_verify_nonce($_POST['product_faqs_nonce'], 'save_product_faqs')) {
-        //     return;
-        // }
-
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-
-        if (!current_user_can('edit_post', $post_id)) return;
-
-        $raw = $_POST['product_faqs'] ?? [];
-        $clean = [];
-
-        foreach ($raw as $item) {
-            $q = sanitize_text_field($item['question'] ?? '');
-            $a = sanitize_textarea_field($item['answer'] ?? '');
-            if ($q || $a) {
-                $clean[] = ['question' => $q, 'answer' => $a];
-            }
+        // 保存视频 URL
+        if (isset($_POST['product_video_url']) && wp_verify_nonce($_POST['product_video_url_nonce'], 'save_product_video_url')) {
+            $video_url = esc_url_raw($_POST['product_video_url']);
+            update_post_meta($post_id, 'video_url', $video_url);
         }
 
-        update_post_meta($post_id, 'product_faqs', $clean);
+        if (isset($_POST['product_faqs'])) {
+            $raw = $_POST['product_faqs'] ?? [];
+            $clean = [];
+
+            foreach ($raw as $item) {
+                $q = sanitize_text_field($item['name'] ?? '');
+                $a = sanitize_textarea_field($item['value'] ?? '');
+                if ($q || $a) {
+                    $clean[] = ['name' => $q, 'value' => $a];
+                }
+            }
+
+            update_post_meta($post_id, 'product_faqs', $clean);
+        }
+
+        if (isset($_POST['product_attributes'])) {
+            $raw = $_POST['product_attributes'] ?? [];
+            $clean = [];
+            foreach ($raw as $item) {
+                $name = sanitize_text_field($item['name'] ?? '');
+                $value = sanitize_text_field($item['value'] ?? '');
+                if ($name && $value) {
+                    $clean[] = ['name' => $name, 'value' => $value];
+                }
+            }
+
+            update_post_meta($post_id, '_product_attributes', $clean);
+        }
     }
 }
