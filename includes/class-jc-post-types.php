@@ -30,8 +30,7 @@ class JC_Post_Types
 		add_filter('rest_api_allowed_post_types', array(__CLASS__, 'rest_api_allowed_post_types'));
 		add_filter('gutenberg_can_edit_post_type', array(__CLASS__, 'gutenberg_can_edit_post_type'), 10, 2);
 		add_filter('use_block_editor_for_post_type', array(__CLASS__, 'gutenberg_can_edit_post_type'), 10, 2);
-        add_filter('manage_posts_columns',  array(__CLASS__, 'add_featured_image_column'));
-        // add_action('manage_posts_custom_column',  array(__CLASS__, 'display_featured_image_column'), 10, 2);
+
 
 	}
 
@@ -255,36 +254,7 @@ class JC_Post_Types
 		return $post_types;
 	}
 
-	public static function display_featured_image_column($column_name, $post_id)
-    {
-        if ($column_name === 'featured_image') {
-            $thumbnail_id = get_post_thumbnail_id($post_id);
-            if ($thumbnail_id) {
-                $thumbnail_url = wp_get_attachment_image_url($thumbnail_id, 'thumbnail');
-                echo '<img class="jelly-table-featured-image" data-post-id="' . esc_attr($post_id) . '" src="' . esc_url($thumbnail_url) . '"/>';
-            } else {
-                echo '<div class="jelly-no-image" data-post-id="' . esc_attr($post_id) . '"></div>';
-            }
-        }
-    }
 
-	public static function add_featured_image_column($columns)
-    {
-        $screen = get_current_screen();
-        if (!in_array($screen->post_type, ['product'])) {
-            return $columns; // 如果不是 post 或 page，则跳过
-        }
-        $new_columns = [];
-        foreach ($columns as $key => $title) {
-            if ($key === 'cb') {
-                $new_columns[$key] = $title;
-                $new_columns['featured_image'] = __('Image', 'jelly-engine'); // 添加特色图片列
-            } else {
-                $new_columns[$key] = $title;
-            }
-        }
-        return $new_columns;
-    }
 }
 
 JC_Post_Types::init();

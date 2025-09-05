@@ -20,26 +20,40 @@ define('JELLY_CATALOG_PLUGIN_URL', plugin_dir_url(__FILE__));
 /** 插件本地路径 */
 define('JELLY_CATALOG_PLUGIN_PATH',  plugin_dir_path(__FILE__));
 
+// 优化后的代码结构
 if (!function_exists('is_plugin_active')) {
 	require_once ABSPATH . 'wp-admin/includes/plugin.php';
 }
 
-if (!is_plugin_active('woocommerce/woocommerce.php')) {
-	define('JELLY_CATALOG_WC_ACTIVE', false);
+// 检查 WooCommerce 是否激活
+$woocommerce_active = is_plugin_active('woocommerce/woocommerce.php');
+define('JELLY_CATALOG_WC_ACTIVE', $woocommerce_active);
+
+if (!$woocommerce_active) {
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-post-types.php';
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-compatible.php';
-
 } else {
-	define('JELLY_CATALOG_WC_ACTIVE', true);
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-woocommerce.php';
 }
 
+// 基础依赖
+require JELLY_CATALOG_PLUGIN_PATH . 'includes/jc-functions.php';
 require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-post-meta-box.php';
 require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-admin.php';
 
+// 可选依赖
 if (is_plugin_active('advanced-custom-fields/acf.php')) {
-	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-acf.php';
+	require JELLY_CATALOG_PLUGIN_PATH . 'addons/class-jc-acf.php';
 }
 
-new JC_Admin();
-new JC_Post_Meta_Box();
+if (is_plugin_active('seo-by-rank-math/rank-math.php') && !$woocommerce_active) {
+	require JELLY_CATALOG_PLUGIN_PATH . 'addons/class-jc-rank-math.php';
+}
+
+function jelly_catalog_init()
+{
+	// 所有初始化代码放在这里
+	new JC_Admin();
+	new JC_Post_Meta_Box();
+}
+add_action('plugins_loaded', 'jelly_catalog_init');

@@ -138,6 +138,20 @@
   margin: 0;
 }
 
+.column-jc-thumb {
+  width: 52px;
+}
+
+.jc-thumb img {
+  width: 50px;
+  height: 50px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 4px;
+  background: #f5f5f5;
+  display: inline-block;
+}
+
 @media screen and (max-width: 782px) {
   .jelly-product-description,
   .post-type-product #postexcerpt .inside {
@@ -171,4 +185,4 @@
     margin-right: 0;
     margin-bottom: -1px;
   }
-}/*# sourceMappingURL=admin.css.map */
+}/*# sourceMappingURL=jelly-catalog.css.map */
