@@ -1,5 +1,5 @@
-#jelly_product_images_container {
-  .product_images {
+#jc-gallery {
+  .product-images {
     display: flex;
     flex-wrap: wrap;
     list-style: none;
@@ -11,14 +11,14 @@
       position: relative;
       cursor: move;
       background: #f5f5f5;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-
+      // overflow: hidden;
       img {
         width: 75px;
         height: 75px;
         object-fit: cover;
         display: block;
+        border: 1px solid #ddd;
+        border-radius: 4px;
       }
 
       .actions {
@@ -32,15 +32,17 @@
         border-radius: 99px;
         text-align: center;
         border: 1px solid var(--jelly-color-border, #ccc);
-        background: #fff;
+        background: #fafafa;
         display: none;
         list-style: none;
         margin: 0;
         padding: 2px;
+        text-decoration: none;
+        color: var(--jelly-color-title, #141414);
 
-        a {
-          text-decoration: none;
-          color: var(--jelly-color-title, #141414);
+        &::before {
+          content: "\f158";
+          font-family: "dashicons";
         }
       }
 
@@ -68,9 +70,25 @@
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     }
   }
+  
+}
+
+.jc-gallery-count {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
 }
 
 .edit-description {
+  padding: 16px;
+  border: 1px solid var(--jelly-color-border, #ccc);
+  background-color: #fafafa;
+  margin-bottom: 12px;
   ol {
     color: var(--jelly-color-text-secondary);
     margin-left: 16px;
@@ -87,12 +105,7 @@
   }
 }
 
-// ACF 兼容
-#post-body-content #acf_after_title-sortables.meta-box-sortables {
-  margin: 20px 0;
-}
-
-.jelly-product-tabs {
+.jc-tabs {
   margin: 20px 0;
   background: #fff;
   border: 1px solid #c3c4c7;
@@ -136,6 +149,10 @@
   .tab-content {
     padding: 20px;
     flex: 1;
+    min-height: 700px;
+    .acf-field {
+      margin: 0;
+    }
   }
 
   .tab-pane {
@@ -151,18 +168,31 @@
   }
 
   // 确保原有的 metabox 内容在 tab 中正常显示
-  .product_images,
+  .product-images,
   .jelly-faq-wrapper,
   #product_image_gallery {
     margin: 0;
   }
 }
 
-.column-jc-thumb {
-  width: 52px;
+.short-description-wrapper {
+  height: 175px;
+  width: 100%;
+  #excerpt-character-count {
+    font-weight: bold;
+  }
+  .character-count {
+    text-align: right;
+    margin-bottom: 5px;
+  }
 }
 
-.jc-thumb img{
+.column-jc-thumb {
+  width: 52px;
+  position: relative;
+}
+
+.jc-thumb img {
   width: 50px;
   height: 50px;
   object-fit: cover;
@@ -170,6 +200,59 @@
   background: #f5f5f5;
   // border: 1px solid #ddd;
   display: inline-block;
+}
+
+.jc-repeater-wrapper{
+  .repeater-item{
+    box-sizing: border-box;
+    padding: 16px;
+    background-color: #fafafa;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    position: relative;
+    padding-left: 48px;
+    padding-bottom: 48px;
+    box-shadow: rgba(0, 0, 0, 0.04) 0px 5px 5px;
+    border: 1px solid var(--jelly-color-border, #ccc);
+    .item-number{
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      font-size: 32px;
+      color: rgba(0,0,0,0.5);
+    }
+    &:hover{
+      .item-number{
+        color: rgba(0,0,0,1);
+      }
+    }
+    label{
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+    input,textarea{
+      width: 100%;
+      margin-bottom: 12px;
+    }
+  }
+  .repeater-delete{
+    color: #ff4d4f;
+    border-color: #ff4d4f;
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    .dashicons{
+      font-size: 14px;
+      padding-top: 6px;
+    }
+  }
+  .repeater-add-new{
+    .dashicons{
+      font-size: 14px;
+      padding-top: 6px;
+    }
+  }
 }
 
 @media screen and (max-width: 782px) {
@@ -190,7 +273,7 @@
     box-sizing: border-box;
   }
 
-  .jelly-product-tabs {
+  .jc-tabs {
     flex-direction: column;
 
     .nav-tab-wrapper {
@@ -211,4 +294,9 @@
       }
     }
   }
+}
+
+// ACF 兼容
+#post-body-content #acf_after_title-sortables.meta-box-sortables {
+  margin: 20px 0;
 }

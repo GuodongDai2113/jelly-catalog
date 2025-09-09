@@ -21,14 +21,12 @@ class JC_Admin
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_action('wp_ajax_update_category_image', array($this, 'update_category_image'));
         if (!JELLY_CATALOG_WC_ACTIVE) {
-            // add_filter('manage_posts_columns',  array($this, 'add_featured_image_column'));
-            // add_action('manage_posts_custom_column',  array($this, 'display_featured_image_column'), 10, 2);
-            add_filter( 'manage_edit-product_columns', array( $this, 'columns' ) );
-            add_filter( 'manage_product_posts_custom_column', array( $this, 'column' ), 10, 3 );
+
+            add_filter('manage_edit-product_columns', array($this, 'columns'));
+            add_action('manage_product_posts_custom_column', array($this, 'column'), 10, 2);
 
             add_filter('manage_edit-product_cat_columns', array($this, 'product_cat_columns'));
             add_filter('manage_product_cat_custom_column', array($this, 'product_cat_column'), 10, 3);
-
         }
     }
 
@@ -45,6 +43,14 @@ class JC_Admin
             'jelly-catalog-admin',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog.js',
             array('jquery', 'jquery-ui-sortable'),
+            JELLY_CATALOG_VERSION,
+            true
+        );
+
+        wp_enqueue_script(
+            'jelly-catalog-editor',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-editor.js',
+            array('jquery'),
             JELLY_CATALOG_VERSION,
             true
         );
@@ -104,27 +110,30 @@ class JC_Admin
     /**
      * Column function.
      *
-     * @param mixed $columns Columns.
-     * @param mixed $column Column.
-     * @param mixed $id ID.
+     * @param string $column Column name.
+     * @param int    $id     Post ID.
      */
-    public function column($columns, $column, $id)
+    public function column($column, $id)
     {
-        error_log('123');
         if ('jc-thumb' === $column) {
             $image        = '';
-            $thumbnail_id = get_term_meta($id, 'thumbnail_id', true);
+            $thumbnail_id = get_post_meta($id, '_thumbnail_id', true);
 
             if ($thumbnail_id) {
                 $image = wp_get_attachment_url($thumbnail_id);
+                $images = get_post_meta($id, '_product_image_gallery', true);
+                if (!empty($images)) {
+                    $gallery = explode(',', $images);
+                    $gallery_count = count($gallery);
+                    echo sprintf('<div class="jc-gallery-count">%d</div>', $gallery_count + 1);
+                }
             }
             if (empty($image)) {
                 $image = jc_placeholder_img_src();
             }
 
-            $columns .= '<img src="' . $image . '" alt="Thumbnail" class="wp-post-image" height="48" width="48" />';
+            echo '<img src="' . $image . '" alt="Thumbnail" class="wp-post-image" height="48" width="48" />';
         }
-        return $columns;
     }
 
     /**

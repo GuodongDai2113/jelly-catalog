@@ -1,17 +1,14 @@
 <?php
 
 /**
- * Post Types
- *
- * Registers post types and taxonomies.
- *
- * @package jelly-catalog\Classes\Products
- * @version 2.5.0
+ * includes\class-jc-post-types.php
+ * 
+ * @see: https://jellydai.com
+ * @author: Jelly Dai <d@jellydai.com>
+ * @created : 2025.09.08 10:22
  */
 
-defined('ABSPATH') || exit;
-
-
+if (! defined('ABSPATH')) exit; // 禁止直接访问
 
 /**
  * Post types Class.
@@ -30,8 +27,6 @@ class JC_Post_Types
 		add_filter('rest_api_allowed_post_types', array(__CLASS__, 'rest_api_allowed_post_types'));
 		add_filter('gutenberg_can_edit_post_type', array(__CLASS__, 'gutenberg_can_edit_post_type'), 10, 2);
 		add_filter('use_block_editor_for_post_type', array(__CLASS__, 'gutenberg_can_edit_post_type'), 10, 2);
-
-
 	}
 
 	/**
@@ -70,12 +65,6 @@ class JC_Post_Types
 				'show_in_rest'          => true,
 				'show_ui'               => true,
 				'query_var'             => true,
-				'capabilities'          => array(
-					'manage_terms' => 'manage_product_terms',
-					'edit_terms'   => 'edit_product_terms',
-					'delete_terms' => 'delete_product_terms',
-					'assign_terms' => 'assign_product_terms',
-				),
 				'rewrite'               => array(
 					'slug'         => 'product-category',
 					'with_front'   => false,
@@ -113,12 +102,6 @@ class JC_Post_Types
 				'show_in_rest'          => true,
 				'show_ui'               => true,
 				'query_var'             => true,
-				'capabilities'          => array(
-					'manage_terms' => 'manage_product_terms',
-					'edit_terms'   => 'edit_product_terms',
-					'delete_terms' => 'delete_product_terms',
-					'assign_terms' => 'assign_product_terms',
-				),
 				'rewrite'               => array(
 					'slug'       => 'product-tag',
 					'with_front' => false,
@@ -143,58 +126,56 @@ class JC_Post_Types
 
 		register_post_type(
 			'product',
-				array(
-					'labels'              => array(
-						'name'                  => __('Products', 'jelly-catalog'),
-						'singular_name'         => __('Product', 'jelly-catalog'),
-						'all_items'             => __('All Products', 'jelly-catalog'),
-						'menu_name'             => _x('Products', 'Admin menu name', 'jelly-catalog'),
-						'add_new'               => __('Add New', 'jelly-catalog'),
-						'add_new_item'          => __('Add new product', 'jelly-catalog'),
-						'edit'                  => __('Edit', 'jelly-catalog'),
-						'edit_item'             => __('Edit product', 'jelly-catalog'),
-						'new_item'              => __('New product', 'jelly-catalog'),
-						'view_item'             => __('View product', 'jelly-catalog'),
-						'view_items'            => __('View products', 'jelly-catalog'),
-						'search_items'          => __('Search products', 'jelly-catalog'),
-						'not_found'             => __('No products found', 'jelly-catalog'),
-						'not_found_in_trash'    => __('No products found in trash', 'jelly-catalog'),
-						'parent'                => __('Parent product', 'jelly-catalog'),
-						'featured_image'        => __('Product image', 'jelly-catalog'),
-						'set_featured_image'    => __('Set product image', 'jelly-catalog'),
-						'remove_featured_image' => __('Remove product image', 'jelly-catalog'),
-						'use_featured_image'    => __('Use as product image', 'jelly-catalog'),
-						'insert_into_item'      => __('Insert into product', 'jelly-catalog'),
-						'uploaded_to_this_item' => __('Uploaded to this product', 'jelly-catalog'),
-						'filter_items_list'     => __('Filter products', 'jelly-catalog'),
-						'items_list_navigation' => __('Products navigation', 'jelly-catalog'),
-						'items_list'            => __('Products list', 'jelly-catalog'),
-						'item_link'             => __('Product Link', 'jelly-catalog'),
-						'item_link_description' => __('A link to a product.', 'jelly-catalog'),
-					),
-					'description'         => __('This is where you can browse products in this store.', 'jelly-catalog'),
-					'public'              => true,
-					'show_ui'             => true,
-					'menu_icon'           => 'dashicons-archive',
-					'capability_type'     => 'product',
-					'map_meta_cap'        => true,
-					'publicly_queryable'  => true,
-					'exclude_from_search' => false,
-					'hierarchical'        => false, // Hierarchical causes memory issues - WP loads all records!
-					'rewrite'             => 'products' ? array(
-						'slug'       => 'products',
-						'with_front' => false,
-						'feeds'      => true,
-					) : false,
-					'query_var'           => true,
-					'supports'            => $supports,
-					'has_archive'         => $has_archive,
-					'show_in_nav_menus'   => true,
-					'show_in_rest'        => true,
-				)
-			
-		);
+			array(
+				'labels'              => array(
+					'name'                  => __('Products', 'jelly-catalog'),
+					'singular_name'         => __('Product', 'jelly-catalog'),
+					'all_items'             => __('All Products', 'jelly-catalog'),
+					'menu_name'             => _x('Products', 'Admin menu name', 'jelly-catalog'),
+					'add_new'               => __('Add New', 'jelly-catalog'),
+					'add_new_item'          => __('Add new product', 'jelly-catalog'),
+					'edit'                  => __('Edit', 'jelly-catalog'),
+					'edit_item'             => __('Edit product', 'jelly-catalog'),
+					'new_item'              => __('New product', 'jelly-catalog'),
+					'view_item'             => __('View product', 'jelly-catalog'),
+					'view_items'            => __('View products', 'jelly-catalog'),
+					'search_items'          => __('Search products', 'jelly-catalog'),
+					'not_found'             => __('No products found', 'jelly-catalog'),
+					'not_found_in_trash'    => __('No products found in trash', 'jelly-catalog'),
+					'parent'                => __('Parent product', 'jelly-catalog'),
+					'featured_image'        => __('Product image', 'jelly-catalog'),
+					'set_featured_image'    => __('Set product image', 'jelly-catalog'),
+					'remove_featured_image' => __('Remove product image', 'jelly-catalog'),
+					'use_featured_image'    => __('Use as product image', 'jelly-catalog'),
+					'insert_into_item'      => __('Insert into product', 'jelly-catalog'),
+					'uploaded_to_this_item' => __('Uploaded to this product', 'jelly-catalog'),
+					'filter_items_list'     => __('Filter products', 'jelly-catalog'),
+					'items_list_navigation' => __('Products navigation', 'jelly-catalog'),
+					'items_list'            => __('Products list', 'jelly-catalog'),
+					'item_link'             => __('Product Link', 'jelly-catalog'),
+					'item_link_description' => __('A link to a product.', 'jelly-catalog'),
+				),
+				'description'         => __('This is where you can browse products in this store.', 'jelly-catalog'),
+				'public'              => true,
+				'show_ui'             => true,
+				'menu_icon'           => 'dashicons-archive',
+				'map_meta_cap'        => true,
+				'publicly_queryable'  => true,
+				'exclude_from_search' => false,
+				'hierarchical'        => false, // Hierarchical causes memory issues - WP loads all records!
+				'rewrite'             => 'products' ? array(
+					'slug'       => 'products',
+					'with_front' => false,
+					'feeds'      => true,
+				) : false,
+				'query_var'           => true,
+				'supports'            => $supports,
+				'has_archive'         => $has_archive,
+				'show_in_nav_menus'   => true,
+				'show_in_rest'        => true,
+			)
 
+		);
 	}
 
 	/**
@@ -253,8 +234,6 @@ class JC_Post_Types
 
 		return $post_types;
 	}
-
-
 }
 
 JC_Post_Types::init();

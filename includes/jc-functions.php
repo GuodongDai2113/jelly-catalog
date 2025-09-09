@@ -20,3 +20,60 @@ function jc_placeholder_img_src() {
 	$src = JELLY_CATALOG_PLUGIN_URL . 'assets/images/placeholder.webp';
 	return  $src;
 }
+
+function is_woocommerce_activated() {
+	return JELLY_CATALOG_WC_ACTIVE;
+}
+
+/**
+ * 通用 repeater 字段渲染函数
+ * 
+ * @param array $args 参数数组
+ *  - id: 字段 ID
+ *  - name: 字段名称
+ *  - items: 项目数组
+ *  - fields: 字段定义数组
+ */
+function jc_render_repeater_field($args) {
+    $defaults = array(
+        'id' => '',
+        'name' => '',
+        'items' => array(),
+        'fields' => array()
+    );
+    
+    $args = wp_parse_args($args, $defaults);
+    
+    echo '<div class="jc-repeater-wrapper" data-key="' . esc_attr($args['name']) . '">';
+    
+    foreach ($args['items'] as $index => $item) {
+        echo '<div class="repeater-item">';
+        echo '<span class="item-number">' . esc_html($index) . '</span>';
+        
+        foreach ($args['fields'] as $field) {
+            $field_name = $field['name'];
+            $field_value = isset($item[$field_name]) ? $item[$field_name] : '';
+            
+            echo '<div class="repeater-item__' . esc_attr($field_name) . '">';
+            echo '<label for="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']">';
+            echo esc_html($field['label']);
+            echo '</label>';
+            
+            switch ($field['type']) {
+                case 'textarea':
+                    echo '<textarea class="' . esc_attr($field['class']) . '" id="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" name="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']">' . esc_textarea($field_value) . '</textarea>';
+                    break;
+                case 'text':
+                default:
+                    echo '<input class="' . esc_attr($field['class']) . '" type="text" id="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" name="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" value="' . esc_attr($field_value) . '" />';
+                    break;
+            }
+            
+            echo '</div>';
+        }
+        
+        echo '</div>';
+    }
+    
+    echo '</div>';
+}
