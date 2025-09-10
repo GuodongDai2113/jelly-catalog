@@ -45,8 +45,8 @@ function jc_render_repeater_field($args) {
     $args = wp_parse_args($args, $defaults);
     
     echo '<div class="jc-repeater-wrapper" data-key="' . esc_attr($args['name']) . '">';
-    
-    foreach ($args['items'] as $index => $item) {
+    $index = 0;
+    foreach ($args['items'] as $key => $item) {
         echo '<div class="repeater-item">';
         echo '<span class="item-number">' . esc_html($index) . '</span>';
         
@@ -71,6 +71,8 @@ function jc_render_repeater_field($args) {
             
             echo '</div>';
         }
+
+        $index++;
         
         echo '</div>';
     }

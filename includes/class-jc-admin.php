@@ -18,16 +18,26 @@ class JC_Admin
 {
     public function __construct()
     {
+
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_action('wp_ajax_update_category_image', array($this, 'update_category_image'));
-        if (!JELLY_CATALOG_WC_ACTIVE) {
-
-            add_filter('manage_edit-product_columns', array($this, 'columns'));
-            add_action('manage_product_posts_custom_column', array($this, 'column'), 10, 2);
-
-            add_filter('manage_edit-product_cat_columns', array($this, 'product_cat_columns'));
-            add_filter('manage_product_cat_custom_column', array($this, 'product_cat_column'), 10, 3);
+        if (!is_woocommerce_activated()) {
+            $this->init_catalog_modules();
         }
+    }
+
+    public function init_catalog_modules()
+    {
+        add_filter('manage_edit-product_columns', array($this, 'columns'));
+        add_filter('manage_edit-product_columns', array($this, 'define_columns'));
+        add_action('manage_product_posts_custom_column', array($this, 'column'), 10, 2);
+
+        add_filter('manage_edit-product_sortable_columns', array($this, 'sortable_columns'));
+        add_action('pre_get_posts', array($this, 'product_orderby'));
+        add_action('restrict_manage_posts', array($this, 'product_filters'));
+
+        add_filter('manage_edit-product_cat_columns', array($this, 'product_cat_columns'));
+        add_filter('manage_product_cat_custom_column', array($this, 'product_cat_column'), 10, 3);
     }
 
     public function enqueue_admin_assets()
@@ -104,7 +114,22 @@ class JC_Admin
         $new_columns['jc-thumb'] = __('Image', 'jelly-catalog');
         unset($columns['cb']);
         $columns = array_merge($new_columns, $columns);
+
         return $columns;
+    }
+
+    public function define_columns($columns)
+    {
+        $new_columns = array();
+        foreach ($columns as $key => $value) {
+            $new_columns[$key] = $value;
+            // 在标题列后插入新的列
+            if ('title' === $key) {
+                $new_columns['product_cat'] = __('Categories', 'jelly-catalog');
+                $new_columns['product_tag'] = __('Tags', 'jelly-catalog');
+            }
+        }
+        return array_merge($new_columns, $columns);
     }
 
     /**
@@ -133,6 +158,42 @@ class JC_Admin
             }
 
             echo '<img src="' . $image . '" alt="Thumbnail" class="wp-post-image" height="48" width="48" />';
+        }
+
+        // 显示产品分类
+        if ('product_cat' === $column) {
+            $terms = get_the_terms($id, 'product_cat');
+            if (!empty($terms)) {
+                $out = array();
+                foreach ($terms as $term) {
+                    $out[] = sprintf(
+                        '<a href="%s">%s</a>',
+                        esc_url(add_query_arg(array('post_type' => 'product', 'product_cat' => $term->slug), 'edit.php')),
+                        esc_html(sanitize_term_field('name', $term->name, $term->term_id, 'product_cat', 'display'))
+                    );
+                }
+                echo join(', ', $out);
+            } else {
+                echo '<span aria-hidden="true">—</span>';
+            }
+        }
+
+        // 显示产品标签
+        if ('product_tag' === $column) {
+            $terms = get_the_terms($id, 'product_tag');
+            if (!empty($terms)) {
+                $out = array();
+                foreach ($terms as $term) {
+                    $out[] = sprintf(
+                        '<a href="%s">%s</a>',
+                        esc_url(add_query_arg(array('post_type' => 'product', 'product_tag' => $term->slug), 'edit.php')),
+                        esc_html(sanitize_term_field('name', $term->name, $term->term_id, 'product_tag', 'display'))
+                    );
+                }
+                echo join(', ', $out);
+            } else {
+                echo '<span aria-hidden="true">—</span>';
+            }
         }
     }
 
@@ -189,5 +250,93 @@ class JC_Admin
         $columns['handle'] = '';
 
         return $columns;
+    }
+
+    /**
+     * 使自定义列可排序
+     *
+     * @param array $columns 可排序列
+     * @return array
+     */
+    public function sortable_columns($columns)
+    {
+        $columns['product_cat'] = 'product_cat';
+        $columns['product_tag'] = 'product_tag';
+        return $columns;
+    }
+    /**
+     * 处理排序逻辑
+     *
+     * @param WP_Query $query 查询对象
+     */
+    public function product_orderby($query)
+    {
+        if (!is_admin() || !$query->is_main_query()) {
+            return;
+        }
+
+        if ('product_cat' === $query->get('orderby')) {
+            $query->set('orderby', 'taxonomy');
+            $query->set('taxonomy', 'product_cat');
+        }
+
+        if ('product_tag' === $query->get('orderby')) {
+            $query->set('orderby', 'taxonomy');
+            $query->set('taxonomy', 'product_tag');
+        }
+    }
+    /**
+     * 添加筛选器
+     */
+    public function product_filters()
+    {
+        global $typenow, $wp_query;
+
+        if ('product' === $typenow) {
+            // 产品分类筛选器
+            $current_cat = isset($_GET['product_cat']) ? $_GET['product_cat'] : '';
+            $cat_terms = get_terms(array(
+                'taxonomy' => 'product_cat',
+                'hide_empty' => false,
+                'hierarchical' => true,
+                'orderby' => 'name',
+            ));
+
+            if (!empty($cat_terms) && !is_wp_error($cat_terms)) {
+                echo '<select name="product_cat">';
+                echo '<option value="">' . __('All categories', 'jelly-catalog') . '</option>';
+
+                // 构建分类树
+                // $walker = new Walker_CategoryDropdown();
+                echo walk_category_dropdown_tree($cat_terms, 0, array(
+                    'selected' => $current_cat,
+                    'value_field' => 'slug',
+                    'show_count' => true,
+                ));
+
+                echo '</select>';
+            }
+
+            // 产品标签筛选器
+            $current_tag = isset($_GET['product_tag']) ? $_GET['product_tag'] : '';
+            $tag_terms = get_terms(array(
+                'taxonomy' => 'product_tag',
+                'hide_empty' => false,
+            ));
+
+            if (!empty($tag_terms)) {
+                echo '<select name="product_tag">';
+                echo '<option value="">' . __('All tags', 'jelly-catalog') . '</option>';
+                foreach ($tag_terms as $term) {
+                    printf(
+                        '<option value="%s"%s>%s</option>',
+                        $term->slug,
+                        selected($current_tag, $term->slug, false),
+                        $term->name
+                    );
+                }
+                echo '</select>';
+            }
+        }
     }
 }

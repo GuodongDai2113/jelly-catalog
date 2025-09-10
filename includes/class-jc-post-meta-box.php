@@ -21,6 +21,8 @@ class JC_Post_Meta_Box
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'), 30);
         add_action('save_post_product', array($this, 'save_meta_boxes'));
         add_action('admin_head', array($this, 'add_help'));
+        // include 'includes/class-jc-product-attributes-metabox.php';
+        // new JC_Product_Gallery_Metabox();
     }
 
     function add_meta_boxes()
