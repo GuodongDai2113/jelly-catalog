@@ -127,6 +127,7 @@ class JC_Admin
             if ('title' === $key) {
                 $new_columns['product_cat'] = __('Categories', 'jelly-catalog');
                 $new_columns['product_tag'] = __('Tags', 'jelly-catalog');
+                $new_columns['product_completeness'] = __('Completeness', 'jelly-catalog');
             }
         }
         return array_merge($new_columns, $columns);
@@ -166,9 +167,20 @@ class JC_Admin
             if (!empty($terms)) {
                 $out = array();
                 foreach ($terms as $term) {
+                    // 获取分类层级
+                    $level = 0;
+                    if (isset($term->parent)) {
+                        $ancestors = get_ancestors($term->term_id, 'product_cat');
+                        $level = count($ancestors);
+                    }
+
+                    // 确保层级在合理范围内
+                    $level_class = 'level-' . max(1, min(3, $level + 1));
+
                     $out[] = sprintf(
-                        '<a href="%s">%s</a>',
+                        '<a href="%s" class="%s">%s</a>',
                         esc_url(add_query_arg(array('post_type' => 'product', 'product_cat' => $term->slug), 'edit.php')),
+                        $level_class,
                         esc_html(sanitize_term_field('name', $term->name, $term->term_id, 'product_cat', 'display'))
                     );
                 }
@@ -194,6 +206,28 @@ class JC_Admin
             } else {
                 echo '<span aria-hidden="true">—</span>';
             }
+        }
+
+
+        // 显示产品完整度
+        if ('product_completeness' === $column) {
+            $post = get_post($id);
+            $excerpt = $post->post_excerpt;
+            $content = $post->post_content;
+
+            $excerpt_length = strlen(trim(strip_tags($excerpt)));
+            $content_length = strlen(trim(strip_tags($content)));
+
+            $excerpt_complete = $excerpt_length >= 60;
+            $content_complete = $content_length >= 100;
+
+            echo '<p class="jc-completeness">';
+            echo $excerpt_complete ? '<span class="dashicons dashicons-yes-alt" style="color:#52c41a;"></span>' : '<span class="dashicons dashicons-dismiss" style="color:#ff4d4f;"></span>';
+            echo __('Description') . '</p>';
+
+            echo '<p class="jc-completeness">';
+            echo $content_complete ? '<span class="dashicons dashicons-yes-alt" style="color:#52c41a;"></span>' : '<span class="dashicons dashicons-dismiss" style="color:#ff4d4f;"></span>';
+            echo __('Content') . '</p>';
         }
     }
 
@@ -290,7 +324,7 @@ class JC_Admin
      */
     public function product_filters()
     {
-        global $typenow, $wp_query;
+        global $typenow;
 
         if ('product' === $typenow) {
             // 产品分类筛选器

@@ -13,18 +13,22 @@ if (! defined('ABSPATH')) exit; // 禁止直接访问
 
 class JC_Product_Gallery_Metabox
 {
-    public function __construct() {
-        
-            add_meta_box('product-images', __('Product Gallery', 'jelly-catalog'), array($this, 'render_metabox'), 'product', 'side', 'low');
-            add_action('save_post_product', array($this, 'save_metabox'));
-        
+    public function __construct()
+    {
+        add_action('add_meta_boxes', array($this, 'add_meta_boxes'), 30);
+        add_action('save_post_product', array($this, 'save_metabox'));
+    }
+
+    function add_meta_boxes()
+    {
+        add_meta_box('product-images', __('Product Gallery', 'jelly-catalog'), array($this, 'render_metabox'), 'product', 'side', 'low');
     }
 
     public function render_metabox($post)
     {
         $gallery_image_ids = get_post_meta($post->ID, '_product_image_gallery', true);
         $gallery_image_ids = !empty($gallery_image_ids) ? explode(',', $gallery_image_ids) : array();
-        echo wp_nonce_field('jc_save_product_image_gallery','jc_image_gallery');
+        echo wp_nonce_field('jc_save_product_image_gallery', 'jc_image_gallery');
         echo '<div id="jc-gallery">';
         echo '<ul class="product-images">';
 
@@ -55,13 +59,30 @@ class JC_Product_Gallery_Metabox
         echo '</div>';
     }
 
-    public function save_metabox($post_id) {
-
-        if (! wp_verify_nonce($_POST['jc_image_gallery'], 'jc_save_product_image_gallery')) {
+    public function save_metabox($post_id)
+    {
+        // 检查是否为自动保存
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return;
         }
+
+        // 检查权限
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+
+        // 验证 nonce
+        if (
+            !isset($_POST['jc_image_gallery']) ||
+            !wp_verify_nonce($_POST['jc_image_gallery'], 'jc_save_product_image_gallery')
+        ) {
+            return;
+        }
+
+        // 保存数据
         if (isset($_POST['product_image_gallery'])) {
             $gallery_images = sanitize_text_field($_POST['product_image_gallery']);
+            // 可以进一步验证每个 ID 是否为有效附件
             update_post_meta($post_id, '_product_image_gallery', $gallery_images);
         }
     }

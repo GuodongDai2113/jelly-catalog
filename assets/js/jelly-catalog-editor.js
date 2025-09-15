@@ -43,7 +43,7 @@
         "acf-group_product_field", // ACF 自定义字段组
         "product_faq_metabox", // 产品 FAQ
         "product_attributes_metabox", // 产品属性
-        "product_video_url", // 产品视频链接
+        "product_videourl_metabox", // 产品视频链接
         "rank_math_metabox", // Rank Math SEO 插件 metabox
       ];
 

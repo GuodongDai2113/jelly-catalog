@@ -1,4 +1,3 @@
-@charset "UTF-8";
 #jc-gallery .product-images {
   display: flex;
   flex-wrap: wrap;
@@ -6,7 +5,6 @@
   margin: 0;
   padding: 0;
   gap: 8px;
-  /* 拖拽时的占位符样式（参考 WooCommerce） */
 }
 #jc-gallery .product-images li.image {
   position: relative;
@@ -46,7 +44,6 @@
   font-family: "dashicons";
 }
 #jc-gallery .product-images li.image:hover {
-  /* 图片容器悬停效果 */
   background: #fff;
 }
 #jc-gallery .product-images li.image:hover .actions {
@@ -66,12 +63,12 @@
 
 .jc-gallery-count {
   position: absolute;
-  bottom: 4px;
+  top: 40px;
   right: 4px;
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
   font-size: 12px;
-  padding: 2px 8px;
+  padding: 2px 9px;
   border-radius: 12px;
 }
 
@@ -82,7 +79,6 @@
   margin-bottom: 12px;
 }
 .edit-description ol {
-  color: var(--jelly-color-text-secondary);
   margin-left: 16px;
   line-height: 1.5;
 }
@@ -90,10 +86,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 8px 0 8px 0;
+  margin: 8px 0;
   font-size: 18px;
   font-weight: 600;
-  color: var(--jelly-color-warning);
+  color: var(--jelly-color-warning, #faad14);
 }
 
 .jc-tabs {
@@ -184,6 +180,55 @@
   display: inline-block;
 }
 
+.column-product_completeness {
+  width: 110px;
+}
+
+td.column-product_cat a {
+  display: inline-block;
+  padding: 0 7px;
+  font-size: 12px;
+  border-style: solid;
+  border-width: 1px;
+  margin-right: 4px;
+  border-radius: 4px;
+  display: inline-block;
+  margin: 4px;
+  background-color: var(--jelly-color-default-bg, #fafafa);
+  border: 1px solid var(--jelly-color-default-border, #d9d9d9);
+  color: var(--jelly-color-default-text, rgba(0, 0, 0, 0.88));
+}
+td.column-product_cat a.level-1 {
+  background-color: var(--jelly-color-info-bg, #e6f4ff);
+  border: 1px solid var(--jelly-color-info-border, #91caff);
+  color: var(--jelly-color-info-text, #1677ff);
+}
+td.column-product_cat a.level-2 {
+  background-color: var(--jelly-color-success-bg, #f6ffed);
+  border: 1px solid var(--jelly-color-success-border, #b7eb8f);
+  color: var(--jelly-color-success-text, #52c41a);
+}
+td.column-product_cat a.level-3 {
+  background-color: var(--jelly-color-warning-bg, #fffbe6);
+  border: 1px solid var(--jelly-color-warning-border, #ffe58f);
+  color: var(--jelly-color-warning-text, #faad14);
+}
+
+td.column-product_tag a {
+  display: inline-block;
+  padding: 0 7px;
+  font-size: 12px;
+  border-style: solid;
+  border-width: 1px;
+  margin-right: 4px;
+  border-radius: 4px;
+  display: inline-block;
+  margin: 4px;
+  background-color: var(--jelly-color-default-bg, #fafafa);
+  border: 1px solid var(--jelly-color-default-border, #d9d9d9);
+  color: var(--jelly-color-default-text, rgba(0, 0, 0, 0.88));
+}
+
 .jc-repeater-wrapper .repeater-item {
   box-sizing: border-box;
   padding: 16px;
@@ -211,7 +256,8 @@
   margin-bottom: 6px;
   display: block;
 }
-.jc-repeater-wrapper .repeater-item input, .jc-repeater-wrapper .repeater-item textarea {
+.jc-repeater-wrapper .repeater-item input,
+.jc-repeater-wrapper .repeater-item textarea {
   width: 100%;
   margin-bottom: 12px;
 }
@@ -229,6 +275,10 @@
 .jc-repeater-wrapper .repeater-add-new .dashicons {
   font-size: 14px;
   padding-top: 6px;
+}
+
+.jc-completeness .dashicons {
+  padding-right: 12px;
 }
 
 @media screen and (max-width: 782px) {
