@@ -50,9 +50,30 @@ if (is_plugin_active('seo-by-rank-math/rank-math.php') && !$woocommerce_active) 
 	require JELLY_CATALOG_PLUGIN_PATH . 'addons/class-jc-rank-math.php';
 }
 
+/**
+ * 插件激活时执行的函数
+ * 
+ * @since 1.0.3
+ */
+function jelly_catalog_activate()
+{
+	flush_rewrite_rules();
+}
+register_activation_hook(__FILE__, 'jelly_catalog_activate');
+
+/**
+ * 插件停用时执行的函数
+ * 
+ * @since 1.0.3
+ */
+function jelly_catalog_deactivate()
+{
+	flush_rewrite_rules();
+}
+register_deactivation_hook(__FILE__, 'jelly_catalog_deactivate');
+
 function jelly_catalog_init()
 {
-	// 所有初始化代码放在这里
 	new JC_Admin();
 	new JC_Post_Meta_Box();
 }

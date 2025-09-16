@@ -16,13 +16,31 @@ if (! defined('ABSPATH')) exit; // 禁止直接访问
  * @param string $size Thumbnail size to use.
  * @return string
  */
-function jc_placeholder_img_src() {
-	$src = JELLY_CATALOG_PLUGIN_URL . 'assets/images/placeholder.webp';
-	return  $src;
+function jc_placeholder_img_src()
+{
+    $src = JELLY_CATALOG_PLUGIN_URL . 'assets/images/placeholder.webp';
+    return  $src;
 }
 
-function is_woocommerce_activated() {
-	return JELLY_CATALOG_WC_ACTIVE;
+/**
+ * 检查 WooCommerce 插件是否已激活
+ * 
+ * @return bool 返回 WooCommerce 插件是否激活的状态
+ */
+function is_woocommerce_activated()
+{
+    // 检查 JELLY_CATALOG_WC_ACTIVE 常量是否已定义
+    if (defined(JELLY_CATALOG_WC_ACTIVE)) {
+        return JELLY_CATALOG_WC_ACTIVE;
+    }
+
+    // 检查 is_plugin_active 函数是否存在，不存在则加载相关文件
+    if (!function_exists('is_plugin_active')) {
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        return is_plugin_active('woocommerce/woocommerce.php');
+    }
+
+    return false;
 }
 
 /**
@@ -34,31 +52,32 @@ function is_woocommerce_activated() {
  *  - items: 项目数组
  *  - fields: 字段定义数组
  */
-function jc_render_repeater_field($args) {
+function jc_render_repeater_field($args)
+{
     $defaults = array(
         'id' => '',
         'name' => '',
         'items' => array(),
         'fields' => array()
     );
-    
+
     $args = wp_parse_args($args, $defaults);
-    
+
     echo '<div class="jc-repeater-wrapper" data-key="' . esc_attr($args['name']) . '">';
     $index = 0;
     foreach ($args['items'] as $key => $item) {
         echo '<div class="repeater-item">';
         echo '<span class="item-number">' . esc_html($index) . '</span>';
-        
+
         foreach ($args['fields'] as $field) {
             $field_name = $field['name'];
             $field_value = isset($item[$field_name]) ? $item[$field_name] : '';
-            
+
             echo '<div class="repeater-item__' . esc_attr($field_name) . '">';
             echo '<label for="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']">';
             echo esc_html($field['label']);
             echo '</label>';
-            
+
             switch ($field['type']) {
                 case 'textarea':
                     echo '<textarea class="' . esc_attr($field['class']) . '" id="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" name="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']">' . esc_textarea($field_value) . '</textarea>';
@@ -68,14 +87,14 @@ function jc_render_repeater_field($args) {
                     echo '<input class="' . esc_attr($field['class']) . '" type="text" id="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" name="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" value="' . esc_attr($field_value) . '" />';
                     break;
             }
-            
+
             echo '</div>';
         }
 
         $index++;
-        
+
         echo '</div>';
     }
-    
+
     echo '</div>';
 }
