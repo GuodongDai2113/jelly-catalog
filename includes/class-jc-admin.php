@@ -20,7 +20,7 @@ class JC_Admin
     {
 
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
-        add_action('wp_ajax_update_category_image', array($this, 'update_category_image'));
+
         if (!is_woocommerce_activated()) {
             $this->init_catalog_modules();
         }
@@ -49,13 +49,15 @@ class JC_Admin
             JELLY_CATALOG_VERSION
         );
 
-        wp_enqueue_script(
-            'jelly-catalog-admin',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog.js',
-            array('jquery', 'jquery-ui-sortable'),
-            JELLY_CATALOG_VERSION,
-            true
-        );
+        // wp_enqueue_script(
+        //     'jelly-catalog-admin',
+        //     JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog.js',
+        //     array('jquery', 'jquery-ui-sortable'),
+        //     JELLY_CATALOG_VERSION,
+        //     true
+        // );
+
+        wp_enqueue_media();
 
         wp_enqueue_script(
             'jelly-catalog-editor',
@@ -65,38 +67,14 @@ class JC_Admin
             true
         );
 
-        if (!wp_script_is('jelly-ajax', 'registered')) {
-            wp_localize_script('jelly-ajax', 'jelly_ajax_object', array(
-                'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce'    => wp_create_nonce('jelly_nonce')
-            ));
-        }
+        // if (!wp_script_is('jelly-ajax', 'registered')) {
+        wp_localize_script('jelly-catalog-editor', 'jc_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('jc_nonce')
+        ));
+        // }
     }
 
-    /**
-     * 更新分类图片
-     * 
-     * @since 1.3.0
-     * 
-     * @return void
-     */
-    public function update_category_image()
-    {
-
-        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'jelly_nonce')) {
-            wp_send_json_error(__('Security verification failed', 'jelly-catalog'));
-        }
-
-        $category_id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
-        $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
-
-        if (!$category_id || !$image_id) {
-            wp_send_json_error(__('Missing required parameter', 'jelly-catalog'));
-        }
-
-        update_term_meta($category_id, 'thumbnail_id', $image_id);
-        wp_send_json_success(__('Category image updated successfully', 'jelly-catalog'));
-    }
 
     /**
      * Columns function.
@@ -259,6 +237,11 @@ class JC_Admin
         if ('handle' === $column) {
             $columns .= '<input type="hidden" name="term_id" value="' . esc_attr($id) . '" />';
         }
+
+        if ('description' === $column) {
+            $term = get_term($id, 'product_cat');
+            $columns .= esc_html($term->description);
+        }
         return $columns;
     }
 
@@ -277,8 +260,10 @@ class JC_Admin
             $new_columns['cb'] = $columns['cb'];
             unset($columns['cb']);
         }
+        $new_columns['jc-thumb'] = __('Image', 'jelly-catalog');
+        // $new_columns['name'] = __('Name', 'jelly-catalog');
+        // $new_columns['description'] = __('Description', 'jelly-catalog');
 
-        $new_columns['jc-thumb'] = __('Image', 'woocommerce');
 
         $columns           = array_merge($new_columns, $columns);
         $columns['handle'] = '';
@@ -373,4 +358,5 @@ class JC_Admin
             }
         }
     }
+
 }

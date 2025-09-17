@@ -15,6 +15,7 @@
       if (!$(".post-type-product").length) {
         return;
       }
+      console.log("Jelly Catalog Editor Initialized");
 
       // 初始化所有功能模块
       this.resetProductEditor();
@@ -24,6 +25,15 @@
 
       // 初始化 repeater 功能
       this.initRepeater();
+
+      // 初始化产品画册功能
+      this.initProductGallery();
+
+      // 初始化产品分类图片功能
+      this.initProductCategoryImageModule();
+
+      // 初始化产品分类描述功能
+      this.initProductCategoryDescriptionModule();
     }
 
     /**
@@ -310,7 +320,7 @@
       // 如果还没有新增按钮，则添加一个
       if (repeaterWrapper.find(".repeater-add-new").length === 0) {
         const addButton = $(`<div class="repeater-add-wrapper">
-            <button type="button" class="button repeater-add-new">
+            <button type="button" class="button button-primary repeater-add-new">
                 <span class="dashicons dashicons-plus"></span>
                 Add New Item
             </button>
@@ -405,6 +415,170 @@
                 }
               });
           });
+      });
+    }
+
+    /**
+     * 初始化产品图片画廊模块
+     */
+    initProductGallery() {
+      const container = $("#jc-gallery .product-images");
+      if (!container.length) {
+        return;
+      }
+      // 图片排序
+      container.sortable({
+        items: "li.image",
+        cursor: "move",
+        scrollSensitivity: 40,
+        forcePlaceholderSize: true,
+        helper: "clone",
+        opacity: 0.65,
+        placeholder: "ui-sortable-placeholder",
+        start: function (event, ui) {
+          ui.placeholder.height(ui.item.height());
+          ui.placeholder.width(ui.item.width());
+        },
+        stop: function () {
+          container.find("li.image").removeAttr("style");
+          this.updateGalleryImages();
+        }.bind(this),
+      });
+
+      // 删除图片
+      $(document).on("click", "#jc-gallery .image a.delete", (e) => {
+        e.preventDefault();
+        $(e.currentTarget).closest("li.image").remove();
+        this.updateGalleryImages();
+      });
+
+      // 添加图片
+      $(document).on("click", ".jc-add-image a", (e) => {
+        e.preventDefault();
+        this.openMediaFrame(e.currentTarget);
+      });
+    }
+
+    /**
+     * 初始化产品分类图片模块
+     */
+    initProductCategoryImageModule() {
+      if (!$(".taxonomy-product_cat").length) {
+        return;
+      }
+
+      $(".column-thumb, .column-jc-thumb").on("click", function () {
+        let frame;
+        if (frame) {
+          frame.open();
+          return;
+        }
+
+        frame = wp.media({
+          multiple: false,
+        });
+
+        frame.on(
+          "select",
+          function () {
+            const attachment = frame.state().get("selection").first().toJSON();
+            $(this).find("img").attr("src", attachment.url);
+            const categoryId = $(this).parent().attr("id").replace("tag-", "");
+            $.ajax({
+              url: jc_ajax.ajax_url,
+              type: "POST",
+              data: {
+                action: "update_product_category_image",
+                category_id: categoryId,
+                image_id: attachment.id,
+                nonce: jc_ajax.nonce,
+              },
+              success: (response) => {},
+            });
+          }.bind(this)
+        );
+        frame.open();
+      });
+    }
+
+    /**
+     * 初始化产品分类描述模块
+     */
+    initProductCategoryDescriptionModule() {
+      if (!$(".taxonomy-product_cat").length) {
+        return;
+      }
+
+      $(".wp-list-table").on("dblclick", ".column-description", function () {
+        const cell = $(this);
+        // 保留原始 HTML
+        const source = cell.html();
+        // 排除 .screen-reader-text 和 aria-hidden="true" 的内容
+        const description = cell
+          .clone()
+          .find('.screen-reader-text, [aria-hidden="true"]')
+          .remove()
+          .end()
+          .text()
+          .trim();
+        const termId = cell.closest("tr").attr("id").replace("tag-", "");
+
+        // 检查是否已经处于编辑状态
+        if (cell.find("textarea").length > 0) {
+          return;
+        }
+
+        // 创建编辑器元素
+        const editor = $('<div class="jc-description-editor"></div>');
+        const textarea = $(
+          '<textarea class="description-textarea" rows="4" cols="40"></textarea>'
+        );
+        const actions = $('<div class="description-actions"></div>');
+        const saveBtn = $('.inline-edit-save .save', $('.inline-edit-row')).clone();
+        const cancelBtn = $('.inline-edit-save .cancel', $('.inline-edit-row')).clone();
+
+        saveBtn.on("click", function (e) {
+          e.preventDefault();
+          const updatedDescription = textarea.val();
+          $.ajax({
+            url: jc_ajax.ajax_url,
+            type: "POST",
+            data: {
+              action: "update_product_category_description",
+              term_id: termId,
+              description: updatedDescription,
+              nonce: jc_ajax.nonce,
+            },
+            success: function (response) {
+              if (response.success) {
+                // 更新显示的描述
+                cell.html("<p>" + updatedDescription + "</p>");
+              }
+            },
+          });
+        });
+
+        cancelBtn.on("click", function (e) {
+          e.preventDefault();
+          cell.html(source);
+        });
+
+        // 设置文本域的值
+        textarea.val(description);
+
+        // 设置保存按钮的属性
+        saveBtn.attr("data-term-id", termId);
+
+        // 组装编辑器
+        editor.append(textarea, actions);
+        actions.append(cancelBtn,saveBtn);
+
+
+        // 将编辑器插入到当前单元格
+        cell.html(editor);
+
+        // 聚焦到文本域
+        textarea.focus();
       });
     }
   }

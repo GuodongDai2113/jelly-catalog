@@ -176,6 +176,8 @@ class JC_Post_Types
 			)
 
 		);
+
+		do_action( 'jc_after_register_post_type' );
 	}
 
 	/**
@@ -233,6 +235,25 @@ class JC_Post_Types
 		$post_types[] = 'product';
 
 		return $post_types;
+	}
+
+	/**
+	 * Flush rules if the event is queued.
+	 *
+	 * @since 3.3.0
+	 */
+	public static function maybe_flush_rewrite_rules() {
+		if ( 'yes' === get_option( 'jc_queue_flush_rewrite_rules' ) ) {
+			update_option( 'jc_queue_flush_rewrite_rules', 'no' );
+			self::flush_rewrite_rules();
+		}
+	}
+
+	/**
+	 * Flush rewrite rules.
+	 */
+	public static function flush_rewrite_rules() {
+		flush_rewrite_rules();
 	}
 }
 
