@@ -28,7 +28,7 @@ class JC_Product_FAQ_Metabox
     {
         $faqs = get_post_meta($post->ID, '_product_faqs', true);
         $faqs = is_array($faqs) ? $faqs : [];
-        echo wp_nonce_field('jc_save_product_faq', 'jc_faq');
+        wp_nonce_field('jc_save_product_faq', 'jc_faq');
         // 使用通用 repeater 函数生成 FAQ 表单
         jc_render_repeater_field(array(
             'id' => 'product_faqs',

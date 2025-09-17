@@ -28,7 +28,7 @@ class JC_Product_Attributes_Metabox
     {
         $attributes = get_post_meta($post->ID, '_product_attributes', true);
         $attributes = is_array($attributes) ? $attributes : [];
-        echo wp_nonce_field('jc_save_product_attributes', 'jc_attributes');
+        wp_nonce_field('jc_save_product_attributes', 'jc_attributes');
 
         // 使用通用 repeater 函数生成 FAQ 表单
         jc_render_repeater_field(array(

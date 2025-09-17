@@ -28,7 +28,7 @@ class JC_Product_Gallery_Metabox
     {
         $gallery_image_ids = get_post_meta($post->ID, '_product_image_gallery', true);
         $gallery_image_ids = !empty($gallery_image_ids) ? explode(',', $gallery_image_ids) : array();
-        echo wp_nonce_field('jc_save_product_image_gallery', 'jc_image_gallery');
+        wp_nonce_field('jc_save_product_image_gallery', 'jc_image_gallery');
         echo '<div id="jc-gallery">';
         echo '<ul class="product-images">';
 

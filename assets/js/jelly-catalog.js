@@ -6,177 +6,22 @@
       if (!$(".post-type-product").length) {
         return;
       }
-
-      // 初始化所有功能模块
-      this.initModules();
-    }
-
-    /**
-     * 初始化所有功能模块
-     */
-    initModules() {
-      this.initProductGallery();
-      // this.initProductFAQ();
+      // 初始化产品分类图片功能
       this.initProductCategoryImageModule();
-      // this.resetProductEditor();
-    }
 
-    /**
-     * 初始化产品图片画廊模块
-     */
-    initProductGallery() {
-      const container = $("#jc-gallery .product-images");
-      if (!container.length) {
-        return;
-      }
-      // 图片排序
-      container.sortable({
-        items: "li.image",
-        cursor: "move",
-        scrollSensitivity: 40,
-        forcePlaceholderSize: true,
-        helper: "clone",
-        opacity: 0.65,
-        placeholder: "ui-sortable-placeholder",
-        start: function (event, ui) {
-          ui.placeholder.height(ui.item.height());
-          ui.placeholder.width(ui.item.width());
-        },
-        stop: function () {
-          container.find("li.image").removeAttr("style");
-          this.updateGalleryImages();
-        }.bind(this),
-      });
-
-      // 删除图片
-      $(document).on("click", "#jc-gallery .image a.delete", (e) => {
-        e.preventDefault();
-        $(e.currentTarget).closest("li.image").remove();
-        this.updateGalleryImages();
-      });
-
-      // 添加图片
-      $(document).on("click", ".jc-add-image a", (e) => {
-        e.preventDefault();
-        this.openMediaFrame(e.currentTarget);
-      });
-    }
-
-    /**
-     * 打开媒体框架以选择图片
-     */
-    openMediaFrame(button) {
-      let productGalleryFrame;
-      const $el = $(button);
-      const deleteText = $el.data("delete") || "Delete image";
-
-      if (productGalleryFrame) {
-        productGalleryFrame.open();
-        return;
-      }
-
-      productGalleryFrame = wp.media({
-        title: $el.data("choose"),
-        button: { text: $el.data("update") },
-        library: {
-          type: [
-            "image/jpeg",
-            "image/jpg",
-            "image/png",
-            "image/gif",
-            "image/webp",
-          ],
-        },
-        multiple: true,
-      });
-
-      productGalleryFrame.on("select", () => {
-        const selection = productGalleryFrame.state().get("selection");
-
-        selection.map((attachment) => {
-          attachment = attachment.toJSON();
-          if (attachment.id) {
-            $("#jc-gallery .product-images").append(`
-              <li class="image" data-attachment_id="${attachment.id}">
-                <img src="${attachment.sizes.thumbnail.url}" alt="" />
-                <a href="#" class="actions delete" title="${deleteText}"></a>
-              </li>
-            `);
-          }
-        });
-
-        this.updateGalleryImages();
-      });
-
-      productGalleryFrame.open();
-    }
-
-    /**
-     * 更新隐藏字段中的图片ID
-     */
-    updateGalleryImages() {
-      const attachmentIds = $("#jc-gallery .product-images li.image")
-        .map(function () {
-          return $(this).data("attachment_id");
-        })
-        .get()
-        .join(",");
-
-      $("#product_image_gallery").val(attachmentIds);
-    }
-
-    /**
-     * 初始化产品FAQ模块
-     */
-    initProductFAQ() {
-      const faqContainer = $(".jelly-kv-wrapper");
-
-      $("add-faq").on("click", () => {
-        const index = faqContainer.find(".kv-item").length;
-        const html = this.getFaqItemTemplate(index);
-        faqContainer.append(html);
-      });
-
-      faqContainer.on("click", ".kv-item__remove .remove-item", function () {
-        $(this).closest(".kv-item").remove();
-      });
-    }
-
-    /**
-     * 获取FAQ模板
-     */
-    getFaqItemTemplate(index) {
-      return `
-        <div class="kv-item">
-          <div class="kv-item__key">
-            <label for="product_faqs[${index}][question]">Question:</label>
-            <input
-              class="kv-item__key-input"
-              type="text"
-              id="product_faqs[${index}][question]"
-              name="product_faqs[${index}][question]"
-            />
-          </div>
-          <div class="kv-item__value">
-            <label for="product_faqs[${index}][answer]">Answer:</label>
-            <textarea
-              class="kv-item__value-input"
-              id="product_faqs[${index}][answer]"
-              name="product_faqs[${index}][answer]"
-            ></textarea>
-          </div>
-          <div class="kv-item__remove">
-            <button type="button" class="button remove-item">Remove FAQ</button>
-          </div>
-        </div>
-      `;
+      // 初始化产品分类描述功能
+      this.initProductCategoryDescriptionModule();
     }
 
     /**
      * 初始化产品分类图片模块
      */
     initProductCategoryImageModule() {
-      $(".taxonomy-product_cat .column-thumb").on("click", function () {
+      if (!$(".taxonomy-product_cat").length) {
+        return;
+      }
+
+      $(".column-thumb, .column-jc-thumb").on("click", function () {
         let frame;
         if (frame) {
           frame.open();
@@ -184,8 +29,6 @@
         }
 
         frame = wp.media({
-          title: "选择或上传图片",
-          button: { text: "使用此图片" },
           multiple: false,
         });
 
@@ -195,7 +38,17 @@
             const attachment = frame.state().get("selection").first().toJSON();
             $(this).find("img").attr("src", attachment.url);
             const categoryId = $(this).parent().attr("id").replace("tag-", "");
-            this.updateCategoryImage(categoryId, attachment.id);
+            $.ajax({
+              url: jc_ajax.ajax_url,
+              type: "POST",
+              data: {
+                action: "update_product_category_image",
+                category_id: categoryId,
+                image_id: attachment.id,
+                nonce: jc_ajax.nonce,
+              },
+              success: (response) => {},
+            });
           }.bind(this)
         );
         frame.open();
@@ -203,32 +56,90 @@
     }
 
     /**
-     * 更新分类图片
+     * 初始化产品分类描述模块
      */
-    updateCategoryImage(categoryId, imageId) {
-      $.ajax({
-        url: jelly_ajax_object.ajax_url,
-        type: "POST",
-        data: {
-          action: "update_category_image",
-          category_id: categoryId,
-          image_id: imageId,
-          nonce: jelly_ajax_object.nonce,
-        },
-        success: (response) => {
-          if (response.success) {
-            jellyShowSuccess("分类图片更新成功");
-          } else {
-            jellyShowError("分类图片更新失败");
-          }
-        },
-        error: () => {
-          jellyShowError("请求失败，请重试");
-        },
+    initProductCategoryDescriptionModule() {
+      if (!$(".taxonomy-product_cat").length) {
+        return;
+      }
+
+      $(".wp-list-table").on("dblclick", ".column-description", function () {
+        const cell = $(this);
+        // 保留原始 HTML
+        const source = cell.html();
+        // 排除 .screen-reader-text 和 aria-hidden="true" 的内容
+        const description = cell
+          .clone()
+          .find('.screen-reader-text, [aria-hidden="true"]')
+          .remove()
+          .end()
+          .text()
+          .trim();
+        const termId = cell.closest("tr").attr("id").replace("tag-", "");
+
+        // 检查是否已经处于编辑状态
+        if (cell.find("textarea").length > 0) {
+          return;
+        }
+
+        // 创建编辑器元素
+        const editor = $('<div class="jc-description-editor"></div>');
+        const textarea = $(
+          '<textarea class="description-textarea" rows="4" cols="40"></textarea>'
+        );
+        const actions = $('<div class="description-actions"></div>');
+        const saveBtn = $(
+          ".inline-edit-save .save",
+          $(".inline-edit-row")
+        ).clone();
+        const cancelBtn = $(
+          ".inline-edit-save .cancel",
+          $(".inline-edit-row")
+        ).clone();
+
+        saveBtn.on("click", function (e) {
+          e.preventDefault();
+          const updatedDescription = textarea.val();
+          $.ajax({
+            url: jc_ajax.ajax_url,
+            type: "POST",
+            data: {
+              action: "update_product_category_description",
+              term_id: termId,
+              description: updatedDescription,
+              nonce: jc_ajax.nonce,
+            },
+            success: function (response) {
+              if (response.success) {
+                // 更新显示的描述
+                cell.html("<p>" + updatedDescription + "</p>");
+              }
+            },
+          });
+        });
+
+        cancelBtn.on("click", function (e) {
+          e.preventDefault();
+          cell.html(source);
+        });
+
+        // 设置文本域的值
+        textarea.val(description);
+
+        // 设置保存按钮的属性
+        saveBtn.attr("data-term-id", termId);
+
+        // 组装编辑器
+        editor.append(textarea, actions);
+        actions.append(cancelBtn, saveBtn);
+
+        // 将编辑器插入到当前单元格
+        cell.html(editor);
+
+        // 聚焦到文本域
+        textarea.focus();
       });
     }
-
-
   }
 
   // 初始化 ProductManager 类

@@ -27,7 +27,7 @@ class JC_Product_Videourl_Metabox
     public function render_metabox($post)
     {
         $video_url = get_post_meta($post->ID, '_product_videourl', true);
-        echo wp_nonce_field('jc_save_product_videourl', 'jc_videourl');
+        wp_nonce_field('jc_save_product_videourl', 'jc_videourl');
         echo '<p>';
         echo '<label for="product_video_url">' . __('Video URL', 'jelly-catalog') . ':</label>';
         echo '<input type="url" id="product_videourl" name="product_videourl" value="' . esc_url($video_url) . '" class="large-text" />';

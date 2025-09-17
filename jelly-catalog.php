@@ -50,10 +50,11 @@ if (is_plugin_active('seo-by-rank-math/rank-math.php') && !$woocommerce_active) 
 	require JELLY_CATALOG_PLUGIN_PATH . 'addons/class-jc-rank-math.php';
 }
 
-function jelly_catalog_load_plugin_textdomain() {
-    load_plugin_textdomain( 'jelly-catalog', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
+function jelly_catalog_load_plugin_textdomain()
+{
+	load_plugin_textdomain('jelly-catalog', FALSE, basename(dirname(__FILE__)) . '/languages/');
 }
-add_action( 'plugins_loaded', 'jelly_catalog_load_plugin_textdomain' );
+add_action('plugins_loaded', 'jelly_catalog_load_plugin_textdomain');
 
 function jelly_catalog_init()
 {

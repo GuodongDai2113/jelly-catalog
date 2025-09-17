@@ -49,13 +49,13 @@ class JC_Admin
             JELLY_CATALOG_VERSION
         );
 
-        // wp_enqueue_script(
-        //     'jelly-catalog-admin',
-        //     JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog.js',
-        //     array('jquery', 'jquery-ui-sortable'),
-        //     JELLY_CATALOG_VERSION,
-        //     true
-        // );
+        wp_enqueue_script(
+            'jelly-catalog-admin',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog.js',
+            array('jquery', 'jquery-ui-sortable'),
+            JELLY_CATALOG_VERSION,
+            true
+        );
 
         wp_enqueue_media();
 
@@ -201,11 +201,11 @@ class JC_Admin
 
             echo '<p class="jc-completeness">';
             echo $excerpt_complete ? '<span class="dashicons dashicons-yes-alt" style="color:#52c41a;"></span>' : '<span class="dashicons dashicons-dismiss" style="color:#ff4d4f;"></span>';
-            echo __('Description') . '</p>';
+            echo __('Description','jelly-catalog') . '</p>';
 
             echo '<p class="jc-completeness">';
             echo $content_complete ? '<span class="dashicons dashicons-yes-alt" style="color:#52c41a;"></span>' : '<span class="dashicons dashicons-dismiss" style="color:#ff4d4f;"></span>';
-            echo __('Content') . '</p>';
+            echo __('Content','jelly-catalog') . '</p>';
         }
     }
 

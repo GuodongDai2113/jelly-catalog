@@ -120,7 +120,8 @@ class JC_Post_Types
 			return;
 		}
 
-		$supports   = array('title', 'editor', 'excerpt', 'thumbnail', 'custom-fields', 'publicize', 'wpcom-markdown');
+		// $supports   = array('title', 'editor', 'excerpt', 'thumbnail', 'custom-fields', 'publicize', 'wpcom-markdown');
+		$supports   = array('title', 'editor', 'excerpt', 'thumbnail');
 
 		$has_archive = 'products';
 
