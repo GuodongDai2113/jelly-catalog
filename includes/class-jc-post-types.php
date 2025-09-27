@@ -27,6 +27,7 @@ class JC_Post_Types
 		add_filter('rest_api_allowed_post_types', array(__CLASS__, 'rest_api_allowed_post_types'));
 		add_filter('gutenberg_can_edit_post_type', array(__CLASS__, 'gutenberg_can_edit_post_type'), 10, 2);
 		add_filter('use_block_editor_for_post_type', array(__CLASS__, 'gutenberg_can_edit_post_type'), 10, 2);
+		add_action('pre_get_posts', array(__CLASS__, 'product_query'));
 	}
 
 	/**
@@ -177,8 +178,6 @@ class JC_Post_Types
 			)
 
 		);
-
-		do_action( 'jc_after_register_post_type' );
 	}
 
 	/**
@@ -239,22 +238,19 @@ class JC_Post_Types
 	}
 
 	/**
-	 * Flush rules if the event is queued.
-	 *
-	 * @since 3.3.0
+	 * 修改产品归档页面的查询参数
+	 * 
+	 * @param \WP_Query $query 查询对象
 	 */
-	public static function maybe_flush_rewrite_rules() {
-		if ( 'yes' === get_option( 'jc_queue_flush_rewrite_rules' ) ) {
-			update_option( 'jc_queue_flush_rewrite_rules', 'no' );
-			self::flush_rewrite_rules();
+	public static function product_query($query)
+	{
+		// 只在产品归档页面且是主查询时修改
+		if (!is_admin() && $query->is_main_query()) {
+			if (is_product_archive()) {
+				$product_per_page = get_option('products_per_page', 16);
+				$query->set('posts_per_page', $product_per_page);
+			}
 		}
-	}
-
-	/**
-	 * Flush rewrite rules.
-	 */
-	public static function flush_rewrite_rules() {
-		flush_rewrite_rules();
 	}
 }
 

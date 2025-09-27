@@ -24,6 +24,10 @@ class JC_Admin
         if (!is_woocommerce_activated()) {
             $this->init_catalog_modules();
         }
+
+        add_filter('jelly_register_sections', array($this, 'add_theme_sections'));
+        add_filter('jelly_register_tabs', array($this, 'add_theme_tabs'));
+    
     }
 
     public function init_catalog_modules()
@@ -201,11 +205,11 @@ class JC_Admin
 
             echo '<p class="jc-completeness">';
             echo $excerpt_complete ? '<span class="dashicons dashicons-yes-alt" style="color:#52c41a;"></span>' : '<span class="dashicons dashicons-dismiss" style="color:#ff4d4f;"></span>';
-            echo __('Description','jelly-catalog') . '</p>';
+            echo __('Description', 'jelly-catalog') . '</p>';
 
             echo '<p class="jc-completeness">';
             echo $content_complete ? '<span class="dashicons dashicons-yes-alt" style="color:#52c41a;"></span>' : '<span class="dashicons dashicons-dismiss" style="color:#ff4d4f;"></span>';
-            echo __('Content','jelly-catalog') . '</p>';
+            echo __('Content', 'jelly-catalog') . '</p>';
         }
     }
 
@@ -358,5 +362,44 @@ class JC_Admin
             }
         }
     }
+
+    function add_theme_tabs($tabs)
+    {
+        $tabs['product'] = [
+            "title" => esc_html__('Product', 'jelly-catalog'),
+            "icon" => "ri-puzzle-line",
+        ];
+        return $tabs;
+    }
+
+    function add_theme_sections($sections)
+    {
+        $pages = get_pages();
+        $page_options = [
+            '' => __('None', 'jelly-catalog'),
+        ];
+        foreach ($pages as $page) {
+            $page_options[$page->ID] = $page->post_title;
+        }
+
+        $sections['product'] = [
+            'product' => [
+                "title" => '',
+                "fields" => [
+                    [
+                        'id' => 'products_per_page',
+                        'label' => __('Products per page', 'jelly-catalog'),
+                        'type' => 'number',
+                        'wp_sync' => 'products_per_page',
+                        'description' => __('Number of products to show per page.', 'jelly-catalog'),
+                    ]
+                ]
+            ]
+        ];
+
+        return $sections;
+    }
+
+
 
 }

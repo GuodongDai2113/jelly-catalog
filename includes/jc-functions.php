@@ -98,3 +98,7 @@ function jc_render_repeater_field($args)
 
     echo '</div>';
 }
+
+function is_product_archive(){
+    return is_post_type_archive('product') || is_tax('product_cat') || is_tax('product_tag');
+}
