@@ -4,7 +4,7 @@
  * Plugin Name:       Jelly Catalog
  * Plugin URI:        https://jellydai.com/
  * Description:       Only enable product features, fully compatible with Woocommerce
- * Version:           1.0.3
+ * Version:           1.0.5
  * Author:            JellyDai
  * Author URI:        https://jellydai.com/
  * Text Domain: jelly-catalog
@@ -14,7 +14,7 @@
 if (! defined('ABSPATH')) exit; // 禁止直接访问
 
 /** 插件版本 */
-define('JELLY_CATALOG_VERSION', '1.0.4');
+define('JELLY_CATALOG_VERSION', '1.0.5');
 
 /** 插件URL路径 */
 define('JELLY_CATALOG_PLUGIN_URL', plugin_dir_url(__FILE__));

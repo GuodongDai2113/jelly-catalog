@@ -28,8 +28,6 @@
 
       // 初始化产品画册功能
       this.initProductGallery();
-
-
     }
 
     /**
@@ -118,7 +116,6 @@
           } else {
             // 产品描述 metabox：直接使用整个 metabox
             metaboxContent = metabox;
-            
           }
 
           // 从帮助标签中获取描述内容并添加到 metabox 内容开头
@@ -141,10 +138,10 @@
           }
         }
       });
-      const elementorEditor = $('#elementor-editor');
-      const elementorSwitch = $('#elementor-switch-mode');
+      const elementorEditor = $("#elementor-editor");
+      const elementorSwitch = $("#elementor-switch-mode");
       if (elementorEditor.length && elementorSwitch.length) {
-        const content = $('#tab-postdivrich')
+        const content = $("#tab-postdivrich");
         content.append(elementorSwitch);
         content.append(elementorEditor);
       }
@@ -463,7 +460,56 @@
       });
     }
 
+    /**
+     * 打开媒体框架以选择图片
+     */
+    openMediaFrame(button) {
+      let productGalleryFrame;
+      const $el = $(button);
+      const deleteText = $el.data("delete") || "Delete image";
 
+      if (productGalleryFrame) {
+        productGalleryFrame.open();
+        return;
+      }
+
+      productGalleryFrame = wp.media({
+        title: $el.data("choose"),
+        button: { text: $el.data("update") },
+        library: {
+          type: [
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+          ],
+        },
+        multiple: true,
+      });
+
+      productGalleryFrame.on("select", () => {
+        const selection = productGalleryFrame.state().get("selection");
+
+        selection.map((attachment) => {
+          attachment = attachment.toJSON();
+          if (attachment.id) {
+            $("#jelly_product_images_container .product_images").append(`
+                  <li class="image" data-attachment_id="${attachment.id}">
+                    <img src="${attachment.sizes.thumbnail.url}" alt="" />
+                    <ul class="actions">
+                      <li><a href="#" class="delete" title="${deleteText}">X</a></li>
+                    </ul>
+                  </li>
+                `);
+          }
+        });
+
+        this.updateGalleryImages();
+      });
+
+      productGalleryFrame.open();
+    }
   }
 
   /**
