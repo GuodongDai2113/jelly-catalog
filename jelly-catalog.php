@@ -61,6 +61,7 @@ function jelly_catalog_init()
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-admin.php';
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-post-meta-box.php';
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-ajax-action.php';
+	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-sheet-editor.php';
 	new JC_Admin();
 	new JC_Post_Meta_Box();
 }
