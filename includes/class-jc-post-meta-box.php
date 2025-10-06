@@ -16,6 +16,16 @@ if (! defined('ABSPATH')) exit; // 禁止直接访问
  */
 class JC_Post_Meta_Box
 {
+    public static $instance;
+
+    public static function instance()
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
     public function __construct()
     {
         add_action('admin_head', array($this, 'add_help'));
@@ -133,7 +143,7 @@ class JC_Post_Meta_Box
     private function initialize_metaboxes()
     {
         // 只在未激活 WooCommerce 时加载基础产品 metaboxes
-        if (!is_woocommerce_activated()) {
+        if (!jc_is_woocommerce_activated()) {
             $this->load_core_product_metaboxes();
         }
 
@@ -170,3 +180,4 @@ class JC_Post_Meta_Box
         new JC_Product_Attributes_Metabox();
     }
 }
+JC_Post_Meta_Box::instance();

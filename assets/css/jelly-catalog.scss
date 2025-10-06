@@ -1,27 +1,32 @@
+// ======================== 商品图库区域 ========================
 #jc-gallery {
   .product-images {
+    // 商品图拖拽容器
     display: flex;
     flex-wrap: wrap;
+    gap: 8px;
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: 8px;
 
     li.image {
+      // 单张图片卡片
       position: relative;
       cursor: move;
       background: #f5f5f5;
 
       img {
+        // 统一缩略图尺寸与裁切
         width: 75px;
         height: 75px;
-        object-fit: cover;
         display: block;
+        object-fit: cover;
         border: 1px solid #ddd;
         border-radius: 4px;
       }
 
       .actions {
+        // 删除按钮（Dashicons）
         position: absolute;
         top: -4px;
         right: -4px;
@@ -47,15 +52,17 @@
       }
 
       &:hover {
+        // 悬停时展示操作按钮并加亮背景
         .actions {
           display: block;
         }
+
         background: #fff;
       }
     }
 
-    // 拖拽相关样式
     .ui-sortable-placeholder {
+      // 拖拽占位样式
       border: 2px dashed #bbb;
       background-color: #f5f5f5;
       visibility: visible !important;
@@ -64,12 +71,14 @@
     }
 
     .ui-sortable-helper {
+      // 拖拽中的临时效果
       transform: rotate(5deg);
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     }
   }
 }
 
+// ======================== 图库计数徽章 ========================
 .jc-gallery-count {
   position: absolute;
   top: 40px;
@@ -81,18 +90,21 @@
   border-radius: 12px;
 }
 
+// ======================== 描述编辑模块 ========================
 .edit-description {
   padding: 16px;
+  margin-bottom: 12px;
   border: 1px solid var(--jelly-color-border, #ccc);
   background-color: #fafafa;
-  margin-bottom: 12px;
 
   ol {
+    // 引导提示的列表排版
     margin-left: 16px;
     line-height: 1.5;
   }
 
   .edit-title {
+    // 编辑区标题
     display: flex;
     align-items: center;
     gap: 8px;
@@ -103,35 +115,38 @@
   }
 }
 
+// ======================== Tab 选项卡布局 ========================
 .jc-tabs {
   margin: 20px 0;
+  display: flex;
+  flex-direction: row;
   background: #fff;
   border: 1px solid #c3c4c7;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
-  display: flex;
-  flex-direction: row;
 
   .nav-tab-wrapper {
-    border-bottom: none;
-    border-right: 1px solid #c3c4c7;
-    padding: 0;
-    background: #f0f0f1;
-    min-width: 150px;
+    // 侧边标签列
     display: flex;
     flex-direction: column;
+    min-width: 150px;
+    padding: 0;
+    background: #f0f0f1;
+    border-right: 1px solid #c3c4c7;
+    border-bottom: none;
 
     .nav-tab {
       margin: 0;
-      border: none;
-      border-bottom: 1px solid #c3c4c7;
-      background: #f0f0f1;
-      font-weight: 600;
-      border-radius: 0;
       padding: 12px 10px;
       text-align: left;
       text-transform: capitalize;
+      font-weight: 600;
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid #c3c4c7;
+      background: #f0f0f1;
 
       &.nav-tab-active {
+        // 当前选中的标签
         background: #fff;
         border-right: 1px solid #fff;
         border-bottom: 1px solid #c3c4c7;
@@ -146,8 +161,9 @@
   }
 
   .tab-content {
-    padding: 20px;
+    // 右侧内容区域
     flex: 1;
+    padding: 20px;
     min-height: 700px;
 
     .acf-field {
@@ -156,6 +172,7 @@
   }
 
   .tab-pane {
+    // 单个选项卡面板
     display: none;
 
     &.active {
@@ -167,14 +184,15 @@
     }
   }
 
-  // 确保原有的 metabox 内容在 tab 中正常显示
   .product-images,
   .jelly-faq-wrapper,
   #product_image_gallery {
+    // 兼容原 metabox 的布局
     margin: 0;
   }
 }
 
+// ======================== 摘要输入辅助 ========================
 .short-description-wrapper {
   height: 175px;
   width: 100%;
@@ -189,12 +207,14 @@
   }
 }
 
-.taxonomy-product_cat .inline-editor{
-  textarea{
+.taxonomy-product_cat .inline-editor {
+  // 分类快速编辑表单宽度
+  textarea {
     width: 100%;
   }
 }
 
+// ======================== 商品列表缩略图列 ========================
 .column-jc-thumb {
   width: 52px;
   position: relative;
@@ -202,15 +222,16 @@
 }
 
 .jc-thumb img {
+  // 列表缩略图样式
   width: 50px;
   height: 50px;
+  display: inline-block;
   object-fit: cover;
   border-radius: 4px;
   background: #f5f5f5;
-  display: inline-block;
 }
 
-.column-handle{
+.column-handle {
   display: none;
 }
 
@@ -218,69 +239,67 @@
   width: 110px;
 }
 
+// ======================== 商品分类标签 ========================
 td.column-product_cat {
   a {
     display: inline-block;
+    margin: 4px;
     padding: 0 7px;
     font-size: 12px;
-    border-style: solid;
-    border-width: 1px;
-    margin-right: 4px;
-    border-radius: 4px;
-    display: inline-block;
-    margin: 4px;
-
-    background-color: var(--jelly-color-default-bg, #fafafa);
     border: 1px solid var(--jelly-color-default-border, #d9d9d9);
+    border-radius: 4px;
+    background-color: var(--jelly-color-default-bg, #fafafa);
     color: var(--jelly-color-default-text, rgba(0, 0, 0, 0.88));
+
     &.level-1 {
       background-color: var(--jelly-color-info-bg, #e6f4ff);
-      border: 1px solid var(--jelly-color-info-border, #91caff);
+      border-color: var(--jelly-color-info-border, #91caff);
       color: var(--jelly-color-info-text, #1677ff);
     }
+
     &.level-2 {
       background-color: var(--jelly-color-success-bg, #f6ffed);
-      border: 1px solid var(--jelly-color-success-border, #b7eb8f);
+      border-color: var(--jelly-color-success-border, #b7eb8f);
       color: var(--jelly-color-success-text, #52c41a);
     }
+
     &.level-3 {
       background-color: var(--jelly-color-warning-bg, #fffbe6);
-      border: 1px solid var(--jelly-color-warning-border, #ffe58f);
+      border-color: var(--jelly-color-warning-border, #ffe58f);
       color: var(--jelly-color-warning-text, #faad14);
     }
   }
 }
+
+// ======================== 商品标签 ========================
 td.column-product_tag {
   a {
     display: inline-block;
+    margin: 4px;
     padding: 0 7px;
     font-size: 12px;
-    border-style: solid;
-    border-width: 1px;
-    margin-right: 4px;
-    border-radius: 4px;
-    display: inline-block;
-    margin: 4px;
-    background-color: var(--jelly-color-default-bg, #fafafa);
     border: 1px solid var(--jelly-color-default-border, #d9d9d9);
+    border-radius: 4px;
+    background-color: var(--jelly-color-default-bg, #fafafa);
     color: var(--jelly-color-default-text, rgba(0, 0, 0, 0.88));
   }
 }
 
+// ======================== Repeater 表单 UI ========================
 .jc-repeater-wrapper {
   .repeater-item {
-    box-sizing: border-box;
-    padding: 16px;
-    background-color: #fafafa;
-    border-radius: 4px;
-    margin-bottom: 12px;
+    // 单条 Repeater 项容器
     position: relative;
-    padding-left: 48px;
-    padding-bottom: 48px;
-    box-shadow: rgba(0, 0, 0, 0.04) 0px 5px 5px;
+    box-sizing: border-box;
+    padding: 16px 16px 48px 48px;
+    margin-bottom: 12px;
+    background-color: #fafafa;
     border: 1px solid var(--jelly-color-border, #ccc);
+    border-radius: 4px;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.04);
 
     .item-number {
+      // 左上角序号
       position: absolute;
       top: 16px;
       left: 16px;
@@ -295,24 +314,26 @@ td.column-product_tag {
     }
 
     label {
-      font-weight: 600;
-      margin-bottom: 6px;
       display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
     }
 
     input,
     textarea {
+      // 输入组件占满宽度
       width: 100%;
       margin-bottom: 12px;
     }
   }
 
   .repeater-delete {
+    // 删除按钮样式
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
     color: #ff4d4f;
     border-color: #ff4d4f;
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
 
     .dashicons {
       font-size: 14px;
@@ -321,48 +342,53 @@ td.column-product_tag {
   }
 
   .repeater-add-new {
+    // 新增按钮对齐
     display: flex;
     align-items: center;
+
     .dashicons {
       width: auto;
       height: auto;
-      font-size: 14px;
       margin-right: 6px;
+      font-size: 14px;
     }
   }
 }
 
+// ======================== 完成度显示 ========================
 .jc-completeness {
   .dashicons {
     padding-right: 12px;
   }
 }
 
-.jc-description-editor{
-  .description-textarea{
+// ======================== 描述编辑器扩展 ========================
+.jc-description-editor {
+  .description-textarea {
     width: 100%;
   }
-  .description-actions{
+
+  .description-actions {
     display: flex;
+    justify-content: end;
     gap: 12px;
     margin-top: 8px;
-    justify-content: end;
-    }
-    
+  }
 }
 
-
+// ======================== 响应式适配 ========================
 @media screen and (max-width: 782px) {
   .jelly-product-description,
   .post-type-product #postexcerpt .inside {
+    // 小屏幕改为纵向排列
     flex-direction: column-reverse;
   }
 
   .jelly-product-description #wp-content-wrap,
   .post-type-product #postexcerpt #wp-excerpt-wrap {
     width: 100%;
-    box-sizing: border-box;
     margin: 0;
+    box-sizing: border-box;
   }
 
   .post-type-product .edit-description {
@@ -393,7 +419,8 @@ td.column-product_tag {
   }
 }
 
-// ACF 兼容
+// ======================== ACF 兼容性 ========================
 #post-body-content #acf_after_title-sortables.meta-box-sortables {
+  // 与 ACF metabox 保持一致的间距
   margin: 20px 0;
 }

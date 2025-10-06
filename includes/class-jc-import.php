@@ -12,256 +12,312 @@ if (! defined('ABSPATH')) exit; // 禁止直接访问
 
 class JC_Import
 {
-    /**
-     * Import products from CSV data
-     *
-     * @param string $csv_file Path to CSV file
-     * @return array Result of import process
-     */
-    public function import_from_csv($csv_file)
+    protected static ?JC_Import $instance = null;
+
+    /** 基础列映射 */
+    protected array $base_fields = [
+        'ID'          => 'id',
+        'Name'        => 'name',
+        'Description' => 'description',
+        'Categories'  => 'categories',
+        'Tags'        => 'tags',
+        'Images'      => 'images',
+    ];
+
+    /** 导入选项默认值 */
+    protected array $defaults = [
+        'delimiter'                    => ',',
+        'enclosure'                    => '"',
+        'escape'                       => '\\',
+        'update_existing'              => true,
+        'post_type'                    => 'product',
+        'post_status'                  => 'publish',
+        'category_taxonomy'            => 'product_cat',
+        'tag_taxonomy'                 => 'product_tag',
+        'category_delimiter'           => '|',
+        'category_hierarchy_delimiter' => '>',
+        'tag_delimiter'                => ',',
+        'image_delimiter'              => ',',
+        'gallery_meta_key'             => '_product_image_gallery',
+    ];
+
+    private function __construct() {}
+
+    public static function instance(): JC_Import
     {
-        $result = array(
+        if (! self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * 从 CSV 导入
+     */
+    public function import_from_csv(string $file_path, array $args = []): array
+    {
+        $args   = wp_parse_args($args, $this->defaults);
+        $result = [
             'imported' => 0,
-            'updated' => 0,
-            'skipped' => 0,
-            'errors' => array()
-        );
+            'updated'  => 0,
+            'skipped'  => 0,
+            'errors'   => [],
+        ];
 
-        // Parse CSV file
-        $csv_data = $this->parse_csv($csv_file);
-
-        if (is_wp_error($csv_data)) {
-            return array('error' => $csv_data->get_error_message());
+        if (! file_exists($file_path)) {
+            return $this->add_error($result, sprintf('CSV 文件不存在：%s', $file_path));
         }
 
-        foreach ($csv_data as $row) {
-            $import_result = $this->import_single_product($row);
+        $csv = new SplFileObject($file_path, 'r');
+        $csv->setFlags(SplFileObject::READ_CSV | SplFileObject::SKIP_EMPTY);
+        $csv->setCsvControl($args['delimiter'], $args['enclosure'], $args['escape']);
 
-            if (isset($import_result['error'])) {
+        $headers = [];
+        foreach ($csv as $row_index => $row) {
+            if ($row_index === 0) {
+                $headers = $this->normalize_headers($row);
+                continue;
+            }
+
+            if ($row === [null] || empty(array_filter($row, 'strlen'))) {
+                continue;
+            }
+
+            $data = $this->combine_row($headers, $row);
+            if (empty($data['name'])) {
                 $result['skipped']++;
-                $result['errors'][] = $import_result['error'];
-            } elseif (isset($import_result['updated']) && $import_result['updated']) {
-                $result['updated']++;
-            } else {
-                $result['imported']++;
+                continue;
+            }
+
+            try {
+                $updated = $this->persist_post($data, $args);
+                $result[$updated ? 'updated' : 'imported']++;
+            } catch (Throwable $e) {
+                $result['errors'][] = sprintf('第 %d 行失败：%s', $row_index + 1, $e->getMessage());
             }
         }
 
         return $result;
     }
 
-    /**
-     * Parse CSV file
-     *
-     * @param string $csv_file Path to CSV file
-     * @return array|WP_Error Parsed data or error
-     */
-    private function parse_csv($csv_file)
+    protected function normalize_headers(array $headers): array
     {
-        if (!file_exists($csv_file)) {
-            return new WP_Error('file_not_exists', __('CSV file does not exist.', 'jelly-catalog'));
+        $map = [];
+        foreach ($headers as $index => $raw) {
+            $key = trim((string) $raw);
+            if (isset($this->base_fields[$key])) {
+                $map[$index] = $this->base_fields[$key];
+            } elseif (str_starts_with($key, 'Meta:')) {
+                $meta_key = trim(substr($key, strlen('Meta:')));
+                $map[$index] = $this->sanitize_meta_key($meta_key);
+            } else {
+                // 未知列同样当作 meta key
+                $map[$index] = $this->sanitize_meta_key($key);
+            }
         }
-
-        $file = fopen($csv_file, 'r');
-        if (!$file) {
-            return new WP_Error('file_open_error', __('Cannot open CSV file.', 'jelly-catalog'));
-        }
-
-        $header = fgetcsv($file);
-        if (!$header) {
-            return new WP_Error('invalid_csv', __('Invalid CSV file format.', 'jelly-catalog'));
-        }
-
-        $data = array();
-        while (($row = fgetcsv($file)) !== false) {
-            $data[] = array_combine($header, $row);
-        }
-
-        fclose($file);
-        return $data;
+        return $map;
     }
 
-    /**
-     * Import a single product
-     *
-     * @param array $product_data Single product data
-     * @return array Result of single product import
-     */
-    private function import_single_product($product_data)
+    protected function sanitize_meta_key(string $key): string
     {
-        // Check if product already exists by ID or slug
-        $existing_product = null;
-        if (!empty($product_data['id']) && is_numeric($product_data['id'])) {
-            $existing_product = get_post($product_data['id']);
-        } elseif (!empty($product_data['slug'])) {
-            $existing_product = get_page_by_path($product_data['slug'], OBJECT, 'product');
+        $key = trim($key);
+        return $key === '' ? 'meta_' . wp_generate_password(8, false) : $key;
+    }
+
+    protected function combine_row(array $headers, array $row): array
+    {
+        $assoc = [];
+        foreach ($headers as $index => $field) {
+            $assoc[$field] = isset($row[$index]) ? trim((string) $row[$index]) : '';
+        }
+        return $assoc;
+    }
+
+    protected function persist_post(array $data, array $args): bool
+    {
+        $post_id  = 0;
+        $is_update = false;
+
+        if (! empty($data['id']) && $args['update_existing']) {
+            $candidate = get_post((int) $data['id']);
+            if ($candidate && $candidate->post_type === $args['post_type']) {
+                $post_id  = $candidate->ID;
+                $is_update = true;
+            }
         }
 
-        // Prepare post data
-        $post_data = array(
-            'post_type' => 'product',
-            'post_title' => isset($product_data['title']) ? $product_data['title'] : '',
-            'post_content' => isset($product_data['content']) ? $product_data['content'] : '',
-            'post_excerpt' => isset($product_data['excerpt']) ? $product_data['excerpt'] : '',
-            'post_status' => isset($product_data['status']) ? $product_data['status'] : 'publish',
-            'post_name' => isset($product_data['slug']) ? $product_data['slug'] : '',
-        );
+        $post_data = [
+            'post_type'    => $args['post_type'],
+            'post_status'  => $args['post_status'],
+            'post_title'   => wp_strip_all_tags($data['name']),
+            'post_content' => $data['description'],
+        ];
 
-        // Add ID if exists
-        if ($existing_product) {
-            $post_data['ID'] = $existing_product->ID;
+        if ($is_update) {
+            $post_data['ID'] = $post_id;
+            $post_id = wp_update_post($post_data, true);
+        } else {
+            $post_id = wp_insert_post($post_data, true);
         }
-
-        // Insert or update product
-        $post_id = wp_insert_post($post_data, true);
 
         if (is_wp_error($post_id)) {
-            return array('error' => $post_id->get_error_message());
+            throw new RuntimeException($post_id->get_error_message());
         }
 
-        // Handle categories
-        if (!empty($product_data['categories'])) {
-            $categories = explode(',', $product_data['categories']);
-            $this->set_product_terms($post_id, $categories, 'product_cat');
-        }
+        // 分类与标签
+        $this->sync_categories($post_id, $data['categories'] ?? '', $args);
+        $this->sync_tags($post_id, $data['tags'] ?? '', $args);
 
-        // Handle tags
-        if (!empty($product_data['tags'])) {
-            $tags = explode(',', $product_data['tags']);
-            $this->set_product_terms($post_id, $tags, 'product_tag');
-        }
+        // 图片
+        $this->sync_images($post_id, $data['images'] ?? '', $args);
 
-        // Handle images (featured image and gallery)
-        $gallery_image_ids = array();
-        if (!empty($product_data['images'])) {
-            $images = explode(',', $product_data['images']);
-            foreach ($images as $index => $image_url) {
-                $image_url = trim($image_url);
-                if (empty($image_url)) {
-                    continue;
-                }
-
-                // Download image and get attachment ID
-                $attachment_id = $this->import_image_from_url($image_url);
-
-                if ($attachment_id && !is_wp_error($attachment_id)) {
-                    if ($index === 0) {
-                        // First image is featured image
-                        set_post_thumbnail($post_id, $attachment_id);
-                    } else {
-                        // Other images are gallery images
-                        $gallery_image_ids[] = $attachment_id;
-                    }
-                }
+        // Meta（除基础字段外余下字段）
+        $base_keys = array_values($this->base_fields);
+        foreach ($data as $key => $value) {
+            if (in_array($key, $base_keys, true)) {
+                continue;
+            }
+            if ($value === '') {
+                delete_post_meta($post_id, $key);
+            } else {
+                update_post_meta($post_id, $key, $value);
             }
         }
 
-        // Save gallery images to meta
-        if (!empty($gallery_image_ids)) {
-            update_post_meta($post_id, '_product_image_gallery', implode(',', $gallery_image_ids));
-        } else {
-            delete_post_meta($post_id, '_product_image_gallery');
-        }
-
-        // Handle meta fields
-        $meta_fields = array_keys($product_data);
-        foreach ($meta_fields as $field) {
-            // Process meta fields (those not in standard fields)
-            if (!in_array($field, array('id', 'slug', 'title', 'content', 'excerpt', 'status', 'categories', 'tags', 'images'))) {
-                update_post_meta($post_id, $field, $product_data[$field]);
-            }
-        }
-
-        return array(
-            'post_id' => $post_id,
-            'updated' => !is_null($existing_product)
-        );
+        return $is_update;
     }
 
-    /**
-     * Set product terms (categories or tags)
-     *
-     * @param int $post_id Post ID
-     * @param array $terms Terms to set
-     * @param string $taxonomy Taxonomy name
-     */
-    private function set_product_terms($post_id, $terms, $taxonomy)
+    protected function sync_categories(int $post_id, string $raw, array $args): void
     {
-        $term_ids = array();
+        $taxonomy = apply_filters('jc_catalog_category_taxonomy', $args['category_taxonomy']);
+        if (! taxonomy_exists($taxonomy) || $raw === '') {
+            return;
+        }
 
-        foreach ($terms as $term_name) {
-            $term_name = trim($term_name);
-            if (empty($term_name)) {
+        $paths = array_filter(array_map('trim', explode($args['category_delimiter'], $raw)));
+        if (empty($paths)) {
+            wp_set_object_terms($post_id, [], $taxonomy);
+            return;
+        }
+
+        wp_defer_term_counting(true);
+        $term_ids = [];
+
+        foreach ($paths as $path) {
+            $segments = array_filter(array_map('trim', explode($args['category_hierarchy_delimiter'], $path)));
+            if (empty($segments)) {
                 continue;
             }
 
-            // Check if term exists
-            $term_obj = term_exists($term_name, $taxonomy);
-            if (!$term_obj) {
-                // Create term if it doesn't exist
-                $term_obj = wp_insert_term($term_name, $taxonomy);
+            $parent  = 0;
+            $term_id = 0;
+            foreach ($segments as $segment) {
+                $existing = term_exists($segment, $taxonomy, $parent);
+                if (! $existing) {
+                    $created = wp_insert_term($segment, $taxonomy, ['parent' => $parent]);
+                    if (is_wp_error($created)) {
+                        continue 2;
+                    }
+                    $term_id = (int) $created['term_id'];
+                } else {
+                    $term_id = (int) $existing['term_id'];
+                }
+                $parent = $term_id;
             }
 
-            if (!is_wp_error($term_obj)) {
-                $term_ids[] = $term_obj['term_id'];
+            if ($term_id) {
+                $term_ids[] = $term_id;
             }
         }
 
-        wp_set_object_terms($post_id, $term_ids, $taxonomy);
+        if (! empty($term_ids)) {
+            wp_set_object_terms($post_id, $term_ids, $taxonomy, false);
+        }
+
+        wp_defer_term_counting(false);
     }
 
-    /**
-     * Import image from URL
-     *
-     * @param string $image_url Image URL
-     * @return int|WP_Error Attachment ID or error
-     */
-    private function import_image_from_url($image_url)
+    protected function sync_tags(int $post_id, string $raw, array $args): void
     {
-        // Check if image already exists in media library
-        $attachment = get_page_by_title(basename($image_url), OBJECT, 'attachment');
-        if ($attachment) {
-            return $attachment->ID;
+        $taxonomy = apply_filters('jc_catalog_tag_taxonomy', $args['tag_taxonomy']);
+        if (! taxonomy_exists($taxonomy) || $raw === '') {
+            return;
         }
 
-        // Download image
-        $image_data = file_get_contents($image_url);
-        if ($image_data === false) {
-            return new WP_Error('image_download_failed', __('Failed to download image from URL.', 'jelly-catalog'));
+        $terms = array_filter(array_map('trim', explode($args['tag_delimiter'], $raw)));
+        wp_set_object_terms($post_id, $terms, $taxonomy, false);
+    }
+
+    protected function sync_images(int $post_id, string $raw, array $args): void
+    {
+        if ($raw === '') {
+            delete_post_thumbnail($post_id);
+            update_post_meta($post_id, $args['gallery_meta_key'], []);
+            return;
         }
 
-        // Get image type
-        $image_type = wp_check_filetype(basename($image_url));
-        if (!$image_type['ext']) {
-            return new WP_Error('invalid_image_type', __('Invalid image type.', 'jelly-catalog'));
+        if (! function_exists('media_sideload_image')) {
+            require_once ABSPATH . 'wp-admin/includes/image.php';
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            require_once ABSPATH . 'wp-admin/includes/media.php';
         }
 
-        // Create attachment
-        $upload_dir = wp_upload_dir();
-        $filename = basename($image_url);
-        $unique_filename = wp_unique_filename($upload_dir['path'], $filename);
-        $upload_file = $upload_dir['path'] . '/' . $unique_filename;
+        $urls = array_values(array_filter(array_map('trim', explode($args['image_delimiter'], $raw))));
+        if (empty($urls)) {
+            return;
+        }
 
-        file_put_contents($upload_file, $image_data);
+        $gallery_ids = [];
+        foreach ($urls as $index => $url) {
+            $attachment_id = $this->resolve_attachment($url, $post_id);
+            if (! $attachment_id) {
+                continue;
+            }
 
-        $attachment_data = array(
-            'guid' => $upload_dir['url'] . '/' . $unique_filename,
-            'post_mime_type' => $image_type['type'],
-            'post_title' => sanitize_file_name(basename($filename, '.' . $image_type['ext'])),
-            'post_content' => '',
-            'post_status' => 'inherit'
-        );
+            if ($index === 0) {
+                set_post_thumbnail($post_id, $attachment_id);
+            } else {
+                $gallery_ids[] = $attachment_id;
+            }
+        }
 
-        $attachment_id = wp_insert_attachment($attachment_data, $upload_file);
+        update_post_meta($post_id, $args['gallery_meta_key'], $gallery_ids);
+    }
+
+    protected function resolve_attachment(string $url, int $post_id): ?int
+    {
+        if (! filter_var($url, FILTER_VALIDATE_URL)) {
+            return null;
+        }
+
+        $existing = attachment_url_to_postid($url);
+        if ($existing) {
+            return $existing;
+        }
+
+        $tmp = download_url($url);
+        if (is_wp_error($tmp)) {
+            return null;
+        }
+
+        $file_array = [
+            'name'     => wp_basename(parse_url($url, PHP_URL_PATH)),
+            'tmp_name' => $tmp,
+        ];
+
+        $attachment_id = media_handle_sideload($file_array, $post_id);
+
         if (is_wp_error($attachment_id)) {
-            return $attachment_id;
+            @unlink($file_array['tmp_name']);
+            return null;
         }
 
-        // Generate metadata
-        require_once(ABSPATH . 'wp-admin/includes/image.php');
-        $attach_data = wp_generate_attachment_metadata($attachment_id, $upload_file);
-        wp_update_attachment_metadata($attachment_id, $attach_data);
+        return (int) $attachment_id;
+    }
 
-        return $attachment_id;
+    protected function add_error(array $result, string $message): array
+    {
+        $result['errors'][] = $message;
+        return $result;
     }
 }

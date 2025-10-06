@@ -1,16 +1,24 @@
 (function ($) {
   "use strict";
 
-  class ProductManager {
+  class JellyCatalogCategoryEditor {
     constructor() {
-      if (!$(".post-type-product").length) {
+      const $body = $("body");
+      if (
+        !$body.hasClass("post-type-product") ||
+        !$body.hasClass("edit-tags-php")
+      ) {
         return;
       }
+
       // 初始化产品分类图片功能
       this.initProductCategoryImageModule();
 
       // 初始化产品分类描述功能
       this.initProductCategoryDescriptionModule();
+
+      console.log("Jelly Catalog Category Editor Initialized");
+
     }
 
     /**
@@ -142,8 +150,7 @@
     }
   }
 
-  // 初始化 ProductManager 类
   $(document).ready(() => {
-    new ProductManager();
+    window.JellyCatalogCategoryEditor = new JellyCatalogCategoryEditor();
   });
 })(jQuery);
