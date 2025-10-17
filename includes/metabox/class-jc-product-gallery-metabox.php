@@ -4,7 +4,7 @@
  * includes\metabox\product-gallery-metabox.php
  * 
  * @see: https://jellydai.com
- * @author: Jelly Dai <d@jellydai.com>
+ * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created: 2025.09.10 09:15
  */
 

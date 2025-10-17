@@ -4,7 +4,7 @@
  * includes\metabox\class-jc-product-postexcerpt-metabox
  * 
  * @see: https://jellydai.com
- * @author: Jelly Dai <d@jellydai.com>
+ * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created: 2025.09.15 15:30
  */
 

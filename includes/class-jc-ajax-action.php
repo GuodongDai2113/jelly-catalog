@@ -4,7 +4,7 @@
  * includes\class-jc-ajax-action.php
  * 
  * @see: https://jellydai.com
- * @author: Jelly Dai <d@jellydai.com>
+ * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created : 2025.09.17 14:37
  */
 

@@ -4,7 +4,7 @@
  * includes\class-jc-post-types.php
  * 
  * @see: https://jellydai.com
- * @author: Jelly Dai <d@jellydai.com>
+ * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created : 2025.09.08 10:22
  */
 

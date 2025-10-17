@@ -4,7 +4,7 @@
  * includes\class-jc-woocommerce.php
  * 
  * @see: https://jellydai.com
- * @author: Jelly Dai <d@jellydai.com>
+ * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created : 2025.08.05 15:35
  */
 

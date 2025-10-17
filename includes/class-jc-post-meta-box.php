@@ -4,7 +4,7 @@
  * includes\class-jc-post-meta-box.php
  * 
  * @see: https://jellydai.com
- * @author: Jelly Dai <d@jellydai.com>
+ * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created: 2025.07.29 14:47
  */
 
