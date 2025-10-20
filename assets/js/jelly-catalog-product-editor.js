@@ -478,7 +478,7 @@
           const data = attachment.toJSON();
           if (!data.id) return;
 
-          $("#jelly_product_images_container .product_images").append(`
+          $("#jc-gallery .product-images").append(`
             <li class="image" data-attachment_id="${data.id}">
               <img src="${data.sizes.thumbnail.url}" alt="" />
               <ul class="actions">
@@ -499,7 +499,7 @@
      */
     updateGalleryImages() {
       const ids = [];
-      $("#jelly_product_images_container .product_images li.image").each(
+      $("#jc-gallery .product-images li.image").each(
         (_, item) => {
           const id = $(item).data("attachment_id");
           if (id) ids.push(id);
