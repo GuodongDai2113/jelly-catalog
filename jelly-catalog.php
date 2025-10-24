@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Plugin Name:       Jelly Catalog
- * Plugin URI:        https://jellydai.com/
- * Description:       Only enable product features, fully compatible with Woocommerce
- * Version:           1.5.2
- * Author:            JellyDai
- * Author URI:        https://jellydai.com/
+ * Plugin Name: Jelly Catalog
+ * Plugin URI:  https://jellydai.com/
+ * Description: Only enable product features, fully compatible with Woocommerce
+ * Version:     2.0.0
+ * Author:      JellyDai
+ * Author URI:  https://jellydai.com/
  * Text Domain: jelly-catalog
  * Domain Path: /languages
  */
@@ -14,7 +14,7 @@
 if (! defined('ABSPATH')) exit; // 禁止直接访问
 
 /** 插件版本 */
-define('JELLY_CATALOG_VERSION', '1.5.2');
+define('JELLY_CATALOG_VERSION', '2.0.0');
 
 /** 插件URL路径 */
 define('JELLY_CATALOG_PLUGIN_URL', plugin_dir_url(__FILE__));

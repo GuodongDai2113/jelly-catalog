@@ -10,7 +10,7 @@
       // 仅在产品编辑页执行
 
       const $body = $("body");
-      if (!$body.hasClass("post-type-product") || !$body.hasClass("post-php")) {
+      if (!$body.hasClass("post-type-product")) {
         return;
       }
 
@@ -48,6 +48,7 @@
      */
     resetProductEditor() {
       const titlediv = $("#poststuff #titlediv");
+      
       if (!titlediv.length) return;
 
       const tabContainer = this.createTabContainer();

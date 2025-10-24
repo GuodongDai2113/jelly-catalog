@@ -102,6 +102,41 @@ class JC_Admin
     }
 
     /**
+     * 判断当前页面是否与产品后台编辑相关
+     *
+     * @return bool
+     */
+    private function is_product_edit_page(): bool
+    {
+        // 检查是否在管理后台环境
+        if (!is_admin()) {
+            return false;
+        }
+
+        global $pagenow, $typenow, $hook_suffix;
+
+        // 获取当前页面信息
+        $current_page = isset($pagenow) ? $pagenow : '';
+        $current_post_type = isset($typenow) ? $typenow : '';
+
+        // 判断是否为产品相关的编辑页面
+        $is_product_page = (
+            // 产品列表页面
+            ($current_page === 'edit.php' && $current_post_type === 'product') ||
+            // 添加新产品页面
+            ($current_page === 'post-new.php' && $current_post_type === 'product') ||
+            // 编辑产品页面
+            ($current_page === 'post.php' && $current_post_type === 'product') ||
+            // 产品分类页面
+            ($current_page === 'edit-tags.php' && isset($_GET['taxonomy']) && $_GET['taxonomy'] === 'product_cat') ||
+            // 产品标签页面
+            ($current_page === 'edit-tags.php' && isset($_GET['taxonomy']) && $_GET['taxonomy'] === 'product_tag')
+        );
+
+        return $is_product_page;
+    }
+
+    /**
      * 加载后台样式与脚本
      *
      * @param string $hook 当前页面 Hook 名称
@@ -109,6 +144,10 @@ class JC_Admin
      */
     public function enqueue_admin_assets($hook)
     {
+        if (!$this->is_product_edit_page()) {
+            return;
+        }
+
 
         wp_enqueue_style(
             'jelly-catalog-admin',
@@ -119,7 +158,7 @@ class JC_Admin
 
         wp_enqueue_media();
 
-        if ($hook === 'edit.php') {
+        if ($hook === 'edit.php' && !jc_is_woocommerce_activated()) {
             wp_enqueue_script(
                 'jelly-catalog-io',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-io.js',
@@ -129,7 +168,7 @@ class JC_Admin
             );
         }
 
-        if ($hook === 'post.php') {
+        if ($hook === 'post.php' || $hook === 'post-new.php') {
             wp_enqueue_script(
                 'jelly-catalog-product-editor',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-product-editor.js',
