@@ -158,15 +158,15 @@ class JC_Admin
 
         wp_enqueue_media();
 
-        if ($hook === 'edit.php' && !jc_is_woocommerce_activated()) {
-            wp_enqueue_script(
-                'jelly-catalog-io',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-io.js',
-                array('jquery'),
-                JELLY_CATALOG_VERSION,
-                true
-            );
-        }
+        // if ($hook === 'edit.php' && !jc_is_woocommerce_activated()) {
+        //     wp_enqueue_script(
+        //         'jelly-catalog-io',
+        //         JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-io.js',
+        //         array('jquery'),
+        //         JELLY_CATALOG_VERSION,
+        //         true
+        //     );
+        // }
 
         if ($hook === 'post.php' || $hook === 'post-new.php') {
             wp_enqueue_script(

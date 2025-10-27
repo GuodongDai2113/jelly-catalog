@@ -95,7 +95,7 @@ class JC_Sheet_Editor
             'edit.php?post_type=product',
             __('Product Sheet', 'jelly-catalog'),
             __('Product Sheet', 'jelly-catalog'),
-            'manage_options',
+            'edit_posts',
             'products-sheet',
             array($this, 'render_products_sheet')
         );
