@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Jelly Catalog 1.0.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/jelly-catalog\n"
 "POT-Creation-Date: 2025-09-17T15:12:16+08:00\n"
-"PO-Revision-Date: 2025-09-17 15:42+0800\n"
+"PO-Revision-Date: 2025-10-31 16:24+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -18,7 +18,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #: jelly-catalog.php
 msgid "Jelly Catalog"
-msgstr "果冻目录"
+msgstr "Jelly 目录"
 
 #. Plugin URI of the plugin
 #. Author URI of the plugin
