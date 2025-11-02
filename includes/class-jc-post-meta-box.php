@@ -157,9 +157,15 @@ class JC_Post_Meta_Box
     {
         include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-gallery-metabox.php';
         include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-postexcerpt-metabox.php';
+        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-cat-thumbnail-metabox.php';
 
+        // 图片相册功能
         new JC_Product_Gallery_Metabox();
+        // 产品摘要功能
         new JC_Product_Postexcerpt_Metabox();
+        // 分类缩略图功能
+        new JC_Product_Cat_Thumbnail_Metabox();
+
     }
 
     /**
@@ -178,6 +184,14 @@ class JC_Post_Meta_Box
         // 产品属性功能
         include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-attributes-metabox.php';
         new JC_Product_Attributes_Metabox();
+
+        // 分类横幅图功能
+        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-cat-banner-metabox.php';
+        new JC_Product_Cat_Banner_Metabox();
+
+        // 分类图标功能
+        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-cat-faq-metabox.php';
+        new JC_Product_Cat_FAQ_Metabox();
     }
 }
 JC_Post_Meta_Box::instance();

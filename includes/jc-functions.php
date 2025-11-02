@@ -59,10 +59,10 @@ function jc_render_repeater_field($args)
     $args = wp_parse_args($args, $defaults);
 
     echo '<div class="jc-repeater-wrapper" data-key="' . esc_attr($args['name']) . '">';
-    $index = 0;
+    $index = 1;
     foreach ($args['items'] as $key => $item) {
         echo '<div class="repeater-item">';
-        echo '<span class="item-number">' . esc_html($index) . '</span>';
+        echo '<span class="item-number">No.' . esc_html($index) . '</span>';
 
         foreach ($args['fields'] as $field) {
             $field_name = $field['name'];
@@ -94,7 +94,26 @@ function jc_render_repeater_field($args)
     echo '</div>';
 }
 
-function is_product_archive()
+function is_jc_product_single()
+{
+    return is_singular('product');
+}
+
+function is_jc_product_category() {
+    return is_tax('product_cat') || is_tax('product_tag');
+}
+
+function is_jc_product_archive()
 {
     return is_post_type_archive('product') || is_tax('product_cat') || is_tax('product_tag');
+}
+
+function is_jc_product_search()
+{
+    return is_search() && 'product' === get_query_var('post_type');
+}
+
+function is_jc_products()
+{
+    return is_post_type_archive('product');
 }

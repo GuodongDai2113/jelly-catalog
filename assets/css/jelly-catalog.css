@@ -233,8 +233,8 @@ td.column-product_tag a {
 .jc-repeater-wrapper .repeater-item {
   position: relative;
   box-sizing: border-box;
-  padding: 16px 16px 48px 48px;
-  margin-bottom: 12px;
+  padding: 16px 16px 48px 16px;
+  margin: 12px 0;
   background-color: #fafafa;
   border: 1px solid var(--jelly-color-border, #ccc);
   border-radius: 4px;
@@ -242,13 +242,10 @@ td.column-product_tag a {
 }
 .jc-repeater-wrapper .repeater-item .item-number {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  font-size: 32px;
-  color: rgba(0, 0, 0, 0.5);
-}
-.jc-repeater-wrapper .repeater-item:hover .item-number {
-  color: rgb(0, 0, 0);
+  top: 8px;
+  right: 16px;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.3);
 }
 .jc-repeater-wrapper .repeater-item label {
   display: block;
@@ -260,14 +257,14 @@ td.column-product_tag a {
   width: 100%;
   margin-bottom: 12px;
 }
-.jc-repeater-wrapper .repeater-delete {
+.jc-repeater-wrapper .remove-repeater {
   position: absolute;
   right: 16px;
   bottom: 16px;
   color: #ff4d4f;
   border-color: #ff4d4f;
 }
-.jc-repeater-wrapper .repeater-delete .dashicons {
+.jc-repeater-wrapper .remove-repeater .dashicons {
   font-size: 14px;
   padding-top: 6px;
 }
@@ -294,6 +291,12 @@ td.column-product_tag a {
   justify-content: end;
   gap: 12px;
   margin-top: 8px;
+}
+
+.wp-core-ui .button.remove-thumbnail,
+.wp-core-ui .button.remove-banner {
+  border-color: #ff4d4f;
+  color: #ff4d4f;
 }
 
 @media screen and (max-width: 782px) {

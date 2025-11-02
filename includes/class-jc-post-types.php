@@ -246,7 +246,7 @@ class JC_Post_Types
 	{
 		// 只在产品归档页面且是主查询时修改
 		if (!is_admin() && $query->is_main_query()) {
-			if (is_product_archive()) {
+			if (is_jc_product_archive()) {
 				$product_per_page = get_option('products_per_page', 16);
 				$query->set('posts_per_page', $product_per_page);
 			}

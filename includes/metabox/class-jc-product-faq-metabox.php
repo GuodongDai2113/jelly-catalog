@@ -86,6 +86,9 @@ class JC_Product_FAQ_Metabox
             }
 
             update_post_meta($post_id, '_product_faqs', $clean);
+        } else {
+            // 如果没有收到数据，说明用户可能删除了所有条目，需要清除元数据
+            delete_post_meta($post_id, '_product_faqs');
         }
     }
 }

@@ -4,10 +4,7 @@
   class JellyCatalogCategoryEditor {
     constructor() {
       const $body = $("body");
-      if (
-        !$body.hasClass("post-type-product") ||
-        !$body.hasClass("edit-tags-php")
-      ) {
+      if (!$body.hasClass("post-type-product")) {
         return;
       }
 
@@ -17,8 +14,13 @@
       // 初始化产品分类描述功能
       this.initProductCategoryDescriptionModule();
 
-      console.log("Jelly Catalog Category Editor Initialized");
+      // 初始化分类缩略图功能
+      this.initProductCategoryThumbnailModule();
 
+      // 初始化分类横幅图功能
+      this.initProductCategoryBannerModule();
+
+      console.log("Jelly Catalog Category Editor Initialized");
     }
 
     /**
@@ -147,6 +149,146 @@
         // 聚焦到文本域
         textarea.focus();
       });
+    }
+
+    /**
+     * 初始化产品分类缩略图模块
+     */
+    initProductCategoryThumbnailModule() {
+      const self = this;
+
+      // 添加分类页面的缩略图选择器
+      $(document).on("click", "#thumbnail_id_button", function (e) {
+        e.preventDefault();
+        self.openMediaUploader("thumbnail");
+      });
+
+      // 编辑分类页面的缩略图选择器
+      $(document).on(
+        "click",
+        ".term-thumbnail-wrap .button.select-thumbnail",
+        function (e) {
+          e.preventDefault();
+          const container = $(this).closest(".term-thumbnail-wrap");
+          self.openMediaUploader("thumbnail", container);
+        }
+      );
+
+      // 移除缩略图功能
+      $(document).on(
+        "click",
+        ".term-thumbnail-wrap .button.remove-thumbnail, #remove-thumbnail",
+        function (e) {
+          e.preventDefault();
+          const container = $(this).closest(".term-thumbnail-wrap");
+          if (container.length) {
+            // 编辑页面
+            container.find(".thumbnail-preview").hide();
+            container.find(".thumbnail-id-input").val("");
+            container.find(".button.remove-thumbnail").hide();
+            container.find(".button.select-thumbnail").show();
+          } else {
+            // 添加页面
+            $("#thumbnail_id").val("");
+            $(".thumbnail-preview").hide();
+            $(".thumbnail-preview img").attr("src", "");
+            $(".remove-thumbnail").hide();
+          }
+        }
+      );
+    }
+
+    /**
+     * 初始化产品分类横幅图模块
+     */
+    initProductCategoryBannerModule() {
+      const self = this;
+
+      // 添加分类页面的横幅图选择器
+      $(document).on("click", "#banner_id_button", function (e) {
+        e.preventDefault();
+        self.openMediaUploader("banner");
+      });
+
+      // 编辑分类页面的横幅图选择器
+      $(document).on(
+        "click",
+        ".term-banner-wrap .button.select-banner",
+        function (e) {
+          e.preventDefault();
+          const container = $(this).closest(".term-banner-wrap");
+          self.openMediaUploader("banner", container);
+        }
+      );
+
+      // 移除横幅图功能
+      $(document).on(
+        "click",
+        ".term-banner-wrap .button.remove-banner, #remove-banner",
+        function (e) {
+          e.preventDefault();
+          const container = $(this).closest(".term-banner-wrap");
+          if (container.length) {
+            // 编辑页面
+            container.find(".banner-preview").hide();
+            container.find(".banner-id-input").val("");
+            container.find(".button.remove-banner").hide();
+            container.find(".button.select-banner").show();
+          } else {
+            // 添加页面
+            $("#banner_id").val("");
+            $(".banner-preview").hide();
+            $(".banner-preview img").attr("src", "");
+            $(".remove-banner").hide();
+          }
+        }
+      );
+    }
+
+    /**
+     * 打开媒体上传器
+     * @param {string} type - 媒体类型 (thumbnail|banner)
+     * @param {jQuery} container - 容器元素
+     */
+    openMediaUploader(type, container = null) {
+      const isEditPage = container !== null;
+
+      let frame = wp.media({
+        multiple: false,
+      });
+
+      frame.on("select", function () {
+        const attachment = frame.state().get("selection").first().toJSON();
+
+        if (isEditPage) {
+          // 编辑页面处理
+          const inputField = container.find(`.${type}-id-input`);
+          const preview = container.find(`.${type}-preview`);
+          const img = preview.find("img");
+          const removeBtn = container.find(`.button.remove-${type}`);
+          const selectBtn = container.find(`.button.select-${type}`);
+
+          inputField.val(attachment.id);
+          img.attr("src", attachment.url);
+          preview.show();
+          removeBtn.show();
+          selectBtn.hide();
+        } else {
+          // 添加页面处理
+          const fieldId = type === "thumbnail" ? "#thumbnail_id" : "#banner_id";
+          const previewClass =
+            type === "thumbnail" ? ".thumbnail-preview" : ".banner-preview";
+          const removeClass =
+            type === "thumbnail" ? ".remove-thumbnail" : ".remove-banner";
+
+          $(fieldId).val(attachment.id);
+          $(previewClass).show();
+          $(`${previewClass} img`).attr("src", attachment.url);
+          $(removeClass).show();
+        }
+      });
+
+      frame.open();
     }
   }
 

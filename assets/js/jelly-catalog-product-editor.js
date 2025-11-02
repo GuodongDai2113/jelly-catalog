@@ -39,7 +39,7 @@
     init() {
       this.resetProductEditor();
       this.initCharacterCount();
-      this.initRepeater();
+      // this.initRepeater();
       this.initProductGallery();
     }
 
@@ -273,7 +273,7 @@
      * 绑定 repeater 的增删事件
      */
     bindRepeaterEvents() {
-      $(document).on("click", ".repeater-item .repeater-delete", (e) => {
+      $(document).on("click", ".repeater-item .remove-repeater", (e) => {
         e.preventDefault();
         $(e.currentTarget).closest(".repeater-item").remove();
       });
@@ -291,10 +291,10 @@
     addDeleteButtons(repeaterWrapper) {
       repeaterWrapper.find(".repeater-item").each((_, item) => {
         const $item = $(item);
-        if ($item.find(".repeater-delete").length) return;
+        if ($item.find(".remove-repeater").length) return;
 
         $item.append(`
-          <button type="button" class="button repeater-delete" title="Delete item">
+          <button type="button" class="button remove-repeater" title="Delete item">
             <span class="dashicons dashicons-trash"></span>
           </button>
         `);
@@ -351,7 +351,7 @@
       builder().appendTo($item);
 
       $item.append(`
-        <button type="button" class="button repeater-delete" title="Delete item">
+        <button type="button" class="button remove-repeater" title="Delete item">
           <span class="dashicons dashicons-trash"></span>
         </button>
       `);

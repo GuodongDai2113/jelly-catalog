@@ -113,24 +113,21 @@ class JC_Admin
             return false;
         }
 
-        global $pagenow, $typenow, $hook_suffix;
+        global $pagenow;
 
         // 获取当前页面信息
         $current_page = isset($pagenow) ? $pagenow : '';
-        $current_post_type = isset($typenow) ? $typenow : '';
+        $post_type = isset($_GET['post_type']) ? $_GET['post_type'] : '';
+        $taxonomy = isset($_GET['taxonomy']) ? $_GET['taxonomy'] : '';
 
         // 判断是否为产品相关的编辑页面
         $is_product_page = (
-            // 产品列表页面
-            ($current_page === 'edit.php' && $current_post_type === 'product') ||
-            // 添加新产品页面
-            ($current_page === 'post-new.php' && $current_post_type === 'product') ||
-            // 编辑产品页面
-            ($current_page === 'post.php' && $current_post_type === 'product') ||
-            // 产品分类页面
-            ($current_page === 'edit-tags.php' && isset($_GET['taxonomy']) && $_GET['taxonomy'] === 'product_cat') ||
-            // 产品标签页面
-            ($current_page === 'edit-tags.php' && isset($_GET['taxonomy']) && $_GET['taxonomy'] === 'product_tag')
+            // 编辑
+            (in_array($current_page, ['post.php'])) ||
+            // 产品相关页面（列表、新建、编辑）
+            (in_array($current_page, ['edit.php', 'post-new.php', 'post.php']) && $post_type === 'product') ||
+            // 产品分类相关页面
+            (in_array($current_page, ['edit-tags.php', 'term.php']) && in_array($taxonomy, ['product_cat', 'product_tag']))
         );
 
         return $is_product_page;
@@ -168,6 +165,14 @@ class JC_Admin
         //     );
         // }
 
+        wp_enqueue_script(
+            'jelly-catalog-repeater',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-repeater.js',
+            array('jquery'),
+            JELLY_CATALOG_VERSION,
+            true
+        );
+
         if ($hook === 'post.php' || $hook === 'post-new.php') {
             wp_enqueue_script(
                 'jelly-catalog-product-editor',
@@ -178,7 +183,7 @@ class JC_Admin
             );
         }
 
-        if ($hook === 'edit-tags.php') {
+        if ($hook === 'edit-tags.php' || $hook === 'term.php') {
             wp_enqueue_script(
                 'jelly-catalog-editor',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-category-editor.js',
