@@ -36,6 +36,7 @@ define('JELLY_CATALOG_WC_ACTIVE', $woocommerce_active);
 
 if (!$woocommerce_active) {
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-post-types.php';
+	// require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-template-loader.php';
 } else {
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-woocommerce.php';
 }
@@ -61,6 +62,9 @@ add_action('plugins_loaded', 'jelly_catalog_load_plugin_textdomain');
 
 function jelly_catalog_init()
 {
+	if (!is_admin()) {
+		return;
+	}
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-admin.php';
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-post-meta-box.php';
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-ajax-action.php';

@@ -48,8 +48,8 @@ class JC_Admin
     protected function register_global_hooks()
     {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
-        add_filter('jelly_register_sections', array($this, 'add_theme_sections'));
-        add_filter('jelly_register_tabs', array($this, 'add_theme_tabs'));
+        add_action('admin_init', [$this, 'register_settings']);
+        // add_filter('display_post_states', [$this, 'display_product_page_states'], 10, 2);
     }
 
     /**
@@ -145,7 +145,6 @@ class JC_Admin
             return;
         }
 
-
         wp_enqueue_style(
             'jelly-catalog-admin',
             JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog.css',
@@ -180,6 +179,13 @@ class JC_Admin
                 array('jquery', 'jquery-ui-sortable'),
                 JELLY_CATALOG_VERSION,
                 true
+            );
+            wp_localize_script(
+                'jelly-catalog-product-editor',
+                'jc_product_editor_data',
+                array(
+                    'postdivrich' => __('Product Description', 'jelly-catalog'),
+                )
             );
         }
 
@@ -576,54 +582,80 @@ class JC_Admin
     }
 
     /**
-     * 向主题设置面板新增标签页
-     *
-     * @param array $tabs 已注册标签数组
-     * @return array
+     * 注册设置选项
      */
-    public function add_theme_tabs($tabs)
+    public function register_settings()
     {
-        $tabs['product'] = array(
-            'title' => esc_html__('Product', 'jelly-catalog'),
-            'icon'  => 'ri-puzzle-line',
+        // 添加产品页面设置字段
+        add_settings_field(
+            'page_for_products',
+            __('Products Page', 'jelly-catalog'),
+            [$this, 'render_page_for_products_select'],
+            'reading',
+            'default',
+            array('label_for' => 'page_for_products')
         );
 
-        return $tabs;
+        // 添加每页产品数量设置字段
+        add_settings_field(
+            'products_per_page',
+            __('Products Per Page', 'jelly-catalog'),
+            [$this, 'render_products_per_page_input'],
+            'reading',
+            'default',
+            array('label_for' => 'products_per_page')
+        );
+
+        // 注册设置选项
+        register_setting('reading', 'page_for_products');
+        register_setting('reading', 'products_per_page', array(
+            'type' => 'integer',
+            'sanitize_callback' => 'absint',
+            'default' => 10
+        ));
     }
 
     /**
-     * 向主题设置面板新增产品相关配置节
+     * 渲染产品页面选择下拉框
      *
-     * @param array $sections 已注册配置节
-     * @return array
+     * @return void
      */
-    public function add_theme_sections($sections)
+    public function render_page_for_products_select()
     {
-        $pages        = get_pages();
-        $page_options = array(
-            '' => __('None', 'jelly-catalog'),
-        );
+        $selected_page = get_option('page_for_products', 0);
 
-        foreach ($pages as $page) {
-            $page_options[$page->ID] = $page->post_title;
+        wp_dropdown_pages(array(
+            'name'             => 'page_for_products',
+            'selected'         => $selected_page,
+            'show_option_none' => __('— Select a page —', 'jelly-catalog'),
+            'option_none_value' => '0',
+        ));
+
+        echo '<p class="description">' . __('Select the page where your products will be displayed.', 'jelly-catalog') . '</p>';
+    }
+
+    /**
+     * 渲染每页产品数量输入框
+     *
+     * @return void
+     */
+    public function render_products_per_page_input()
+    {
+        $products_per_page = get_option('products_per_page', 10);
+
+        echo '<input name="products_per_page" type="number" step="1" min="1" id="products_per_page" value="' . esc_attr($products_per_page) . '" class="small-text" />';
+        echo '<p class="description">' . __('Set the number of products to display per page.', 'jelly-catalog') . '</p>';
+    }
+
+    public function display_product_page_states($post_states, $post)
+    {
+        $page_for_products = (int) get_option('page_for_products', 0);
+
+        if ($post->ID === $page_for_products) {
+            $post_states['jelly_catalog'] = '<span>' . __('Jelly Catalog', 'jelly-catalog') . '</span>';
         }
 
-        $sections['product'] = array(
-            'product' => array(
-                'title'  => '',
-                'fields' => array(
-                    array(
-                        'id'          => 'products_per_page',
-                        'label'       => __('Products per page', 'jelly-catalog'),
-                        'type'        => 'number',
-                        'wp_sync'     => 'products_per_page',
-                        'description' => __('Number of products to show per page.', 'jelly-catalog'),
-                    ),
-                ),
-            ),
-        );
-
-        return $sections;
+        return $post_states;
     }
 }
 JC_Admin::instance();

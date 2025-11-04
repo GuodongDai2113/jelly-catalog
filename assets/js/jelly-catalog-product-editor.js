@@ -84,7 +84,7 @@
 
         const tabTitle =
           metaboxId === "postdivrich"
-            ? "Product Description"
+            ? jc_product_editor_data.postdivrich
             : metabox.find("h2.hndle").text() || metaboxId;
 
         const tabLink = $(`

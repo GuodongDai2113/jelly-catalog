@@ -252,6 +252,7 @@ class JC_Post_Types
 			}
 		}
 	}
+	
 }
 
 JC_Post_Types::init();
