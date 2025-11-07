@@ -62,7 +62,7 @@ class JC_Product_Cat_Thumbnail_Metabox
                     </div>
                     <p>
                         <button class="button button-secondary" id="thumbnail_id_button"><?php esc_html_e('Select Thumbnail', 'jelly-catalog'); ?></button>
-                        <button class="button button-secondary remove-banner" style="<?php echo $thumbnail_id ? '' : 'display: none;'; ?>"><?php esc_html_e('Remove Thumbnail', 'jelly-catalog'); ?></button>
+                        <button class="button button-secondary remove-thumbnail" style="<?php echo $thumbnail_id ? '' : 'display: none;'; ?>"><?php esc_html_e('Remove Thumbnail', 'jelly-catalog'); ?></button>
                     </p>
                 </div>
                 <p class="description"><?php esc_html_e('Select a thumbnail for this product category.', 'jelly-catalog'); ?></p>

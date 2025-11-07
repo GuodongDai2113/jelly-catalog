@@ -166,10 +166,10 @@
       // 编辑分类页面的缩略图选择器
       $(document).on(
         "click",
-        ".term-thumbnail-wrap .button.select-thumbnail",
+        "#thumbnail_id_container .button.select-thumbnail",
         function (e) {
           e.preventDefault();
-          const container = $(this).closest(".term-thumbnail-wrap");
+          const container = $(this).closest("#thumbnail_id_container");
           self.openMediaUploader("thumbnail", container);
         }
       );
@@ -177,14 +177,14 @@
       // 移除缩略图功能
       $(document).on(
         "click",
-        ".term-thumbnail-wrap .button.remove-thumbnail, #remove-thumbnail",
+        "#thumbnail_id_container .button.remove-thumbnail, #remove-thumbnail",
         function (e) {
           e.preventDefault();
-          const container = $(this).closest(".term-thumbnail-wrap");
+          const container = $(this).closest("#thumbnail_id_container");
           if (container.length) {
             // 编辑页面
             container.find(".thumbnail-preview").hide();
-            container.find(".thumbnail-id-input").val("");
+            container.find("#thumbnail_id").val("");
             container.find(".button.remove-thumbnail").hide();
             container.find(".button.select-thumbnail").show();
           } else {
@@ -213,10 +213,10 @@
       // 编辑分类页面的横幅图选择器
       $(document).on(
         "click",
-        ".term-banner-wrap .button.select-banner",
+        "#banner_id_container .button.select-banner",
         function (e) {
           e.preventDefault();
-          const container = $(this).closest(".term-banner-wrap");
+          const container = $(this).closest("#banner_id_container");
           self.openMediaUploader("banner", container);
         }
       );
@@ -224,14 +224,14 @@
       // 移除横幅图功能
       $(document).on(
         "click",
-        ".term-banner-wrap .button.remove-banner, #remove-banner",
+        "#banner_id_container .button.remove-banner, #remove-banner",
         function (e) {
           e.preventDefault();
-          const container = $(this).closest(".term-banner-wrap");
+          const container = $(this).closest("#banner_id_container");
           if (container.length) {
             // 编辑页面
             container.find(".banner-preview").hide();
-            container.find(".banner-id-input").val("");
+            container.find("#banner_id").val("");
             container.find(".button.remove-banner").hide();
             container.find(".button.select-banner").show();
           } else {
