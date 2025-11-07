@@ -41,6 +41,12 @@ class JC_Post_Meta_Box
         }
 
         $screen->add_help_tab(array(
+            'id'      => 'title_help',
+            'title'   => __('Title', 'jelly-catalog'),
+            'content' => '<div class="title-description">' . __('Recommended format: <code>Model number + core product keywords + specifications/attributes</code>', 'jelly-catalog') . '</div>',
+        ));
+
+        $screen->add_help_tab(array(
             'id'      => 'postexcerpt_help',
             'title'   => __('Short Description', 'jelly-catalog'),
             'content' => '<div class="edit-description">
@@ -165,7 +171,6 @@ class JC_Post_Meta_Box
         new JC_Product_Postexcerpt_Metabox();
         // 分类缩略图功能
         new JC_Product_Cat_Thumbnail_Metabox();
-
     }
 
     /**

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jelly Catalog 1.0.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/jelly-catalog\n"
-"POT-Creation-Date: 2025-11-04T16:25:49+08:00\n"
-"PO-Revision-Date: 2025-11-04 16:30+0800\n"
+"POT-Creation-Date: 2025-11-07T08:03:08+00:00\n"
+"PO-Revision-Date: 2025-11-07 16:52+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -180,12 +180,12 @@ msgstr "产品描述"
 msgid "Image"
 msgstr "图片"
 
-#: includes/class-jc-admin.php:236 includes/class-jc-post-meta-box.php:74
+#: includes/class-jc-admin.php:236 includes/class-jc-post-meta-box.php:80
 #: includes/class-jc-post-types.php:48
 msgid "Categories"
 msgstr "分类"
 
-#: includes/class-jc-admin.php:237 includes/class-jc-post-meta-box.php:88
+#: includes/class-jc-admin.php:237 includes/class-jc-post-meta-box.php:94
 msgid "Tags"
 msgstr "标签"
 
@@ -193,7 +193,7 @@ msgstr "标签"
 msgid "Completeness"
 msgstr "完整性"
 
-#: includes/class-jc-admin.php:378 includes/class-jc-post-meta-box.php:60
+#: includes/class-jc-admin.php:378 includes/class-jc-post-meta-box.php:66
 msgid "Description"
 msgstr "描述"
 
@@ -269,230 +269,240 @@ msgstr "导出失败"
 
 #: includes/class-jc-ajax-action.php:307
 msgid "No file uploaded"
-msgstr "未上传文件。"
+msgstr "未上传文件"
 
 #: includes/class-jc-post-meta-box.php:45
+msgid "Title"
+msgstr "标题"
+
+#: includes/class-jc-post-meta-box.php:46
+msgid ""
+"Recommended format: <code>Model number + core product keywords + "
+"specifications/attributes</code>"
+msgstr "推荐格式: <code>型号 + 核心产品词 + 规格/属性</code>"
+
+#: includes/class-jc-post-meta-box.php:51
 msgid "Short Description"
 msgstr "短描述"
 
-#: includes/class-jc-post-meta-box.php:47
-#: includes/class-jc-post-meta-box.php:62
+#: includes/class-jc-post-meta-box.php:53
+#: includes/class-jc-post-meta-box.php:68
 msgid "Writing Guidelines:"
 msgstr "写作指南："
 
-#: includes/class-jc-post-meta-box.php:49
+#: includes/class-jc-post-meta-box.php:55
 msgid ""
 "The short description should naturally include high-frequency user search "
 msgstr "简短描述应该自然地包含高频用户搜索"
 
-#: includes/class-jc-post-meta-box.php:49
+#: includes/class-jc-post-meta-box.php:55
 msgid "keywords"
 msgstr "关键词"
 
-#: includes/class-jc-post-meta-box.php:49
+#: includes/class-jc-post-meta-box.php:55
 msgid " or "
 msgstr "货"
 
-#: includes/class-jc-post-meta-box.php:49
+#: includes/class-jc-post-meta-box.php:55
 msgid "long-tail keywords"
 msgstr "长尾关键词"
 
-#: includes/class-jc-post-meta-box.php:50
+#: includes/class-jc-post-meta-box.php:56
 msgid "Place important keywords at the beginning to improve keyword weighting"
 msgstr "将重要关键词放在开头以提高关键词权重"
 
-#: includes/class-jc-post-meta-box.php:51
+#: includes/class-jc-post-meta-box.php:57
 msgid "Recommended length is between "
 msgstr "建议长度介于"
 
-#: includes/class-jc-post-meta-box.php:51
+#: includes/class-jc-post-meta-box.php:57
 msgid "100-160"
 msgstr "100-160"
 
-#: includes/class-jc-post-meta-box.php:51
+#: includes/class-jc-post-meta-box.php:57
 msgid " characters, providing sufficient value without being overly lengthy"
 msgstr "字符，提供足够的价值，但又不会太长"
 
-#: includes/class-jc-post-meta-box.php:52
+#: includes/class-jc-post-meta-box.php:58
 msgid ""
 "Use clear and concise language, avoiding excessive technical terminology"
 msgstr "使用清晰简洁的语言，避免过多的技术术语"
 
-#: includes/class-jc-post-meta-box.php:53
+#: includes/class-jc-post-meta-box.php:59
 msgid ""
 "Highlight unique product advantages, such as materials, performance, price, "
 "usage scenarios, etc."
 msgstr "突出产品独有的优势，比如材质、性能、价格、使用场景等。"
 
-#: includes/class-jc-post-meta-box.php:64
+#: includes/class-jc-post-meta-box.php:70
 msgid ""
 "It is recommended to use relevant keywords in the details, no less than 5 "
 "times, evenly distributed throughout the page."
 msgstr "建议在详情中使用相关关键词，不少于5次，均匀分布于整个页面。"
 
-#: includes/class-jc-post-meta-box.php:65
+#: includes/class-jc-post-meta-box.php:71
 msgid ""
 "Replace all pronouns in the details with keywords - use specific names "
 "instead of words like \"it\" whenever possible."
 msgstr ""
 "用关键词替换详细信息中的所有代词 - 尽可能使用具体名称而不是“它”之类的词。"
 
-#: includes/class-jc-post-meta-box.php:66
+#: includes/class-jc-post-meta-box.php:72
 msgid "Each paragraph in the details should not exceed "
 msgstr "详细信息中的每个段落不应超过"
 
-#: includes/class-jc-post-meta-box.php:66
+#: includes/class-jc-post-meta-box.php:72
 msgid "500"
 msgstr "500"
 
-#: includes/class-jc-post-meta-box.php:66
+#: includes/class-jc-post-meta-box.php:72
 msgid ""
 " characters. If exceeded, split into paragraphs. The full text should have a "
 "minimum of "
 msgstr "字符。如果超过，则拆分成段落。全文至少应包含"
 
-#: includes/class-jc-post-meta-box.php:66
+#: includes/class-jc-post-meta-box.php:72
 msgid "1000"
 msgstr "1000"
 
-#: includes/class-jc-post-meta-box.php:66
+#: includes/class-jc-post-meta-box.php:72
 msgid " characters."
 msgstr " 字符。"
 
-#: includes/class-jc-post-meta-box.php:67
+#: includes/class-jc-post-meta-box.php:73
 msgid ""
 "Ensure original content in the details. Do not copy directly from the "
 "internet. Page similarity within the website should not exceed "
 msgstr "确保内容细节原创。请勿直接从互联网复制。网站内页面相似度不得超过 "
 
-#: includes/class-jc-post-meta-box.php:67
+#: includes/class-jc-post-meta-box.php:73
 msgid "30%"
 msgstr "30%"
 
-#: includes/class-jc-post-meta-box.php:67
+#: includes/class-jc-post-meta-box.php:73
 msgid "."
 msgstr "。"
 
-#: includes/class-jc-post-meta-box.php:76
+#: includes/class-jc-post-meta-box.php:82
 msgid "Category Selection Guidelines:"
 msgstr "类别选择指南："
 
-#: includes/class-jc-post-meta-box.php:78
+#: includes/class-jc-post-meta-box.php:84
 msgid ""
 "Select the most relevant categories for your product to improve "
 "discoverability."
 msgstr "为您的产品选择最相关的类别以提高可发现性。"
 
-#: includes/class-jc-post-meta-box.php:79
+#: includes/class-jc-post-meta-box.php:85
 msgid "Use specific categories rather than generic ones when possible."
 msgstr "尽可能使用特定类别而不是通用类别。"
 
-#: includes/class-jc-post-meta-box.php:80
+#: includes/class-jc-post-meta-box.php:86
 msgid ""
 "Avoid selecting too many categories - 2-4 relevant categories are "
 "recommended."
 msgstr "避免选择太多类别 - 建议选择 2-4 个相关类别。"
 
-#: includes/class-jc-post-meta-box.php:81
+#: includes/class-jc-post-meta-box.php:87
 msgid ""
 "Check existing categories before creating new ones to maintain consistency."
 msgstr "在创建新类别之前，请检查现有类别以保持一致性。"
 
-#: includes/class-jc-post-meta-box.php:90
+#: includes/class-jc-post-meta-box.php:96
 msgid "Tag Usage Guidelines:"
 msgstr "标签使用指南："
 
-#: includes/class-jc-post-meta-box.php:92
+#: includes/class-jc-post-meta-box.php:98
 msgid ""
 "Use tags to highlight specific features, materials, or use cases of your "
 "product."
 msgstr "使用标签突出显示产品的特定功能、材料或用例。"
 
-#: includes/class-jc-post-meta-box.php:93
+#: includes/class-jc-post-meta-box.php:99
 msgid "Tags should be single words or short phrases separated by commas."
 msgstr "标签应该是用逗号分隔的单个单词或短语。"
 
-#: includes/class-jc-post-meta-box.php:94
+#: includes/class-jc-post-meta-box.php:100
 msgid "Focus on important keywords that customers might search for."
 msgstr "关注客户可能搜索的重要关键词。"
 
-#: includes/class-jc-post-meta-box.php:95
+#: includes/class-jc-post-meta-box.php:101
 msgid ""
 "Avoid duplicate tags and excessive tagging - 5-10 relevant tags are "
 "sufficient."
 msgstr "避免重复标签和过度标签 - 5-10 个相关标签就足够了。"
 
-#: includes/class-jc-post-meta-box.php:102
+#: includes/class-jc-post-meta-box.php:108
 msgid "Download"
 msgstr "下载"
 
-#: includes/class-jc-post-meta-box.php:104
+#: includes/class-jc-post-meta-box.php:110
 msgid "Downloadable Content Guidelines:"
 msgstr "可下载内容指南："
 
-#: includes/class-jc-post-meta-box.php:106
+#: includes/class-jc-post-meta-box.php:112
 msgid "Upload high-quality files in supported formats (PDF, DOC, ZIP, etc.)."
 msgstr "上传支持格式（PDF、DOC、ZIP 等）的高质量文件。"
 
-#: includes/class-jc-post-meta-box.php:107
+#: includes/class-jc-post-meta-box.php:113
 msgid "Ensure files are virus-free and safe for users to download."
 msgstr "确保文件无病毒且可供用户安全下载。"
 
-#: includes/class-jc-post-meta-box.php:108
+#: includes/class-jc-post-meta-box.php:114
 msgid "Provide clear file descriptions to help users understand content."
 msgstr "提供清晰的文件描述以帮助用户理解内容。"
 
-#: includes/class-jc-post-meta-box.php:109
+#: includes/class-jc-post-meta-box.php:115
 msgid "Compress large files to reduce download time and server load."
 msgstr "压缩大文件以减少下载时间和服务器负载。"
 
-#: includes/class-jc-post-meta-box.php:116
+#: includes/class-jc-post-meta-box.php:122
 msgid "FAQ"
 msgstr "FAQ"
 
-#: includes/class-jc-post-meta-box.php:118
+#: includes/class-jc-post-meta-box.php:124
 msgid "FAQ Creation Guidelines:"
 msgstr "常见问题解答创建指南："
 
-#: includes/class-jc-post-meta-box.php:120
+#: includes/class-jc-post-meta-box.php:126
 msgid ""
 "Address common customer questions about product features, usage, and "
 "specifications."
 msgstr "解答客户关于产品功能、用途和规格的常见问题。"
 
-#: includes/class-jc-post-meta-box.php:121
+#: includes/class-jc-post-meta-box.php:127
 msgid "Write clear, concise questions and detailed, helpful answers."
 msgstr "写出清晰、简洁的问题和详细、有用的答案。"
 
-#: includes/class-jc-post-meta-box.php:122
+#: includes/class-jc-post-meta-box.php:128
 msgid "Organize FAQs in order of importance or frequency of questions."
 msgstr "写出清晰、简洁的问题和详细、有用的答案。"
 
-#: includes/class-jc-post-meta-box.php:123
+#: includes/class-jc-post-meta-box.php:129
 msgid "Regularly update FAQs based on customer feedback and new questions."
 msgstr "根据客户反馈和新问题定期更新常见问题解答。"
 
-#: includes/class-jc-post-meta-box.php:130
+#: includes/class-jc-post-meta-box.php:136
 msgid "Attributes"
 msgstr "属性"
 
-#: includes/class-jc-post-meta-box.php:132
+#: includes/class-jc-post-meta-box.php:138
 msgid "Product Attributes Guidelines:"
 msgstr "产品属性指南："
 
-#: includes/class-jc-post-meta-box.php:134
+#: includes/class-jc-post-meta-box.php:140
 msgid "Include all relevant technical specifications and product details."
 msgstr "包括所有相关的技术规格和产品详细信息。"
 
-#: includes/class-jc-post-meta-box.php:135
+#: includes/class-jc-post-meta-box.php:141
 msgid "Use consistent naming conventions for attribute keys."
 msgstr "对属性键使用一致的命名约定。"
 
-#: includes/class-jc-post-meta-box.php:136
+#: includes/class-jc-post-meta-box.php:142
 msgid "Provide accurate measurements and specifications."
 msgstr "提供准确的测量和规格。"
 
-#: includes/class-jc-post-meta-box.php:137
+#: includes/class-jc-post-meta-box.php:143
 msgid "Avoid duplicate attributes and ensure all values are filled in."
 msgstr "避免重复的属性并确保填写所有值。"
 
@@ -775,33 +785,33 @@ msgstr "产品表格"
 
 #: includes/class-jc-sheet-editor.php:117
 msgid "« First"
-msgstr ""
+msgstr "« 最前"
 
 #: includes/class-jc-sheet-editor.php:120
 msgid "‹ Previous"
-msgstr ""
+msgstr "<上一步"
 
 #. translators: 1: current page placeholder, 2: total pages placeholder
 #: includes/class-jc-sheet-editor.php:126
 #, php-format
 msgid "Page %1$s of %2$s"
-msgstr ""
+msgstr "第%1$s页，共%2$s页"
 
 #: includes/class-jc-sheet-editor.php:142
 msgid "Next ›"
-msgstr ""
+msgstr "下一步>"
 
 #: includes/class-jc-sheet-editor.php:145
 msgid "Last »"
-msgstr ""
+msgstr "最后 »"
 
 #: includes/class-jc-sheet-editor.php:148
 msgid "Jump to:"
-msgstr ""
+msgstr "跳转到:"
 
 #: includes/class-jc-sheet-editor.php:151
 msgid "Go"
-msgstr ""
+msgstr "开始"
 
 #: includes/class-jc-sheet-editor.php:155
 msgid "Save Sheet"

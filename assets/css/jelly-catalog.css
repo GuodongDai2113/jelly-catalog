@@ -92,12 +92,20 @@
   color: var(--jelly-color-warning, #faad14);
 }
 
+.title-description {
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid var(--jelly-color-border, #ccc);
+  background-color: #fafafa;
+  position: absolute;
+}
+
 .jc-tabs {
   margin: 20px 0;
   display: flex;
   flex-direction: row;
   background: #fff;
-  border: 1px solid #c3c4c7;
+  border: 1px solid #d9d9d9;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 }
 .jc-tabs .nav-tab-wrapper {
@@ -105,8 +113,8 @@
   flex-direction: column;
   min-width: 150px;
   padding: 0;
-  background: #f0f0f1;
-  border-right: 1px solid #c3c4c7;
+  background: #fafafa;
+  border-right: 1px solid #d9d9d9;
   border-bottom: none;
 }
 .jc-tabs .nav-tab-wrapper .nav-tab {
@@ -117,13 +125,17 @@
   font-weight: 600;
   border: none;
   border-radius: 0;
-  border-bottom: 1px solid #c3c4c7;
-  background: #f0f0f1;
+  border-bottom: 1px solid #d9d9d9;
+  background: #fafafa;
+}
+.jc-tabs .nav-tab-wrapper .nav-tab:focus {
+  outline: none;
+  box-shadow: none;
 }
 .jc-tabs .nav-tab-wrapper .nav-tab.nav-tab-active {
   background: #fff;
   border-right: 1px solid #fff;
-  border-bottom: 1px solid #c3c4c7;
+  border-bottom: 1px solid #d9d9d9;
   color: #1d2327;
   margin-right: -1px;
 }
@@ -297,6 +309,10 @@ td.column-product_tag a {
 .wp-core-ui .button.remove-banner {
   border-color: #ff4d4f;
   color: #ff4d4f;
+}
+
+.post-type-product #postdivrich #wp-content-wrap {
+  padding-top: 55px !important;
 }
 
 @media screen and (max-width: 782px) {

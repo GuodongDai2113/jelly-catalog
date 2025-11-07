@@ -48,7 +48,7 @@
      */
     resetProductEditor() {
       const titlediv = $("#poststuff #titlediv");
-      
+
       if (!titlediv.length) return;
 
       const tabContainer = this.createTabContainer();
@@ -57,8 +57,17 @@
       this.generateTabs(this.metaboxIds, tabContainer);
       this.appendElementorControls();
       this.bindTabEvents();
-    }
 
+      this.moveTitleDescription();
+    }
+    moveTitleDescription() {
+      const $titleDescription = $(".title-description").first();
+      const $titleField = $("#title");
+
+      if ($titleDescription.length && $titleField.length) {
+        $titleField.after($titleDescription);
+      }
+    }
     /**
      * 创建标签页容器骨架
      */
@@ -500,12 +509,10 @@
      */
     updateGalleryImages() {
       const ids = [];
-      $("#jc-gallery .product-images li.image").each(
-        (_, item) => {
-          const id = $(item).data("attachment_id");
-          if (id) ids.push(id);
-        }
-      );
+      $("#jc-gallery .product-images li.image").each((_, item) => {
+        const id = $(item).data("attachment_id");
+        if (id) ids.push(id);
+      });
 
       $("#product_image_gallery").val(ids.join(",")).trigger("change");
     }
