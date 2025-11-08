@@ -641,7 +641,7 @@ class JC_Admin
      */
     public function render_products_per_page_input()
     {
-        $products_per_page = get_option('products_per_page', 10);
+        $products_per_page = get_option('products_per_page', 16);
 
         echo '<input name="products_per_page" type="number" step="1" min="1" id="products_per_page" value="' . esc_attr($products_per_page) . '" class="small-text" />';
         echo '<p class="description">' . __('Set the number of products to display per page.', 'jelly-catalog') . '</p>';
