@@ -30,14 +30,14 @@
   font-size: 12px;
   border-radius: 99px;
   text-align: center;
-  border: 1px solid var(--jelly-color-border, #ccc);
+  border: 1px solid #ccc;
   background: #fafafa;
   display: none;
   list-style: none;
   margin: 0;
   padding: 2px;
   text-decoration: none;
-  color: var(--jelly-color-title, #141414);
+  color: #141414;
 }
 #jc-gallery .product-images li.image .actions::before {
   content: "\f158";
@@ -75,7 +75,7 @@
 .edit-description {
   padding: 16px;
   margin-bottom: 12px;
-  border: 1px solid var(--jelly-color-border, #ccc);
+  border: 1px solid #ccc;
   background-color: #fafafa;
 }
 .edit-description ol {
@@ -89,15 +89,23 @@
   margin: 8px 0;
   font-size: 18px;
   font-weight: 600;
-  color: var(--jelly-color-warning, #faad14);
+  color: #faad14;
+}
+
+#title:focus + .title-description {
+  display: block;
 }
 
 .title-description {
   padding: 16px;
   margin-bottom: 12px;
-  border: 1px solid var(--jelly-color-border, #ccc);
-  background-color: #fafafa;
+  border: 1px solid #ccc;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 6px;
   position: absolute;
+  top: -60px;
+  display: none;
+  color: #fff;
 }
 
 .jc-tabs {
@@ -215,21 +223,6 @@ td.column-product_cat a {
   background-color: var(--jelly-color-default-bg, #fafafa);
   color: var(--jelly-color-default-text, rgba(0, 0, 0, 0.88));
 }
-td.column-product_cat a.level-1 {
-  background-color: var(--jelly-color-info-bg, #e6f4ff);
-  border-color: var(--jelly-color-info-border, #91caff);
-  color: var(--jelly-color-info-text, #1677ff);
-}
-td.column-product_cat a.level-2 {
-  background-color: var(--jelly-color-success-bg, #f6ffed);
-  border-color: var(--jelly-color-success-border, #b7eb8f);
-  color: var(--jelly-color-success-text, #52c41a);
-}
-td.column-product_cat a.level-3 {
-  background-color: var(--jelly-color-warning-bg, #fffbe6);
-  border-color: var(--jelly-color-warning-border, #ffe58f);
-  color: var(--jelly-color-warning-text, #faad14);
-}
 
 td.column-product_tag a {
   display: inline-block;
@@ -248,7 +241,7 @@ td.column-product_tag a {
   padding: 16px 16px 48px 16px;
   margin: 12px 0;
   background-color: #fafafa;
-  border: 1px solid var(--jelly-color-border, #ccc);
+  border: 1px solid #ccc;
   border-radius: 4px;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.04);
 }

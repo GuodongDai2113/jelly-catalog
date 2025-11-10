@@ -27,7 +27,7 @@ class JC_Post_Types
 		add_filter('rest_api_allowed_post_types', array(__CLASS__, 'rest_api_allowed_post_types'));
 		add_filter('gutenberg_can_edit_post_type', array(__CLASS__, 'gutenberg_can_edit_post_type'), 10, 2);
 		add_filter('use_block_editor_for_post_type', array(__CLASS__, 'gutenberg_can_edit_post_type'), 10, 2);
-		add_action('pre_get_posts', array(__CLASS__, 'product_query'));
+		add_action('pre_get_posts', array(__CLASS__, 'product_query'),9);
 	}
 
 	/**
@@ -249,10 +249,16 @@ class JC_Post_Types
 			if (is_jc_product_archive()) {
 				$product_per_page = get_option('products_per_page', 16);
 				$query->set('posts_per_page', $product_per_page);
+				
+				// 增加查询顺序设定
+				$orderby = get_option('products_orderby', 'date');
+				$order = get_option('products_order', 'DESC');
+
+				$query->set('orderby', $orderby);
+				$query->set('order', $order);
 			}
 		}
 	}
-	
 }
 
 JC_Post_Types::init();

@@ -259,7 +259,7 @@ class JC_Ajax_Action
                 $updated_count++;
             }
         }
-
+        /* translators: %d: Number of products updated */
         wp_send_json_success(sprintf(__('Successfully updated %d products', 'jelly-catalog'), $updated_count));
     }
 

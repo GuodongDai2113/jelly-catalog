@@ -49,6 +49,7 @@ class JC_Elementor
         add_action('elementor/dynamic_tags/register', [$this, 'register_tags']);
         add_action('elementor/theme/register_conditions', [$this, 'register_conditions']);
         add_action('elementor/documents/register', [$this, 'register_documents']);
+        add_action('elementor/widgets/register', [$this, 'register_widgets']);
 
         add_filter('elementor/theme/need_override_location', [$this, 'theme_template_include'], 10, 2);
         add_filter('elementor/document/config', [$this, 'add_loop_recommended_widgets'], 11, 2);
@@ -195,6 +196,14 @@ class JC_Elementor
                 $widget->add_skin(new  Jelly_Catalog\Addons\Elementor\Skins\Skin_Loop_Product_Taxonomy($widget));
             }, 13);
         }
+    }
+
+    function register_widgets($widgets_manager)
+    {
+        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-faq.php');
+
+        $widgets_manager->register( new Jelly_Catalog\Addons\Elementor\Widgets\Product_FAQ() );
+
     }
 
     public function theme_template_include($need_override_location, $location)

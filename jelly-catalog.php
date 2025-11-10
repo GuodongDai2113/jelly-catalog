@@ -4,7 +4,7 @@
  * Plugin Name: Jelly Catalog
  * Plugin URI:  https://jellydai.com/
  * Description: Only enable product features, fully compatible with Woocommerce
- * Version:     2.0.1
+ * Version:     2.1.0
  * Author:      JellyDai
  * Author URI:  https://jellydai.com/
  * Text Domain: jelly-catalog
@@ -14,7 +14,7 @@
 if (! defined('ABSPATH')) exit; // 禁止直接访问
 
 /** 插件版本 */
-define('JELLY_CATALOG_VERSION', '2.0.1');
+define('JELLY_CATALOG_VERSION', '2.1.0');
 
 /** 插件URL路径 */
 define('JELLY_CATALOG_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -66,6 +66,7 @@ function jelly_catalog_init()
 		return;
 	}
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-admin.php';
+	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-settings.php';
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-post-meta-box.php';
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-ajax-action.php';
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-sheet-editor.php';
