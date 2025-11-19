@@ -126,6 +126,10 @@ class JC_Post_Types
 
 		$has_archive = 'products';
 
+		$permalinks = jc_get_permalink_structure();
+
+		// $permalinks['product_rewrite_slug']
+
 		register_post_type(
 			'product',
 			array(
@@ -165,8 +169,8 @@ class JC_Post_Types
 				'publicly_queryable'  => true,
 				'exclude_from_search' => false,
 				'hierarchical'        => false, // Hierarchical causes memory issues - WP loads all records!
-				'rewrite'             => 'products' ? array(
-					'slug'       => 'products',
+				'rewrite'             => $permalinks['product_rewrite_slug'] ? array(
+					'slug'       => $permalinks['product_rewrite_slug'],
 					'with_front' => false,
 					'feeds'      => true,
 				) : false,
