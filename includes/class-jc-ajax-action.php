@@ -1,25 +1,29 @@
 <?php
 
 /**
- * includes\class-jc-ajax-action.php
+ * Jelly Catalog AJAX 处理类
  * 
- * @see: https://jellydai.com
- * @author: Jelly Dai <daiguo1003@gmail.com>
- * @created : 2025.09.17 14:37
+ * 处理所有来自前端的 AJAX 请求，包括产品数据的获取、更新以及分类管理等功能
  */
 
-if (! defined('ABSPATH')) exit; // 禁止直接访问
-
-/**
- * AJAX 操作类
- */
 class JC_Ajax_Action
 {
-    public static $instance;
 
+    /**
+     * 单例实例
+     *
+     * @var JC_Ajax_Action|null
+     */
+    private static $instance = null;
+
+    /**
+     * 获取单例实例
+     *
+     * @return JC_Ajax_Action
+     */
     public static function instance()
     {
-        if (!isset(self::$instance)) {
+        if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
@@ -41,6 +45,8 @@ class JC_Ajax_Action
         add_action('wp_ajax_save_products_sheet', array($this, 'save_products_sheet'));
         add_action('wp_ajax_jc_catalog_export', array($this, 'handle_export_products'));
         add_action('wp_ajax_jc_catalog_import', array($this, 'handle_import_products'));
+        // 添加获取分类法术语的AJAX处理
+        add_action('wp_ajax_get_taxonomy_terms', array($this, 'get_taxonomy_terms'));
     }
 
     public function admin_ajax_scripts()
@@ -150,17 +156,17 @@ class JC_Ajax_Action
         // 计算偏移量用于分页查询
         $offset = ($page - 1) * $per_page;
 
-        // 查询产品基础信息：ID、标题、摘要，并按 ID 倒序排列
+        // 查询产品基础信息：ID、标题、摘要、内容、状态，并按 ID 倒序排列
         $products = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT ID, post_title, post_excerpt FROM {$wpdb->posts} WHERE post_type='product' AND post_status='publish' ORDER BY ID DESC LIMIT %d OFFSET %d",
+                "SELECT ID, post_title, post_excerpt, post_content, post_status FROM {$wpdb->posts} WHERE post_type='product' AND post_status IN ('publish', 'draft') ORDER BY ID DESC LIMIT %d OFFSET %d",
                 $per_page,
                 $offset
             ),
             ARRAY_A
         );
 
-        // 为每个产品加载所需的 SEO 元数据
+        // 为每个产品加载所需的 SEO 元数据和分类标签信息
         foreach ($products as &$product) {
             $product_id = $product['ID'];
             $meta_data = array();
@@ -170,12 +176,23 @@ class JC_Ajax_Action
                 $meta_data[$meta_key] = $meta_value;
             }
 
+            // 获取产品分类（获取完整的分类树结构）
+            $categories = $this->get_product_category_hierarchy($product_id);
+            $product['categories'] = $categories;
+
+            // 获取产品标签
+            $tags = wp_get_post_terms($product_id, 'product_tag', array(
+                'fields' => 'ids',
+            ));
+
+            $product['tags'] = !empty($tags) ? $tags : array();
+
             $product['meta_data'] = $meta_data;
         }
 
         // 获取所有符合条件的产品总数，用于计算总页数
         $total_products = $wpdb->get_var(
-            "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type='product' AND post_status='publish'"
+            "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type='product' AND post_status IN ('publish', 'draft')"
         );
 
         // 构造并发送 JSON 响应结果
@@ -187,6 +204,66 @@ class JC_Ajax_Action
             'total_pages' => ceil($total_products / $per_page)
         ));
     }
+
+    /**
+     * 获取产品分类层级结构
+     *
+     * @param int $product_id 产品ID
+     * @return array 分类层级结构数组
+     */
+    private function get_product_category_hierarchy($product_id)
+    {
+        // 获取产品所有分类
+        $terms = wp_get_post_terms($product_id, 'product_cat', array('fields' => 'all'));
+
+        if (empty($terms) || is_wp_error($terms)) {
+            return array();
+        }
+
+        $hierarchy = array();
+
+        foreach ($terms as $term) {
+            $hierarchy[] = $this->build_category_levels($term);
+        }
+
+        return $hierarchy;
+    }
+
+
+    /**
+     * 构建分类层级数组
+     *
+     * @param WP_Term $term 分类对象
+     * @return array
+     */
+    private function build_category_levels($term)
+    {
+        $levels = array();
+
+        // 当前分类 ID
+        $levels[] = $term->term_id;
+        $parent_id = $term->parent;
+
+        // 向上查找父级（最多 3 层）
+        while ($parent_id > 0 && count($levels) < 3) {
+            $parent = get_term($parent_id, 'product_cat');
+
+            if (!$parent || is_wp_error($parent)) {
+                break;
+            }
+
+            array_unshift($levels, $parent->term_id);
+            $parent_id = $parent->parent;
+        }
+
+        return array(
+            'level_1' => $levels[0] ?? null,
+            'level_2' => $levels[1] ?? null,
+            'level_3' => $levels[2] ?? null,
+        );
+    }
+
+
 
     /**
      * 批量保存产品数据的 AJAX 处理函数
@@ -241,6 +318,14 @@ class JC_Ajax_Action
                 $update_data['post_excerpt'] = wp_kses_post($item['post_excerpt']);
             }
 
+            if (isset($item['post_content'])) {
+                $update_data['post_content'] = wp_kses_post($item['post_content']);
+            }
+
+            if (isset($item['post_status'])) {
+                $update_data['post_status'] = in_array($item['post_status'], array('publish', 'draft')) ? $item['post_status'] : 'draft';
+            }
+
             // 执行文章更新操作
             $result = wp_update_post($update_data, true);
 
@@ -254,6 +339,16 @@ class JC_Ajax_Action
                 }
             }
 
+            // 更新产品分类（处理分级分类）
+            if (isset($item['categories'])) {
+                $this->update_product_terms($product_id, $item['categories'], 'product_cat');
+            }
+
+            // 更新产品标签
+            if (isset($item['tags'])) {
+                $this->update_product_tags($product_id, $item['tags']);
+            }
+
             // 统计成功更新的产品数量
             if (!is_wp_error($result) && $result > 0) {
                 $updated_count++;
@@ -263,85 +358,251 @@ class JC_Ajax_Action
         wp_send_json_success(sprintf(__('Successfully updated %d products', 'jelly-catalog'), $updated_count));
     }
 
+    /**
+     * 更新产品的分类（基于层级 ID 结构）
+     *
+     * @param int   $product_id 产品ID
+     * @param array $levels     分类层级数组，如：
+     *                          [
+     *                              'level_1' => 203,
+     *                              'level_2' => '',
+     *                              'level_3' => ''
+     *                          ]
+     * @param string $taxonomy  分类法名称
+     * @return void
+     */
+    private function update_product_terms($product_id, $levels, $taxonomy)
+    {
+        // 清空现有分类
+        wp_set_object_terms($product_id, array(), $taxonomy);
+
+        if (empty($levels) || !is_array($levels)) {
+            return;
+        }
+
+        // 按优先级选取最深层级
+        $term_id = 0;
+
+        if (!empty($levels['level_3'])) {
+            $term_id = (int) $levels['level_3'];
+        } elseif (!empty($levels['level_2'])) {
+            $term_id = (int) $levels['level_2'];
+        } elseif (!empty($levels['level_1'])) {
+            $term_id = (int) $levels['level_1'];
+        }
+
+        if ($term_id <= 0) {
+            return;
+        }
+
+        // 校验 term 是否存在（防御式）
+        $term = get_term($term_id, $taxonomy);
+        if (!$term || is_wp_error($term)) {
+            return;
+        }
+
+        // 只设置最深层级
+        wp_set_object_terms($product_id, array($term_id), $taxonomy);
+    }
+
+
+    /**
+     * 更新产品的标签
+     *
+     * @param int    $product_id 产品ID
+     * @param string $tags_str   逗号分隔的标签字符串
+     * @return void
+     */
+    private function update_product_tags($product_id, $tags_str)
+    {
+        // 将逗号分隔的字符串转换为数组
+        $tags = array_filter(array_map('trim', explode(',', $tags_str)));
+
+        if (empty($tags)) {
+            // 如果没有标签，清空现有的
+            wp_set_object_terms($product_id, array(), 'product_tag');
+            return;
+        }
+
+        // 为每个标签检查或创建
+        $tag_ids = array();
+        foreach ($tags as $tag_name) {
+            $tag = term_exists($tag_name, 'product_tag');
+
+            if (!$tag) {
+                // 如果标签不存在，则创建它
+                $new_tag = wp_insert_term($tag_name, 'product_tag');
+                if (!is_wp_error($new_tag)) {
+                    $tag_ids[] = (int) $new_tag['term_id'];
+                }
+            } else {
+                $tag_ids[] = (int) $tag['term_id'];
+            }
+        }
+
+        // 设置产品的新标签
+        wp_set_object_terms($product_id, $tag_ids, 'product_tag');
+    }
+
     public function handle_export_products()
-{
-    check_ajax_referer('jc_nonce', 'nonce');
+    {
+        check_ajax_referer('jc_nonce', 'nonce');
 
-    if (! current_user_can('export')) {
-        wp_send_json_error(array('message' => __('Insufficient permissions', 'jelly-catalog')));
+        if (! current_user_can('export')) {
+            wp_send_json_error(array('message' => __('Insufficient permissions', 'jelly-catalog')));
+        }
+
+        $upload_dir = wp_upload_dir();
+        if (! empty($upload_dir['error'])) {
+            wp_send_json_error(array('message' => $upload_dir['error']));
+        }
+
+        $filename  = 'jc-products-' . gmdate('Ymd-His') . '.csv';
+        $file_path = trailingslashit($upload_dir['path']) . $filename;
+
+        if (! is_dir($upload_dir['path'])) {
+            wp_mkdir_p($upload_dir['path']);
+        }
+
+        require_once plugin_dir_path(__FILE__) . 'class-jc-export.php';
+
+        $result = JC_Export::instance()->export_to_csv($file_path);
+
+        if (empty($result['success'])) {
+            wp_send_json_error(array('message' => isset($result['message']) ? $result['message'] : __('Export failed', 'jelly-catalog')));
+        }
+
+        $file_url = trailingslashit($upload_dir['url']) . $filename;
+        wp_send_json_success(array('url' => $file_url));
     }
 
-    $upload_dir = wp_upload_dir();
-    if (! empty($upload_dir['error'])) {
-        wp_send_json_error(array('message' => $upload_dir['error']));
-    }
+    public function handle_import_products()
+    {
+        check_ajax_referer('jc_nonce', 'nonce');
 
-    $filename  = 'jc-products-' . gmdate('Ymd-His') . '.csv';
-    $file_path = trailingslashit($upload_dir['path']) . $filename;
+        if (! current_user_can('import')) {
+            wp_send_json_error(array('message' => __('Insufficient permissions', 'jelly-catalog')));
+        }
 
-    if (! is_dir($upload_dir['path'])) {
-        wp_mkdir_p($upload_dir['path']);
-    }
+        if (empty($_FILES['file']) || ! is_uploaded_file($_FILES['file']['tmp_name'])) {
+            wp_send_json_error(array('message' => __('No file uploaded', 'jelly-catalog')));
+        }
 
-    require_once plugin_dir_path(__FILE__) . 'class-jc-export.php';
+        $overrides = array(
+            'test_form' => false,
+            'mimes'     => array('csv' => 'text/csv'),
+        );
 
-    $result = JC_Export::instance()->export_to_csv($file_path);
+        $uploaded = wp_handle_upload($_FILES['file'], $overrides);
 
-    if (empty($result['success'])) {
-        wp_send_json_error(array('message' => isset($result['message']) ? $result['message'] : __('Export failed', 'jelly-catalog')));
-    }
+        if (isset($uploaded['error'])) {
+            wp_send_json_error(array('message' => $uploaded['error']));
+        }
 
-    $file_url = trailingslashit($upload_dir['url']) . $filename;
-    wp_send_json_success(array('url' => $file_url));
-}
+        require_once plugin_dir_path(__FILE__) . 'class-jc-import.php';
 
-public function handle_import_products()
-{
-    check_ajax_referer('jc_nonce', 'nonce');
+        $result = JC_Import::instance()->import_from_csv($uploaded['file']);
 
-    if (! current_user_can('import')) {
-        wp_send_json_error(array('message' => __('Insufficient permissions', 'jelly-catalog')));
-    }
+        if (is_file($uploaded['file'])) {
+            @unlink($uploaded['file']);
+        }
 
-    if (empty($_FILES['file']) || ! is_uploaded_file($_FILES['file']['tmp_name'])) {
-        wp_send_json_error(array('message' => __('No file uploaded', 'jelly-catalog')));
-    }
+        if (! empty($result['errors'])) {
+            wp_send_json_error(array(
+                'message' => implode("\n", $result['errors']),
+                'imported' => $result['imported'],
+                'updated'  => $result['updated'],
+                'skipped'  => $result['skipped'],
+            ));
+        }
 
-    $overrides = array(
-        'test_form' => false,
-        'mimes'     => array('csv' => 'text/csv'),
-    );
-
-    $uploaded = wp_handle_upload($_FILES['file'], $overrides);
-
-    if (isset($uploaded['error'])) {
-        wp_send_json_error(array('message' => $uploaded['error']));
-    }
-
-    require_once plugin_dir_path(__FILE__) . 'class-jc-import.php';
-
-    $result = JC_Import::instance()->import_from_csv($uploaded['file']);
-
-    if (is_file($uploaded['file'])) {
-        @unlink($uploaded['file']);
-    }
-
-    if (! empty($result['errors'])) {
-        wp_send_json_error(array(
-            'message' => implode("\n", $result['errors']),
+        wp_send_json_success(array(
             'imported' => $result['imported'],
             'updated'  => $result['updated'],
             'skipped'  => $result['skipped'],
         ));
     }
 
-    wp_send_json_success(array(
-        'imported' => $result['imported'],
-        'updated'  => $result['updated'],
-        'skipped'  => $result['skipped'],
-    ));
-}
+    /**
+     * 获取分类法术语用于自动完成
+     *
+     * @return void
+     */
+    public function get_taxonomy_terms()
+    {
+        check_ajax_referer('jc_nonce', 'nonce');
 
+        if (!current_user_can('edit_posts')) {
+            wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
+        }
+
+        $taxonomy = isset($_POST['taxonomy']) ? sanitize_text_field($_POST['taxonomy']) : '';
+
+        if (empty($taxonomy) || !taxonomy_exists($taxonomy)) {
+            wp_send_json_error(__('Invalid taxonomy', 'jelly-catalog'));
+        }
+
+        if ($taxonomy === 'product_cat') {
+            // 获取产品分类层级结构
+            $terms = $this->get_category_hierarchy();
+            wp_send_json_success($terms);
+        } else {
+            // 获取所有术语对象
+            $terms = get_terms(array(
+                'taxonomy'   => $taxonomy,
+                'hide_empty' => false,
+            ));
+
+            if (is_wp_error($terms)) {
+                wp_send_json_error($terms->get_error_message());
+            }
+
+            // 组装返回格式：id / name / slug
+            $result = array();
+
+            if (!empty($terms)) {
+                foreach ($terms as $term) {
+                    $result[] = array(
+                        'id'   => $term->term_id,
+                        'name' => $term->name,
+                        'slug' => $term->slug,
+                    );
+                }
+            }
+
+            wp_send_json_success($result);
+        }
+    }
+
+    /**
+     * 获取分类层级结构（扁平化）
+     *
+     * @return array 分类结构数组
+     */
+    private function get_category_hierarchy()
+    {
+        $terms = get_terms(array(
+            'taxonomy'   => 'product_cat',
+            'hide_empty' => false,
+        ));
+
+        if (is_wp_error($terms) || empty($terms)) {
+            return array();
+        }
+
+        $result = array();
+
+        foreach ($terms as $term) {
+            $result[] = array(
+                'id'        => $term->term_id,
+                'name'      => $term->name,
+                'slug'      => $term->slug,
+                'parent_id' => $term->parent ?: 0,
+            );
+        }
+
+        return $result;
+    }
 }
 
 JC_Ajax_Action::instance();

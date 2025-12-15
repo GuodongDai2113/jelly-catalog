@@ -69,16 +69,23 @@ class JC_Sheet_Editor
             return;
         }
 
-        wp_enqueue_style('handsontable', 'https://cdn.jsdelivr.net/npm/handsontable/styles/handsontable.min.css');
-        wp_enqueue_style('handsontable-theme', 'https://cdn.jsdelivr.net/npm/handsontable/styles/ht-theme-main.min.css');
-        wp_enqueue_style('tagify', 'https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css');
+        // 引入Tabulator库
+        wp_enqueue_style('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css');
+        wp_enqueue_script('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js', array('jquery'), null, true);
+        
+        // 加载本地CSS样式文件
+        wp_enqueue_style(
+            'jelly-catalog-sheet-editor',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog.css',
+            array(),
+            JELLY_CATALOG_VERSION
+        );
 
-        wp_enqueue_script('handsontable', 'https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js', array(), null, true);
-        wp_enqueue_script('tagify', 'https://cdn.jsdelivr.net/npm/@yaireo/tagify', array(), null, true);
+        // 加载基于Tabulator的JavaScript文件
         wp_enqueue_script(
             'jelly-catalog-sheet-editor',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-sheet-editor.js',
-            array('jquery', 'handsontable'),
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-sheet-editor-tabulator.js',
+            array('jquery', 'tabulator'),
             null,
             true
         );
