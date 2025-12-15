@@ -116,18 +116,18 @@ class JC_Sheet_Editor
     public function render_products_sheet()
     {
         ?>
-        <div class="wrap">
-            <div id="hot"></div>
-            <br>
-            <div id="pagination-controls">
-                <button class="button" id="first-page">
-                    <?php esc_html_e('« First', 'jelly-catalog'); ?>
-                </button>
-                <button class="button" id="prev-page">
-                    <?php esc_html_e('‹ Previous', 'jelly-catalog'); ?>
-                </button>
-                <span id="page-info">
-                    <?php
+<div class="wrap">
+    <div id="hot"></div>
+    <br>
+    <div id="pagination-controls">
+        <button class="button" id="first-page">
+            <?php esc_html_e('« First', 'jelly-catalog'); ?>
+        </button>
+        <button class="button" id="prev-page">
+            <?php esc_html_e('‹ Previous', 'jelly-catalog'); ?>
+        </button>
+        <span id="page-info">
+            <?php
                     $page_info = sprintf(
                         /* translators: 1: current page placeholder, 2: total pages placeholder */
                         esc_html__('Page %1$s of %2$s', 'jelly-catalog'),
@@ -144,26 +144,34 @@ class JC_Sheet_Editor
                         )
                     );
                     ?>
-                </span>
-                <button class="button" id="next-page">
-                    <?php esc_html_e('Next ›', 'jelly-catalog'); ?>
-                </button>
-                <button class="button" id="last-page">
-                    <?php esc_html_e('Last »', 'jelly-catalog'); ?>
-                </button>
-                <span class="pagination-jump">
-                    <?php esc_html_e('Jump to:', 'jelly-catalog'); ?>
-                    <input type="number" id="goto-page" min="1" style="width: 60px;">
-                    <button class="button" id="goto-page-btn">
-                        <?php esc_html_e('Go', 'jelly-catalog'); ?>
-                    </button>
-                </span>
-                <button class="button button-primary" id="save-sheet">
-                    <?php esc_html_e('Save Sheet', 'jelly-catalog'); ?>
-                </button>
-            </div>
-        </div>
-        <?php
+        </span>
+        <button class="button" id="next-page">
+            <?php esc_html_e('Next ›', 'jelly-catalog'); ?>
+        </button>
+        <button class="button" id="last-page">
+            <?php esc_html_e('Last »', 'jelly-catalog'); ?>
+        </button>
+        <span class="pagination-jump">
+            <?php esc_html_e('Jump to:', 'jelly-catalog'); ?>
+            <input type="number" id="goto-page" min="1" style="width: 60px;">
+            <button class="button" id="goto-page-btn">
+                <?php esc_html_e('Go', 'jelly-catalog'); ?>
+            </button>
+        </span>
+        <span class="per-page-selector">
+            <?php esc_html_e('Per page:', 'jelly-catalog'); ?>
+            <select id="per-page-select">
+                <?php for ($i = 10; $i <= 100; $i += 10): ?>
+                <option value="<?php echo $i; ?>" <?php selected($i, 20); ?>><?php echo $i; ?></option>
+                <?php endfor; ?>
+            </select>
+        </span>
+        <button class="button button-primary" id="save-sheet">
+            <?php esc_html_e('Save Sheet', 'jelly-catalog'); ?>
+        </button>
+    </div>
+</div>
+<?php
     }
 }
 
