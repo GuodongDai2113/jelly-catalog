@@ -492,7 +492,7 @@
             <li class="image" data-attachment_id="${data.id}">
               <img src="${data.sizes.thumbnail.url}" alt="" />
               <ul class="actions">
-                <li><a href="#" class="delete" title="${deleteText}">X</a></li>
+                <li><a href="#" class="delete" title="${deleteText}"></a></li>
               </ul>
             </li>
           `);
