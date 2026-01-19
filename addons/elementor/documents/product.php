@@ -142,12 +142,12 @@ class Product extends Single_Base {
 
 	protected static function get_editor_panel_categories() {
 		$categories = [
-			'jelly-catalog-elements-single' => [
+			'jc-elements-single' => [
 				'title' => esc_html__( 'Product', 'jelly-catalog' ),
 
 			],
 			// Move to top as active.
-			'jelly-catalog-elements' => [
+			'jc-elements' => [
 				'title' => esc_html__( 'Jelly Catalog', 'jelly-catalog' ),
 				'active' => true,
 			],

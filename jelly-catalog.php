@@ -74,3 +74,14 @@ function jelly_catalog_init()
 	
 }
 add_action('plugins_loaded', 'jelly_catalog_init');
+
+// 前端资源加载
+function jelly_catalog_enqueue_frontend_assets() {
+    wp_enqueue_style(
+        'jelly-catalog',
+        JELLY_CATALOG_PLUGIN_URL . 'assets/css/jc.min.css',
+        array(),
+        JELLY_CATALOG_VERSION
+    );
+}
+add_action('wp_enqueue_scripts', 'jelly_catalog_enqueue_frontend_assets');

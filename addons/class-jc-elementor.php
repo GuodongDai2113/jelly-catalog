@@ -128,11 +128,15 @@ class JC_Elementor
         include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-title.php');
         include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-image.php');
         include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-banner.php');
+        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-why-choose.php');
+        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-advantages.php');
 
         $tags = [
             'Product_Title',
             'Product_Cat_Image',
             'Product_Cat_Banner',
+            'Product_Cat_Why_Choose',
+            'Product_Cat_Advantages',
         ];
 
         /** @var \Elementor\Core\DynamicTags\Manager $module */
@@ -201,8 +205,12 @@ class JC_Elementor
     function register_widgets($widgets_manager)
     {
         include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-faq.php');
+        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-faq.php');
+        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-content.php');
 
+        $widgets_manager->register( new Jelly_Catalog\Addons\Elementor\Widgets\Product_Content() );
         $widgets_manager->register( new Jelly_Catalog\Addons\Elementor\Widgets\Product_FAQ() );
+        $widgets_manager->register( new Jelly_Catalog\Addons\Elementor\Widgets\Product_Cat_FAQ() );
 
     }
 

@@ -67,11 +67,11 @@ class Product_Post extends Post {
 		return $categories;
 	}
 
-	// protected function get_remote_library_config() {
-	// 	$config = parent::get_remote_library_config();
+	protected function get_remote_library_config() {
+		$config = parent::get_remote_library_config();
 
-	// 	$config['category'] = 'single product';
+		// $config['category'] = 'single product';
 
-	// 	return $config;
-	// }
+		return $config;
+	}
 }

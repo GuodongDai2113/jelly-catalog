@@ -40,12 +40,12 @@ class JC_ACF
             'title' => esc_html__('Product Category Field Group', 'jelly-catalog'),
             'fields' => array(
                 array(
-                    'key' => 'field_category_content',
-                    'label' => esc_html__('Category Content', 'jelly-catalog'),
-                    'name' => 'category_content',
+                    'key' => 'field_category_why_choose',
+                    'label' => esc_html__('Category Why Choose', 'jelly-catalog'),
+                    'name' => 'category_why_choose',
                     'aria-label' => '',
                     'type' => 'wysiwyg',
-                    'instructions' => esc_html__('Enter the content for this category.', 'jelly-catalog'),
+                    'instructions' => esc_html__('Enter the why choose for this category.', 'jelly-catalog'),
                     'required' => 0,
                     'conditional_logic' => 0,
                     'wrapper' => array(
@@ -60,7 +60,48 @@ class JC_ACF
                     'media_upload' => 1,
                     'delay' => 0,
                 ),
-
+                array(
+                    'key' => 'field_category_advantages',
+                    'label' => esc_html__('Category Advantages', 'jelly-catalog'),
+                    'name' => 'category_advantages',
+                    'aria-label' => '',
+                    'type' => 'wysiwyg',
+                    'instructions' => esc_html__('Enter the advantages for this category.', 'jelly-catalog'),
+                    'required' => 0,
+                    'conditional_logic' => 0,
+                    'wrapper' => array(
+                        'width' => '',
+                        'class' => '',
+                        'id' => '',
+                    ),
+                    'default_value' => '',
+                    'allow_in_bindings' => 0,
+                    'tabs' => 'all',
+                    'toolbar' => 'full',
+                    'media_upload' => 1,
+                    'delay' => 0,
+                ),
+                // array(
+                //     'key' => 'field_category_content',
+                //     'label' => esc_html__('Category Content', 'jelly-catalog'),
+                //     'name' => 'category_content',
+                //     'aria-label' => '',
+                //     'type' => 'wysiwyg',
+                //     'instructions' => esc_html__('Enter the content for this category.', 'jelly-catalog'),
+                //     'required' => 0,
+                //     'conditional_logic' => 0,
+                //     'wrapper' => array(
+                //         'width' => '',
+                //         'class' => '',
+                //         'id' => '',
+                //     ),
+                //     'default_value' => '',
+                //     'allow_in_bindings' => 0,
+                //     'tabs' => 'all',
+                //     'toolbar' => 'full',
+                //     'media_upload' => 1,
+                //     'delay' => 0,
+                // ),
             ),
             'location' => array(
                 array(
@@ -82,46 +123,46 @@ class JC_ACF
             'show_in_rest' => 0,
         );
 
-        if (is_plugin_active('elementor/elementor.php')) {
-            $product_category_field_group['fields'][] = array(
-                'key' => 'field_elementor_template_id',
-                'label' => esc_html__('Elementor Page Template', 'jelly-catalog'),
-                'name' => 'elementor_template_id',
-                'aria-label' => '',
-                'type' => 'post_object',
-                'instructions' => esc_html__('Choose an Elementor-designed page to display for this category.', 'jelly-catalog'),
-                'required' => 0,
-                'conditional_logic' => 0,
-                'wrapper' => array(
-                    'width' => '',
-                    'class' => '',
-                    'id' => '',
-                ),
-                'post_type' => array(
-                    0 => 'elementor_library',
-                ),
-                'post_status' => array(
-                    0 => 'publish',
-                ),
-                'query_args' => array(
-                    'meta_query' => array(
-                        array(
-                            'key' => '_elementor_template_type',
-                            'value' => 'page',
-                            'compare' => '='
-                        )
-                    )
-                ),
-                'taxonomy' => '',
-                'return_format' => 'id',
-                'multiple' => 0,
-                'allow_null' => 1,
-                'allow_in_bindings' => 0,
-                'bidirectional' => 0,
-                'ui' => 1,
-                'bidirectional_target' => array(),
-            );
-        }
+        // if (is_plugin_active('elementor/elementor.php')) {
+        //     $product_category_field_group['fields'][] = array(
+        //         'key' => 'field_elementor_template_id',
+        //         'label' => esc_html__('Elementor Page Template', 'jelly-catalog'),
+        //         'name' => 'elementor_template_id',
+        //         'aria-label' => '',
+        //         'type' => 'post_object',
+        //         'instructions' => esc_html__('Choose an Elementor-designed page to display for this category.', 'jelly-catalog'),
+        //         'required' => 0,
+        //         'conditional_logic' => 0,
+        //         'wrapper' => array(
+        //             'width' => '',
+        //             'class' => '',
+        //             'id' => '',
+        //         ),
+        //         'post_type' => array(
+        //             0 => 'elementor_library',
+        //         ),
+        //         'post_status' => array(
+        //             0 => 'publish',
+        //         ),
+        //         'query_args' => array(
+        //             'meta_query' => array(
+        //                 array(
+        //                     'key' => '_elementor_template_type',
+        //                     'value' => 'page',
+        //                     'compare' => '='
+        //                 )
+        //             )
+        //         ),
+        //         'taxonomy' => '',
+        //         'return_format' => 'id',
+        //         'multiple' => 0,
+        //         'allow_null' => 1,
+        //         'allow_in_bindings' => 0,
+        //         'bidirectional' => 0,
+        //         'ui' => 1,
+        //         'bidirectional_target' => array(),
+        //     );
+        // }
 
         acf_add_local_field_group($product_category_field_group);
     }

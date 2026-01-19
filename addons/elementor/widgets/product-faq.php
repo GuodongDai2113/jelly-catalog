@@ -17,7 +17,7 @@ class Product_FAQ extends \Elementor\Widget_Base
 
     public function get_name(): string
     {
-        return 'product-faq';
+        return 'jc-product-faq';
     }
 
     public function get_title(): string
@@ -44,21 +44,17 @@ class Product_FAQ extends \Elementor\Widget_Base
     protected function render(): void
     {
         $faqs = get_post_meta(get_the_ID(), '_product_faqs', true);
-        echo "<div class='accordion'>";
-        $first = true;
-        foreach ($faqs as $item) {
-            $name = esc_html($item['name'] ?? '');
-            $value = wp_kses_post($item['value'] ?? '');
-
-            $open = $first ? ' open' : '';
-            $first = false;
-
-            echo "<details class='accordion-item'{$open}>";
-            echo "<summary class='accordion-header'>{$name}</summary>";
-            echo "<div class='accordion-content'><p>{$value}</p></div>";
-            echo "</details>";
+        if (! empty($faqs) && is_array($faqs)) {
+            echo "<div class='jc-faq'>";
+            foreach ($faqs as $item) {
+                $name = esc_html($item['name'] ?? '');
+                $value = wp_kses_post($item['value'] ?? '');
+                echo "<details class='jc-faq-item'>";
+                echo "<summary class='jc-faq-header'><h3>{$name}</h3></summary>";
+                echo "<div class='jc-faq-content'><p>{$value}</p></div>";
+                echo "</details>";
+            }
+            echo "</div>";
         }
-
-        echo "</div>";
     }
 }
