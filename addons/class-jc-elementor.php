@@ -1,3 +1,4 @@
+class-jc-elementor.php
 <?php
 
 /**
@@ -207,10 +208,16 @@ class JC_Elementor
         include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-faq.php');
         include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-faq.php');
         include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-content.php');
+        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-attributes.php');
+        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-nav.php');
+        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-download.php');
 
         $widgets_manager->register( new Jelly_Catalog\Addons\Elementor\Widgets\Product_Content() );
         $widgets_manager->register( new Jelly_Catalog\Addons\Elementor\Widgets\Product_FAQ() );
         $widgets_manager->register( new Jelly_Catalog\Addons\Elementor\Widgets\Product_Cat_FAQ() );
+        $widgets_manager->register( new Jelly_Catalog\Addons\Elementor\Widgets\Product_Attributes() );
+        $widgets_manager->register( new Jelly_Catalog\Addons\Elementor\Widgets\Product_Cat_Nav() );
+        $widgets_manager->register( new Jelly_Catalog\Addons\Elementor\Widgets\Product_Download() );
 
     }
 

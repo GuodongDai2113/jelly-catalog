@@ -21,7 +21,7 @@ class Product_Cat_Faq extends \Elementor\Widget_Base
 
 	public function get_icon()
 	{
-		return 'eicon-commenting-o';
+        return 'eicon-checkbox';
 	}
 
 	public function get_categories()

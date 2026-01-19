@@ -79,9 +79,17 @@ add_action('plugins_loaded', 'jelly_catalog_init');
 function jelly_catalog_enqueue_frontend_assets() {
     wp_enqueue_style(
         'jelly-catalog',
-        JELLY_CATALOG_PLUGIN_URL . 'assets/css/jc.min.css',
+        JELLY_CATALOG_PLUGIN_URL . 'assets/css/jc.css',
         array(),
         JELLY_CATALOG_VERSION
+    );
+    
+    wp_enqueue_script(
+        'jelly-catalog',
+        JELLY_CATALOG_PLUGIN_URL . 'assets/js/jc.js',
+        array(),
+        JELLY_CATALOG_VERSION,
+        true
     );
 }
 add_action('wp_enqueue_scripts', 'jelly_catalog_enqueue_frontend_assets');

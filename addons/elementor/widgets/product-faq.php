@@ -27,7 +27,7 @@ class Product_FAQ extends \Elementor\Widget_Base
 
     public function get_icon(): string
     {
-        return 'eicon-commenting-o';
+        return 'eicon-checkbox';
     }
 
     public function get_categories(): array
