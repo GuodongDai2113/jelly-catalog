@@ -4,8 +4,7 @@ namespace Jelly_Catalog\Addons\Elementor\Widgets;
 
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
-use Elementor\Core\Kits\Documents\Tabs\Global_Colors;
-use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
+use Elementor\Icons_Manager;
 
 if (!defined('ABSPATH')) exit; // 禁止直接访问
 
@@ -29,7 +28,7 @@ class Product_Download extends Widget_Base
 
     public function get_categories()
     {
-        return ['jelly-catalog'];
+        return ['jc-elements-single'];
     }
 
     public function get_keywords()
@@ -51,25 +50,6 @@ class Product_Download extends Widget_Base
             ]
         );
 
-        $this->add_control(
-            'download_label',
-            [
-                'label' => esc_html__('Download Label', 'jelly-catalog'),
-                'type' => Controls_Manager::TEXT,
-                'default' => esc_html__('Download Product Catalog', 'jelly-catalog'),
-                'placeholder' => esc_html__('Enter download button label', 'jelly-catalog'),
-            ]
-        );
-
-        $this->add_control(
-            'no_file_text',
-            [
-                'label' => esc_html__('No File Text', 'jelly-catalog'),
-                'type' => Controls_Manager::TEXT,
-                'default' => esc_html__('No download file available', 'jelly-catalog'),
-                'placeholder' => esc_html__('Text to show when no file is available', 'jelly-catalog'),
-            ]
-        );
 
         $this->end_controls_section();
 
@@ -81,29 +61,7 @@ class Product_Download extends Widget_Base
             ]
         );
 
-        $this->add_control(
-            'button_color',
-            [
-                'label' => esc_html__('Button Color', 'jelly-catalog'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .jc-product-download-btn' => 'background-color: {{VALUE}};',
-                ],
-                'default' => '#2c62ed',
-            ]
-        );
 
-        $this->add_control(
-            'text_color',
-            [
-                'label' => esc_html__('Text Color', 'jelly-catalog'),
-                'type' => Controls_Manager::COLOR,
-                'selectors' => [
-                    '{{WRAPPER}} .jc-product-download-btn' => 'color: {{VALUE}};',
-                ],
-                'default' => '#ffffff',
-            ]
-        );
 
         $this->end_controls_section();
     }
@@ -121,20 +79,31 @@ class Product_Download extends Widget_Base
         // 从ACF字段获取产品文件
         $product_file = get_field('product_file', $product_id);
 
-        $download_label = $settings['download_label'] ?: esc_html__('Download Product Catalog', 'jelly-catalog');
-        $no_file_text = $settings['no_file_text'] ?: esc_html__('No download file available', 'jelly-catalog');
 ?>
-        <div class="jc-product-download">
-            <?php if ($product_file): ?>
-                <a href="<?php echo esc_url($product_file['url']); ?>"
-                    class="jc-product-download-btn"
+        <?php if ($product_file): ?>
+            <div class="jc-download">
+                <a href="<?php echo esc_url($product_file['url']); ?> download"
+                    class="jc-download-item"
                     download="<?php echo esc_attr($product_file['filename']); ?>">
-                    <?php echo esc_html($download_label); ?>
+                    <span class="jc-download-icon">
+                        <?php Icons_Manager::render_icon(['value' => 'fas fa-file-pdf', 'library' => 'fa-solid'], ['aria-hidden' => 'true']); ?>
+                    </span>
+                    <div class="jc-download-file">
+                        <span class="jc-download-name">
+                            <?php echo esc_html($product_file['filename']); ?>
+                        </span>
+                        <span class="jc-download-size">
+                            <?php echo esc_html(size_format($product_file['filesize'])); ?>
+                        </span>
+                    </div>
+                    <span class="jc-download-button">
+                        <?php Icons_Manager::render_icon(['value' => 'fas fa-cloud-download-alt', 'library' => 'fa-solid'], ['aria-hidden' => 'true']); ?>
+                    </span>
                 </a>
-            <?php else: ?>
-                <p class="jc-no-file"><?php echo esc_html($no_file_text); ?></p>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php else: ?>
+            <p class="jc-download-no-file"><?php echo esc_html__('The product files have not yet been uploaded. Please contact customer service to obtain them.'); ?></p>
+        <?php endif; ?>
 <?php
     }
 }

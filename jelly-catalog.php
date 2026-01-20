@@ -71,25 +71,41 @@ function jelly_catalog_init()
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-ajax-action.php';
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-sheet-editor.php';
 	require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-port.php';
-	
 }
 add_action('plugins_loaded', 'jelly_catalog_init');
 
 // 前端资源加载
-function jelly_catalog_enqueue_frontend_assets() {
-    wp_enqueue_style(
-        'jelly-catalog',
-        JELLY_CATALOG_PLUGIN_URL . 'assets/css/jc.css',
-        array(),
-        JELLY_CATALOG_VERSION
-    );
-    
-    wp_enqueue_script(
-        'jelly-catalog',
-        JELLY_CATALOG_PLUGIN_URL . 'assets/js/jc.js',
-        array(),
-        JELLY_CATALOG_VERSION,
-        true
-    );
+function jelly_catalog_enqueue_frontend_assets()
+{
+	wp_enqueue_style(
+		'jelly-catalog',
+		JELLY_CATALOG_PLUGIN_URL . 'assets/css/jc.css',
+		array(),
+		JELLY_CATALOG_VERSION
+	);
+
+	if (is_singular('product')) {
+
+		wp_enqueue_style(
+			'jelly-catalog-swiper',
+			JELLY_CATALOG_PLUGIN_URL . 'assets/css/swiper-bundle.min.css',
+			array(),
+			JELLY_CATALOG_VERSION
+		);
+		wp_enqueue_script(
+			'jelly-catalog-swiper',
+			JELLY_CATALOG_PLUGIN_URL . 'assets/js/swiper-bundle.min.js',
+			array(),
+			JELLY_CATALOG_VERSION,
+			true
+		);
+		wp_enqueue_script(
+			'jelly-catalog',
+			JELLY_CATALOG_PLUGIN_URL . 'assets/js/jc.js',
+			array(),
+			JELLY_CATALOG_VERSION,
+			true
+		);
+	}
 }
 add_action('wp_enqueue_scripts', 'jelly_catalog_enqueue_frontend_assets');

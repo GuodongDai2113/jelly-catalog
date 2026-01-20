@@ -254,7 +254,6 @@ class Product_Attributes extends Widget_Base
         if (empty($attributes) || !is_array($attributes)) {
             return;
         }
-        $migration_allowed = Icons_Manager::is_migration_allowed();
 
         $grid_columns =  'cols-' . $settings['columns'];
         ?>
