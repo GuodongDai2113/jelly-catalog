@@ -25,7 +25,7 @@ class JC_ACF
 
     public function __construct()
     {
-        add_action('acf/include_fields', array($this, 'add_prodcut_category_fields'));
+        // add_action('acf/include_fields', array($this, 'add_prodcut_category_fields'));
         add_action('acf/include_fields', array($this, 'add_prodcut_fields'));
     }
 
@@ -39,6 +39,46 @@ class JC_ACF
             'key' => 'group_product_category',
             'title' => esc_html__('Product Category Field Group', 'jelly-catalog'),
             'fields' => array(
+                array(
+                    'key' => 'field_category_h1_title',
+                    'label' => esc_html__('Category H1 Title', 'jelly-catalog'),
+                    'name' => 'category_h1_title',
+                    'aria-label' => '',
+                    'type' => 'text',
+                    'instructions' => esc_html__('Enter the H1 title for this category.', 'jelly-catalog'),
+                    'required' => 0,
+                    'conditional_logic' => 0,
+                    'wrapper' => array(
+                        'width' => '',
+                        'class' => '',
+                        'id' => '',
+                    ),
+                    'default_value' => '',
+                    'placeholder' => '',
+                    'prepend' => '',
+                    'append' => '',
+                    'maxlength' => '',
+                ),
+                array(
+                    'key' => 'field_category_why_choose_title',
+                    'label' => esc_html__('Why Choose Us Title', 'jelly-catalog'),
+                    'name' => 'category_why_choose_title',
+                    'aria-label' => '',
+                    'type' => 'text',
+                    'instructions' => esc_html__('Enter the why choose us title for this category.', 'jelly-catalog'),
+                    'required' => 0,
+                    'conditional_logic' => 0,
+                    'wrapper' => array(
+                        'width' => '',
+                        'class' => '',
+                        'id' => '',
+                    ),
+                    'default_value' => '',
+                    'placeholder' => '',
+                    'prepend' => '',
+                    'append' => '',
+                    'maxlength' => '',
+                ),
                 array(
                     'key' => 'field_category_why_choose',
                     'label' => esc_html__('Category Why Choose', 'jelly-catalog'),
@@ -81,27 +121,6 @@ class JC_ACF
                     'media_upload' => 1,
                     'delay' => 0,
                 ),
-                // array(
-                //     'key' => 'field_category_content',
-                //     'label' => esc_html__('Category Content', 'jelly-catalog'),
-                //     'name' => 'category_content',
-                //     'aria-label' => '',
-                //     'type' => 'wysiwyg',
-                //     'instructions' => esc_html__('Enter the content for this category.', 'jelly-catalog'),
-                //     'required' => 0,
-                //     'conditional_logic' => 0,
-                //     'wrapper' => array(
-                //         'width' => '',
-                //         'class' => '',
-                //         'id' => '',
-                //     ),
-                //     'default_value' => '',
-                //     'allow_in_bindings' => 0,
-                //     'tabs' => 'all',
-                //     'toolbar' => 'full',
-                //     'media_upload' => 1,
-                //     'delay' => 0,
-                // ),
             ),
             'location' => array(
                 array(
@@ -122,47 +141,6 @@ class JC_ACF
             'description' => '',
             'show_in_rest' => 0,
         );
-
-        // if (is_plugin_active('elementor/elementor.php')) {
-        //     $product_category_field_group['fields'][] = array(
-        //         'key' => 'field_elementor_template_id',
-        //         'label' => esc_html__('Elementor Page Template', 'jelly-catalog'),
-        //         'name' => 'elementor_template_id',
-        //         'aria-label' => '',
-        //         'type' => 'post_object',
-        //         'instructions' => esc_html__('Choose an Elementor-designed page to display for this category.', 'jelly-catalog'),
-        //         'required' => 0,
-        //         'conditional_logic' => 0,
-        //         'wrapper' => array(
-        //             'width' => '',
-        //             'class' => '',
-        //             'id' => '',
-        //         ),
-        //         'post_type' => array(
-        //             0 => 'elementor_library',
-        //         ),
-        //         'post_status' => array(
-        //             0 => 'publish',
-        //         ),
-        //         'query_args' => array(
-        //             'meta_query' => array(
-        //                 array(
-        //                     'key' => '_elementor_template_type',
-        //                     'value' => 'page',
-        //                     'compare' => '='
-        //                 )
-        //             )
-        //         ),
-        //         'taxonomy' => '',
-        //         'return_format' => 'id',
-        //         'multiple' => 0,
-        //         'allow_null' => 1,
-        //         'allow_in_bindings' => 0,
-        //         'bidirectional' => 0,
-        //         'ui' => 1,
-        //         'bidirectional_target' => array(),
-        //     );
-        // }
 
         acf_add_local_field_group($product_category_field_group);
     }

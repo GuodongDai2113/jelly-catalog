@@ -15,10 +15,10 @@ class JC_Product_Cat_FAQ_Metabox
 {
     public function __construct()
     {
-        add_action('product_cat_add_form_fields', array($this, 'add_category_faq_field'));
+        // add_action('product_cat_add_form_fields', array($this, 'add_category_faq_field'));
         add_action('product_cat_edit_form_fields', array($this, 'edit_category_faq_field'));
         add_action('edited_product_cat', array($this, 'save_category_faq_field'));
-        add_action('create_product_cat', array($this, 'save_category_faq_field'));
+        // add_action('create_product_cat', array($this, 'save_category_faq_field'));
     }
 
     /**

@@ -23,7 +23,7 @@ class Product_Gallery extends Widget_Base
 
     public function get_icon()
     {
-        return 'eicon-download-button';
+        return 'eicon-product-images';
     }
 
     public function get_categories()

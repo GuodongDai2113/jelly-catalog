@@ -144,6 +144,7 @@ class JC_Post_Meta_Box
                 </ol>
             </div>',
         ));
+
     }
 
     private function initialize_metaboxes()
@@ -194,7 +195,11 @@ class JC_Post_Meta_Box
         include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-cat-banner-metabox.php';
         new JC_Product_Cat_Banner_Metabox();
 
-        // 分类图标功能
+        // 分类产品字段功能
+        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-cat-fields-metabox.php';
+        new JC_Product_Cat_Fields_Metabox();
+
+        // 分类问答功能
         include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-cat-faq-metabox.php';
         new JC_Product_Cat_FAQ_Metabox();
     }

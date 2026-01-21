@@ -36,6 +36,8 @@ class JC_Product_Postexcerpt_Metabox
             <?php
             $settings = array(
                 'textarea_name' => 'excerpt',
+                'textarea_rows' => 10,
+                'media_buttons' => false,
                 'quicktags'     => array('buttons' => 'em,strong,link'),
                 'tinymce'       => array(
                     'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',

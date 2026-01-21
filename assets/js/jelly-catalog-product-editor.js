@@ -353,7 +353,7 @@
 
       const $item = $(`
         <div class="repeater-item">
-          <span class="item-number">${index}</span>
+          <span class="item-title">${index}</span>
         </div>
       `);
 

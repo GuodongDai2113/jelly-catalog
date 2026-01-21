@@ -13,10 +13,10 @@ class JC_Product_Cat_Banner_Metabox
 
     public function __construct()
     {
-        add_action('product_cat_add_form_fields', array($this, 'add_banner_field'));
+        // add_action('product_cat_add_form_fields', array($this, 'add_banner_field'));
         add_action('product_cat_edit_form_fields', array($this, 'edit_banner_field'));
         add_action('edited_product_cat', array($this, 'save_banner_field'));
-        add_action('create_product_cat', array($this, 'save_banner_field'));
+        // add_action('create_product_cat', array($this, 'save_banner_field'));
     }
 
     /**

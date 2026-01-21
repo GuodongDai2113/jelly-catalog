@@ -1,3 +1,33 @@
+#set-post-thumbnail img {
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+}
+
+#edit-slug-box {
+  padding-left: 0;
+  background-color: #fff;
+  padding: 6px 10px;
+  border: 1px solid #e5e7eb;
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 4px;
+}
+
+#sample-permalink{
+  display: flex;
+  align-items: center;
+}
+
+#editable-post-name input#new-post-slug {
+  width: 500px;
+}
+
+.categorydiv div.tabs-panel, .customlinkdiv div.tabs-panel, .posttypediv div.tabs-panel, .taxonomydiv div.tabs-panel, .wp-tab-panel{
+  max-height: unset;
+}
+
 // ======================== 商品图库区域 ========================
 #jc-gallery {
   .product-images {
@@ -13,7 +43,8 @@
       // 单张图片卡片
       position: relative;
       cursor: move;
-      background: #f5f5f5;
+      background: #f3f4f6;
+      border-radius: 4px;
 
       img {
         // 统一缩略图尺寸与裁切
@@ -21,7 +52,7 @@
         height: 75px;
         display: block;
         object-fit: cover;
-        border: 1px solid #ddd;
+        border: 1px solid #e5e7eb;
         border-radius: 4px;
       }
 
@@ -36,8 +67,8 @@
         font-size: 12px;
         border-radius: 99px;
         text-align: center;
-        border: 1px solid #ccc;
-        background: #fafafa;
+        border: 1px solid #e5e7eb;
+        background: #fff;
         display: none;
         list-style: none;
         margin: 0;
@@ -52,19 +83,20 @@
       }
 
       &:hover {
+
         // 悬停时展示操作按钮并加亮背景
         .actions {
           display: block;
         }
 
-        background: #fff;
+        background: #f9fafb;
       }
     }
 
     .ui-sortable-placeholder {
       // 拖拽占位样式
-      border: 2px dashed #bbb;
-      background-color: #f5f5f5;
+      border: 2px dashed #e5e7eb;
+      background-color: #f3f4f6;
       visibility: visible !important;
       border-radius: 4px;
       box-sizing: border-box;
@@ -94,8 +126,8 @@
 .edit-description {
   padding: 16px;
   margin-bottom: 12px;
-  border: 1px solid #ccc;
-  background-color: #fafafa;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
 
   ol {
     // 引导提示的列表排版
@@ -105,22 +137,31 @@
 
   .edit-title {
     // 编辑区标题
-    display: flex;
+    display: inline-block;
     align-items: center;
-    gap: 8px;
     margin: 8px 0;
     font-size: 18px;
     font-weight: 600;
-    color: #faad14;
+    color: #1d2327;
+    background-color: #fdc700;
+    padding: 6px;
+
+    .dashicons {
+      position: relative;
+      top: 4px;
+      margin-right: 6px;
+    }
   }
 }
-#title:focus + .title-description {
+
+#title:focus+.title-description {
   display: block;
 }
+
 .title-description {
   padding: 16px;
   margin-bottom: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid #e5e7eb;
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 6px;
   position: absolute;
@@ -131,11 +172,11 @@
 
 // ======================== Tab 选项卡布局 ========================
 .jc-tabs {
-  margin: 20px 0;
+  margin: 16px 0;
   display: flex;
   flex-direction: row;
   background: #fff;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #e5e7eb;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 
   .nav-tab-wrapper {
@@ -144,8 +185,8 @@
     flex-direction: column;
     min-width: 150px;
     padding: 0;
-    background: #fafafa;
-    border-right: 1px solid #d9d9d9;
+    background: #f9fafb;
+    border-right: 1px solid #e5e7eb;
     border-bottom: none;
 
     .nav-tab {
@@ -156,19 +197,23 @@
       font-weight: 600;
       border: none;
       border-radius: 0;
-      border-bottom: 1px solid #d9d9d9;
-      background: #fafafa;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #4a5565;
+
       &:focus {
         outline: none;
         box-shadow: none;
       }
+
       &.nav-tab-active {
         // 当前选中的标签
         background: #fff;
         border-right: 1px solid #fff;
-        border-bottom: 1px solid #d9d9d9;
-        color: #1d2327;
+        border-bottom: 1px solid #e5e7eb;
+        color: #030712;
         margin-right: -1px;
+        font-weight: 600;
       }
 
       &:last-child {
@@ -196,7 +241,7 @@
       display: block;
     }
 
-    > div {
+    >div {
       margin-bottom: 20px;
     }
   }
@@ -225,6 +270,7 @@
 }
 
 .taxonomy-product_cat .inline-editor {
+
   // 分类快速编辑表单宽度
   textarea {
     width: 100%;
@@ -245,7 +291,7 @@
   display: inline-block;
   object-fit: cover;
   border-radius: 4px;
-  background: #f5f5f5;
+  background: #f3f4f6;
 }
 
 .column-handle {
@@ -261,30 +307,12 @@ td.column-product_cat {
   a {
     display: inline-block;
     margin: 4px;
-    padding: 0 7px;
+    padding: 1px 8px;
     font-size: 12px;
-    border: 1px solid var(--jelly-color-default-border, #d9d9d9);
+    border: 1px solid #e5e7eb;
     border-radius: 4px;
-    background-color: var(--jelly-color-default-bg, #fafafa);
-    color: var(--jelly-color-default-text, rgba(0, 0, 0, 0.88));
-
-    // &.level-1 {
-    //   background-color: var(--jelly-color-info-bg, #e6f4ff);
-    //   border-color: var(--jelly-color-info-border, #91caff);
-    //   color: var(--jelly-color-info-text, #1677ff);
-    // }
-
-    // &.level-2 {
-    //   background-color: var(--jelly-color-success-bg, #f6ffed);
-    //   border-color: var(--jelly-color-success-border, #b7eb8f);
-    //   color: var(--jelly-color-success-text, #52c41a);
-    // }
-
-    // &.level-3 {
-    //   background-color: var(--jelly-color-warning-bg, #fffbe6);
-    //   border-color: var(--jelly-color-warning-border, #ffe58f);
-    //   color: var(--jelly-color-warning-text, #faad14);
-    // }
+    background-color: #f9fafb;
+    color: #364153;
   }
 }
 
@@ -293,12 +321,12 @@ td.column-product_tag {
   a {
     display: inline-block;
     margin: 4px;
-    padding: 0 7px;
+    padding: 1px 8px;
     font-size: 12px;
-    border: 1px solid var(--jelly-color-default-border, #d9d9d9);
+    border: 1px solid #e5e7eb;
     border-radius: 4px;
-    background-color: var(--jelly-color-default-bg, #fafafa);
-    color: var(--jelly-color-default-text, rgba(0, 0, 0, 0.88));
+    background-color: #f9fafb;
+    color: #364153;
   }
 }
 
@@ -308,20 +336,36 @@ td.column-product_tag {
     // 单条 Repeater 项容器
     position: relative;
     box-sizing: border-box;
-    padding: 16px 16px 48px 16px;
+    // padding: 16px 16px 48px 16px;
+    padding-bottom: 12px;
     margin: 12px 0;
-    background-color: #fafafa;
-    border: 1px solid #ccc;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 4px;
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 
-    .item-number {
-      // 左上角序号
-      position: absolute;
-      top: 8px;
-      right: 16px;
-      font-size: 24px;
-      color: rgba(0, 0, 0, 0.3);
+    .repeater-item-header {
+      background-color: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 8px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .item-title {
+      line-height: 1;
+      font-size: 16px;
+      color: #030712;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .repeater-item__name,
+    .repeater-item__value,
+    .repeater-item__key {
+      padding: 0 16px;
     }
 
     label {
@@ -339,20 +383,23 @@ td.column-product_tag {
   }
 
   .remove-repeater {
-    // 删除按钮样式
-    position: absolute;
-    right: 16px;
-    bottom: 16px;
-    color: #ff4d4f;
-    border-color: #ff4d4f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 
-    .dashicons {
-      font-size: 14px;
-      padding-top: 6px;
+    &:hover {
+      color: #9f0712;
     }
   }
 
-  .repeater-add-new {
+  .repeater-add-wrapper {
+    display: flex;
+    align-items: center;
+  }
+
+  .repeater-add-new,
+  .bulk-create {
     // 新增按钮对齐
     display: flex;
     align-items: center;
@@ -390,14 +437,17 @@ td.column-product_tag {
 // ======================== 按钮样式 ========================
 .wp-core-ui .button.remove-thumbnail,
 .wp-core-ui .button.remove-banner {
-  border-color: #ff4d4f;
-  color: #ff4d4f;
+  border-color: #b32d2e;
+  color: #b32d2e;
 }
+
 .post-type-product #postdivrich #wp-content-wrap {
   padding-top: 55px !important;
 }
+
 // ======================== 响应式适配 ========================
 @media screen and (max-width: 782px) {
+
   .jelly-product-description,
   .post-type-product #postexcerpt .inside {
     // 小屏幕改为纵向排列
@@ -421,16 +471,16 @@ td.column-product_tag {
 
     .nav-tab-wrapper {
       border-right: none;
-      border-bottom: 1px solid #c3c4c7;
+      border-bottom: 1px solid #e5e7eb;
       min-width: auto;
 
       .nav-tab {
-        border-bottom: 1px solid #c3c4c7;
+        border-bottom: 1px solid #e5e7eb;
         border-right: none;
 
         &.nav-tab-active {
           border-right: none;
-          border-bottom: 1px solid #c3c4c7;
+          border-bottom: 1px solid #e5e7eb;
           margin-right: 0;
           margin-bottom: -1px;
         }

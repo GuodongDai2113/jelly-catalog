@@ -62,7 +62,11 @@ function jc_render_repeater_field($args)
     $index = 1;
     foreach ($args['items'] as $key => $item) {
         echo '<div class="repeater-item">';
-        echo '<span class="item-number">No.' . esc_html($index) . '</span>';
+        echo '<div class="repeater-item-header">';
+        $title = esc_html(str_replace('_', ' ', $args['name']));
+        echo '<span class="item-title">' . esc_html($index) . '. ' . $title . '</span>';
+        
+        echo '</div>';
 
         foreach ($args['fields'] as $field) {
             $field_name = $field['name'];

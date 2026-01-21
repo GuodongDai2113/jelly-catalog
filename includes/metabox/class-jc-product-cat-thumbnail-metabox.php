@@ -13,10 +13,10 @@ class JC_Product_Cat_Thumbnail_Metabox
 
     public function __construct()
     {
-        add_action('product_cat_add_form_fields', array($this, 'add_thumbnail_field'));
+        // add_action('product_cat_add_form_fields', array($this, 'add_thumbnail_field'));
         add_action('product_cat_edit_form_fields', array($this, 'edit_thumbnail_field'));
         add_action('edited_product_cat', array($this, 'save_thumbnail_field'));
-        add_action('create_product_cat', array($this, 'save_thumbnail_field'));
+        // add_action('create_product_cat', array($this, 'save_thumbnail_field'));
     }
 
     /**
