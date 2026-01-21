@@ -1,12 +1,26 @@
 (function ($) {
   "use strict";
 
+  const SELECTORS = {
+    wrapper: ".jc-repeater-wrapper",
+    repeaterItem: ".repeater-item",
+    repeaterAddWrapper: ".repeater-add-wrapper",
+    repeaterAddNew: ".repeater-add-new",
+    repeaterRemove: ".repeater-item .remove-repeater",
+    bulkCreate: ".bulk-create",
+    bulkCreateText: ".jc-bulk-item-text",
+    keyInput: ".repeater-item__key-input",
+    valueInput: ".repeater-item__value-input",
+  };
+
   /**
    * Repeater 功能模块
    * 负责处理 FAQ 和属性等重复字段的增删操作
    */
   class JellyCatalogRepeater {
     constructor() {
+      this.currentWrapper = null;
+      this.bulkCreateModal = null;
       this.init();
       this.initBulkCreateModal();
     }
@@ -23,126 +37,113 @@
      * 初始化批量创建FAQ模态框
      */
     initBulkCreateModal() {
-      this.createModal();
-      this.bindBulkCreateEvents();
+      if (typeof window.JellyCatalogModal !== "function") {
+        return;
+      }
+
+      this.bulkCreateModal = new window.JellyCatalogModal({
+        id: "bulk-create-modal",
+        title: "Bulk Create Items",
+        description:
+          "Paste your content. Each line will be treated as a separate item. For FAQ, each pair of lines will be treated as Question + Answer.",
+        bodyHtml: `
+          <textarea class="jc-bulk-item-text" style="width: 100%; height: 200px; margin-bottom: 15px;" placeholder="Enter content here...\nFor FAQ: First line is Question, second line is Answer\nQuestion 1\nAnswer 1\nQuestion 2\nAnswer 2\n...\n\nFor Attributes: First line is Name, second line is Value\nName 1\nValue 1\nName 2\nValue 2\n..."></textarea>
+        `,
+        confirmText: "Create Items",
+        cancelText: "Cancel",
+        onConfirm: () => this.processBulkCreate(),
+        onClose: () => this.resetBulkCreateState(),
+      });
     }
 
     /**
      * 显示批量创建模态框
      */
     showBulkCreateModal(button) {
-      this.currentWrapper = button.closest('.jc-repeater-wrapper');
-      $('#bulk-create-modal').show();
+      this.currentWrapper = button.closest(SELECTORS.wrapper);
+      if (this.bulkCreateModal) {
+        this.bulkCreateModal.open();
+      }
     }
 
-    /**
-     * 创建批量创建FAQ模态框
-     */
-    createModal() {
-      if ($('#bulk-create-modal').length > 0) return;
 
-      const modalHtml = `
-        <div id="bulk-create-modal" class="bulk-create-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999;">
-          <div class="modal-content" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 5px; min-width: 500px; max-width: 80%; max-height: 80%; overflow-y: auto;">
-            <h3>Bulk Create Items</h3>
-            <p style="margin-bottom: 15px; color: #666;">Paste your content. Each line will be treated as a separate item. For FAQ, each pair of lines will be treated as Question + Answer.</p>
-            <textarea id="bulk-item-text" style="width: 100%; height: 200px; margin-bottom: 15px;" placeholder="Enter content here...\nFor FAQ: First line is Question, second line is Answer\nQuestion 1\nAnswer 1\nQuestion 2\nAnswer 2\n...\n\nFor Attributes: First line is Name, second line is Value\nName 1\nValue 1\nName 2\nValue 2\n..."></textarea>
-            <div class="modal-buttons" style="text-align: right;">
-              <button type="button" class="button button-secondary" id="cancel-bulk-create" style="margin-right: 10px;">Cancel</button>
-              <button type="button" class="button button-primary" id="confirm-bulk-create">Create Items</button>
-            </div>
-          </div>
-        </div>
-      `;
-
-      $('body').append(modalHtml);
-    }
-
-    /**
-     * 绑定批量创建事件
-     */
-    bindBulkCreateEvents() {
-      // 关闭模态框
-      $(document).on('click', '#cancel-bulk-create, #bulk-create-modal', (e) => {
-        if (e.target.id === 'cancel-bulk-create' || e.target.id === 'bulk-create-modal') {
-          $('#bulk-create-modal').hide();
-          $('#bulk-item-text').val('');
-        }
-      });
-
-      // 确认创建
-      $(document).on('click', '#confirm-bulk-create', (e) => {
-        e.preventDefault();
-        this.processBulkCreate();
-      });
-
-      // 阻止点击模态框内容区域时关闭
-      $(document).on('click', '.modal-content', (e) => {
-        e.stopPropagation();
-      });
-    }
 
     /**
      * 处理批量创建FAQ
      */
     processBulkCreate() {
-      const text = $('#bulk-item-text').val().trim();
+      const $textArea = this.getBulkCreateTextArea();
+      const text = $textArea.val().trim();
       if (!text) {
-        alert('Please enter content.');
-        return;
+        alert("Please enter content.");
+        return false;
       }
 
-      const lines = text.split('\n').filter(line => line.trim() !== '');
-      const faqItems = [];
+      const lines = text.split("\n").filter((line) => line.trim() !== "");
+      const items = [];
 
       // 每两行为一组（问题+答案）
       for (let i = 0; i < lines.length; i += 2) {
-        const question = lines[i]?.trim() || '';
-        const answer = lines[i + 1]?.trim() || '';
-        
+        const question = lines[i]?.trim() || "";
+        const answer = lines[i + 1]?.trim() || "";
+
         if (question || answer) {
-          faqItems.push({
+          items.push({
             name: question,
-            value: answer
+            value: answer,
           });
         }
       }
 
-      if (faqItems.length === 0) {
-        alert('No valid items found.');
-        return;
+      if (items.length === 0) {
+        alert("No valid items found.");
+        return false;
       }
 
       // 添加到repeater
       const $wrapper = this.currentWrapper;
-      const key = $wrapper.data('key');
+      const key = $wrapper.data("key");
 
-      faqItems.forEach(item => {
-        const itemCount = $wrapper.find('.repeater-item').length;
+      items.forEach((item) => {
+         const itemCount = $wrapper.find(SELECTORS.repeaterItem).length;
         const $newItem = this.buildRepeaterItem(key, itemCount + 1);
-        
+
         if ($newItem) {
           // 设置值
-          $newItem.find('.repeater-item__key-input').val(item.name);
-          $newItem.find('.repeater-item__value-input').val(item.value);
-          
-          $wrapper.find('.repeater-add-wrapper').before($newItem);
+          $newItem.find(SELECTORS.keyInput).val(item.name);
+          $newItem.find(SELECTORS.valueInput).val(item.value);
+
+          $wrapper.find(SELECTORS.repeaterAddWrapper).before($newItem);
         }
       });
 
-      // 关闭模态框
-      $('#bulk-create-modal').hide();
-      $('#bulk-item-text').val('');
+      $textArea.val("");
       this.currentWrapper = null;
-      
-      alert(`Successfully created ${faqItems.length} items.`);
+
+      alert(`Successfully created ${items.length} items.`);
+      return true;
+    }
+
+    resetBulkCreateState() {
+      const $textArea = this.getBulkCreateTextArea();
+      if ($textArea.length) {
+        $textArea.val("");
+      }
+      this.currentWrapper = null;
+    }
+
+    getBulkCreateTextArea() {
+      if (!this.bulkCreateModal) {
+        return $(SELECTORS.bulkCreateText);
+      }
+      return this.bulkCreateModal.find(SELECTORS.bulkCreateText);
     }
 
     /**
      * 为已有 repeater 添加操作按钮
      */
     prepareExistingRepeaters() {
-      $(".jc-repeater-wrapper").each((_, wrapper) => {
+      $(SELECTORS.wrapper).each((_, wrapper) => {
         const $wrapper = $(wrapper);
         this.addDeleteButtons($wrapper);
         this.ensureAddButton($wrapper);
@@ -153,19 +154,19 @@
      * 绑定 repeater 的增删事件
      */
     bindRepeaterEvents() {
-      $(document).on("click", ".repeater-item .remove-repeater", (e) => {
+      $(document).on("click", SELECTORS.repeaterRemove, (e) => {
         e.preventDefault();
-        $(e.currentTarget).closest(".repeater-item").remove();
+        $(e.currentTarget).closest(SELECTORS.repeaterItem).remove();
       });
 
-      $(document).on("click", ".repeater-add-new", (e) => {
+      $(document).on("click", SELECTORS.repeaterAddNew, (e) => {
         e.preventDefault();
-        const $wrapper = $(e.currentTarget).closest(".jc-repeater-wrapper");
+        const $wrapper = $(e.currentTarget).closest(SELECTORS.wrapper);
         this.addNewRepeaterItem($wrapper);
       });
 
       // 批量创建FAQ事件
-      $(document).on('click', '.bulk-create', (e) => {
+      $(document).on('click', SELECTORS.bulkCreate, (e) => {
         e.preventDefault();
         this.showBulkCreateModal($(e.currentTarget));
       });
@@ -191,7 +192,7 @@
      * 确保容器内存在"新增"按钮
      */
     ensureAddButton(repeaterWrapper) {
-      if (repeaterWrapper.find(".repeater-add-new").length) return;
+      if (repeaterWrapper.find(SELECTORS.repeaterAddNew).length) return;
 
       repeaterWrapper.append(`
         <div class="repeater-add-wrapper">
@@ -212,12 +213,12 @@
      */
     addNewRepeaterItem(repeaterWrapper) {
       const key = repeaterWrapper.data("key");
-      const itemCount = repeaterWrapper.find(".repeater-item").length;
+      const itemCount = repeaterWrapper.find(SELECTORS.repeaterItem).length;
       const $newItem = this.buildRepeaterItem(key, itemCount + 1);
 
       if (!$newItem) return;
 
-      repeaterWrapper.find(".repeater-add-wrapper").before($newItem);
+      repeaterWrapper.find(SELECTORS.repeaterAddWrapper).before($newItem);
     }
 
     /**

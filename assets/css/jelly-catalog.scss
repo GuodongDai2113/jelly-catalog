@@ -1,27 +1,31 @@
+// ==========================================
+// 通用样式设置
+// ==========================================
+
 #set-post-thumbnail img {
-    border: 1px solid #e5e7eb;
-    border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
 }
 
 #edit-slug-box {
-    padding-left: 0;
-    background-color: #fff;
-    padding: 6px 10px;
-    border: 1px solid #e5e7eb;
-    margin-top: 16px;
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 4px;
+  padding-left: 0;
+  background-color: #fff;
+  padding: 6px 10px;
+  border: 1px solid #e5e7eb;
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 4px;
 }
 
 #sample-permalink {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 #editable-post-name input#new-post-slug {
-    width: 500px;
+  width: 500px;
 }
 
 .categorydiv div.tabs-panel,
@@ -29,569 +33,570 @@
 .posttypediv div.tabs-panel,
 .taxonomydiv div.tabs-panel,
 .wp-tab-panel {
-    max-height: unset;
+  max-height: unset;
 }
 
-// ======================== 商品图库区域 ========================
+// ==========================================
+// 模态框样式
+// ==========================================
+
+.jc-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+
+  .jc-modal__content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    min-width: 500px;
+    max-width: 80%;
+    max-height: 80%;
+    overflow-y: auto;
+  }
+
+  .jc-modal__description {
+    margin-bottom: 15px;
+    color: #666;
+  }
+
+  .jc-modal__buttons {
+    text-align: right;
+    margin-top: 15px;
+  }
+
+  .jc-modal__cancel {
+    margin-right: 10px;
+  }
+}
+
+// ==========================================
+// 商品图库样式
+// ==========================================
+
+// 图片画廊主容器
 #jc-gallery {
-    .product-images {
-        // 商品图拖拽容器
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
+  .product-images {
+    // 商品图拖拽容器
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li.image {
+      // 单张图片卡片
+      position: relative;
+      cursor: move;
+      background: #f3f4f6;
+      border-radius: 4px;
+
+      img {
+        // 统一缩略图尺寸与裁切
+        width: 75px;
+        height: 75px;
+        display: block;
+        object-fit: cover;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+      }
+
+      .actions {
+        // 删除按钮（Dashicons）
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        height: 18px;
+        width: 18px;
+        line-height: 18px;
+        font-size: 12px;
+        border-radius: 99px;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        display: none;
         list-style: none;
         margin: 0;
-        padding: 0;
+        padding: 2px;
+        text-decoration: none;
+        color: #141414;
 
-        li.image {
-            // 单张图片卡片
-            position: relative;
-            cursor: move;
-            background: #f3f4f6;
-            border-radius: 4px;
+        &::before {
+          content: "\f158";
+          font-family: "dashicons";
+        }
+      }
 
-            img {
-                // 统一缩略图尺寸与裁切
-                width: 75px;
-                height: 75px;
-                display: block;
-                object-fit: cover;
-                border: 1px solid #e5e7eb;
-                border-radius: 4px;
-            }
-
-            .actions {
-                // 删除按钮（Dashicons）
-                position: absolute;
-                top: -4px;
-                right: -4px;
-                height: 18px;
-                width: 18px;
-                line-height: 18px;
-                font-size: 12px;
-                border-radius: 99px;
-                text-align: center;
-                border: 1px solid #e5e7eb;
-                background: #fff;
-                display: none;
-                list-style: none;
-                margin: 0;
-                padding: 2px;
-                text-decoration: none;
-                color: #141414;
-
-                &::before {
-                    content: "\f158";
-                    font-family: "dashicons";
-                }
-            }
-
-            &:hover {
-                // 悬停时展示操作按钮并加亮背景
-                .actions {
-                    display: block;
-                }
-
-                background: #f9fafb;
-            }
+      &:hover {
+        // 悬停时展示操作按钮并加亮背景
+        .actions {
+          display: block;
         }
 
-        .ui-sortable-placeholder {
-            // 拖拽占位样式
-            border: 2px dashed #e5e7eb;
-            background-color: #f3f4f6;
-            visibility: visible !important;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .ui-sortable-helper {
-            // 拖拽中的临时效果
-            transform: rotate(5deg);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-        }
+        background: #f9fafb;
+      }
     }
+
+    .ui-sortable-placeholder {
+      // 拖拽占位样式
+      border: 2px dashed #e5e7eb;
+      background-color: #f3f4f6;
+      visibility: visible !important;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .ui-sortable-helper {
+      // 拖拽中的临时效果
+      transform: rotate(5deg);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+  }
 }
 
-// ======================== 图库计数徽章 ========================
+// 图库计数徽章
 .jc-gallery-count {
-    position: absolute;
-    top: 40px;
-    right: 4px;
-    background: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    font-size: 12px;
-    padding: 2px 9px;
-    border-radius: 12px;
+  position: absolute;
+  top: 40px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 9px;
+  border-radius: 12px;
 }
 
-// ======================== 描述编辑模块 ========================
+// ==========================================
+// 描述编辑模块
+// ==========================================
+
+// 描述编辑区域基础样式
 .edit-description {
-    padding: 16px;
-    margin-bottom: 12px;
-    border: 1px solid #e5e7eb;
-    background-color: #f9fafb;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
 
-    ol {
-        // 引导提示的列表排版
-        margin-left: 16px;
-        line-height: 1.5;
+  ol {
+    // 引导提示的列表排版
+    margin-left: 16px;
+    line-height: 1.5;
+  }
+
+  .edit-title {
+    // 编辑区标题
+    display: inline-block;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d2327;
+    background-color: #fdc700;
+    padding: 6px;
+
+    .dashicons {
+      position: relative;
+      top: 4px;
+      margin-right: 6px;
     }
-
-    .edit-title {
-        // 编辑区标题
-        display: inline-block;
-        align-items: center;
-        margin: 8px 0;
-        font-size: 18px;
-        font-weight: 600;
-        color: #1d2327;
-        background-color: #fdc700;
-        padding: 6px;
-
-        .dashicons {
-            position: relative;
-            top: 4px;
-            margin-right: 6px;
-        }
-    }
+  }
 }
 
+// 标题描述提示
 #title:focus + .title-description {
-    display: block;
+  display: block;
 }
 
 .title-description {
-    padding: 16px;
-    margin-bottom: 12px;
-    border: 1px solid #e5e7eb;
-    background-color: rgba(0, 0, 0, 0.8);
-    border-radius: 6px;
-    position: absolute;
-    top: -60px;
-    display: none;
-    color: #fff;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #e5e7eb;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 6px;
+  position: absolute;
+  top: -60px;
+  display: none;
+  color: #fff;
 }
 
-// ======================== Tab 选项卡布局 ========================
+// ==========================================
+// Tab 选项卡布局
+// ==========================================
+
 .jc-tabs {
-    margin: 16px 0;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: row;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+
+  .nav-tab-wrapper {
+    // 侧边标签列
     display: flex;
-    flex-direction: row;
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    flex-direction: column;
+    min-width: 150px;
+    padding: 0;
+    background: #f9fafb;
+    border-right: 1px solid #e5e7eb;
+    border-bottom: none;
 
-    .nav-tab-wrapper {
-        // 侧边标签列
-        display: flex;
-        flex-direction: column;
-        min-width: 150px;
-        padding: 0;
-        background: #f9fafb;
-        border-right: 1px solid #e5e7eb;
+    .nav-tab {
+      margin: 0;
+      padding: 12px 10px;
+      text-align: left;
+      text-transform: capitalize;
+      font-weight: 600;
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: #4a5565;
+
+      &:focus {
+        outline: none;
+        box-shadow: none;
+      }
+
+      &.nav-tab-active {
+        // 当前选中的标签
+        background: #fff;
+        border-right: 1px solid #fff;
+        border-bottom: 1px solid #e5e7eb;
+        color: #030712;
+        margin-right: -1px;
+        font-weight: 600;
+      }
+
+      &:last-child {
         border-bottom: none;
+      }
+    }
+  }
 
-        .nav-tab {
-            margin: 0;
-            padding: 12px 10px;
-            text-align: left;
-            text-transform: capitalize;
-            font-weight: 600;
-            border: none;
-            border-radius: 0;
-            border-bottom: 1px solid #e5e7eb;
-            background: #f9fafb;
-            color: #4a5565;
+  .tab-content {
+    // 右侧内容区域
+    flex: 1;
+    padding: 20px;
+    min-height: 700px;
 
-            &:focus {
-                outline: none;
-                box-shadow: none;
-            }
+    .acf-field {
+      margin: 0;
+    }
+  }
 
-            &.nav-tab-active {
-                // 当前选中的标签
-                background: #fff;
-                border-right: 1px solid #fff;
-                border-bottom: 1px solid #e5e7eb;
-                color: #030712;
-                margin-right: -1px;
-                font-weight: 600;
-            }
+  .tab-pane {
+    // 单个选项卡面板
+    display: none;
 
-            &:last-child {
-                border-bottom: none;
-            }
-        }
+    &.active {
+      display: block;
     }
 
-    .tab-content {
-        // 右侧内容区域
-        flex: 1;
-        padding: 20px;
-        min-height: 700px;
-
-        .acf-field {
-            margin: 0;
-        }
+    > div {
+      margin-bottom: 20px;
     }
+  }
 
-    .tab-pane {
-        // 单个选项卡面板
-        display: none;
-
-        &.active {
-            display: block;
-        }
-
-        > div {
-            margin-bottom: 20px;
-        }
-    }
-
-    .product-images,
-    .jelly-faq-wrapper,
-    #product_image_gallery {
-        // 兼容原 metabox 的布局
-        margin: 0;
-    }
+  .product-images,
+  .jelly-faq-wrapper,
+  #product_image_gallery {
+    // 兼容原 metabox 的布局
+    margin: 0;
+  }
 }
 
-// ======================== 摘要输入辅助 ========================
+// ==========================================
+// 摘要输入辅助
+// ==========================================
+
 .short-description-wrapper {
-    height: 175px;
-    width: 100%;
+  height: 175px;
+  width: 100%;
 
-    #excerpt-character-count {
-        font-weight: bold;
-    }
+  #excerpt-character-count {
+    font-weight: bold;
+  }
 
-    .character-count {
-        text-align: right;
-        margin-bottom: 5px;
-    }
+  .character-count {
+    text-align: right;
+    margin-bottom: 5px;
+  }
 }
 
 .taxonomy-product_cat .inline-editor {
-    // 分类快速编辑表单宽度
-    textarea {
-        width: 100%;
-    }
+  // 分类快速编辑表单宽度
+  textarea {
+    width: 100%;
+  }
 }
 
-// ======================== 商品列表缩略图列 ========================
+// ==========================================
+// 商品列表样式
+// ==========================================
+
+// 商品列表缩略图列
 .column-jc-thumb {
-    width: 52px;
-    position: relative;
-    cursor: pointer;
+  width: 52px;
+  position: relative;
+  cursor: pointer;
 }
 
 .jc-thumb img {
-    // 列表缩略图样式
-    width: 50px;
-    height: 50px;
-    display: inline-block;
-    object-fit: cover;
-    border-radius: 4px;
-    background: #f3f4f6;
+  // 列表缩略图样式
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #f3f4f6;
 }
 
 .column-handle {
-    display: none;
+  display: none;
 }
 
 .column-product_completeness {
-    width: 110px;
+  width: 110px;
 }
 
-// ======================== 商品分类标签 ========================
+// 商品分类标签
 td.column-product_cat {
-    a {
-        display: inline-block;
-        margin: 4px;
-        padding: 1px 8px;
-        font-size: 12px;
-        border: 1px solid #e5e7eb;
-        border-radius: 4px;
-        background-color: #f9fafb;
-        color: #364153;
-    }
+  a {
+    display: inline-block;
+    margin: 4px;
+    padding: 1px 8px;
+    font-size: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    background-color: #f9fafb;
+    color: #364153;
+  }
 }
 
-// ======================== 商品标签 ========================
+// 商品标签
 td.column-product_tag {
-    a {
-        display: inline-block;
-        margin: 4px;
-        padding: 1px 8px;
-        font-size: 12px;
-        border: 1px solid #e5e7eb;
-        border-radius: 4px;
-        background-color: #f9fafb;
-        color: #364153;
-    }
+  a {
+    display: inline-block;
+    margin: 4px;
+    padding: 1px 8px;
+    font-size: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    background-color: #f9fafb;
+    color: #364153;
+  }
 }
 
-// ======================== Repeater 表单 UI ========================
+// ==========================================
+// Repeater 表单 UI
+// ==========================================
+
 .jc-repeater-wrapper {
-    .repeater-item {
-        // 单条 Repeater 项容器
-        position: relative;
-        box-sizing: border-box;
-        // padding: 16px 16px 48px 16px;
-        padding-bottom: 12px;
-        margin: 12px 0;
-        background-color: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 4px;
-        overflow: hidden;
+  .repeater-item {
+    // 单条 Repeater 项容器
+    position: relative;
+    box-sizing: border-box;
+    // padding: 16px 16px 48px 16px;
+    padding-bottom: 12px;
+    margin: 12px 0;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
 
-        .repeater-item-header {
-            background-color: #f9fafb;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 8px 16px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .item-title {
-            line-height: 1;
-            font-size: 13px;
-            color: #030712;
-            font-weight: 600;
-            text-transform: capitalize;
-        }
-
-        .repeater-item__name,
-        .repeater-item__value,
-        .repeater-item__key {
-            padding: 0 16px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        input,
-        textarea {
-            // 输入组件占满宽度
-            width: 100%;
-            margin-bottom: 12px;
-        }
+    .repeater-item-header {
+      background-color: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 8px 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    .remove-repeater {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-
-        &:hover {
-            color: #9f0712;
-        }
+    .item-title {
+      line-height: 1;
+      font-size: 13px;
+      color: #030712;
+      font-weight: 600;
+      text-transform: capitalize;
     }
 
-    .repeater-add-wrapper {
-        display: flex;
-        align-items: center;
+    .repeater-item__name,
+    .repeater-item__value,
+    .repeater-item__key {
+      padding: 0 16px;
     }
 
-    .repeater-add-new,
-    .bulk-create {
-        // 新增按钮对齐
-        display: flex;
-        align-items: center;
-
-        .dashicons {
-            width: auto;
-            height: auto;
-            margin-right: 6px;
-            font-size: 14px;
-        }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
     }
-}
 
-// ======================== 完成度显示 ========================
-.jc-completeness {
+    input,
+    textarea {
+      // 输入组件占满宽度
+      width: 100%;
+      margin-bottom: 12px;
+    }
+  }
+
+  .remove-repeater {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:hover {
+      color: #9f0712;
+    }
+  }
+
+  .repeater-add-wrapper {
+    display: flex;
+    align-items: center;
+  }
+
+  .repeater-add-new,
+  .bulk-create {
+    // 新增按钮对齐
+    display: flex;
+    align-items: center;
+
     .dashicons {
-        padding-right: 12px;
+      width: auto;
+      height: auto;
+      margin-right: 6px;
+      font-size: 14px;
     }
+  }
 }
 
-// ======================== 描述编辑器扩展 ========================
+// ==========================================
+// 完成度显示
+// ==========================================
+
+.jc-completeness {
+  .dashicons {
+    padding-right: 12px;
+  }
+}
+
+// ==========================================
+// 描述编辑器扩展
+// ==========================================
+
 .jc-description-editor {
-    .description-textarea {
-        width: 100%;
-    }
+  .description-textarea {
+    width: 100%;
+  }
 
-    .description-actions {
-        display: flex;
-        justify-content: end;
-        gap: 12px;
-        margin-top: 8px;
-    }
+  .description-actions {
+    display: flex;
+    justify-content: end;
+    gap: 12px;
+    margin-top: 8px;
+  }
 }
 
-// ======================== 按钮样式 ========================
+// ==========================================
+// 按钮样式
+// ==========================================
+
 .wp-core-ui .button.remove-thumbnail,
 .wp-core-ui .button.remove-banner {
-    border-color: #b32d2e;
-    color: #b32d2e;
+  border-color: #b32d2e;
+  color: #b32d2e;
 }
 
-.post-type-product:not(.edit-php) #postdivrich #wp-content-wrap {
-    padding-top: 50.8px !important;
-}
-
-.post-type-product:not(.edit-php) .wp-editor-area {
-    border-radius: 0;
-    border: none;
-}
-
-.post-type-product:not(.edit-php) input[type="text"],
-.post-type-product:not(.edit-php) select,
-.post-type-product:not(.edit-php) textarea {
-    border: 1px solid #e5e7eb;
-    background: #fff;
-    border-radius: 4px;
-    width: 100%;
-    max-width: 100%;
-    // box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.post-type-product:not(.edit-php) .wp-editor-wrap {
-    .wp-switch-editor {
-        background: #f3f4f6;
-        color: #6a7282;
-        border-color: #e5e7eb;
-        box-shadow: none;
-        outline: none;
-    }
-    .quicktags-toolbar,
-    div.mce-toolbar-grp {
-        background-color: #f9fafb;
-    }
-
-    &.html-active .switch-html,
-    &.tmce-active .switch-tmce {
-        background-color: #2271b1;
-        border-color: #2271b1;
-        font-weight: 500;
-        color: #fff;
-    }
-    div.mce-statusbar {
-        border-top: 1px solid #e5e7eb;
-    }
-    .wp-editor-container {
-        border: 1px solid #e5e7eb;
-        border-radius: 0 0 4px 4px;
-        overflow: hidden;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    }
-    div.mce-toolbar-grp {
-        border-bottom: 1px solid #e5e7eb;
-    }
-    .mce-top-part::before {
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    }
-    .mce-toolbar .mce-btn-group .mce-btn.mce-listbox {
-        border-color: #e5e7eb;
-    }
-    .wp-editor-tabs {
-        float: none;
-        display: flex;
-        gap: 4px;
-        .wp-switch-editor {
-            width: 100%;
-            margin: 0;
-            border-radius: 4px 4px 0 0;
-            height: 30px;
-            box-sizing: border-box;
-        }
-    }
-    .wp-media-buttons .button {
-        margin-bottom: 0;
-        margin-left: 4px;
-        border-bottom: 0;
-        border-radius: 4px 4px 0 0;
-        margin-bottom: -1px;
-        background-color: #fff;
-    }
-    #wp-content-editor-tools {
-        border-bottom: 1px solid #e5e7eb;
-        background: #fff;
-    }
-
-}
+// ==========================================
+// 预览区域样式
+// ==========================================
 
 .thumbnail-preview,
 .banner-preview {
+  width: 100%;
+  padding: 16px 48px;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  box-sizing: border-box;
+  text-align: center;
+  margin-bottom: 8px;
+
+  img {
     width: 100%;
-    padding: 16px 48px;
-    background: #fff;
-    border-radius: 4px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    box-sizing: border-box;
-    text-align: center;
-    margin-bottom: 8px;
-    img {
-        width: 100%;
-        height: auto;
-    }
+    height: auto;
+  }
 }
+
 .thumbnail-preview img {
-    max-width: 200px;
+  max-width: 200px;
 }
-// ======================== 响应式适配 ========================
+
+// ==========================================
+// 响应式适配
+// ==========================================
+
 @media screen and (max-width: 782px) {
-    .jelly-product-description,
-    .post-type-product #postexcerpt .inside {
-        // 小屏幕改为纵向排列
-        flex-direction: column-reverse;
-    }
+  .jelly-product-description,
+  .post-type-product #postexcerpt .inside {
+    // 小屏幕改为纵向排列
+    flex-direction: column-reverse;
+  }
 
-    .jelly-product-description #wp-content-wrap,
-    .post-type-product #postexcerpt #wp-excerpt-wrap {
-        width: 100%;
-        margin: 0;
-        box-sizing: border-box;
-    }
+  .jelly-product-description #wp-content-wrap,
+  .post-type-product #postexcerpt #wp-excerpt-wrap {
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+  }
 
-    .post-type-product .edit-description {
-        width: 100%;
-        box-sizing: border-box;
-    }
+  .post-type-product .edit-description {
+    width: 100%;
+    box-sizing: border-box;
+  }
 
-    .jc-tabs {
-        flex-direction: column;
+  .jc-tabs {
+    flex-direction: column;
 
-        .nav-tab-wrapper {
-            border-right: none;
-            border-bottom: 1px solid #e5e7eb;
-            min-width: auto;
+    .nav-tab-wrapper {
+      border-right: none;
+      border-bottom: 1px solid #e5e7eb;
+      min-width: auto;
 
-            .nav-tab {
-                border-bottom: 1px solid #e5e7eb;
-                border-right: none;
+      .nav-tab {
+        border-bottom: 1px solid #e5e7eb;
+        border-right: none;
 
-                &.nav-tab-active {
-                    border-right: none;
-                    border-bottom: 1px solid #e5e7eb;
-                    margin-right: 0;
-                    margin-bottom: -1px;
-                }
-            }
+        &.nav-tab-active {
+          border-right: none;
+          border-bottom: 1px solid #e5e7eb;
+          margin-right: 0;
+          margin-bottom: -1px;
         }
+      }
     }
+  }
 }
 
-// ======================== ACF 兼容性 ========================
+// ==========================================
+// ACF 兼容性
+// ==========================================
+
 #post-body-content #acf_after_title-sortables.meta-box-sortables {
-    // 与 ACF metabox 保持一致的间距
-    margin: 20px 0;
+  // 与 ACF metabox 保持一致的间距
+  margin: 20px 0;
 }

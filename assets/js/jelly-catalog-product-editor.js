@@ -5,26 +5,65 @@
    * 产品编辑器
    * 负责将后台产品编辑页面的 metabox 整理成更友好的编辑体验
    */
+  const METABOX_IDS = [
+    "postexcerpt",
+    "postdivrich",
+    "product_catdiv",
+    "tagsdiv-product_tag",
+    "acf-group_product_field",
+    "product_faq_metabox",
+    "product_attributes_metabox",
+    "product_videourl_metabox",
+    "rank_math_metabox",
+  ];
+
+  const EDITOR_IDS = {
+    content: "content",
+    excerpt: "excerpt",
+  };
+
+  const SELECTORS = {
+    body: "body",
+    titleDiv: "#poststuff #titlediv",
+    titleDescription: ".title-description",
+    titleField: "#title",
+    tabs: ".jc-tabs",
+    tabPane: ".tab-pane",
+    tabNav: ".nav-tab-wrapper",
+    tabContent: ".tab-content",
+    excerpt: "#excerpt",
+    excerptCount: "#excerpt-character-count",
+    gallery: "#jc-gallery .product-images",
+    galleryItem: "li.image",
+    galleryAddButton: ".jc-add-image a",
+    galleryField: "#product_image_gallery",
+    elementorEditor: "#elementor-editor",
+    elementorSwitch: "#elementor-switch-mode",
+  };
+
+  const CHARACTER_COUNT_LIMITS = {
+    warning: 130,
+    danger: 160,
+  };
+
+  const CHARACTER_COUNT_COLORS = {
+    ok: "#52c41a",
+    warning: "#faad14",
+    danger: "#ff4d4f",
+  };
+
+  const CHARACTER_COUNT_SYNC_DELAY = 1000;
+  const TINY_MCE_LAYOUT_DELAY = 50;
+
   class JellyCatalogProductEditor {
     constructor() {
       // 仅在产品编辑页执行
 
-      const $body = $("body");
-      if (!$body.hasClass("post-type-product")) {
+      if (!this.isProductEditScreen()) {
         return;
       }
 
-      this.metaboxIds = [
-        "postexcerpt",
-        "postdivrich",
-        "product_catdiv",
-        "tagsdiv-product_tag",
-        "acf-group_product_field",
-        "product_faq_metabox",
-        "product_attributes_metabox",
-        "product_videourl_metabox",
-        "rank_math_metabox",
-      ];
+      this.metaboxIds = METABOX_IDS;
 
       // 复用的媒体选择框实例
       this.productGalleryFrame = null;
@@ -33,13 +72,16 @@
       this.init();
     }
 
+    isProductEditScreen() {
+      return $(SELECTORS.body).hasClass("post-type-product");
+    }
+
     /**
      * 核心初始化流程
      */
     init() {
       this.resetProductEditor();
       this.initCharacterCount();
-      // this.initRepeater();
       this.initProductGallery();
     }
 
@@ -47,22 +89,22 @@
      * 重构 metabox 布局为标签页
      */
     resetProductEditor() {
-      const titlediv = $("#poststuff #titlediv");
+      const $titleDiv = $(SELECTORS.titleDiv);
 
-      if (!titlediv.length) return;
+      if (!$titleDiv.length) return;
 
-      const tabContainer = this.createTabContainer();
-      titlediv.after(tabContainer);
+      const $tabContainer = this.createTabContainer();
+      $titleDiv.after($tabContainer);
 
-      this.generateTabs(this.metaboxIds, tabContainer);
+      this.generateTabs(this.metaboxIds, $tabContainer);
       this.appendElementorControls();
       this.bindTabEvents();
 
       this.moveTitleDescription();
     }
     moveTitleDescription() {
-      const $titleDescription = $(".title-description").first();
-      const $titleField = $("#title");
+      const $titleDescription = $(SELECTORS.titleDescription).first();
+      const $titleField = $(SELECTORS.titleField);
 
       if ($titleDescription.length && $titleField.length) {
         $titleField.after($titleDescription);
@@ -80,53 +122,83 @@
       `);
     }
 
+    getTabPaneId(metaboxId) {
+      return "tab-" + metaboxId;
+    }
+
+    getTabPane(metaboxId) {
+      return $("#" + this.getTabPaneId(metaboxId));
+    }
+
+    getMetaboxTitle(metaboxId, $metabox) {
+      if (metaboxId === "postdivrich") {
+        if (
+          window.jc_product_editor_data &&
+          window.jc_product_editor_data.postdivrich
+        ) {
+          return window.jc_product_editor_data.postdivrich;
+        }
+
+        return "Content";
+      }
+
+      const title = $metabox.find("h2.hndle").text();
+      return title || metaboxId;
+    }
+
+    getMetaboxContent(metaboxId, $metabox) {
+      if (metaboxId === "postdivrich") {
+        return $metabox;
+      }
+
+      return $metabox.find(".inside").children();
+    }
+
     /**
      * 根据 metabox 列表生成标签页内容
      */
-    generateTabs(metaboxIds, tabContainer) {
-      const navWrapper = tabContainer.find(".nav-tab-wrapper");
-      const contentWrapper = tabContainer.find(".tab-content");
+    generateTabs(metaboxIds, $tabContainer) {
+      const $navWrapper = $tabContainer.find(SELECTORS.tabNav);
+      const $contentWrapper = $tabContainer.find(SELECTORS.tabContent);
+      let hasActiveTab = false;
 
-      metaboxIds.forEach((metaboxId, index) => {
-        const metabox = $("#" + metaboxId);
-        if (!metabox.length) return;
+      metaboxIds.forEach((metaboxId) => {
+        const $metabox = $("#" + metaboxId);
+        if (!$metabox.length) return;
 
-        const tabTitle =
-          metaboxId === "postdivrich"
-            ? jc_product_editor_data.postdivrich
-            : metabox.find("h2.hndle").text() || metaboxId;
+        const isActive = !hasActiveTab;
+        hasActiveTab = true;
 
-        const tabLink = $(`
+        const tabTitle = this.getMetaboxTitle(metaboxId, $metabox);
+        const $tabLink = $(`
           <a href="#" class="nav-tab ${
-            index === 0 ? "nav-tab-active" : ""
+            isActive ? "nav-tab-active" : ""
           }" data-tab="${metaboxId}">
             ${tabTitle}
           </a>
         `);
-        navWrapper.append(tabLink);
+        $navWrapper.append($tabLink);
 
-        const tabPane = $(`
+        const $tabPane = $(`
           <div class="tab-pane ${
-            index === 0 ? "active" : ""
-          }" id="tab-${metaboxId}"></div>
+            isActive ? "active" : ""
+          }" id="${this.getTabPaneId(metaboxId)}"></div>
         `);
 
-        const metaboxContent =
-          metaboxId === "postdivrich"
-            ? metabox
-            : metabox.find(".inside").children();
+        const $metaboxContent = this.getMetaboxContent(metaboxId, $metabox);
+        const $description = $(
+          `#tab-panel-${metaboxId}_help .edit-description`
+        );
 
-        const description = $(`#tab-panel-${metaboxId}_help .edit-description`);
-
-        if (description.length && metaboxContent.length) {
-          tabPane.append(description);
+        if ($description.length && $metaboxContent.length) {
+          $tabPane.append($description);
         }
 
-        tabPane.append(metaboxContent);
-        contentWrapper.append(tabPane);
+        $tabPane.append($metaboxContent);
+        $contentWrapper.append($tabPane);
 
         if (metaboxId !== "postdivrich") {
-          metabox.remove();
+          $metabox.remove();
         }
       });
     }
@@ -135,49 +207,60 @@
      * 嵌入 Elementor 切换按钮与编辑器
      */
     appendElementorControls() {
-      const elementorEditor = $("#elementor-editor");
-      const elementorSwitch = $("#elementor-switch-mode");
-      if (!elementorEditor.length || !elementorSwitch.length) return;
+      const $elementorEditor = $(SELECTORS.elementorEditor);
+      const $elementorSwitch = $(SELECTORS.elementorSwitch);
+      if (!$elementorEditor.length || !$elementorSwitch.length) return;
 
-      const content = $("#tab-postdivrich");
-      content.append(elementorSwitch);
-      content.append(elementorEditor);
+      const $content = this.getTabPane("postdivrich");
+      if (!$content.length) return;
+
+      $content.append($elementorSwitch, $elementorEditor);
     }
 
     /**
      * 标签页点击切换逻辑
      */
     bindTabEvents() {
-      $(".jc-tabs").on("click", ".nav-tab", (e) => {
+      const $tabs = $(SELECTORS.tabs);
+      if (!$tabs.length) return;
+
+      $tabs.on("click", ".nav-tab", (e) => {
         e.preventDefault();
         const $tab = $(e.currentTarget);
         const tabId = $tab.data("tab");
 
-        $tab.siblings(".nav-tab").removeClass("nav-tab-active");
+        $tabs.find(".nav-tab").removeClass("nav-tab-active");
         $tab.addClass("nav-tab-active");
 
-        $(".tab-pane").removeClass("active");
-        $("#tab-" + tabId).addClass("active");
+        $tabs.find(SELECTORS.tabPane).removeClass("active");
+        this.getTabPane(tabId).addClass("active");
 
         if (tabId === "postdivrich") {
-          setTimeout(this.resizeEditorToolbar, 0);
+          // 重置 TinyMCE 编辑器的大小调整功能
+          this.fixTinyMCELayout(EDITOR_IDS.content);
         }
       });
     }
 
-    /**
-     * 调整富文本工具栏宽度
-     */
-    resizeEditorToolbar() {
-      const editorContainer = $("#wp-content-editor-container");
-      const editorTools = $("#wp-content-editor-tools");
-      const mceToolbarGrp = $(".mce-toolbar-grp");
+    refreshTinyMCEUI(editor) {
+      if (!editor) return;
 
-      if (!editorContainer.length || !editorTools.length) return;
+      try {
+        editor.execCommand("mceRepaint");
+      } catch (e) {}
+      try {
+        editor.execCommand("mceResize");
+      } catch (e) {}
+    }
 
-      const width = editorContainer.width();
-      editorTools.css("width", width);
-      mceToolbarGrp.css("width", width);
+    fixTinyMCELayout(editorId) {
+      const editor = window.tinymce && tinymce.get(editorId);
+      if (!editor) return;
+
+      setTimeout(() => {
+        this.refreshTinyMCEUI(editor);
+        $(window).trigger("resize");
+      }, TINY_MCE_LAYOUT_DELAY);
     }
 
     /**
@@ -189,18 +272,22 @@
       this.syncInitialCharacterCount();
     }
 
+    getExcerptEditor() {
+      if (typeof tinymce === "undefined") return null;
+      return tinymce.get(EDITOR_IDS.excerpt);
+    }
+
     /**
      * 监听 TinyMCE 内容变化
      */
     bindTinyMceCountListener() {
       $(document).on("tinymce-editor-init", () => {
-        const editor =
-          typeof tinymce !== "undefined" ? tinymce.get("excerpt") : null;
+        const editor = this.getExcerptEditor();
         if (!editor) return;
 
         editor.on("keyup paste cut", () => {
           this.updateCharacterCountDisplay(
-            this.getExcerptLengthFromEditor(editor)
+            this.getExcerptLengthFromEditor(editor),
           );
         });
       });
@@ -210,7 +297,7 @@
      * 监听纯文本域内容变化
      */
     bindTextareaCountListener() {
-      $(document).on("keyup paste cut", "#excerpt", (e) => {
+      $(document).on("keyup paste cut", SELECTORS.excerpt, (e) => {
         this.updateCharacterCountDisplay($(e.currentTarget).val().length);
       });
     }
@@ -220,20 +307,19 @@
      */
     syncInitialCharacterCount() {
       setTimeout(() => {
-        const editor =
-          typeof tinymce !== "undefined" ? tinymce.get("excerpt") : null;
+        const editor = this.getExcerptEditor();
         if (editor) {
           this.updateCharacterCountDisplay(
-            this.getExcerptLengthFromEditor(editor)
+            this.getExcerptLengthFromEditor(editor),
           );
           return;
         }
 
-        const $textarea = $("#excerpt");
+        const $textarea = $(SELECTORS.excerpt);
         if ($textarea.length) {
           this.updateCharacterCountDisplay($textarea.val().length);
         }
-      }, 1000);
+      }, CHARACTER_COUNT_SYNC_DELAY);
     }
 
     /**
@@ -247,16 +333,20 @@
      * 更新计数标签文字与颜色
      */
     updateCharacterCountDisplay(count) {
-      const $countElement = $("#excerpt-character-count");
-      $countElement.text(count);
+      const $countElement = $(SELECTORS.excerptCount);
+      $countElement
+        .text(count)
+        .css("color", this.getCharacterCountColor(count));
+    }
 
-      if (count > 160) {
-        $countElement.css("color", "#ff4d4f");
-      } else if (count > 130) {
-        $countElement.css("color", "#faad14");
-      } else {
-        $countElement.css("color", "#52c41a");
+    getCharacterCountColor(count) {
+      if (count > CHARACTER_COUNT_LIMITS.danger) {
+        return CHARACTER_COUNT_COLORS.danger;
       }
+      if (count > CHARACTER_COUNT_LIMITS.warning) {
+        return CHARACTER_COUNT_COLORS.warning;
+      }
+      return CHARACTER_COUNT_COLORS.ok;
     }
 
     /**
@@ -294,6 +384,14 @@
       });
     }
 
+    buildRepeaterRemoveButton() {
+      return `
+        <button type="button" class="button remove-repeater" title="Delete item">
+          <span class="dashicons dashicons-trash"></span>
+        </button>
+      `;
+    }
+
     /**
      * 为旧数据项补齐删除按钮
      */
@@ -302,11 +400,7 @@
         const $item = $(item);
         if ($item.find(".remove-repeater").length) return;
 
-        $item.append(`
-          <button type="button" class="button remove-repeater" title="Delete item">
-            <span class="dashicons dashicons-trash"></span>
-          </button>
-        `);
+        $item.append(this.buildRepeaterRemoveButton());
       });
     }
 
@@ -359,11 +453,7 @@
 
       builder().appendTo($item);
 
-      $item.append(`
-        <button type="button" class="button remove-repeater" title="Delete item">
-          <span class="dashicons dashicons-trash"></span>
-        </button>
-      `);
+      $item.append(this.buildRepeaterRemoveButton());
 
       return $item;
     }
@@ -404,23 +494,27 @@
       `);
     }
 
+    getGalleryContainer() {
+      return $(SELECTORS.gallery);
+    }
+
     /**
      * 初始化产品画廊排序与按钮
      */
     initProductGallery() {
-      const container = $("#jc-gallery .product-images");
-      if (!container.length) return;
+      const $container = this.getGalleryContainer();
+      if (!$container.length) return;
 
-      this.setupGallerySorting(container);
-      this.bindGalleryEvents(container);
+      this.setupGallerySorting($container);
+      this.bindGalleryEvents($container);
     }
 
     /**
      * 启用图片拖拽排序
      */
-    setupGallerySorting(container) {
-      container.sortable({
-        items: "li.image",
+    setupGallerySorting($container) {
+      $container.sortable({
+        items: SELECTORS.galleryItem,
         cursor: "move",
         scrollSensitivity: 40,
         forcePlaceholderSize: true,
@@ -432,7 +526,7 @@
           ui.placeholder.width(ui.item.width());
         },
         stop: () => {
-          container.find("li.image").removeAttr("style");
+          $container.find(SELECTORS.galleryItem).removeAttr("style");
           this.updateGalleryImages();
         },
       });
@@ -441,14 +535,14 @@
     /**
      * 绑定画廊增删逻辑
      */
-    bindGalleryEvents(container) {
-      container.on("click", "a.delete", (e) => {
+    bindGalleryEvents($container) {
+      $container.on("click", "a.delete", (e) => {
         e.preventDefault();
-        $(e.currentTarget).closest("li.image").remove();
+        $(e.currentTarget).closest(SELECTORS.galleryItem).remove();
         this.updateGalleryImages();
       });
 
-      $(document).on("click", ".jc-add-image a", (e) => {
+      $(document).on("click", SELECTORS.galleryAddButton, (e) => {
         e.preventDefault();
         this.openMediaFrame(e.currentTarget);
       });
@@ -465,6 +559,10 @@
         this.productGalleryFrame.open();
         return;
       }
+
+      if (!window.wp || !wp.media) return;
+
+      const $galleryContainer = this.getGalleryContainer();
 
       this.productGalleryFrame = wp.media({
         title: $button.data("choose"),
@@ -484,11 +582,11 @@
       this.productGalleryFrame.on("select", () => {
         const selection = this.productGalleryFrame.state().get("selection");
 
-        selection.map((attachment) => {
+        selection.each((attachment) => {
           const data = attachment.toJSON();
           if (!data.id) return;
 
-          $("#jc-gallery .product-images").append(`
+          $galleryContainer.append(`
             <li class="image" data-attachment_id="${data.id}">
               <img src="${data.sizes.thumbnail.url}" alt="" />
               <ul class="actions">
@@ -509,12 +607,14 @@
      */
     updateGalleryImages() {
       const ids = [];
-      $("#jc-gallery .product-images li.image").each((_, item) => {
-        const id = $(item).data("attachment_id");
-        if (id) ids.push(id);
-      });
+      this.getGalleryContainer()
+        .find(SELECTORS.galleryItem)
+        .each((_, item) => {
+          const id = $(item).data("attachment_id");
+          if (id) ids.push(id);
+        });
 
-      $("#product_image_gallery").val(ids.join(",")).trigger("change");
+      $(SELECTORS.galleryField).val(ids.join(",")).trigger("change");
     }
   }
 

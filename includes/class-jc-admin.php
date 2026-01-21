@@ -165,9 +165,17 @@ class JC_Admin
         // }
 
         wp_enqueue_script(
+            'jelly-catalog-modal',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-modal.js',
+            array('jquery'),
+            JELLY_CATALOG_VERSION,
+            true
+        );
+
+        wp_enqueue_script(
             'jelly-catalog-repeater',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-repeater.js',
-            array('jquery'),
+            array('jquery', 'jelly-catalog-modal'),
             JELLY_CATALOG_VERSION,
             true
         );
