@@ -29,7 +29,7 @@ class JC_Product_Cat_Banner_Metabox
             <label for="banner_id"><?php esc_html_e('Category Banner', 'jelly-catalog'); ?></label>
             <div id="banner_id_container">
                 <input type="hidden" name="banner_id" id="banner_id" value="">
-                <div class="banner-preview" style="margin-top: 10px; display: none;">
+                <div class="banner-preview" style="display: none;">
                     <img src="" alt="" style="max-width: 150px; height: auto;" />
                 </div>
                 <p>
@@ -58,8 +58,8 @@ class JC_Product_Cat_Banner_Metabox
             <td>
                 <div id="banner_id_container">
                     <input type="hidden" name="banner_id" id="banner_id" value="<?php echo esc_attr($banner_id); ?>">
-                    <div class="banner-preview" style="margin-top: 10px; <?php echo $banner_id ? '' : 'display: none;'; ?>">
-                        <img src="<?php echo esc_url($banner_url); ?>" alt="" style="max-width: 150px; height: auto;" />
+                    <div class="banner-preview" style="<?php echo $banner_id ? '' : 'display: none;'; ?>">
+                        <img src="<?php echo esc_url($banner_url); ?>" alt="" />
                     </div>
                     <p>
                         <button class="button button-secondary" id="banner_id_button"><?php esc_html_e('Select Banner', 'jelly-catalog'); ?></button>

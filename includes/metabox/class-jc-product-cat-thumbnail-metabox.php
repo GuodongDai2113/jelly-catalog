@@ -29,7 +29,7 @@ class JC_Product_Cat_Thumbnail_Metabox
             <label for="thumbnail_id"><?php esc_html_e('Category Thumbnail', 'jelly-catalog'); ?></label>
             <div id="thumbnail_id_container">
                 <input type="hidden" name="thumbnail_id" id="thumbnail_id" value="">
-                <div class="thumbnail-preview" style="margin-top: 10px; display: none;">
+                <div class="thumbnail-preview" style="display: none;">
                     <img src="" alt="" style="max-width: 150px; height: auto;" />
                 </div>
                 <p>
@@ -48,7 +48,7 @@ class JC_Product_Cat_Thumbnail_Metabox
     public function edit_thumbnail_field($term)
     {
         $thumbnail_id = get_term_meta($term->term_id, 'thumbnail_id', true);
-        $thumbnail_url = $thumbnail_id ? wp_get_attachment_thumb_url($thumbnail_id) : '';
+        $thumbnail_url = $thumbnail_id ? wp_get_attachment_url($thumbnail_id) : '';
     ?>
         <tr class="form-field">
             <th scope="row" valign="top">
@@ -57,8 +57,8 @@ class JC_Product_Cat_Thumbnail_Metabox
             <td>
                 <div id="thumbnail_id_container">
                     <input type="hidden" name="thumbnail_id" id="thumbnail_id" value="<?php echo esc_attr($thumbnail_id); ?>">
-                    <div class="thumbnail-preview" style="margin-top: 10px; <?php echo $thumbnail_id ? '' : 'display: none;'; ?>">
-                        <img src="<?php echo esc_url($thumbnail_url); ?>" alt="" style="max-width: 150px; height: auto;" />
+                    <div class="thumbnail-preview" <?php echo $thumbnail_id ? '' : 'display: none;'; ?>>
+                        <img src="<?php echo esc_url($thumbnail_url); ?>" alt=""/>
                     </div>
                     <p>
                         <button class="button button-secondary" id="thumbnail_id_button"><?php esc_html_e('Select Thumbnail', 'jelly-catalog'); ?></button>

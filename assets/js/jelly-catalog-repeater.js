@@ -235,7 +235,7 @@
       const $item = $(`
         <div class="repeater-item">
         <div class="repeater-item-header">
-          <span class="item-title">${index}. ${key.replace('_', ' ')}</span>
+          <span class="item-title">${index}. ${key.replace(/_/g, ' ')}</span>
           <div type="button" class="remove-repeater" title="Delete item">
             <span class="dashicons dashicons-no-alt"></span>
           </div>
