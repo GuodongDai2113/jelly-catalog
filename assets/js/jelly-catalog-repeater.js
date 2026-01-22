@@ -37,11 +37,11 @@
      * 初始化批量创建FAQ模态框
      */
     initBulkCreateModal() {
-      if (typeof window.JellyCatalogModal !== "function") {
+      if (typeof window.JellyModal !== "function") {
         return;
       }
 
-      this.bulkCreateModal = new window.JellyCatalogModal({
+      this.bulkCreateModal = new window.JellyModal({
         id: "bulk-create-modal",
         title: "Bulk Create Items",
         description:

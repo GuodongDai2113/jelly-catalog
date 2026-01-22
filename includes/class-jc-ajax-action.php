@@ -43,10 +43,9 @@ class JC_Ajax_Action
         add_action('wp_ajax_update_product_category_description', array($this, 'update_product_category_description'));
         add_action('wp_ajax_get_products_sheet',  array($this, 'get_products_sheet'));
         add_action('wp_ajax_save_products_sheet', array($this, 'save_products_sheet'));
-        add_action('wp_ajax_jc_catalog_export', array($this, 'handle_export_products'));
-        add_action('wp_ajax_jc_catalog_import', array($this, 'handle_import_products'));
         // 添加获取分类法术语的AJAX处理
         add_action('wp_ajax_get_taxonomy_terms', array($this, 'get_taxonomy_terms'));
+
     }
 
     public function admin_ajax_scripts()
@@ -483,85 +482,6 @@ class JC_Ajax_Action
         wp_set_object_terms($product_id, $tag_ids, 'product_tag');
     }
 
-    public function handle_export_products()
-    {
-        check_ajax_referer('jc_nonce', 'nonce');
-
-        if (! current_user_can('export')) {
-            wp_send_json_error(array('message' => __('Insufficient permissions', 'jelly-catalog')));
-        }
-
-        $upload_dir = wp_upload_dir();
-        if (! empty($upload_dir['error'])) {
-            wp_send_json_error(array('message' => $upload_dir['error']));
-        }
-
-        $filename  = 'jc-products-' . gmdate('Ymd-His') . '.csv';
-        $file_path = trailingslashit($upload_dir['path']) . $filename;
-
-        if (! is_dir($upload_dir['path'])) {
-            wp_mkdir_p($upload_dir['path']);
-        }
-
-        require_once plugin_dir_path(__FILE__) . 'class-jc-export.php';
-
-        $result = JC_Export::instance()->export_to_csv($file_path);
-
-        if (empty($result['success'])) {
-            wp_send_json_error(array('message' => isset($result['message']) ? $result['message'] : __('Export failed', 'jelly-catalog')));
-        }
-
-        $file_url = trailingslashit($upload_dir['url']) . $filename;
-        wp_send_json_success(array('url' => $file_url));
-    }
-
-    public function handle_import_products()
-    {
-        check_ajax_referer('jc_nonce', 'nonce');
-
-        if (! current_user_can('import')) {
-            wp_send_json_error(array('message' => __('Insufficient permissions', 'jelly-catalog')));
-        }
-
-        if (empty($_FILES['file']) || ! is_uploaded_file($_FILES['file']['tmp_name'])) {
-            wp_send_json_error(array('message' => __('No file uploaded', 'jelly-catalog')));
-        }
-
-        $overrides = array(
-            'test_form' => false,
-            'mimes'     => array('csv' => 'text/csv'),
-        );
-
-        $uploaded = wp_handle_upload($_FILES['file'], $overrides);
-
-        if (isset($uploaded['error'])) {
-            wp_send_json_error(array('message' => $uploaded['error']));
-        }
-
-        require_once plugin_dir_path(__FILE__) . 'class-jc-import.php';
-
-        $result = JC_Import::instance()->import_from_csv($uploaded['file']);
-
-        if (is_file($uploaded['file'])) {
-            @unlink($uploaded['file']);
-        }
-
-        if (! empty($result['errors'])) {
-            wp_send_json_error(array(
-                'message' => implode("\n", $result['errors']),
-                'imported' => $result['imported'],
-                'updated'  => $result['updated'],
-                'skipped'  => $result['skipped'],
-            ));
-        }
-
-        wp_send_json_success(array(
-            'imported' => $result['imported'],
-            'updated'  => $result['updated'],
-            'skipped'  => $result['skipped'],
-        ));
-    }
-
     /**
      * 获取分类法术语用于自动完成
      *
@@ -642,6 +562,7 @@ class JC_Ajax_Action
 
         return $result;
     }
+
 }
 
 JC_Ajax_Action::instance();

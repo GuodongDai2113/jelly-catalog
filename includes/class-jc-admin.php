@@ -152,21 +152,18 @@ class JC_Admin
             JELLY_CATALOG_VERSION
         );
 
+        wp_enqueue_style(
+            'jelly-modal',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-modal.css',
+            array(),
+            JELLY_CATALOG_VERSION
+        );
+
         wp_enqueue_media();
 
-        // if ($hook === 'edit.php' && !jc_is_woocommerce_activated()) {
-        //     wp_enqueue_script(
-        //         'jelly-catalog-io',
-        //         JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-io.js',
-        //         array('jquery'),
-        //         JELLY_CATALOG_VERSION,
-        //         true
-        //     );
-        // }
-
         wp_enqueue_script(
-            'jelly-catalog-modal',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-modal.js',
+            'jelly-modal',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-modal.js',
             array('jquery'),
             JELLY_CATALOG_VERSION,
             true
@@ -175,7 +172,7 @@ class JC_Admin
         wp_enqueue_script(
             'jelly-catalog-repeater',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-repeater.js',
-            array('jquery', 'jelly-catalog-modal'),
+            array('jquery', 'jelly-modal'),
             JELLY_CATALOG_VERSION,
             true
         );

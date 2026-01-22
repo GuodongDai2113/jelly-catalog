@@ -2,7 +2,7 @@
   "use strict";
 
   const DEFAULTS = {
-    id: "jc-modal",
+    id: "jelly-modal",
     title: "Modal Title",
     description: "",
     bodyHtml: "",
@@ -16,13 +16,13 @@
     onClose: null,
   };
 
-  class JellyCatalogModal {
+  class JellyModal {
     constructor(options) {
       this.options = $.extend({}, DEFAULTS, options);
       this.$modal = null;
       this.isOpen = false;
       this.bound = false;
-      this.eventNamespace = `.jcModal.${this.options.id}`;
+      this.eventNamespace = `.jellyModal.${this.options.id}`;
       this.ensureModal();
       this.bindEvents();
     }
@@ -36,14 +36,18 @@
       }
 
       const modalHtml = `
-        <div id="${this.options.id}" class="jc-modal">
-          <div class="jc-modal__content">
-            <h3 class="jc-modal__title"></h3>
-            <p class="jc-modal__description"></p>
-            <div class="jc-modal__body"></div>
-            <div class="jc-modal__buttons">
-              <button type="button" class="button button-secondary jc-modal__cancel"></button>
-              <button type="button" class="button button-primary jc-modal__confirm"></button>
+        <div id="${this.options.id}" class="jelly-modal">
+          <div class="jelly-modal__content">
+          <div class="jelly-modal__header">
+            <h3 class="jelly-modal__title"></h3>
+            <p class="jelly-modal__description"></p>
+            </div>
+            <div class="jelly-modal__body"></div>
+            <div class="jelly-modal__footer">
+            <div class="jelly-modal__buttons">
+              <button type="button" class="button button-secondary jelly-modal__cancel"></button>
+              <button type="button" class="button button-primary jelly-modal__confirm"></button>
+            </div>
             </div>
           </div>
         </div>
@@ -57,17 +61,17 @@
     refreshContent() {
       if (!this.$modal) return;
 
-      this.$modal.find(".jc-modal__title").text(this.options.title);
-      const $description = this.$modal.find(".jc-modal__description");
+      this.$modal.find(".jelly-modal__title").text(this.options.title);
+      const $description = this.$modal.find(".jelly-modal__description");
       if (this.options.description) {
         $description.text(this.options.description).show();
       } else {
         $description.hide();
       }
 
-      this.$modal.find(".jc-modal__body").html(this.options.bodyHtml);
-      this.$modal.find(".jc-modal__confirm").text(this.options.confirmText);
-      this.$modal.find(".jc-modal__cancel").text(this.options.cancelText);
+      this.$modal.find(".jelly-modal__body").html(this.options.bodyHtml);
+      this.$modal.find(".jelly-modal__confirm").text(this.options.confirmText);
+      this.$modal.find(".jelly-modal__cancel").text(this.options.cancelText);
     }
 
     bindEvents() {
@@ -76,20 +80,20 @@
 
       $(document).on(
         `click${this.eventNamespace}`,
-        `#${this.options.id} .jc-modal__cancel`,
+        `#${this.options.id} .jelly-modal__cancel`,
         (e) => {
           e.preventDefault();
           this.handleCancel();
-        },
+        }
       );
 
       $(document).on(
         `click${this.eventNamespace}`,
-        `#${this.options.id} .jc-modal__confirm`,
+        `#${this.options.id} .jelly-modal__confirm`,
         (e) => {
           e.preventDefault();
           this.handleConfirm();
-        },
+        }
       );
 
       $(document).on(
@@ -100,15 +104,15 @@
           if (e.target.id === this.options.id) {
             this.close();
           }
-        },
+        }
       );
 
       $(document).on(
         `click${this.eventNamespace}`,
-        `#${this.options.id} .jc-modal__content`,
+        `#${this.options.id} .jelly-modal__content`,
         (e) => {
           e.stopPropagation();
-        },
+        }
       );
 
       $(document).on(`keydown${this.eventNamespace}`, (e) => {
@@ -166,5 +170,7 @@
     }
   }
 
-  window.JellyCatalogModal = JellyCatalogModal;
+  if (window.JellyModal === undefined) {
+    window.JellyModal = JellyModal;
+  }
 })(jQuery);

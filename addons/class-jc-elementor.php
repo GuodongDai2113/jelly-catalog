@@ -50,8 +50,6 @@ class JC_Elementor
         add_action('elementor/theme/register_conditions', [$this, 'register_conditions']);
         add_action('elementor/documents/register', [$this, 'register_documents']);
         add_action('elementor/widgets/register', [$this, 'register_widgets']);
-        add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_elementor_editor_assets']);
-        add_action('elementor/preview/enqueue_styles', [$this, 'enqueue_embedded_iframe_styles']);
 
         add_filter('elementor/theme/need_override_location', [$this, 'theme_template_include'], 10, 2);
         add_filter('elementor/document/config', [$this, 'add_loop_recommended_widgets'], 11, 2);
@@ -61,27 +59,6 @@ class JC_Elementor
         add_filter('elementor/query/query_args', function ($query_args, $widget) {
             return $this->loop_query($query_args, $widget);
         }, 10, 2);
-    }
-
-    public function enqueue_elementor_editor_assets()
-    {
-        wp_enqueue_script(
-            'jelly-catalog-elementor-editor',
-            JELLY_CATALOG_PLUGIN_URL . 'addons/assets/js/jc-elementor-editor.js',
-            array('jquery'),
-            JELLY_CATALOG_VERSION,
-            true
-        );
-    }
-
-    public function enqueue_embedded_iframe_styles()
-    {
-        wp_enqueue_style(
-            'jelly-catalog-elementor-editor',
-            JELLY_CATALOG_PLUGIN_URL . 'addons/assets/css/jc-elementor-editor.css',
-            array(),
-            JELLY_CATALOG_VERSION
-        );
     }
 
     /**
