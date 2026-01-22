@@ -123,10 +123,10 @@ class Product_Gallery extends Widget_Base
                     </div>
                 <?php endif; ?>
             </div>
-            <?php else:?>
-                <div class="jc-product-no-gallery">
-                    <img src="<?php echo JELLY_CATALOG_PLUGIN_URL.'/assets/images/placeholder.webp' ?>" alt="placeholder">
-                </div>
+        <?php else: ?>
+            <div class="jc-product-no-gallery">
+                <img src="<?php echo JELLY_CATALOG_PLUGIN_URL . '/assets/images/placeholder.webp' ?>" alt="placeholder">
+            </div>
         <?php endif; ?>
 <?php
     }

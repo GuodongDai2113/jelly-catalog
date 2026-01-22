@@ -109,3 +109,4 @@ function jelly_catalog_enqueue_frontend_assets()
 	}
 }
 add_action('wp_enqueue_scripts', 'jelly_catalog_enqueue_frontend_assets');
+
