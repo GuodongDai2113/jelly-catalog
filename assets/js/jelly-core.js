@@ -1,24 +1,22 @@
 (function ($) {
   "use strict";
 
-  const DEFAULTS = {
-    id: "jelly-modal",
-    title: "Modal Title",
-    description: "",
-    bodyHtml: "",
-    confirmText: "Confirm",
-    cancelText: "Cancel",
-    closeOnBackdrop: true,
-    closeOnEsc: true,
-    onConfirm: null,
-    onCancel: null,
-    onOpen: null,
-    onClose: null,
-  };
-
   class JellyModal {
     constructor(options) {
-      this.options = $.extend({}, DEFAULTS, options);
+      this.options = $.extend({}, {
+        id: "jelly-modal",
+        title: "Modal Title",
+        description: "",
+        bodyHtml: "",
+        confirmText: "Confirm",
+        cancelText: "Cancel",
+        closeOnBackdrop: true,
+        closeOnEsc: true,
+        onConfirm: null,
+        onCancel: null,
+        onOpen: null,
+        onClose: null,
+      }, options);
       this.$modal = null;
       this.isOpen = false;
       this.bound = false;
@@ -170,7 +168,67 @@
     }
   }
 
+  class JellyNotice {
+    constructor() {
+      const existing = $(".jelly-notie-wrapper");
+      if (existing.length) {
+        this.noticeContainer = existing.first();
+        return;
+      }
+
+      this.noticeContainer = $('<div class="jelly-notie-wrapper"></div>');
+      $("body").append(this.noticeContainer);
+    }
+
+    jellyShowSuccess(message) {
+      this.showNotification(
+        '<span class="dashicons dashicons-yes-alt"></span>' + message,
+        "success"
+      );
+    }
+
+    jellyShowError(message) {
+      this.showNotification(
+        '<span class="dashicons dashicons-dismiss"></span>' + message,
+        "errors"
+      );
+    }
+
+    jellyShowWarning(message) {
+      this.showNotification(
+        '<span class="dashicons dashicons-warning"></span>' + message,
+        "warnings"
+      );
+    }
+
+    showNotification(message, type) {
+      const notification = $(
+        '<div class="jelly-notie ' + type + ' slideIn">' + message + "</div>"
+      );
+      this.noticeContainer.append(notification);
+
+      // 设置定时器自动隐藏;
+      // setTimeout(() => {
+      //   notification.removeClass("slideIn").addClass("slideOut");
+      //   setTimeout(() => {
+      //     notification.remove();
+      //   }, 300); // 等待动画完成后再移除元素
+      // }, 3000);
+    }
+  }
+
   if (window.JellyModal === undefined) {
     window.JellyModal = JellyModal;
+  }
+
+  if (
+    window.jellyShowSuccess === undefined ||
+    window.jellyShowError === undefined
+  ) {
+    const noticeManager = new JellyNotice();
+    window.jellyShowSuccess =
+      noticeManager.jellyShowSuccess.bind(noticeManager);
+    window.jellyShowError = noticeManager.jellyShowError.bind(noticeManager);
+    window.jellyShowWarning = noticeManager.jellyShowWarning.bind(noticeManager);
   }
 })(jQuery);

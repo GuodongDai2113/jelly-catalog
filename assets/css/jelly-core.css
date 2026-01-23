@@ -1,0 +1,215 @@
+:root {
+  /*
+  primay-1:#e6f7ff
+  primay-2:#a8e2ff
+  primay-3:#7ccaf7
+  primay-4:#50adeb
+  primay-5:#288fde
+  primay-6:#0572d1
+  primay-7:#0055ab
+  primay-8:#003e85
+  primay-9:#00295e
+  primay-10:#001638
+  */
+
+  --jelly-color-primary: #0572d1;
+  --jelly-color-primary-hover: #0055ab;
+
+  --jelly-color-border: #e5e7eb;
+  --jelly-color-text: #111827;
+  --jelly-color-description: #6b7280;
+  --jelly-color-overlay: rgba(0, 0, 0, 0.5);
+  --jelly-color-white: #ffffff;
+
+  --jelly-color-bg-dark: #181818;
+  --jelly-color-bg-secondary-dark: #1f1f1f;
+  --jelly-color-bg: #f1f4f9;
+  --jelly-color-bg-secondary: #f9fafb;
+
+  --jelly-color-success: #00c950;
+  --jelly-color-warning: #fe9a00;
+  --jelly-color-error: #fb2c36;
+  --jelly-color-delete: #9f0712;
+
+  --jelly-color-success-bg: #f0fdf4;
+  --jelly-color-success-border: #b9f8cf;
+  --jelly-color-success-text: #00c950;
+
+  --jelly-color-error-bg: #fef2f2;
+  --jelly-color-error-border: #ffc9c9;
+  --jelly-color-error-text: #fb2c36;
+
+  --jelly-color-warning-bg: #fffbeb;
+  --jelly-color-warning-border: #fee685;
+  --jelly-color-warning-text: #fe9a00;
+
+  --jelly-border-radius: 6px;
+
+  --jelly-box-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --jelly-box-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --jelly-box-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* 模态框组件 */
+
+.jelly-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--jelly-color-overlay);
+  z-index: 9999;
+}
+
+.jelly-modal .jelly-modal__content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--jelly-color-white);
+  border-radius: 5px;
+  min-width: 800px;
+  max-width: 80%;
+  max-height: 80%;
+  overflow-y: auto;
+}
+
+.jelly-modal .jelly-modal__title {
+  margin: 0px;
+}
+
+.jelly-modal .jelly-modal__description {
+  margin-bottom: 15px;
+  color: var(--jelly-color-description);
+}
+
+.jelly-modal .jelly-modal__buttons {
+  text-align: right;
+}
+
+.jelly-modal .jelly-modal__cancel {
+  margin-right: 10px;
+}
+
+.jelly-modal .jelly-modal__buttons .button {
+  border: 1px solid var(--jelly-color-border);
+  border-radius: 4px;
+  padding: 10px 24px;
+  background-color: var(--jelly-color-white);
+  color: var(--jelly-color-text);
+  font-size: 15px;
+  line-height: 1.625;
+}
+
+.jelly-modal .jelly-modal__buttons .button-primary {
+  border-color: var(--jelly-color-primary);
+  background-color: var(--jelly-color-primary);
+  color: var(--jelly-color-white);
+}
+
+.jelly-modal .jelly-modal__buttons .button-secondary {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--jelly-color-description);
+}
+
+.jelly-modal .jelly-modal__buttons .button-secondary:hover {
+  background-color: var(--jelly-color-border);
+}
+
+.jelly-modal .jelly-modal__body {
+  padding: 24px 16px;
+}
+
+.jelly-modal .jelly-modal__header {
+  border-bottom: 1px solid var(--jelly-color-border);
+  padding: 24px 16px 0 16px;
+}
+
+.jelly-modal .jelly-modal__footer {
+  background-color: var(--jelly-color-bg-secondary);
+  padding: 12px 16px;
+}
+
+.jelly-notie-wrapper {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 600px;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+/* 通知组件 */
+
+.jelly-notie {
+  padding: 12px 18px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  font-weight: 500 ;
+  text-align: center;
+  opacity: 0;
+  pointer-events: auto;
+  box-shadow: var(--jelly-box-shadow-lg);
+}
+.jelly-notie .dashicons {
+  margin-right: 6px;
+}
+.jelly-notie.success {
+  background-color: var(--jelly-color-success-bg);
+  border: 1px solid var(--jelly-color-success-border);
+  color: var(--jelly-color-success-text);
+}
+.jelly-notie.errors {
+  background-color: var(--jelly-color-error-bg);
+  border: 1px solid var(--jelly-color-error-border);
+  color: var(--jelly-color-error-text);
+}
+.jelly-notie.warnings {
+  background-color: var(--jelly-color-warning-bg);
+  border: 1px solid var(--jelly-color-warning-border);
+  color: var(--jelly-color-warning-text);
+}
+.jelly-notie.slideIn {
+  animation: slideIn 0.3s forwards;
+}
+.jelly-notie.slideOut {
+  animation: slideOut 0.3s forwards;
+}
+
+/* 弹出动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes slideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}

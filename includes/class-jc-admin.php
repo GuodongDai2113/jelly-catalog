@@ -153,8 +153,8 @@ class JC_Admin
         );
 
         wp_enqueue_style(
-            'jelly-modal',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-modal.css',
+            'jelly-core',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-core.css',
             array(),
             JELLY_CATALOG_VERSION
         );
@@ -162,8 +162,8 @@ class JC_Admin
         wp_enqueue_media();
 
         wp_enqueue_script(
-            'jelly-modal',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-modal.js',
+            'jelly-core',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-core.js',
             array('jquery'),
             JELLY_CATALOG_VERSION,
             true
@@ -172,7 +172,7 @@ class JC_Admin
         wp_enqueue_script(
             'jelly-catalog-repeater',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-repeater.js',
-            array('jquery', 'jelly-modal'),
+            array('jquery'),
             JELLY_CATALOG_VERSION,
             true
         );
