@@ -15,43 +15,8 @@ class JC_Product_Cat_FAQ_Metabox
 {
     public function __construct()
     {
-        // add_action('product_cat_add_form_fields', array($this, 'add_category_faq_field'));
         add_action('product_cat_edit_form_fields', array($this, 'edit_category_faq_field'));
         add_action('edited_product_cat', array($this, 'save_category_faq_field'));
-        // add_action('create_product_cat', array($this, 'save_category_faq_field'));
-    }
-
-    /**
-     * 在添加产品分类页面添加 FAQ 字段
-     */
-    public function add_category_faq_field()
-    {
-        echo '<div class="form-field">';
-        echo '<label for="product_cat_faqs">' . __('Category FAQ', 'jelly-catalog') . '</label>';
-        echo '<div id="product_cat_faqs_container">';
-        // 使用通用 repeater 函数生成 FAQ 表单
-        jc_render_repeater_field(array(
-            'id' => 'product_cat_faqs',
-            'name' => 'product_cat_faqs',
-            'items' => array(),
-            'fields' => array(
-                array(
-                    'type' => 'text',
-                    'name' => 'name',
-                    'label' => __('Question:', 'jelly-catalog'),
-                    'class' => 'repeater-item__key-input'
-                ),
-                array(
-                    'type' => 'textarea',
-                    'name' => 'value',
-                    'label' => __('Answer:', 'jelly-catalog'),
-                    'class' => 'repeater-item__value-input'
-                )
-            )
-        ));
-        echo '</div>';
-        echo '<p class="description">' . __('Add frequently asked questions for this product category.', 'jelly-catalog') . '</p>';
-        echo '</div>';
     }
 
     /**

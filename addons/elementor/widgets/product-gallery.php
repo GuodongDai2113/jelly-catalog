@@ -61,7 +61,26 @@ class Product_Gallery extends Widget_Base
             ]
         );
 
+        $this->add_control(
+            'slide_border_radius',
+            [
+                'label' => esc_html__('Border Radius', 'jelly-catalog'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', '%', 'em', 'rem'],
+                'selectors' => [
+                    '{{WRAPPER}} .jc-product-gallery  .swiper-slide' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
 
+        $this->add_group_control(
+            \Elementor\Group_Control_Border::get_type(),
+            [
+                'name' => 'slide_border',
+                'label' => esc_html__('Border', 'jelly-catalog'),
+                'selector' => '{{WRAPPER}} .jc-product-gallery  .swiper-slide',
+            ]
+        );
 
         $this->end_controls_section();
     }
@@ -92,7 +111,8 @@ class Product_Gallery extends Widget_Base
                     <div class="swiper-wrapper">
                         <?php if (!empty($video_url)): ?>
                             <div class="swiper-slide">
-                                <iframe width="100%" height="100%" src="<?php echo esc_url($embed_video_url); ?>?rel=0&autoplay=0" frameborder="0" allowfullscreen></iframe>
+                                <iframe width="100%" height="100%" src="<?php echo esc_url($embed_video_url); ?>?rel=0&autoplay=0"
+                                    frameborder="0" allowfullscreen></iframe>
                             </div>
                         <?php endif; ?>
                         <?php foreach ($all_ids as $id):
@@ -110,7 +130,8 @@ class Product_Gallery extends Widget_Base
                         <div class="swiper-wrapper">
                             <?php if (!empty($video_url)): ?>
                                 <div class="swiper-slide">
-                                    <img src="https://img.youtube.com/vi/<?php echo esc_attr($youtube_id); ?>/hqdefault.jpg" alt="<?php esc_html__('Vieo Thumbnail', 'jelly-frame'); ?>">
+                                    <img src="https://img.youtube.com/vi/<?php echo esc_attr($youtube_id); ?>/hqdefault.jpg"
+                                        alt="<?php esc_html__('Vieo Thumbnail', 'jelly-frame'); ?>">
                                 </div>
                             <?php endif; ?>
                             <?php foreach ($all_ids as $id):

@@ -82,8 +82,7 @@ class Product_Download extends Widget_Base
 ?>
         <?php if ($product_file): ?>
             <div class="jc-download">
-                <a href="<?php echo esc_url($product_file['url']); ?> download"
-                    class="jc-download-item"
+                <a href="<?php echo esc_url($product_file['url']); ?>" class="jc-download-item"
                     download="<?php echo esc_attr($product_file['filename']); ?>">
                     <span class="jc-download-icon">
                         <?php Icons_Manager::render_icon(['value' => 'fas fa-file-pdf', 'library' => 'fa-solid'], ['aria-hidden' => 'true']); ?>
@@ -102,7 +101,9 @@ class Product_Download extends Widget_Base
                 </a>
             </div>
         <?php else: ?>
-            <p class="jc-download-no-file"><?php echo esc_html__('The product files have not yet been uploaded. Please contact customer service to obtain them.'); ?></p>
+            <p class="jc-download-no-file">
+                <?php echo esc_html__('The product files have not yet been uploaded. Please contact customer service to obtain them.'); ?>
+            </p>
         <?php endif; ?>
 <?php
     }

@@ -52,7 +52,7 @@ class JC_Port
         add_action('admin_post_jc_import_products', array($this, 'import_products'));
         add_action('admin_post_jc_clear_import_log', array($this, 'clear_import_log'));
         add_action('admin_notices', array($this, 'import_notices'));
-        
+
         // 设置日志文件路径
         $upload_dir = wp_upload_dir();
         $this->log_file = $upload_dir['basedir'] . '/jc_import_log.txt';
@@ -64,10 +64,7 @@ class JC_Port
      *
      * @return void
      */
-    public function enqueue_script()
-    {
-
-    }
+    public function enqueue_script() {}
 
     /**
      * 向产品菜单添加"导入/导出"子菜单
@@ -93,10 +90,10 @@ class JC_Port
      */
     public function render_products_port()
     {
-        ?>
+?>
         <div class="wrap">
             <h1><?php _e('Import/Export Products', 'jelly-catalog'); ?></h1>
-            
+
             <div class="card">
                 <h2><?php _e('Export Products', 'jelly-catalog'); ?></h2>
                 <p><?php _e('Export all products to CSV file with images as separate files.', 'jelly-catalog'); ?></p>
@@ -106,10 +103,11 @@ class JC_Port
                     <?php submit_button(__('Export Products', 'jelly-catalog'), 'primary', 'export'); ?>
                 </form>
             </div>
-            
+
             <div class="card">
                 <h2><?php _e('Import Products', 'jelly-catalog'); ?></h2>
-                <p><?php _e('Import products from CSV file. Upload the CSV file and a ZIP file containing all images.', 'jelly-catalog'); ?></p>
+                <p><?php _e('Import products from CSV file. Upload the CSV file and a ZIP file containing all images.', 'jelly-catalog'); ?>
+                </p>
                 <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" enctype="multipart/form-data">
                     <?php wp_nonce_field('jc_import_products', 'jc_import_nonce'); ?>
                     <input type="hidden" name="action" value="jc_import_products">
@@ -123,24 +121,28 @@ class JC_Port
                             <td><input type="file" name="images_zip" accept=".zip"></td>
                         </tr>
                     </table>
-                    <p class="description"><?php _e('The images ZIP file should contain all images referenced in the CSV file.', 'jelly-catalog'); ?></p>
+                    <p class="description">
+                        <?php _e('The images ZIP file should contain all images referenced in the CSV file.', 'jelly-catalog'); ?>
+                    </p>
                     <?php submit_button(__('Import Products', 'jelly-catalog'), 'primary', 'import'); ?>
                 </form>
             </div>
-            
+
             <?php if (file_exists($this->log_file)): ?>
-            <div class="card">
-                <h2><?php _e('Import Log', 'jelly-catalog'); ?></h2>
-                <textarea rows="20" cols="100" readonly style="width: 100%; font-family: monospace;"><?php echo esc_textarea(file_get_contents($this->log_file)); ?></textarea>
-                <p>
-                    <a href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=jc_clear_import_log'), 'clear_import_log'); ?>" class="button">
-                        <?php _e('Clear Log', 'jelly-catalog'); ?>
-                    </a>
-                </p>
-            </div>
+                <div class="card">
+                    <h2><?php _e('Import Log', 'jelly-catalog'); ?></h2>
+                    <textarea rows="20" cols="100" readonly
+                        style="width: 100%; font-family: monospace;"><?php echo esc_textarea(file_get_contents($this->log_file)); ?></textarea>
+                    <p>
+                        <a href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=jc_clear_import_log'), 'clear_import_log'); ?>"
+                            class="button">
+                            <?php _e('Clear Log', 'jelly-catalog'); ?>
+                        </a>
+                    </p>
+                </div>
             <?php endif; ?>
         </div>
-        <?php
+<?php
     }
 
     /**
@@ -152,17 +154,17 @@ class JC_Port
         if (!current_user_can('manage_options')) {
             wp_die(__('You do not have sufficient permissions to access this page.', 'jelly-catalog'));
         }
-        
+
         // 验证 nonce
         if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'clear_import_log')) {
             wp_die(__('Security check failed', 'jelly-catalog'));
         }
-        
+
         // 删除日志文件
         if (file_exists($this->log_file)) {
             unlink($this->log_file);
         }
-        
+
         // 重定向回导入导出页面
         wp_redirect(admin_url('edit.php?post_type=product&page=products-port'));
         exit;
@@ -209,14 +211,14 @@ class JC_Port
         $upload_dir = wp_upload_dir();
         $export_dir = $upload_dir['basedir'] . '/jc_export_' . time();
         wp_mkdir_p($export_dir);
-        
+
         // 创建CSV文件
         $csv_file = $export_dir . '/products.csv';
         $fp = fopen($csv_file, 'w');
-        
+
         // 写入UTF-8 BOM头以支持中文
-        fprintf($fp, chr(0xEF).chr(0xBB).chr(0xBF));
-        
+        fprintf($fp, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
         // 写入表头
         $headers = array(
             'ID',
@@ -231,11 +233,11 @@ class JC_Port
             'Attributes'
         );
         fputcsv($fp, $headers);
-        
+
         // 处理每个产品
         foreach ($products as $product) {
             $post_id = $product->ID;
-            
+
             // 获取特色图像
             $featured_image = '';
             $featured_image_id = get_post_thumbnail_id($post_id);
@@ -252,7 +254,7 @@ class JC_Port
                     }
                 }
             }
-            
+
             // 获取画廊图像
             $gallery_images = array();
             $gallery_ids = get_post_meta($post_id, '_product_image_gallery', true);
@@ -272,18 +274,18 @@ class JC_Port
                     }
                 }
             }
-            
+
             // 获取分类和标签
             $categories = wp_get_post_terms($post_id, 'product_cat', array('fields' => 'names'));
             $tags = wp_get_post_terms($post_id, 'product_tag', array('fields' => 'names'));
-            
+
             // 获取FAQ和属性
             $faqs = get_post_meta($post_id, '_product_faqs', true);
             $faqs_serialized = $faqs ? base64_encode(json_encode($faqs)) : '';
-            
+
             $attributes = get_post_meta($post_id, '_product_attributes', true);
             $attributes_serialized = $attributes ? base64_encode(json_encode($attributes)) : '';
-            
+
             // 写入产品数据到CSV
             $row = array(
                 $post_id,
@@ -297,12 +299,12 @@ class JC_Port
                 $faqs_serialized,
                 $attributes_serialized
             );
-            
+
             fputcsv($fp, $row);
         }
-        
+
         fclose($fp);
-        
+
         // 打包为ZIP文件
         if (class_exists('ZipArchive')) {
             $zip_file = $export_dir . '.zip';
@@ -310,10 +312,10 @@ class JC_Port
             if ($zip->open($zip_file, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
                 $this->add_files_to_zip($zip, $export_dir, $export_dir);
                 $zip->close();
-                
+
                 // 删除临时目录
                 $this->rrmdir($export_dir);
-                
+
                 // 提供下载
                 header('Content-Type: application/zip');
                 header('Content-Disposition: attachment; filename="products_export_' . date('Y-m-d_H-i-s') . '.zip"');
@@ -323,18 +325,18 @@ class JC_Port
                 exit;
             }
         }
-        
+
         // 如果不能创建ZIP，则只提供CSV下载
         header('Content-Type: text/csv; charset=UTF-8');
         header('Content-Disposition: attachment; filename="products_export_' . date('Y-m-d_H-i-s') . '.csv"');
         readfile($csv_file);
-        
+
         // 清理临时文件
         unlink($csv_file);
         if (is_dir($export_dir)) {
             $this->rrmdir($export_dir);
         }
-        
+
         exit;
     }
 
@@ -359,7 +361,7 @@ class JC_Port
         }
 
         $this->log("开始导入产品");
-        
+
         // 检查文件上传
         if (!isset($_FILES['csv_file']) || $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK) {
             $this->log("CSV文件上传失败: " . ($_FILES['csv_file']['error'] ?? '未知错误'));
@@ -373,7 +375,7 @@ class JC_Port
         $upload_dir = wp_upload_dir();
         $temp_dir = $upload_dir['basedir'] . '/jc_import_' . time();
         wp_mkdir_p($temp_dir);
-        
+
         $this->log("创建临时目录: " . $temp_dir);
 
         // 解压图片ZIP文件（如果提供了）
@@ -386,7 +388,7 @@ class JC_Port
                     $zip->close();
                     $images_path = $temp_dir . '/images/';
                     $this->log("图片ZIP文件解压成功到: " . $images_path);
-                    
+
                     // 查找实际的图片目录
                     $actual_images_path = $this->find_images_directory($images_path);
                     if ($actual_images_path !== false) {
@@ -409,7 +411,7 @@ class JC_Port
         // 处理CSV文件
         $csv_file = $_FILES['csv_file']['tmp_name'];
         $handle = fopen($csv_file, 'r');
-        
+
         if (!$handle) {
             $this->log("无法打开CSV文件进行读取");
             $this->rrmdir($temp_dir);
@@ -421,18 +423,18 @@ class JC_Port
 
         // 跳过BOM头
         $bom = fread($handle, 3);
-        if ($bom !== chr(0xEF).chr(0xBB).chr(0xBF)) {
+        if ($bom !== chr(0xEF) . chr(0xBB) . chr(0xBF)) {
             rewind($handle);
         }
 
         // 读取表头
         $headers = fgetcsv($handle);
         $this->log("读取到表头: " . implode(', ', $headers));
-        
+
         // 确定FAQ和属性的数量
         $faq_count = 0;
         $attribute_count = 0;
-        
+
         foreach ($headers as $header) {
             if (strpos($header, 'FAQ_Q_') === 0) {
                 $faq_num = (int)substr($header, 6);
@@ -446,19 +448,19 @@ class JC_Port
                 }
             }
         }
-        
+
         $this->log("检测到FAQ数量: " . $faq_count);
         $this->log("检测到属性数量: " . $attribute_count);
-        
+
         // 存储导入结果
         $imported = 0;
         $errors = 0;
-        
+
         // 处理每行数据
         while (($row = fgetcsv($handle)) !== FALSE) {
             $data = array_combine($headers, $row);
             $this->log("处理产品: " . $data['Title'] . " (ID: " . ($data['ID'] ?? 'new') . ")");
-            
+
             // 创建或更新产品
             $post_data = array(
                 'post_type' => 'product',
@@ -467,7 +469,7 @@ class JC_Port
                 'post_content' => $data['Description'],
                 'post_status' => 'publish'
             );
-            
+
             // 如果有ID则尝试更新现有产品
             if (!empty($data['ID'])) {
                 $existing_post = get_post($data['ID']);
@@ -478,25 +480,25 @@ class JC_Port
                     $this->log("指定的产品ID不存在，将创建新产品: " . $data['ID']);
                 }
             }
-            
+
             $post_id = wp_insert_post($post_data);
-            
+
             if (is_wp_error($post_id)) {
                 $this->log("创建/更新产品失败: " . $post_id->get_error_message());
                 $errors++;
                 continue;
             }
-            
+
             $this->log("产品保存成功，ID: " . $post_id);
-            
+
             // 处理特色图像
             if (!empty($data['Featured Image'])) {
                 $image_name = basename($data['Featured Image']);
                 $image_path = $images_path . $image_name;
-                
+
                 $this->log("处理特色图像: " . $image_name);
                 $this->log("图像路径: " . $image_path);
-                
+
                 if (file_exists($image_path)) {
                     $attachment_id = $this->import_image_as_attachment($image_path, $post_id, $image_name);
                     if ($attachment_id) {
@@ -522,20 +524,20 @@ class JC_Port
                     }
                 }
             }
-            
+
             // 处理画廊图像
             if (!empty($data['Gallery Images'])) {
                 $gallery_images = explode(',', $data['Gallery Images']);
                 $gallery_ids = array();
-                
+
                 $this->log("处理画廊图像，共 " . count($gallery_images) . " 张图片");
-                
+
                 foreach ($gallery_images as $image_filename) {
                     $image_name = basename($image_filename);
                     $image_path = $images_path . $image_name;
-                    
+
                     $this->log("处理画廊图像: " . $image_name);
-                    
+
                     if (file_exists($image_path)) {
                         $attachment_id = $this->import_image_as_attachment($image_path, $post_id, $image_name);
                         if ($attachment_id) {
@@ -561,13 +563,13 @@ class JC_Port
                         }
                     }
                 }
-                
+
                 if (!empty($gallery_ids)) {
                     update_post_meta($post_id, '_product_image_gallery', implode(',', $gallery_ids));
                     $this->log("画廊图像元数据已保存，IDs: " . implode(',', $gallery_ids));
                 }
             }
-            
+
             // 处理分类
             if (!empty($data['Categories'])) {
                 $categories = explode('|', $data['Categories']);
@@ -576,7 +578,7 @@ class JC_Port
                 foreach ($categories as $category_name) {
                     $category_name = trim($category_name);
                     if (empty($category_name)) continue;
-                    
+
                     $category = get_term_by('name', $category_name, 'product_cat');
                     if (!$category) {
                         $new_category = wp_insert_term($category_name, 'product_cat');
@@ -594,7 +596,7 @@ class JC_Port
                 wp_set_post_terms($post_id, $category_ids, 'product_cat');
                 $this->log("产品分类已设置，IDs: " . implode(',', $category_ids));
             }
-            
+
             // 处理标签
             if (!empty($data['Tags'])) {
                 $tags = explode('|', $data['Tags']);
@@ -603,7 +605,7 @@ class JC_Port
                 foreach ($tags as $tag_name) {
                     $tag_name = trim($tag_name);
                     if (empty($tag_name)) continue;
-                    
+
                     $tag = get_term_by('name', $tag_name, 'product_tag');
                     if (!$tag) {
                         $new_tag = wp_insert_term($tag_name, 'product_tag');
@@ -621,13 +623,13 @@ class JC_Port
                 wp_set_post_terms($post_id, $tag_ids, 'product_tag');
                 $this->log("产品标签已设置，IDs: " . implode(',', $tag_ids));
             }
-            
+
             // 处理FAQ
             $faqs = array();
             for ($i = 1; $i <= $faq_count; $i++) {
                 $question_key = 'FAQ_Q_' . $i;
                 $answer_key = 'FAQ_A_' . $i;
-                
+
                 if (!empty($data[$question_key]) || !empty($data[$answer_key])) {
                     $faqs[] = array(
                         'name' => isset($data[$question_key]) ? $data[$question_key] : '',
@@ -635,18 +637,18 @@ class JC_Port
                     );
                 }
             }
-            
+
             if (!empty($faqs)) {
                 update_post_meta($post_id, '_product_faqs', $faqs);
                 $this->log("FAQ数据已保存，共 " . count($faqs) . " 条");
             }
-            
+
             // 处理属性
             $attributes = array();
             for ($i = 1; $i <= $attribute_count; $i++) {
                 $name_key = 'Attribute_Name_' . $i;
                 $value_key = 'Attribute_Value_' . $i;
-                
+
                 if (!empty($data[$name_key]) || !empty($data[$value_key])) {
                     $attributes[] = array(
                         'name' => isset($data[$name_key]) ? $data[$name_key] : '',
@@ -654,30 +656,30 @@ class JC_Port
                     );
                 }
             }
-            
+
             if (!empty($attributes)) {
                 update_post_meta($post_id, '_product_attributes', $attributes);
                 $this->log("属性数据已保存，共 " . count($attributes) . " 条");
             }
-            
+
             $imported++;
             $this->log("产品处理完成: " . $data['Title'] . "\n---");
         }
-        
+
         fclose($handle);
-        
+
         // 清理临时文件
         $this->rrmdir($temp_dir);
         $this->log("导入过程结束，清理临时文件");
-        
+
         // 设置通知消息
         set_transient('jc_import_result', array(
             'imported' => $imported,
             'errors' => $errors
         ), 60);
-        
+
         $this->log("导入完成 - 成功: {$imported}, 失败: {$errors}");
-        
+
         wp_redirect(add_query_arg('import_success', 1, wp_get_referer()));
         exit;
     }
@@ -685,21 +687,22 @@ class JC_Port
     /**
      * 在目录及其子目录中查找图片文件
      */
-    private function find_file_in_subdirectories($root_path, $filename) {
+    private function find_file_in_subdirectories($root_path, $filename)
+    {
         $this->log("在目录 {$root_path} 及其子目录中搜索文件: {$filename}");
-        
+
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($root_path, RecursiveDirectoryIterator::SKIP_DOTS),
             RecursiveIteratorIterator::SELF_FIRST
         );
-        
+
         foreach ($iterator as $file) {
             if ($file->isFile() && $file->getFilename() === $filename) {
                 $this->log("找到文件: " . $file->getPathname());
                 return $file->getPathname();
             }
         }
-        
+
         $this->log("未找到文件: {$filename}");
         return false;
     }
@@ -707,22 +710,23 @@ class JC_Port
     /**
      * 查找图片目录
      */
-    private function find_images_directory($path) {
+    private function find_images_directory($path)
+    {
         $this->log("查找图片目录: " . $path);
-        
+
         // 检查当前目录是否包含图片文件
         $files = glob($path . "*.{jpg,jpeg,png,gif,webp,JPG,JPEG,PNG,GIF,WEBP}", GLOB_BRACE);
         if (!empty($files)) {
             $this->log("在当前目录找到图片文件");
             return $path;
         }
-        
+
         // 搜索子目录
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS),
             RecursiveIteratorIterator::SELF_FIRST
         );
-        
+
         foreach ($iterator as $file) {
             if ($file->isDir()) {
                 $sub_path = $file->getPathname() . DIRECTORY_SEPARATOR;
@@ -733,7 +737,7 @@ class JC_Port
                 }
             }
         }
-        
+
         $this->log("未在目录及其子目录中找到图片文件");
         return false;
     }
@@ -744,28 +748,28 @@ class JC_Port
     private function import_image_as_attachment($image_path, $post_id, $filename)
     {
         $this->log("开始导入图像为附件: " . $filename);
-        
+
         if (!file_exists($image_path)) {
             $this->log("图像文件不存在: " . $image_path);
             return false;
         }
-        
+
         $upload_dir = wp_upload_dir();
-        
+
         // 创建唯一的文件名
         $unique_filename = wp_unique_filename($upload_dir['path'], $filename);
         $new_filepath = $upload_dir['path'] . '/' . $unique_filename;
-        
+
         $this->log("目标文件路径: " . $new_filepath);
-        
+
         // 复制文件到上传目录
         if (copy($image_path, $new_filepath)) {
             $this->log("文件复制成功");
-            
+
             // 获取文件类型
             $wp_filetype = wp_check_filetype($filename, null);
             $this->log("文件类型: " . $wp_filetype['type']);
-            
+
             // 创建附件元数据
             $attachment = array(
                 'post_mime_type' => $wp_filetype['type'],
@@ -773,29 +777,29 @@ class JC_Port
                 'post_content' => '',
                 'post_status' => 'inherit'
             );
-            
+
             // 插入附件
             $attach_id = wp_insert_attachment($attachment, $new_filepath, $post_id);
-            
+
             if (is_wp_error($attach_id)) {
                 $this->log("附件插入失败: " . $attach_id->get_error_message());
                 return false;
             }
-            
+
             $this->log("附件插入成功，ID: " . $attach_id);
-            
+
             // 生成并更新附件元数据
             require_once(ABSPATH . 'wp-admin/includes/image.php');
             $attach_data = wp_generate_attachment_metadata($attach_id, $new_filepath);
             wp_update_attachment_metadata($attach_id, $attach_data);
-            
+
             $this->log("附件元数据更新完成");
-            
+
             return $attach_id;
         } else {
             $this->log("文件复制失败");
         }
-        
+
         return false;
     }
 
@@ -820,7 +824,7 @@ class JC_Port
                 delete_transient('jc_import_result');
             }
         }
-        
+
         if (isset($_GET['import_error'])) {
             $error_msg = '';
             switch ($_GET['import_error']) {
@@ -833,7 +837,7 @@ class JC_Port
                 default:
                     $error_msg = __('导入过程中发生未知错误。', 'jelly-catalog');
             }
-            
+
             printf('<div class="notice notice-error is-dismissible"><p>%s</p></div>', $error_msg);
         }
     }
@@ -867,7 +871,7 @@ class JC_Port
             if ($filename != "." && $filename != "..") {
                 $full_path = $path . '/' . $filename;
                 $local_path = str_replace($base_dir . '/', '', $full_path);
-                
+
                 if (is_file($full_path)) {
                     $zip->addFile($full_path, $local_path);
                 } elseif (is_dir($full_path)) {

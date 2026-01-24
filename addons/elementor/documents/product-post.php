@@ -1,77 +1,86 @@
 <?php
+
 namespace Jelly_Catalog\Addons\Elementor\Documents;
 
 use Elementor\Core\DocumentTypes\Post;
 use Elementor\Utils;
 use ElementorPro\Core\Behaviors\Feature_Lock;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+if (! defined('ABSPATH')) {
+    exit; // Exit if accessed directly
 }
 
-class Product_Post extends Post {
+class Product_Post extends Post
+{
 
-	public static function get_properties() {
-		$properties = parent::get_properties();
+    public static function get_properties()
+    {
+        $properties = parent::get_properties();
 
-		$properties['cpt'] = [
-			'product',
-		];
+        $properties['cpt'] = [
+            'product',
+        ];
 
-		return $properties;
-	}
+        return $properties;
+    }
 
-	/**
-	 * @since  2.0.0
-	 * @access public
-	 */
-	public function get_name() {
-		return 'product-post';
-	}
+    /**
+     * @since  2.0.0
+     * @access public
+     */
+    public function get_name()
+    {
+        return 'product-post';
+    }
 
-	/**
-	 * @since  2.0.0
-	 * @access public
-	 * @static
-	 */
-	public static function get_title() {
-		return esc_html__( 'Product Post', 'jelly-catalog' );
-	}
+    /**
+     * @since  2.0.0
+     * @access public
+     * @static
+     */
+    public static function get_title()
+    {
+        return esc_html__('Product Post', 'jelly-catalog');
+    }
 
-	public static function get_plural_title() {
-		return esc_html__( 'Product Posts', 'jelly-catalog' );
-	}
+    public static function get_plural_title()
+    {
+        return esc_html__('Product Posts', 'jelly-catalog');
+    }
 
-	public static function get_lock_behavior_v2() {
-		return new Feature_Lock( [
-			'type' => static::get_type(),
-		] );
-	}
+    public static function get_lock_behavior_v2()
+    {
+        return new Feature_Lock([
+            'type' => static::get_type(),
+        ]);
+    }
 
-	protected static function get_editor_panel_categories() {
-		$categories = parent::get_editor_panel_categories();
+    protected static function get_editor_panel_categories()
+    {
+        $categories = parent::get_editor_panel_categories();
 
-		unset( $categories['theme-elements-single'] );
+        unset($categories['theme-elements-single']);
 
-		$categories = Utils::array_inject(
-			$categories,
-			'theme-elements',
-			[
-				'jc-elements-single' => [
-					'title' => esc_html__( 'Product', 'jelly-catalog' ),
-					'active' => false,
-				],
-			]
-		);
+        $categories = Utils::array_inject(
+            $categories,
+            'theme-elements',
+            [
+                'jc-elements-single' => [
+                    'title' => esc_html__('Product', 'jelly-catalog'),
+                    'active' => false,
+                ],
+            ]
+        );
 
-		return $categories;
-	}
+        return $categories;
+    }
 
-	protected function get_remote_library_config() {
-		$config = parent::get_remote_library_config();
+    protected function get_remote_library_config()
+    {
+        $config = parent::get_remote_library_config();
 
-		// $config['category'] = 'single product';
+        // $config['category'] = 'single product';
 
-		return $config;
-	}
+        return $config;
+    }
 }

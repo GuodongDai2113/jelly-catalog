@@ -133,11 +133,8 @@ class Product_Cat_Nav extends Widget_Base
 
                 $is_active = ($current_top_id && (int)$term->term_id === (int)$current_top_id);
                 ?>
-                <a
-                    class="jc-cat-nav__tab <?php echo $is_active ? 'is-active' : ''; ?>"
-                    href="<?php echo esc_url($link); ?>"
-                    role="tab"
-                    aria-selected="<?php echo $is_active ? 'true' : 'false'; ?>">
+                <a class="jc-cat-nav__tab <?php echo $is_active ? 'is-active' : ''; ?>" href="<?php echo esc_url($link); ?>"
+                    role="tab" aria-selected="<?php echo $is_active ? 'true' : 'false'; ?>">
                     <?php echo esc_html($term->name); ?>
                 </a>
             <?php endforeach; ?>

@@ -394,8 +394,8 @@ class JC_Admin
     protected function print_completeness_line($is_complete, $label)
     {
         $icon = $is_complete
-            ? '<span class="dashicons dashicons-yes-alt" style="color:#52c41a;"></span>'
-            : '<span class="dashicons dashicons-dismiss" style="color:#ff4d4f;"></span>';
+            ? '<span class="dashicons dashicons-yes-alt"></span>'
+            : '<span class="dashicons dashicons-dismiss"></span>';
 
         printf('<p class="jc-completeness">%s%s</p>', $icon, esc_html($label));
     }

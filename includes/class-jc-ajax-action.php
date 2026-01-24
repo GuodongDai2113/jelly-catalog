@@ -45,7 +45,6 @@ class JC_Ajax_Action
         add_action('wp_ajax_save_products_sheet', array($this, 'save_products_sheet'));
         // 添加获取分类法术语的AJAX处理
         add_action('wp_ajax_get_taxonomy_terms', array($this, 'get_taxonomy_terms'));
-
     }
 
     public function admin_ajax_scripts()
@@ -144,7 +143,7 @@ class JC_Ajax_Action
         // 获取分页参数
         $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
         $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 20;
-        
+
         $per_page = max(10, min(100, $per_page));
 
         // 定义需要获取的元数据键
@@ -176,42 +175,42 @@ class JC_Ajax_Action
 
             foreach ($meta_keys as $meta_key) {
                 $meta_value = get_post_meta($product_id, $meta_key, true);
-            // 对于图片相关的元字段，获取附件链接
-            if ($meta_key === '_thumbnail_id' || $meta_key === '_product_image_gallery') {
-                if ($meta_key === '_thumbnail_id') {
-                    // 单个特色图片
-                    if (!empty($meta_value) && is_numeric($meta_value)) {
-                        $attachment_url = wp_get_attachment_image_url($meta_value, 'thumbnail');
-                        $meta_data[$meta_key] = array(
-                            array(
-                                'id' => (int)$meta_value,
-                                'url' => $attachment_url ? $attachment_url : ''
-                            )
-                        );
-                    } else {
-                        $meta_data[$meta_key] = array();
-                    }
-                } else if ($meta_key === '_product_image_gallery') {
-                    // 画廊图片数组
-                    $gallery_images = array();
-                    if (!empty($meta_value)) {
-                        $image_ids = explode(',', $meta_value);
-                        foreach ($image_ids as $image_id) {
-                            $image_id = trim($image_id);
-                            if (is_numeric($image_id)) {
-                                $attachment_url = wp_get_attachment_image_url($image_id, 'thumbnail');
-                                $gallery_images[] = array(
-                                    'id' => (int)$image_id,
+                // 对于图片相关的元字段，获取附件链接
+                if ($meta_key === '_thumbnail_id' || $meta_key === '_product_image_gallery') {
+                    if ($meta_key === '_thumbnail_id') {
+                        // 单个特色图片
+                        if (!empty($meta_value) && is_numeric($meta_value)) {
+                            $attachment_url = wp_get_attachment_image_url($meta_value, 'thumbnail');
+                            $meta_data[$meta_key] = array(
+                                array(
+                                    'id' => (int)$meta_value,
                                     'url' => $attachment_url ? $attachment_url : ''
-                                );
+                                )
+                            );
+                        } else {
+                            $meta_data[$meta_key] = array();
+                        }
+                    } else if ($meta_key === '_product_image_gallery') {
+                        // 画廊图片数组
+                        $gallery_images = array();
+                        if (!empty($meta_value)) {
+                            $image_ids = explode(',', $meta_value);
+                            foreach ($image_ids as $image_id) {
+                                $image_id = trim($image_id);
+                                if (is_numeric($image_id)) {
+                                    $attachment_url = wp_get_attachment_image_url($image_id, 'thumbnail');
+                                    $gallery_images[] = array(
+                                        'id' => (int)$image_id,
+                                        'url' => $attachment_url ? $attachment_url : ''
+                                    );
+                                }
                             }
                         }
+                        $meta_data[$meta_key] = $gallery_images;
                     }
-                    $meta_data[$meta_key] = $gallery_images;
+                } else {
+                    $meta_data[$meta_key] = $meta_value;
                 }
-            } else {
-                $meta_data[$meta_key] = $meta_value;
-            }
             }
 
             // 获取产品分类（获取完整的分类树结构）
@@ -562,7 +561,6 @@ class JC_Ajax_Action
 
         return $result;
     }
-
 }
 
 JC_Ajax_Action::instance();

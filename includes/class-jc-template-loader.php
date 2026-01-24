@@ -29,28 +29,28 @@ class JC_Template_Loader
      */
     public static function inject_products_page_context()
     {
-        if (! (is_post_type_archive('product') )) {
+        if (! (is_post_type_archive('product'))) {
             return;
         }
-    
+
         global $wp_query, $post;
-    
+
         $page = get_post(self::$products_page_id);
         if (! $page || $page->post_status !== 'publish') {
             return;
         }
-    
+
         $queried_object = get_queried_object();
         $prefix = '';
-    
+
         if (! empty($queried_object->description) && (! isset($_GET['product-page']) || absint($_GET['product-page']) === 1)) {
             $prefix = '<div class="term-description">' . wpautop(wp_kses_post($queried_object->description)) . '</div>';
         }
-    
+
         $page_content = apply_filters('the_content', $page->post_content);
         $loop_shortcode = '[products paginate="true"]';
         $composed_content = $prefix . $page_content . do_shortcode($loop_shortcode);
-    
+
         $dummy_post = [
             'ID'                    => 0,
             'post_status'           => 'publish',
@@ -77,9 +77,9 @@ class JC_Template_Loader
             'comment_count'         => 0,
             'filter'                => 'raw',
         ];
-    
+
         $post = new WP_Post((object)$dummy_post);
-    
+
         // ✅ 替换主查询（关键修复）
         $wp_query->post               = $post;
         $wp_query->posts              = [$post];
@@ -92,34 +92,34 @@ class JC_Template_Loader
         $wp_query->max_num_pages      = 1;
         $wp_query->queried_object     = $post;     // ✅ 核心修复
         $wp_query->queried_object_id  = $post->ID; // ✅ 核心修复
-    
+
         setup_postdata($post);
         remove_all_filters('the_excerpt');
-    
+
         add_filter('template_include', [__CLASS__, 'force_page_template']);
     }
-    
+
 
     /**
      * 强制加载页面模板 (Elementor / theme page.php)
      */
     public static function force_page_template($template)
     {
-		$possible_templates = array(
-			'page',
-			'single',
-			'singular',
-			'index',
-		);
+        $possible_templates = array(
+            'page',
+            'single',
+            'singular',
+            'index',
+        );
 
-		foreach ( $possible_templates as $possible_template ) {
-			$path = get_query_template( $possible_template );
-			if ( $path ) {
-				return $path;
-			}
-		}
+        foreach ($possible_templates as $possible_template) {
+            $path = get_query_template($possible_template);
+            if ($path) {
+                return $path;
+            }
+        }
 
-		return $template;
+        return $template;
     }
 }
 

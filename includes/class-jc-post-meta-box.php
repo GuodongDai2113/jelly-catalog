@@ -144,7 +144,6 @@ class JC_Post_Meta_Box
                 </ol>
             </div>',
         ));
-
     }
 
     private function initialize_metaboxes()

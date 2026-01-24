@@ -14,64 +14,8 @@ class JC_Product_Cat_Fields_Metabox
 {
     public function __construct()
     {
-        // add_action('product_cat_add_form_fields', array($this, 'add_category_fields'));
         add_action('product_cat_edit_form_fields', array($this, 'edit_category_fields'));
         add_action('edited_product_cat', array($this, 'save_category_fields'));
-        // add_action('create_product_cat', array($this, 'save_category_fields'));
-    }
-
-    /**
-     * 在添加产品分类页面添加字段
-     */
-    public function add_category_fields()
-    {
-        // Category H1 Title
-        echo '<div class="form-field">';
-        echo '<label for="category_h1_title">' . esc_html__('Category H1 Title', 'jelly-catalog') . '</label>';
-        echo '<input type="text" name="category_h1_title" id="category_h1_title" value="">';
-        echo '<p class="description">' . esc_html__('Enter the H1 title for this category.', 'jelly-catalog') . '</p>';
-        echo '</div>';
-
-        // Category Why Choose Us Title
-        echo '<div class="form-field">';
-        echo '<label for="category_why_choose_title">' . esc_html__('Why Choose Us Title', 'jelly-catalog') . '</label>';
-        echo '<input type="text" name="category_why_choose_title" id="category_why_choose_title" value="">';
-        echo '<p class="description">' . esc_html__('Enter the why choose us title for this category.', 'jelly-catalog') . '</p>';
-        echo '</div>';
-
-        // Category Why Choose Content
-        echo '<div class="form-field">';
-        echo '<label for="category_why_choose">' . esc_html__('Category Why Choose', 'jelly-catalog') . '</label>';
-        wp_editor('', 'category_why_choose', array(
-            'textarea_name' => 'category_why_choose',
-            'textarea_rows' => 10,
-            'media_buttons' => false,
-            'teeny' => false,
-            'tinymce' => array(
-                'toolbar1' => 'formatselect,bold,italic,bullist,numlist,link,unlink,undo,redo',
-                'toolbar2' => ''
-            ),
-            'quicktags' => true
-        ));
-        echo '<p class="description">' . esc_html__('Enter the why choose content for this category.', 'jelly-catalog') . '</p>';
-        echo '</div>';
-
-        // Category Advantages
-        echo '<div class="form-field">';
-        echo '<label for="category_advantages">' . esc_html__('Category Advantages', 'jelly-catalog') . '</label>';
-        wp_editor('', 'category_advantages', array(
-            'textarea_name' => 'category_advantages',
-            'textarea_rows' => 10,
-            'media_buttons' => false,
-            'teeny' => false,
-            'tinymce' => array(
-                'toolbar1' => 'formatselect,bold,italic,bullist,numlist,link,unlink,undo,redo',
-                'toolbar2' => ''
-            ),
-            'quicktags' => true
-        ));
-        echo '<p class="description">' . esc_html__('Enter the advantages for this category.', 'jelly-catalog') . '</p>';
-        echo '</div>';
     }
 
     /**
@@ -116,10 +60,10 @@ class JC_Product_Cat_Fields_Metabox
             'textarea_name' => 'category_why_choose',
             'textarea_rows' => 10,
             'media_buttons' => false,
-            'teeny' => false,
-            'tinymce' => array(
-                'toolbar1' => 'formatselect,bold,italic,bullist,numlist,link,unlink,undo,redo',
-                'toolbar2' => ''
+            'quicktags'     => array('buttons' => 'em,strong,link'),
+            'tinymce'       => array(
+                'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
+                'theme_advanced_buttons2' => '',
             ),
             'quicktags' => true
         ));
@@ -137,10 +81,10 @@ class JC_Product_Cat_Fields_Metabox
             'textarea_name' => 'category_advantages',
             'textarea_rows' => 10,
             'media_buttons' => false,
-            'teeny' => false,
-            'tinymce' => array(
-                'toolbar1' => 'formatselect,bold,italic,bullist,numlist,link,unlink,undo,redo',
-                'toolbar2' => ''
+            'quicktags'     => array('buttons' => 'em,strong,link'),
+            'tinymce'       => array(
+                'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
+                'theme_advanced_buttons2' => '',
             ),
             'quicktags' => true
         ));

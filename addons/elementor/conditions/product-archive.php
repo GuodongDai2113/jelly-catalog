@@ -3,62 +3,72 @@
  * 摘取文件 elementor-pro\modules\woocommerce\conditions\product-archive.php
  * 
  */
+
 namespace Jelly_Catalog\Addons\Elementor\Conditions;
 
 use ElementorPro\Modules\ThemeBuilder as ThemeBuilder;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+if (! defined('ABSPATH')) {
+    exit; // Exit if accessed directly
 }
 
-class Product_Archive extends ThemeBuilder\Conditions\Condition_Base {
+class Product_Archive extends ThemeBuilder\Conditions\Condition_Base
+{
 
-	private $post_type = 'product';
-	private $post_taxonomies;
+    private $post_type = 'product';
+    private $post_taxonomies;
 
-	public function __construct( array $data = [] ) {
-		$taxonomies = get_object_taxonomies( $this->post_type, 'objects' );
-		$this->post_taxonomies = wp_filter_object_list( $taxonomies, [
-			'public' => true,
-			'show_in_nav_menus' => true,
-		] );
+    public function __construct(array $data = [])
+    {
+        $taxonomies = get_object_taxonomies($this->post_type, 'objects');
+        $this->post_taxonomies = wp_filter_object_list($taxonomies, [
+            'public' => true,
+            'show_in_nav_menus' => true,
+        ]);
 
-		parent::__construct( $data );
-	}
+        parent::__construct($data);
+    }
 
-	public static function get_type() {
-		return 'archive';
-	}
+    public static function get_type()
+    {
+        return 'archive';
+    }
 
-	public function get_name() {
-		return 'product_archive';
-	}
+    public function get_name()
+    {
+        return 'product_archive';
+    }
 
-	public static function get_priority() {
-		return 40;
-	}
+    public static function get_priority()
+    {
+        return 40;
+    }
 
-	public function get_label() {
-		return esc_html__( 'Product Archive', 'jelly-catalog' );
-	}
+    public function get_label()
+    {
+        return esc_html__('Product Archive', 'jelly-catalog');
+    }
 
-	public function get_all_label() {
-		return esc_html__( 'All Product Archives', 'jelly-catalog' );
-	}
+    public function get_all_label()
+    {
+        return esc_html__('All Product Archives', 'jelly-catalog');
+    }
 
-	public function register_sub_conditions() {
-		$this->register_sub_condition( new Products_page() );
-		$this->register_sub_condition( new Product_Search() );
+    public function register_sub_conditions()
+    {
+        $this->register_sub_condition(new Products_page());
+        $this->register_sub_condition(new Product_Search());
 
-		foreach ( $this->post_taxonomies as $slug => $object ) {
-			$condition = new ThemeBuilder\Conditions\Taxonomy( [
-				'object' => $object,
-			] );
-			$this->register_sub_condition( $condition );
-		}
-	}
+        foreach ($this->post_taxonomies as $slug => $object) {
+            $condition = new ThemeBuilder\Conditions\Taxonomy([
+                'object' => $object,
+            ]);
+            $this->register_sub_condition($condition);
+        }
+    }
 
-	public function check( $args ) {
-		return is_jc_product_archive() || is_jc_product_search();
-	}
+    public function check($args)
+    {
+        return is_jc_product_archive() || is_jc_product_search();
+    }
 }

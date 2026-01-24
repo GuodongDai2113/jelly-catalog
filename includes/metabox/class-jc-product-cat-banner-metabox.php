@@ -33,8 +33,10 @@ class JC_Product_Cat_Banner_Metabox
                     <img src="" alt="" style="max-width: 150px; height: auto;" />
                 </div>
                 <p>
-                    <button class="button button-secondary" id="banner_id_button"><?php esc_html_e('Select Banner', 'jelly-catalog'); ?></button>
-                    <button class="button button-secondary remove-banner" style="display: none;"><?php esc_html_e('Remove Banner', 'jelly-catalog'); ?></button>
+                    <button class="button button-secondary"
+                        id="banner_id_button"><?php esc_html_e('Select Banner', 'jelly-catalog'); ?></button>
+                    <button class="button button-secondary remove-banner"
+                        style="display: none;"><?php esc_html_e('Remove Banner', 'jelly-catalog'); ?></button>
                 </p>
             </div>
             <p class="description"><?php esc_html_e('Select a banner image for this product category.', 'jelly-catalog'); ?></p>
@@ -62,11 +64,14 @@ class JC_Product_Cat_Banner_Metabox
                         <img src="<?php echo esc_url($banner_url); ?>" alt="" />
                     </div>
                     <p>
-                        <button class="button button-secondary" id="banner_id_button"><?php esc_html_e('Select Banner', 'jelly-catalog'); ?></button>
-                        <button class="button button-secondary remove-banner" style="<?php echo $banner_id ? '' : 'display: none;'; ?>"><?php esc_html_e('Remove Banner', 'jelly-catalog'); ?></button>
+                        <button class="button button-secondary"
+                            id="banner_id_button"><?php esc_html_e('Select Banner', 'jelly-catalog'); ?></button>
+                        <button class="button button-secondary remove-banner"
+                            style="<?php echo $banner_id ? '' : 'display: none;'; ?>"><?php esc_html_e('Remove Banner', 'jelly-catalog'); ?></button>
                     </p>
                 </div>
-                <p class="description"><?php esc_html_e('Select a banner image for this product category.', 'jelly-catalog'); ?></p>
+                <p class="description"><?php esc_html_e('Select a banner image for this product category.', 'jelly-catalog'); ?>
+                </p>
             </td>
         </tr>
 <?php

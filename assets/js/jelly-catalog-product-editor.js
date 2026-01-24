@@ -287,7 +287,7 @@
 
         editor.on("keyup paste cut", () => {
           this.updateCharacterCountDisplay(
-            this.getExcerptLengthFromEditor(editor),
+            this.getExcerptLengthFromEditor(editor)
           );
         });
       });
@@ -310,7 +310,7 @@
         const editor = this.getExcerptEditor();
         if (editor) {
           this.updateCharacterCountDisplay(
-            this.getExcerptLengthFromEditor(editor),
+            this.getExcerptLengthFromEditor(editor)
           );
           return;
         }

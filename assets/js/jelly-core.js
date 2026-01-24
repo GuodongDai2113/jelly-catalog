@@ -3,20 +3,24 @@
 
   class JellyModal {
     constructor(options) {
-      this.options = $.extend({}, {
-        id: "jelly-modal",
-        title: "Modal Title",
-        description: "",
-        bodyHtml: "",
-        confirmText: "Confirm",
-        cancelText: "Cancel",
-        closeOnBackdrop: true,
-        closeOnEsc: true,
-        onConfirm: null,
-        onCancel: null,
-        onOpen: null,
-        onClose: null,
-      }, options);
+      this.options = $.extend(
+        {},
+        {
+          id: "jelly-modal",
+          title: "Modal Title",
+          description: "",
+          bodyHtml: "",
+          confirmText: "Confirm",
+          cancelText: "Cancel",
+          closeOnBackdrop: true,
+          closeOnEsc: true,
+          onConfirm: null,
+          onCancel: null,
+          onOpen: null,
+          onClose: null,
+        },
+        options
+      );
       this.$modal = null;
       this.isOpen = false;
       this.bound = false;
@@ -208,12 +212,12 @@
       this.noticeContainer.append(notification);
 
       // 设置定时器自动隐藏;
-      // setTimeout(() => {
-      //   notification.removeClass("slideIn").addClass("slideOut");
-      //   setTimeout(() => {
-      //     notification.remove();
-      //   }, 300); // 等待动画完成后再移除元素
-      // }, 3000);
+      setTimeout(() => {
+        notification.removeClass("slideIn").addClass("slideOut");
+        setTimeout(() => {
+          notification.remove();
+        }, 300); // 等待动画完成后再移除元素
+      }, 3000);
     }
   }
 
@@ -229,6 +233,7 @@
     window.jellyShowSuccess =
       noticeManager.jellyShowSuccess.bind(noticeManager);
     window.jellyShowError = noticeManager.jellyShowError.bind(noticeManager);
-    window.jellyShowWarning = noticeManager.jellyShowWarning.bind(noticeManager);
+    window.jellyShowWarning =
+      noticeManager.jellyShowWarning.bind(noticeManager);
   }
 })(jQuery);

@@ -66,8 +66,6 @@
       }
     }
 
-
-
     /**
      * 处理批量创建FAQ
      */
@@ -105,7 +103,7 @@
       const key = $wrapper.data("key");
 
       items.forEach((item) => {
-         const itemCount = $wrapper.find(SELECTORS.repeaterItem).length;
+        const itemCount = $wrapper.find(SELECTORS.repeaterItem).length;
         const $newItem = this.buildRepeaterItem(key, itemCount + 1);
 
         if ($newItem) {
@@ -166,7 +164,7 @@
       });
 
       // 批量创建FAQ事件
-      $(document).on('click', SELECTORS.bulkCreate, (e) => {
+      $(document).on("click", SELECTORS.bulkCreate, (e) => {
         e.preventDefault();
         this.showBulkCreateModal($(e.currentTarget));
       });
@@ -176,16 +174,18 @@
      * 为旧数据项补齐删除按钮
      */
     addDeleteButtons(repeaterWrapper) {
-      repeaterWrapper.find(".repeater-item .repeater-item-header").each((_, item) => {
-        const $item = $(item);
-        if ($item.find(".remove-repeater").length) return;
+      repeaterWrapper
+        .find(".repeater-item .repeater-item-header")
+        .each((_, item) => {
+          const $item = $(item);
+          if ($item.find(".remove-repeater").length) return;
 
-        $item.append(`
+          $item.append(`
           <div type="button" class="remove-repeater" title="Delete item">
             <span class="dashicons dashicons-no-alt"></span>
           </div>
         `);
-      });
+        });
     }
 
     /**
@@ -236,7 +236,7 @@
       const $item = $(`
         <div class="repeater-item">
         <div class="repeater-item-header">
-          <span class="item-title">${index}. ${key.replace(/_/g, ' ')}</span>
+          <span class="item-title">${index}. ${key.replace(/_/g, " ")}</span>
           <div type="button" class="remove-repeater" title="Delete item">
             <span class="dashicons dashicons-no-alt"></span>
           </div>

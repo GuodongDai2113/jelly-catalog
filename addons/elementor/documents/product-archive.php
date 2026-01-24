@@ -1,171 +1,188 @@
 <?php
+
 namespace Jelly_Catalog\Addons\Elementor\Documents;
 
 use ElementorPro\Modules\ThemeBuilder\Documents\Archive;
 use ElementorPro\Plugin;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+if (! defined('ABSPATH')) {
+    exit; // Exit if accessed directly
 }
 
-class Product_Archive extends Archive {
+class Product_Archive extends Archive
+{
 
-	public static function get_properties() {
-		$properties = parent::get_properties();
+    public static function get_properties()
+    {
+        $properties = parent::get_properties();
 
-		$properties['location'] = 'archive';
-		$properties['condition_type'] = 'product_archive';
+        $properties['location'] = 'archive';
+        $properties['condition_type'] = 'product_archive';
 
-		return $properties;
-	}
+        return $properties;
+    }
 
-	public static function get_type() {
-		return 'product-archive';
-	}
+    public static function get_type()
+    {
+        return 'product-archive';
+    }
 
-	public static function get_title() {
-		return esc_html__( 'Products Archive', 'jelly-catalog' );
-	}
+    public static function get_title()
+    {
+        return esc_html__('Products Archive', 'jelly-catalog');
+    }
 
-	public static function get_plural_title() {
-		return esc_html__( 'Products Archives', 'jelly-catalog' );
-	}
+    public static function get_plural_title()
+    {
+        return esc_html__('Products Archives', 'jelly-catalog');
+    }
 
-	protected static function get_site_editor_icon() {
-		return 'eicon-products';
-	}
+    protected static function get_site_editor_icon()
+    {
+        return 'eicon-products';
+    }
 
-	/**
-	 * Fix for thumbnail name that is different from editor type.
-	 *
-	 * @return string
-	 */
-	protected static function get_site_editor_thumbnail_url() {
-		return ELEMENTOR_ASSETS_URL . 'images/app/site-editor/products.svg';
-	}
+    /**
+     * Fix for thumbnail name that is different from editor type.
+     *
+     * @return string
+     */
+    protected static function get_site_editor_thumbnail_url()
+    {
+        return ELEMENTOR_ASSETS_URL . 'images/app/site-editor/products.svg';
+    }
 
-	protected static function get_site_editor_tooltip_data() {
-		return [
-			'title' => esc_html__( 'What is a Products Archive Template?', 'jelly-catalog' ),
-			'content' => esc_html__( 'A products archive template allows you to easily design the layout and style of your WooCommerce shop page or other product archive pages - those pages that show a list of products, which may be filtered by terms such as categories, tags, etc.', 'jelly-catalog' ),
-			'tip' => esc_html__( 'You can create multiple products archive templates, and assign each to different categories of products. This gives you the freedom to customize the appearance for each type of product being shown.', 'jelly-catalog' ),
-			'docs' => 'https://go.elementor.com/app-theme-builder-products-archive',
-			'video_url' => 'https://www.youtube.com/embed/cQLeirgkguA',
-		];
-	}
+    protected static function get_site_editor_tooltip_data()
+    {
+        return [
+            'title' => esc_html__('What is a Products Archive Template?', 'jelly-catalog'),
+            'content' => esc_html__('A products archive template allows you to easily design the layout and style of your WooCommerce shop page or other product archive pages - those pages that show a list of products, which may be filtered by terms such as categories, tags, etc.', 'jelly-catalog'),
+            'tip' => esc_html__('You can create multiple products archive templates, and assign each to different categories of products. This gives you the freedom to customize the appearance for each type of product being shown.', 'jelly-catalog'),
+            'docs' => 'https://go.elementor.com/app-theme-builder-products-archive',
+            'video_url' => 'https://www.youtube.com/embed/cQLeirgkguA',
+        ];
+    }
 
-	// public function enqueue_scripts() {
-	// 	// In preview mode it's not a real Woocommerce page - enqueue manually.
-	// 	if ( Plugin::elementor()->preview->is_preview_mode( $this->get_main_id() ) ) {
-	// 		wp_enqueue_script( 'woocommerce' );
-	// 	}
-	// }
+    // public function enqueue_scripts() {
+    // 	// In preview mode it's not a real Woocommerce page - enqueue manually.
+    // 	if ( Plugin::elementor()->preview->is_preview_mode( $this->get_main_id() ) ) {
+    // 		wp_enqueue_script( 'woocommerce' );
+    // 	}
+    // }
 
-	public function get_container_attributes() {
-		$attributes = parent::get_container_attributes();
+    public function get_container_attributes()
+    {
+        $attributes = parent::get_container_attributes();
 
-		$attributes['class'] .= ' product';
+        $attributes['class'] .= ' product';
 
-		return $attributes;
-	}
+        return $attributes;
+    }
 
-	public function filter_body_classes( $body_classes ) {
-		$body_classes = parent::filter_body_classes( $body_classes );
+    public function filter_body_classes($body_classes)
+    {
+        $body_classes = parent::filter_body_classes($body_classes);
 
-		if ( get_the_ID() === $this->get_main_id() || Plugin::elementor()->preview->is_preview_mode( $this->get_main_id() ) ) {
-			$body_classes[] = 'jelly-catalog';
-		}
+        if (get_the_ID() === $this->get_main_id() || Plugin::elementor()->preview->is_preview_mode($this->get_main_id())) {
+            $body_classes[] = 'jelly-catalog';
+        }
 
-		return $body_classes;
-	}
+        return $body_classes;
+    }
 
-	public static function get_preview_as_default() {
-		return 'post_type_archive/product';
-	}
+    public static function get_preview_as_default()
+    {
+        return 'post_type_archive/product';
+    }
 
-	public static function get_preview_as_options() {
-		$post_type_archives = [];
-		$taxonomies = [];
-		$post_type = 'product';
+    public static function get_preview_as_options()
+    {
+        $post_type_archives = [];
+        $taxonomies = [];
+        $post_type = 'product';
 
-		$post_type_object = get_post_type_object( $post_type );
+        $post_type_object = get_post_type_object($post_type);
 
-		$post_type_archives[ 'post_type_archive/' . $post_type ] = $post_type_object->label . ' ' . esc_html__( 'Archive', 'jelly-catalog' );
+        $post_type_archives['post_type_archive/' . $post_type] = $post_type_object->label . ' ' . esc_html__('Archive', 'jelly-catalog');
 
-		$post_type_taxonomies = get_object_taxonomies( $post_type, 'objects' );
+        $post_type_taxonomies = get_object_taxonomies($post_type, 'objects');
 
-		$post_type_taxonomies = wp_filter_object_list( $post_type_taxonomies, [
-			'public' => true,
-			'show_in_nav_menus' => true,
-		] );
+        $post_type_taxonomies = wp_filter_object_list($post_type_taxonomies, [
+            'public' => true,
+            'show_in_nav_menus' => true,
+        ]);
 
-		foreach ( $post_type_taxonomies as $slug => $object ) {
-			$taxonomies[ 'taxonomy/' . $slug ] = $object->label . ' ' . esc_html__( 'Archive', 'jelly-catalog' );
-		}
+        foreach ($post_type_taxonomies as $slug => $object) {
+            $taxonomies['taxonomy/' . $slug] = $object->label . ' ' . esc_html__('Archive', 'jelly-catalog');
+        }
 
-		$options = [
-			'search' => esc_html__( 'Search Results', 'jelly-catalog' ),
-		];
+        $options = [
+            'search' => esc_html__('Search Results', 'jelly-catalog'),
+        ];
 
-		$options += $taxonomies + $post_type_archives;
+        $options += $taxonomies + $post_type_archives;
 
-		return [
-			'archive' => [
-				'label' => esc_html__( 'Archive', 'jelly-catalog' ),
-				'options' => $options,
-			],
-		];
-	}
+        return [
+            'archive' => [
+                'label' => esc_html__('Archive', 'jelly-catalog'),
+                'options' => $options,
+            ],
+        ];
+    }
 
-	public function __construct( array $data = [] ) {
-		parent::__construct( $data );
+    public function __construct(array $data = [])
+    {
+        parent::__construct($data);
 
-		// add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ], 11 );
-	}
+        // add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ], 11 );
+    }
 
-	protected static function get_editor_panel_categories() {
-		// 在编辑器的左侧面板增加置顶分类
-		$categories = [
-			'jc-elements-archive' => [
-				'title' => esc_html__( 'Product Archive', 'jelly-catalog' ),
-			],
-			// Move to top as active.
-			'jc-elements' => [
-				'title' => esc_html__( 'Jelly Catalog', 'jelly-catalog' ),
-				'active' => true,
-			],
-		];
+    protected static function get_editor_panel_categories()
+    {
+        // 在编辑器的左侧面板增加置顶分类
+        $categories = [
+            'jc-elements-archive' => [
+                'title' => esc_html__('Product Archive', 'jelly-catalog'),
+            ],
+            // Move to top as active.
+            'jc-elements' => [
+                'title' => esc_html__('Jelly Catalog', 'jelly-catalog'),
+                'active' => true,
+            ],
+        ];
 
-		$categories += parent::get_editor_panel_categories();
+        $categories += parent::get_editor_panel_categories();
 
-		unset( $categories['theme-elements-archive'] );
+        unset($categories['theme-elements-archive']);
 
-		return $categories;
-	}
+        return $categories;
+    }
 
-	public static function get_editor_panel_config() {
-		$config = parent::get_editor_panel_config();
-		$config['widgets_settings']['theme-archive-title']['categories'][] = 'jc-elements-archive';
+    public static function get_editor_panel_config()
+    {
+        $config = parent::get_editor_panel_config();
+        $config['widgets_settings']['theme-archive-title']['categories'][] = 'jc-elements-archive';
 
-		return $config;
-	}
+        return $config;
+    }
 
-	protected function register_controls() {
-		parent::register_controls();
+    protected function register_controls()
+    {
+        parent::register_controls();
 
-		$this->update_control(
-			'preview_type',
-			[
-				'default' => 'post_type_archive/product',
-			]
-		);
-	}
+        $this->update_control(
+            'preview_type',
+            [
+                'default' => 'post_type_archive/product',
+            ]
+        );
+    }
 
-	// protected function get_remote_library_config() {
-	// 	$config = parent::get_remote_library_config();
+    // protected function get_remote_library_config() {
+    // 	$config = parent::get_remote_library_config();
 
-	// 	$config['category'] = 'product archive';
+    // 	$config['category'] = 'product archive';
 
-	// 	return $config;
-	// }
+    // 	return $config;
+    // }
 }

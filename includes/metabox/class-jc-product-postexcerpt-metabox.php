@@ -25,7 +25,7 @@ class JC_Product_Postexcerpt_Metabox
 
     public function render_metabox($post)
     {
-        ?>
+?>
         <div class="short-description-wrapper">
             <div class="character-count">
                 <span class="count-label"><?php esc_html_e('Characters:', 'jelly-catalog'); ?></span>

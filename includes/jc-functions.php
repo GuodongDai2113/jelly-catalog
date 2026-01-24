@@ -65,7 +65,7 @@ function jc_render_repeater_field($args)
         echo '<div class="repeater-item-header">';
         $title = esc_html(str_replace('_', ' ', $args['name']));
         echo '<span class="item-title">' . esc_html($index) . '. ' . $title . '</span>';
-        
+
         echo '</div>';
 
         foreach ($args['fields'] as $field) {
@@ -131,29 +131,30 @@ function jc_get_page_id($page)
     return $page ? absint($page) : -1;
 }
 
-function jc_get_permalink_structure() {
-    $saved_permalinks = (array) get_option( 'jelly_catalog_permalinks', array() );
-	$permalinks       = wp_parse_args(
-		array_filter( $saved_permalinks ),
-		array(
-			'product_base'           => _x( 'products', 'slug', 'jelly-catalog' ),
-			// 'category_base'          => _x( 'product-category', 'slug', 'jelly-catalog' ),
-			// 'tag_base'               => _x( 'product-tag', 'slug', 'jelly-catalog' ),
-			// 'attribute_base'         => '',
-			// 'use_verbose_page_rules' => false,
-		)
-	);
+function jc_get_permalink_structure()
+{
+    $saved_permalinks = (array) get_option('jelly_catalog_permalinks', array());
+    $permalinks       = wp_parse_args(
+        array_filter($saved_permalinks),
+        array(
+            'product_base'           => _x('products', 'slug', 'jelly-catalog'),
+            // 'category_base'          => _x( 'product-category', 'slug', 'jelly-catalog' ),
+            // 'tag_base'               => _x( 'product-tag', 'slug', 'jelly-catalog' ),
+            // 'attribute_base'         => '',
+            // 'use_verbose_page_rules' => false,
+        )
+    );
 
-	if ( $saved_permalinks !== $permalinks ) {
-		update_option( 'jelly_catalog_permalinks', $permalinks );
-	}
+    if ($saved_permalinks !== $permalinks) {
+        update_option('jelly_catalog_permalinks', $permalinks);
+    }
 
-	$permalinks['product_rewrite_slug']   = untrailingslashit( $permalinks['product_base'] );
-	// $permalinks['category_rewrite_slug']  = untrailingslashit( $permalinks['category_base'] );
-	// $permalinks['tag_rewrite_slug']       = untrailingslashit( $permalinks['tag_base'] );
-	// $permalinks['attribute_rewrite_slug'] = untrailingslashit( $permalinks['attribute_base'] );
+    $permalinks['product_rewrite_slug']   = untrailingslashit($permalinks['product_base']);
+    // $permalinks['category_rewrite_slug']  = untrailingslashit( $permalinks['category_base'] );
+    // $permalinks['tag_rewrite_slug']       = untrailingslashit( $permalinks['tag_base'] );
+    // $permalinks['attribute_rewrite_slug'] = untrailingslashit( $permalinks['attribute_base'] );
 
-	return $permalinks;
+    return $permalinks;
 }
 
 // function jc_template_redirect()

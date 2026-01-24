@@ -85,7 +85,7 @@ class JC_Product_Attributes_Metabox
             }
 
             update_post_meta($post_id, '_product_attributes', $clean);
-        }else{
+        } else {
             delete_post_meta($post_id, '_product_attributes');
         }
     }

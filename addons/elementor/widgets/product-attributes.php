@@ -46,18 +46,19 @@ class Product_Attributes extends Widget_Base
     }
 
     /**
-	 * Get style dependencies.
-	 *
-	 * Retrieve the list of style dependencies the widget requires.
-	 *
-	 * @since 3.24.0
-	 * @access public
-	 *
-	 * @return array Widget style dependencies.
-	 */
-	public function get_style_depends(): array {
-		return [ 'widget-icon-list' ];
-	}
+     * Get style dependencies.
+     *
+     * Retrieve the list of style dependencies the widget requires.
+     *
+     * @since 3.24.0
+     * @access public
+     *
+     * @return array Widget style dependencies.
+     */
+    public function get_style_depends(): array
+    {
+        return ['widget-icon-list'];
+    }
 
 
     protected function register_controls(): void
@@ -85,6 +86,18 @@ class Product_Attributes extends Widget_Base
             ]
         );
 
+        $this->add_control(
+            'max_items',
+            [
+                'label' => esc_html__('Max Items to Show', 'jelly-catalog'),
+                'type' => Controls_Manager::NUMBER,
+                'description' => esc_html__('Maximum number of attributes to display', 'jelly-catalog'),
+                'default' => 4,
+                'min' => 1,
+                'step' => 1,
+            ]
+        );
+
         $this->end_controls_section();
 
         // 图标设置
@@ -103,7 +116,7 @@ class Product_Attributes extends Widget_Base
                 'label_on' => esc_html__('Yes', 'jelly-catalog'),
                 'label_off' => esc_html__('No', 'jelly-catalog'),
                 'return_value' => 'yes',
-                'default' => 'yes',
+                'default' => '',
             ]
         );
 
@@ -115,7 +128,7 @@ class Product_Attributes extends Widget_Base
                 'fa4compatibility' => 'icon',
                 'default' => [
                     'value' => 'fas fa-check',
-                    'library' => 'solid',
+                    'library' => 'fa-solid',
                 ],
                 'condition' => [
                     'enable_icon' => 'yes',
@@ -204,43 +217,43 @@ class Product_Attributes extends Widget_Base
         );
 
         $this->add_control(
-			'icon_color',
-			[
-				'label' => esc_html__( 'Icon Color', 'jelly-catalog' ),
-				'type' => Controls_Manager::COLOR,
-				'default' => '',
+            'icon_color',
+            [
+                'label' => esc_html__('Icon Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
+                'default' => '',
                 'separator' => 'before',
-				'selectors' => [
-					'{{WRAPPER}} .jc-attribute-icon' => 'fill: {{VALUE}}; color: {{VALUE}};',
-				],
-			]
-		);
+                'selectors' => [
+                    '{{WRAPPER}} .jc-attribute-icon' => 'fill: {{VALUE}}; color: {{VALUE}};',
+                ],
+            ]
+        );
 
         $this->add_responsive_control(
-			'icon_size',
-			[
-				'label' => esc_html__( 'Size', 'jelly-catalog' ),
-				'type' => Controls_Manager::SLIDER,
-				'size_units' => [ 'px', '%', 'em', 'rem', 'vw', 'custom' ],
-				'default' => [
-					'size' => 14,
-				],
-				'range' => [
-					'px' => [
-						'min' => 6,
-					],
-					'%' => [
-						'min' => 6,
-					],
-					'vw' => [
-						'min' => 6,
-					],
-				],
-				'selectors' => [
-					'{{WRAPPER}}' => '--jc-attribute-icon-size: {{SIZE}}{{UNIT}};',
-				],
-			]
-		);
+            'icon_size',
+            [
+                'label' => esc_html__('Size', 'jelly-catalog'),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
+                'default' => [
+                    'size' => 14,
+                ],
+                'range' => [
+                    'px' => [
+                        'min' => 6,
+                    ],
+                    '%' => [
+                        'min' => 6,
+                    ],
+                    'vw' => [
+                        'min' => 6,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}}' => '--jc-attribute-icon-size: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
 
         $this->end_controls_section();
     }
@@ -255,8 +268,14 @@ class Product_Attributes extends Widget_Base
             return;
         }
 
+        // 限制显示的属性数量
+        $max_items = $settings['max_items'];
+        if ($max_items > 0 && count($attributes) > $max_items) {
+            $attributes = array_slice($attributes, 0, $max_items, true);
+        }
+
         $grid_columns =  'cols-' . $settings['columns'];
-        ?>
+?>
         <div class="jc-attributes-wrapper <?php echo esc_attr($grid_columns); ?>">
             <?php foreach ($attributes as $item): ?>
                 <div class="jc-attribute">
@@ -272,6 +291,6 @@ class Product_Attributes extends Widget_Base
                 </div>
             <?php endforeach; ?>
         </div>
-        <?php
+<?php
     }
 }
