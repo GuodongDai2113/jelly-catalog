@@ -24,6 +24,7 @@ class JC_Product_Cat_Thumbnail_Metabox
     {
         $thumbnail_id = get_term_meta($term->term_id, 'thumbnail_id', true);
         $thumbnail_url = $thumbnail_id ? wp_get_attachment_url($thumbnail_id) : '';
+        echo wp_nonce_field('jc_save_product_cat_thumbnail', 'jc_product_cat_thumbnail_nonce', true, false);
 ?>
         <tr class="form-field">
             <th scope="row" valign="top">
@@ -54,6 +55,17 @@ class JC_Product_Cat_Thumbnail_Metabox
      */
     public function save_thumbnail_field($term_id)
     {
+        if (!current_user_can('manage_categories')) {
+            return;
+        }
+
+        if (
+            !isset($_POST['jc_product_cat_thumbnail_nonce']) ||
+            !wp_verify_nonce($_POST['jc_product_cat_thumbnail_nonce'], 'jc_save_product_cat_thumbnail')
+        ) {
+            return;
+        }
+
         if (isset($_POST['thumbnail_id'])) {
             $thumbnail_id = absint($_POST['thumbnail_id']);
             update_term_meta($term_id, 'thumbnail_id', $thumbnail_id);

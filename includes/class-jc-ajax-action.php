@@ -112,6 +112,11 @@ class JC_Ajax_Action
             wp_send_json_error(__('Security verification failed', 'jelly-catalog'));
         }
 
+        // 检查当前用户是否具有管理分类的权限
+        if (!current_user_can('manage_categories')) {
+            wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
+        }
+
         // 获取并验证分类ID和图片ID参数
         $category_id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
         $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
@@ -139,6 +144,10 @@ class JC_Ajax_Action
     {
         global $wpdb;
         check_ajax_referer('jc_nonce', 'nonce');
+
+        if (!current_user_can('edit_products') && !current_user_can('edit_posts')) {
+            wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
+        }
 
         // 获取分页参数
         $page = isset($_POST['page']) ? intval($_POST['page']) : 1;

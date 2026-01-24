@@ -231,6 +231,18 @@ class JC_Settings
             return;
         }
 
+        if (empty($_POST['jelly_catalog_product_base'])) {
+            return;
+        }
+
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        if (isset($_POST['_wpnonce'])) {
+            check_admin_referer('update-permalink');
+        }
+
         if (isset($_POST['jelly_catalog_product_base'])) {
             $permalinks = get_option('jelly_catalog_permalinks', array());
             $permalinks['product_base'] = sanitize_title_with_dashes($_POST['jelly_catalog_product_base']);

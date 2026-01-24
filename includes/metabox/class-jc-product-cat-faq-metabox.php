@@ -27,6 +27,8 @@ class JC_Product_Cat_FAQ_Metabox
         $faqs = get_term_meta($term->term_id, 'product_cat_faqs', true);
         $faqs = is_array($faqs) ? $faqs : array();
 
+        echo wp_nonce_field('jc_save_product_cat_faq', 'jc_product_cat_faq_nonce', true, false);
+
         echo '<tr class="form-field">';
         echo '<th scope="row" valign="top">';
         echo '<label for="product_cat_faqs">' . __('Category FAQ', 'jelly-catalog') . '</label>';
@@ -64,6 +66,17 @@ class JC_Product_Cat_FAQ_Metabox
      */
     public function save_category_faq_field($term_id)
     {
+        if (!current_user_can('manage_categories')) {
+            return;
+        }
+
+        if (
+            !isset($_POST['jc_product_cat_faq_nonce']) ||
+            !wp_verify_nonce($_POST['jc_product_cat_faq_nonce'], 'jc_save_product_cat_faq')
+        ) {
+            return;
+        }
+
         // 保存数据
         if (isset($_POST['product_cat_faqs'])) {
             $raw = $_POST['product_cat_faqs'] ?? array();

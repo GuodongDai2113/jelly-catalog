@@ -52,6 +52,8 @@ class JC_Product_Cat_Banner_Metabox
         $banner_id = get_term_meta($term->term_id, 'banner_id', true);
         $banner_url = $banner_id ? wp_get_attachment_url($banner_id) : '';
 
+        echo wp_nonce_field('jc_save_product_cat_banner', 'jc_product_cat_banner_nonce', true, false);
+
     ?>
         <tr class="form-field">
             <th scope="row" valign="top">
@@ -82,6 +84,17 @@ class JC_Product_Cat_Banner_Metabox
      */
     public function save_banner_field($term_id)
     {
+        if (!current_user_can('manage_categories')) {
+            return;
+        }
+
+        if (
+            !isset($_POST['jc_product_cat_banner_nonce']) ||
+            !wp_verify_nonce($_POST['jc_product_cat_banner_nonce'], 'jc_save_product_cat_banner')
+        ) {
+            return;
+        }
+
         if (isset($_POST['banner_id'])) {
             $banner_id = absint($_POST['banner_id']);
             update_term_meta($term_id, 'banner_id', $banner_id);

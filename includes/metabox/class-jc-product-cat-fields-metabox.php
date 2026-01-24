@@ -28,6 +28,8 @@ class JC_Product_Cat_Fields_Metabox
         $category_why_choose = get_term_meta($term->term_id, 'category_why_choose', true);
         $category_advantages = get_term_meta($term->term_id, 'category_advantages', true);
 
+        echo wp_nonce_field('jc_save_product_cat_fields', 'jc_product_cat_fields_nonce', true, false);
+
         // Category H1 Title
         echo '<tr class="form-field">';
         echo '<th scope="row" valign="top">';
@@ -98,6 +100,17 @@ class JC_Product_Cat_Fields_Metabox
      */
     public function save_category_fields($term_id)
     {
+        if (!current_user_can('manage_categories')) {
+            return;
+        }
+
+        if (
+            !isset($_POST['jc_product_cat_fields_nonce']) ||
+            !wp_verify_nonce($_POST['jc_product_cat_fields_nonce'], 'jc_save_product_cat_fields')
+        ) {
+            return;
+        }
+
         // Save Category H1 Title
         if (isset($_POST['category_h1_title'])) {
             $category_h1_title = sanitize_text_field($_POST['category_h1_title']);

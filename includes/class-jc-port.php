@@ -459,14 +459,19 @@ class JC_Port
         // 处理每行数据
         while (($row = fgetcsv($handle)) !== FALSE) {
             $data = array_combine($headers, $row);
+            if ($data === false) {
+                $this->log("CSV列数不匹配，跳过该行。Headers: " . count($headers) . " Row: " . count($row));
+                $errors++;
+                continue;
+            }
             $this->log("处理产品: " . $data['Title'] . " (ID: " . ($data['ID'] ?? 'new') . ")");
 
             // 创建或更新产品
             $post_data = array(
                 'post_type' => 'product',
-                'post_title' => $data['Title'],
-                'post_excerpt' => $data['Short Description'],
-                'post_content' => $data['Description'],
+                'post_title' => sanitize_text_field($data['Title'] ?? ''),
+                'post_excerpt' => wp_kses_post($data['Short Description'] ?? ''),
+                'post_content' => wp_kses_post($data['Description'] ?? ''),
                 'post_status' => 'publish'
             );
 
@@ -626,15 +631,23 @@ class JC_Port
 
             // 处理FAQ
             $faqs = array();
-            for ($i = 1; $i <= $faq_count; $i++) {
-                $question_key = 'FAQ_Q_' . $i;
-                $answer_key = 'FAQ_A_' . $i;
+            if ($faq_count > 0) {
+                for ($i = 1; $i <= $faq_count; $i++) {
+                    $question_key = 'FAQ_Q_' . $i;
+                    $answer_key = 'FAQ_A_' . $i;
 
-                if (!empty($data[$question_key]) || !empty($data[$answer_key])) {
-                    $faqs[] = array(
-                        'name' => isset($data[$question_key]) ? $data[$question_key] : '',
-                        'value' => isset($data[$answer_key]) ? $data[$answer_key] : ''
-                    );
+                    if (!empty($data[$question_key]) || !empty($data[$answer_key])) {
+                        $faqs[] = array(
+                            'name' => isset($data[$question_key]) ? $data[$question_key] : '',
+                            'value' => isset($data[$answer_key]) ? $data[$answer_key] : ''
+                        );
+                    }
+                }
+            } elseif (!empty($data['FAQs'])) {
+                $decoded = base64_decode($data['FAQs'], true);
+                $parsed = $decoded ? json_decode($decoded, true) : null;
+                if (is_array($parsed)) {
+                    $faqs = $parsed;
                 }
             }
 
@@ -645,15 +658,23 @@ class JC_Port
 
             // 处理属性
             $attributes = array();
-            for ($i = 1; $i <= $attribute_count; $i++) {
-                $name_key = 'Attribute_Name_' . $i;
-                $value_key = 'Attribute_Value_' . $i;
+            if ($attribute_count > 0) {
+                for ($i = 1; $i <= $attribute_count; $i++) {
+                    $name_key = 'Attribute_Name_' . $i;
+                    $value_key = 'Attribute_Value_' . $i;
 
-                if (!empty($data[$name_key]) || !empty($data[$value_key])) {
-                    $attributes[] = array(
-                        'name' => isset($data[$name_key]) ? $data[$name_key] : '',
-                        'value' => isset($data[$value_key]) ? $data[$value_key] : ''
-                    );
+                    if (!empty($data[$name_key]) || !empty($data[$value_key])) {
+                        $attributes[] = array(
+                            'name' => isset($data[$name_key]) ? $data[$name_key] : '',
+                            'value' => isset($data[$value_key]) ? $data[$value_key] : ''
+                        );
+                    }
+                }
+            } elseif (!empty($data['Attributes'])) {
+                $decoded = base64_decode($data['Attributes'], true);
+                $parsed = $decoded ? json_decode($decoded, true) : null;
+                if (is_array($parsed)) {
+                    $attributes = $parsed;
                 }
             }
 
