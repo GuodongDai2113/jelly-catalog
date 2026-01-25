@@ -46,10 +46,10 @@
   --jelly-border-radius: 6px;
 
   --jelly-box-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --jelly-box-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1),
-    0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --jelly-box-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --jelly-box-shadow-sm:
+    0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --jelly-box-shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 /* 模态框组件 */
@@ -75,7 +75,9 @@
   min-width: 800px;
   max-width: 80%;
   max-height: 80%;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .jelly-modal .jelly-modal__title {
@@ -83,6 +85,7 @@
 }
 
 .jelly-modal .jelly-modal__description {
+  margin-top: 8px;
   margin-bottom: 15px;
   color: var(--jelly-color-description);
 }
@@ -123,6 +126,8 @@
 
 .jelly-modal .jelly-modal__body {
   padding: 24px 16px;
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 .jelly-modal .jelly-modal__header {
