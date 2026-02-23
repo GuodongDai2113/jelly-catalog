@@ -56,7 +56,7 @@ class JellyCatalogSheetTabulator {
         .then((categories) => {
           this.categories = categories; // 保存树形结构
           this.categoriesMap = Object.fromEntries(
-            categories.map((item) => [item.id, item])
+            categories.map((item) => [item.id, item]),
           );
           categoriesLoaded = true;
           if (categoriesLoaded && tagsLoaded) {
@@ -76,7 +76,7 @@ class JellyCatalogSheetTabulator {
         .then((tags) => {
           this.tags = tags;
           this.tagsMap = Object.fromEntries(
-            tags.map((item) => [item.id, item])
+            tags.map((item) => [item.id, item]),
           );
           tagsLoaded = true;
           if (categoriesLoaded && tagsLoaded) {
@@ -209,7 +209,7 @@ class JellyCatalogSheetTabulator {
     jQuery("#first-page, #prev-page").prop("disabled", this.currentPage <= 1);
     jQuery("#next-page, #last-page").prop(
       "disabled",
-      this.currentPage >= this.totalPages
+      this.currentPage >= this.totalPages,
     );
     jQuery("#goto-page, #goto-page-btn").prop("disabled", this.totalPages == 1);
   }
@@ -285,6 +285,7 @@ class JellyCatalogSheetTabulator {
     this.table = new Tabulator("#hot", {
       data: products,
       layout: "fitColumns",
+      rowHeight: 60,
       pagination: false,
       movableColumns: true,
       resizableRows: true,
@@ -317,7 +318,7 @@ class JellyCatalogSheetTabulator {
         formatter: (cell) => {
           const data = cell.getValue();
           if (data && Array.isArray(data) && data.length > 0 && data[0].url) {
-            return `<img src="${data[0].url}" style="max-width: 80px; max-height: 80px;" />`;
+            return `<img src="${data[0].url}" style="max-width: 50px; max-height: 50px;" />`;
           }
           return "";
         },
@@ -599,7 +600,7 @@ class JellyCatalogSheetTabulator {
 
     tableData.forEach((rowData) => {
       const originalRow = this.originalData.find(
-        (item) => item.ID == rowData.ID
+        (item) => item.ID == rowData.ID,
       );
 
       if (!originalRow) return;
@@ -675,21 +676,6 @@ class JellyCatalogSheetTabulator {
       if (currentTags !== originalTags) {
         rowChanges.tags = currentTags;
       }
-
-      // 检查元数据字段变更
-      // if (rowData.meta_data) {
-      //     Object.keys(rowData.meta_data).forEach((key) => {
-      //         const currentValue = rowData.meta_data[key];
-      //         const originalValue = originalRow.meta_data[key];
-      //         console.log(currentValue);
-      //         console.log(originalValue);
-
-      //         if (currentValue !== originalValue) {
-      //             if (!rowChanges.meta_data) rowChanges.meta_data = {};
-      //             rowChanges.meta_data[key] = currentValue;
-      //         }
-      //     });
-      // }
 
       // 如果有变更则添加到changes数组
       if (Object.keys(rowChanges).length > 1) {
