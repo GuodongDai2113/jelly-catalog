@@ -27,7 +27,7 @@ class Product_FAQ extends \Elementor\Widget_Base
 
     public function get_icon(): string
     {
-        return 'eicon-checkbox';
+        return 'eicon-checkbox jelly-engine-icon';
     }
 
     public function get_categories(): array

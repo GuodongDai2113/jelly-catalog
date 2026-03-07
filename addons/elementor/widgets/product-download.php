@@ -23,7 +23,7 @@ class Product_Download extends Widget_Base
 
     public function get_icon()
     {
-        return 'eicon-download-button';
+        return 'eicon-download-button jelly-engine-icon';
     }
 
     public function get_categories()

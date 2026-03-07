@@ -32,7 +32,7 @@ class Product_Attributes extends Widget_Base
 
     public function get_icon(): string
     {
-        return 'eicon-editor-list-ul';
+        return 'eicon-editor-list-ul jelly-engine-icon';
     }
 
     public function get_categories(): array

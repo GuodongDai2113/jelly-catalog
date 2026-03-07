@@ -29,7 +29,7 @@ class Product_Cat_Nav extends Widget_Base
 
     public function get_icon()
     {
-        return 'eicon-tabs';
+        return 'eicon-tabs jelly-engine-icon';
     }
 
     public function get_categories()

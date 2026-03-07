@@ -23,7 +23,7 @@ class Product_Gallery extends Widget_Base
 
     public function get_icon()
     {
-        return 'eicon-product-images';
+        return 'eicon-product-images jelly-engine-icon';
     }
 
     public function get_categories()

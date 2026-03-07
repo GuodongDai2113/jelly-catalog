@@ -4,7 +4,7 @@
  * Plugin Name: Jelly Catalog
  * Plugin URI:  https://jellydai.com/
  * Description: Only enable product features, fully compatible with Woocommerce
- * Version:     3.0.0
+ * Version:     3.0.1
  * Author:      JellyDai
  * Author URI:  https://jellydai.com/
  * Text Domain: jelly-catalog
@@ -14,7 +14,7 @@
 if (! defined('ABSPATH')) exit; // 禁止直接访问
 
 /** 插件版本 */
-define('JELLY_CATALOG_VERSION', '3.0.0');
+define('JELLY_CATALOG_VERSION', '3.0.1');
 
 /** 插件URL路径 */
 define('JELLY_CATALOG_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -84,6 +84,14 @@ function jelly_catalog_enqueue_frontend_assets()
         JELLY_CATALOG_VERSION
     );
 
+    wp_enqueue_script(
+        'jelly-catalog',
+        JELLY_CATALOG_PLUGIN_URL . 'assets/js/jc.js',
+        array(),
+        JELLY_CATALOG_VERSION,
+        true
+    );
+
     if (is_singular('product')) {
 
         wp_enqueue_style(
@@ -95,13 +103,6 @@ function jelly_catalog_enqueue_frontend_assets()
         wp_enqueue_script(
             'jelly-catalog-swiper',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/swiper-bundle.min.js',
-            array(),
-            JELLY_CATALOG_VERSION,
-            true
-        );
-        wp_enqueue_script(
-            'jelly-catalog',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jc.js',
             array(),
             JELLY_CATALOG_VERSION,
             true
