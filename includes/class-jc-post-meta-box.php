@@ -2,14 +2,15 @@
 
 /**
  * includes\class-jc-post-meta-box.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created: 2025.07.29 14:47
  */
 
-
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 /**
  * 添加自定义 metabox
@@ -28,27 +29,27 @@ class JC_Post_Meta_Box
 
     public function __construct()
     {
-        add_action('admin_head', array($this, 'add_help'));
+        add_action('admin_head', [$this, 'add_help']);
 
         $this->initialize_metaboxes();
     }
 
-    function add_help()
+    public function add_help()
     {
         $screen = get_current_screen();
         if ($screen->id !== 'product') {
             return;
         }
 
-        $screen->add_help_tab(array(
-            'id'      => 'title_help',
-            'title'   => __('Title', 'jelly-catalog'),
+        $screen->add_help_tab([
+            'id' => 'title_help',
+            'title' => __('Title', 'jelly-catalog'),
             'content' => '<div class="title-description">' . __('Recommended format: <code>Model number + core product keywords + specifications/attributes</code>', 'jelly-catalog') . '</div>',
-        ));
+        ]);
 
-        $screen->add_help_tab(array(
-            'id'      => 'postexcerpt_help',
-            'title'   => __('Short Description', 'jelly-catalog'),
+        $screen->add_help_tab([
+            'id' => 'postexcerpt_help',
+            'title' => __('Short Description', 'jelly-catalog'),
             'content' => '<div class="edit-description">
                 <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Writing Guidelines:', 'jelly-catalog') . '</p>
                 <ol>
@@ -59,11 +60,11 @@ class JC_Post_Meta_Box
                     <li>' . esc_html__('Highlight unique product advantages, such as materials, performance, price, usage scenarios, etc.', 'jelly-catalog') . '</li>
                 </ol>
             </div>',
-        ));
+        ]);
 
-        $screen->add_help_tab(array(
-            'id'      => 'postdivrich_help',
-            'title'   => __('Description', 'jelly-catalog'),
+        $screen->add_help_tab([
+            'id' => 'postdivrich_help',
+            'title' => __('Description', 'jelly-catalog'),
             'content' => '<div class="edit-description">
                 <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Writing Guidelines:', 'jelly-catalog') . '</p>
                 <ol>
@@ -73,11 +74,11 @@ class JC_Post_Meta_Box
                     <li>' . esc_html__('Ensure original content in the details. Do not copy directly from the internet. Page similarity within the website should not exceed ', 'jelly-catalog') . '<code>' . esc_html__('30%', 'jelly-catalog') . '</code>' . esc_html__('.', 'jelly-catalog') . '</li>
                 </ol>
             </div>',
-        ));
+        ]);
 
-        $screen->add_help_tab(array(
-            'id'      => 'product_catdiv_help',
-            'title'   => __('Categories', 'jelly-catalog'),
+        $screen->add_help_tab([
+            'id' => 'product_catdiv_help',
+            'title' => __('Categories', 'jelly-catalog'),
             'content' => '<div class="edit-description">
                 <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Category Selection Guidelines:', 'jelly-catalog') . '</p>
                 <ol>
@@ -87,11 +88,11 @@ class JC_Post_Meta_Box
                     <li>' . esc_html__('Check existing categories before creating new ones to maintain consistency.', 'jelly-catalog') . '</li>
                 </ol>
             </div>',
-        ));
+        ]);
 
-        $screen->add_help_tab(array(
-            'id'      => 'tagsdiv-product_tag_help',
-            'title'   => __('Tags', 'jelly-catalog'),
+        $screen->add_help_tab([
+            'id' => 'tagsdiv-product_tag_help',
+            'title' => __('Tags', 'jelly-catalog'),
             'content' => '<div class="edit-description">
                 <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Tag Usage Guidelines:', 'jelly-catalog') . '</p>
                 <ol>
@@ -101,11 +102,11 @@ class JC_Post_Meta_Box
                     <li>' . esc_html__('Avoid duplicate tags and excessive tagging - 5-10 relevant tags are sufficient.', 'jelly-catalog') . '</li>
                 </ol>
             </div>',
-        ));
+        ]);
 
-        $screen->add_help_tab(array(
-            'id'      => 'acf-group_product_field_help',
-            'title'   => __('Download', 'jelly-catalog'),
+        $screen->add_help_tab([
+            'id' => 'acf-group_product_field_help',
+            'title' => __('Download', 'jelly-catalog'),
             'content' => '<div class="edit-description">
                 <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Downloadable Content Guidelines:', 'jelly-catalog') . '</p>
                 <ol>
@@ -115,11 +116,11 @@ class JC_Post_Meta_Box
                     <li>' . esc_html__('Compress large files to reduce download time and server load.', 'jelly-catalog') . '</li>
                 </ol>
             </div>',
-        ));
+        ]);
 
-        $screen->add_help_tab(array(
-            'id'      => 'product_faq_metabox_help',
-            'title'   => __('FAQ', 'jelly-catalog'),
+        $screen->add_help_tab([
+            'id' => 'product_faq_metabox_help',
+            'title' => __('FAQ', 'jelly-catalog'),
             'content' => '<div class="edit-description">
                 <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('FAQ Creation Guidelines:', 'jelly-catalog') . '</p>
                 <ol>
@@ -129,11 +130,11 @@ class JC_Post_Meta_Box
                     <li>' . esc_html__('Regularly update FAQs based on customer feedback and new questions.', 'jelly-catalog') . '</li>
                 </ol>
             </div>',
-        ));
+        ]);
 
-        $screen->add_help_tab(array(
-            'id'      => 'product_attributes_metabox_help',
-            'title'   => __('Attributes', 'jelly-catalog'),
+        $screen->add_help_tab([
+            'id' => 'product_attributes_metabox_help',
+            'title' => __('Attributes', 'jelly-catalog'),
             'content' => '<div class="edit-description">
                 <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Product Attributes Guidelines:', 'jelly-catalog') . '</p>
                 <ol>
@@ -143,7 +144,21 @@ class JC_Post_Meta_Box
                     <li>' . esc_html__('Avoid duplicate attributes and ensure all values are filled in.', 'jelly-catalog') . '</li>
                 </ol>
             </div>',
-        ));
+        ]);
+
+        $screen->add_help_tab([
+            'id' => 'product_order_metabox_help',
+            'title' => __('Sort Order', 'jelly-catalog'),
+            'content' => '<div class="edit-description">
+                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Sort Order Guidelines:', 'jelly-catalog') . '</p>
+                <ol>
+                    <li>' . esc_html__('Higher numbers will cause the product to appear earlier in listings.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Default sort order is 0. Products with the same sort order will be sorted by date.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Use whole numbers greater than or equal to 0 for best results.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('This setting overrides the default chronological ordering of products.', 'jelly-catalog') . '</li>
+                </ol>
+            </div>',
+        ]);
     }
 
     private function initialize_metaboxes()
@@ -156,6 +171,7 @@ class JC_Post_Meta_Box
         // 始终加载扩展功能 metaboxes
         $this->load_extended_product_metaboxes();
     }
+
     /**
      * 加载核心产品 metaboxes（仅在无 WooCommerce 时）
      */

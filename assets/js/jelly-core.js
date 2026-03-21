@@ -1,6 +1,6 @@
 (function ($) {
   "use strict";
-
+  // 版本：1.0.1
   class JellyModal {
     constructor(options) {
       this.options = $.extend(
@@ -42,7 +42,6 @@
           <div class="jelly-modal__content">
           <div class="jelly-modal__header">
             <h3 class="jelly-modal__title"></h3>
-            <p class="jelly-modal__description"></p>
             </div>
             <div class="jelly-modal__body"></div>
             <div class="jelly-modal__footer">
@@ -64,13 +63,6 @@
       if (!this.$modal) return;
 
       this.$modal.find(".jelly-modal__title").text(this.options.title);
-      const $description = this.$modal.find(".jelly-modal__description");
-      if (this.options.description) {
-        $description.text(this.options.description).show();
-      } else {
-        $description.hide();
-      }
-
       this.$modal.find(".jelly-modal__body").html(this.options.bodyHtml);
       this.$modal.find(".jelly-modal__confirm").text(this.options.confirmText);
       this.$modal.find(".jelly-modal__cancel").text(this.options.cancelText);

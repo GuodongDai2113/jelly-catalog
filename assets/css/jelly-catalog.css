@@ -285,18 +285,29 @@ td.column-product_cat a {
   display: inline-block;
   margin: 4px;
   padding: 1px 8px;
-  font-size: 12px;
+  font-size: 13px;
   border: 1px solid #e5e7eb;
   border-radius: 4px;
   background-color: #f9fafb;
   color: #364153;
 }
 
+td.column-product_cat a.level-1 {
+  border: 1px solid #a8e2ff;
+  background-color: #e6f7ff;
+  color: #0572d1;
+}
+td.column-product_cat a.level-2 {
+  border: 1px solid #b9f8cf;
+  background-color: #f0fdf4;
+  color: #00a63e;
+}
+
 td.column-product_tag a {
   display: inline-block;
   margin: 4px;
   padding: 1px 8px;
-  font-size: 12px;
+  font-size: 13px;
   border: 1px solid #e5e7eb;
   border-radius: 4px;
   background-color: #f9fafb;
