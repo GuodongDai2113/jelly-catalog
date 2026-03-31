@@ -1,6 +1,6 @@
 (function ($) {
   "use strict";
-  // 版本：1.0.1
+  // 版本：1.0.2
   class JellyModal {
     constructor(options) {
       this.options = $.extend(
@@ -149,9 +149,12 @@
       if (!this.$modal) return;
       this.$modal.hide();
       this.isOpen = false;
+
       if (typeof this.options.onClose === "function") {
         this.options.onClose(this);
       }
+
+      this.destroy();
     }
 
     find(selector) {
@@ -161,6 +164,16 @@
     setBodyHtml(html) {
       this.options.bodyHtml = html;
       this.refreshContent();
+    }
+
+    destroy() {
+      $(document).off(this.eventNamespace);
+      if (this.$modal) {
+        this.$modal.remove();
+        this.$modal = null;
+      }
+      this.isOpen = false;
+      this.bound = false;
     }
   }
 

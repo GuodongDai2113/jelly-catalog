@@ -2,26 +2,27 @@
 
 /**
  * includes\metabox\class-jc-product-attributes-metabox.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created: 2025.09.15 15:25
  */
 
-
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class JC_Product_Attributes_Metabox
 {
     public function __construct()
     {
-        add_action('add_meta_boxes', array($this, 'add_meta_boxes'), 30);
-        add_action('save_post_product', array($this, 'save_metabox'));
+        add_action('add_meta_boxes', [$this, 'add_meta_boxes'], 30);
+        add_action('save_post_product', [$this, 'save_metabox']);
     }
 
-    function add_meta_boxes()
+    public function add_meta_boxes()
     {
-        add_meta_box('product_attributes_metabox', __('Product Attributes', 'jelly-catalog'), array($this, 'render_metabox'), 'product', 'normal', 'default');
+        add_meta_box('product_attributes_metabox', __('Product Attributes', 'jelly-catalog'), [$this, 'render_metabox'], 'product', 'normal', 'default');
     }
 
     public function render_metabox($post)
@@ -30,26 +31,26 @@ class JC_Product_Attributes_Metabox
         $attributes = is_array($attributes) ? $attributes : [];
         wp_nonce_field('jc_save_product_attributes', 'jc_attributes');
 
-        // 使用通用 repeater 函数生成 FAQ 表单
-        jc_render_repeater_field(array(
+        jc_render_repeater_field([
             'id' => 'product_attributes',
             'name' => 'product_attributes',
+            'title' => __('Product Attributes', 'jelly-catalog'),
             'items' => $attributes,
-            'fields' => array(
-                array(
+            'fields' => [
+                [
                     'type' => 'text',
                     'name' => 'name',
-                    'label' => __('Name:', 'jelly-frame'),
+                    'label' => __('Name:', 'jelly-catalog'),
                     'class' => 'repeater-item__key-input'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'name' => 'value',
-                    'label' => __('Value:', 'jelly-frame'),
+                    'label' => __('Value:', 'jelly-catalog'),
                     'class' => 'repeater-item__value-input'
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
     }
 
     public function save_metabox($post_id)

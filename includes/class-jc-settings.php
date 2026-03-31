@@ -8,7 +8,7 @@
  * @created 2025.11.10 15:30
  */
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit; // 禁止直接访问
 }
 
@@ -17,16 +17,16 @@ if (! defined('ABSPATH')) {
  */
 class JC_Settings
 {
+    private $permalinks = [];
 
-    private $permalinks = array();
     /**
      * 初始化设置
      */
     public static function init()
     {
-        add_action('admin_init', array(__CLASS__, 'register_settings'));
-        add_action('admin_init', array(__CLASS__, 'register_permalink_settings'));
-        add_action('admin_init', array(__CLASS__, 'save_permalink_settings'), 10);
+        add_action('admin_init', [__CLASS__, 'register_settings']);
+        add_action('admin_init', [__CLASS__, 'register_permalink_settings']);
+        add_action('admin_init', [__CLASS__, 'save_permalink_settings'], 10);
     }
 
     /**
@@ -38,7 +38,7 @@ class JC_Settings
         add_settings_section(
             'jelly_catalog_products_section',
             __('Products Settings', 'jelly-catalog'),
-            array(__CLASS__, 'render_products_section'),
+            [__CLASS__, 'render_products_section'],
             'reading'
         );
 
@@ -46,59 +46,59 @@ class JC_Settings
         add_settings_field(
             'page_for_products',
             __('Products Page', 'jelly-catalog'),
-            array(__CLASS__, 'render_page_for_products_select'),
+            [__CLASS__, 'render_page_for_products_select'],
             'reading',
             'jelly_catalog_products_section',
-            array('label_for' => 'page_for_products')
+            ['label_for' => 'page_for_products']
         );
 
         // 添加每页产品数量设置字段
         add_settings_field(
             'products_per_page',
             __('Products Per Page', 'jelly-catalog'),
-            array(__CLASS__, 'render_products_per_page_input'),
+            [__CLASS__, 'render_products_per_page_input'],
             'reading',
             'jelly_catalog_products_section',
-            array('label_for' => 'products_per_page')
+            ['label_for' => 'products_per_page']
         );
 
         // 添加产品排序依据设置字段
         add_settings_field(
             'products_orderby',
             __('Products Order By', 'jelly-catalog'),
-            array(__CLASS__, 'render_products_orderby_select'),
+            [__CLASS__, 'render_products_orderby_select'],
             'reading',
             'jelly_catalog_products_section',
-            array('label_for' => 'products_orderby')
+            ['label_for' => 'products_orderby']
         );
 
         // 添加产品排序方向设置字段
         add_settings_field(
             'products_order',
             __('Products Order', 'jelly-catalog'),
-            array(__CLASS__, 'render_products_order_select'),
+            [__CLASS__, 'render_products_order_select'],
             'reading',
             'jelly_catalog_products_section',
-            array('label_for' => 'products_order')
+            ['label_for' => 'products_order']
         );
 
         // 注册设置选项
         register_setting('reading', 'page_for_products');
-        register_setting('reading', 'products_per_page', array(
+        register_setting('reading', 'products_per_page', [
             'type' => 'integer',
             'sanitize_callback' => 'absint',
             'default' => 10
-        ));
-        register_setting('reading', 'products_orderby', array(
+        ]);
+        register_setting('reading', 'products_orderby', [
             'type' => 'string',
             'sanitize_callback' => 'sanitize_text_field',
             'default' => 'date'
-        ));
-        register_setting('reading', 'products_order', array(
+        ]);
+        register_setting('reading', 'products_order', [
             'type' => 'string',
             'sanitize_callback' => 'sanitize_text_field',
             'default' => 'DESC'
-        ));
+        ]);
     }
 
     /**
@@ -116,12 +116,12 @@ class JC_Settings
     {
         $selected_page = get_option('page_for_products', 0);
 
-        wp_dropdown_pages(array(
-            'name'             => 'page_for_products',
-            'selected'         => $selected_page,
+        wp_dropdown_pages([
+            'name' => 'page_for_products',
+            'selected' => $selected_page,
             'show_option_none' => __('— Select a page —', 'jelly-catalog'),
             'option_none_value' => '0',
-        ));
+        ]);
 
         echo '<p class="description">' . __('Select the page where your products will be displayed.', 'jelly-catalog') . '</p>';
     }
@@ -142,13 +142,13 @@ class JC_Settings
      */
     public static function render_products_orderby_select()
     {
-        $orderby_options = array(
-            'date'          => __('Date', 'jelly-catalog'),
-            'title'         => __('Title', 'jelly-catalog'),
-            'menu_order'    => __('Menu Order', 'jelly-catalog'),
-            'rand'          => __('Random', 'jelly-catalog'),
-            'modified'      => __('Last Modified', 'jelly-catalog')
-        );
+        $orderby_options = [
+            'date' => __('Date', 'jelly-catalog'),
+            'title' => __('Title', 'jelly-catalog'),
+            'menu_order' => __('Menu Order', 'jelly-catalog'),
+            'rand' => __('Random', 'jelly-catalog'),
+            'modified' => __('Last Modified', 'jelly-catalog')
+        ];
 
         $selected_orderby = get_option('products_orderby', 'date');
 
@@ -165,10 +165,10 @@ class JC_Settings
      */
     public static function render_products_order_select()
     {
-        $order_options = array(
-            'ASC'   => __('Ascending', 'jelly-catalog'),
-            'DESC'  => __('Descending', 'jelly-catalog')
-        );
+        $order_options = [
+            'ASC' => __('Ascending', 'jelly-catalog'),
+            'DESC' => __('Descending', 'jelly-catalog')
+        ];
 
         $selected_order = get_option('products_order', 'DESC');
 
@@ -180,7 +180,6 @@ class JC_Settings
         echo '<p class="description">' . __('Select the direction of product ordering.', 'jelly-catalog') . '</p>';
     }
 
-
     /**
      * 注册固定链接设置
      */
@@ -189,14 +188,14 @@ class JC_Settings
         add_settings_section(
             'jelly_catalog_permalink_section',
             __('Product Permalinks', 'jelly-catalog'),
-            array(__CLASS__, 'render_permalink_section'),
+            [__CLASS__, 'render_permalink_section'],
             'permalink'
         );
 
         add_settings_field(
             'jelly_catalog_product_base',
             __('Product Base', 'jelly-catalog'),
-            array(__CLASS__, 'render_product_base_input'),
+            [__CLASS__, 'render_product_base_input'],
             'permalink',
             'jelly_catalog_permalink_section'
         );
@@ -244,7 +243,7 @@ class JC_Settings
         }
 
         if (isset($_POST['jelly_catalog_product_base'])) {
-            $permalinks = get_option('jelly_catalog_permalinks', array());
+            $permalinks = get_option('jelly_catalog_permalinks', []);
             $permalinks['product_base'] = sanitize_title_with_dashes($_POST['jelly_catalog_product_base']);
 
             update_option('jelly_catalog_permalinks', $permalinks);

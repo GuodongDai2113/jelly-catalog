@@ -2,7 +2,7 @@
 
 /**
  * addons\class-jc-elementor.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created : 2025.11.01 19:37
@@ -13,8 +13,9 @@ use Elementor\Core\Documents_Manager;
 use ElementorPro\Plugin;
 use ElementorPro\Modules\LoopBuilder\Module as LoopBuilderModule;
 
-
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class JC_Elementor
 {
@@ -22,10 +23,10 @@ class JC_Elementor
 
     protected $docs_types = [];
 
-    const LOOP_PRODUCT_SKIN_ID = 'product';
-    const LOOP_PRODUCT_TAXONOMY_SKIN_ID = 'product_taxonomy';
+    public const LOOP_PRODUCT_SKIN_ID = 'product';
+    public const LOOP_PRODUCT_TAXONOMY_SKIN_ID = 'product_taxonomy';
 
-    const RECOMMENDED_POSTS_WIDGET_NAMES = [
+    public const RECOMMENDED_POSTS_WIDGET_NAMES = [
         'theme-post-featured-image',
     ];
 
@@ -36,6 +37,7 @@ class JC_Elementor
         }
         return self::$instance;
     }
+
     public function __construct()
     {
         // $this->include_elementor();
@@ -73,7 +75,7 @@ class JC_Elementor
         }
 
         $controls = $form->get_controls($control_name);
-        if (! $controls || ! isset($controls['options'])) {
+        if (!$controls || !isset($controls['options'])) {
             return;
         }
 
@@ -89,7 +91,7 @@ class JC_Elementor
     {
         $controls = $form->get_controls($control_name);
 
-        if (! $controls || ! isset($controls['options'])) {
+        if (!$controls || !isset($controls['options'])) {
             return;
         }
 
@@ -100,7 +102,6 @@ class JC_Elementor
             'options' => $options,
         ]);
     }
-
 
     public function add_products_type_to_template_popup($form)
     {
@@ -124,16 +125,15 @@ class JC_Elementor
 
     public function register_tags()
     {
-
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-title.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-excerpt.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-primary-category.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-image.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-banner.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-why-choose.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-advantages.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-h1-title.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-why-choose-title.php');
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-title.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-excerpt.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-primary-category.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-image.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-banner.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-why-choose.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-advantages.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-h1-title.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-why-choose-title.php';
 
         $tags = [
             'Product_Title',
@@ -163,10 +163,10 @@ class JC_Elementor
 
     public function register_conditions($conditions_manager)
     {
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/jelly-catalog.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/products-page.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/product-archive.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/product-search.php');
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/jelly-catalog.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/products-page.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/product-archive.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/product-search.php';
 
         $jc_condition = new Jelly_Catalog\Addons\Elementor\Conditions\Jelly_Catalog();
 
@@ -178,9 +178,9 @@ class JC_Elementor
      */
     public function register_documents($documents_manager)
     {
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/documents/product-archive.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/documents/product-post.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/documents/product.php');
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/documents/product-archive.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/documents/product-post.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/documents/product.php';
 
         $this->docs_types = [
             'product-post' => Jelly_Catalog\Addons\Elementor\Documents\Product_Post::get_class_full_name(),
@@ -195,31 +195,31 @@ class JC_Elementor
         }
     }
 
-    function register_skins()
+    public function register_skins()
     {
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/skins/skin-loop-product.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/skins/skin-loop-product-taxonomy.php');
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/skins/skin-loop-product.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/skins/skin-loop-product-taxonomy.php';
 
         foreach (LoopBuilderModule::LOOP_WIDGETS as $widget_type) {
             add_action('elementor/widget/' . $widget_type . '/skins_init', function (Widget_Base $widget) {
-                $widget->add_skin(new  Jelly_Catalog\Addons\Elementor\Skins\Skin_Loop_Product($widget));
+                $widget->add_skin(new Jelly_Catalog\Addons\Elementor\Skins\Skin_Loop_Product($widget));
             });
             add_action('elementor/widget/' . $widget_type . '/skins_init', function (Widget_Base $widget) {
-                $widget->add_skin(new  Jelly_Catalog\Addons\Elementor\Skins\Skin_Loop_Product_Taxonomy($widget));
+                $widget->add_skin(new Jelly_Catalog\Addons\Elementor\Skins\Skin_Loop_Product_Taxonomy($widget));
             }, 13);
         }
     }
 
-    function register_widgets($widgets_manager)
+    public function register_widgets($widgets_manager)
     {
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-faq.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-faq.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-content.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-attributes.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-nav.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-list.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-download.php');
-        include_once(JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-gallery.php');
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-faq.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-faq.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-content.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-attributes.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-nav.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-list.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-download.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-gallery.php';
 
         $widgets_manager->register(new Jelly_Catalog\Addons\Elementor\Widgets\Product_Content());
         $widgets_manager->register(new Jelly_Catalog\Addons\Elementor\Widgets\Product_FAQ());
@@ -242,7 +242,7 @@ class JC_Elementor
 
     public function add_loop_recommended_widgets($config, $post_id)
     {
-        if (! $this->is_source_set_to_products($post_id)) {
+        if (!$this->is_source_set_to_products($post_id)) {
             return $config;
         }
 
@@ -284,7 +284,7 @@ class JC_Elementor
 
     public function loop_query($query_args, $widget)
     {
-        if (! $this->is_product_query($widget)) {
+        if (!$this->is_product_query($widget)) {
             return $query_args;
         }
 
@@ -295,7 +295,7 @@ class JC_Elementor
     {
         $widget_config = $widget->get_config();
 
-        return (! empty($widget_config['is_loop']) && 'product' === $widget->get_current_skin_id());
+        return (!empty($widget_config['is_loop']) && 'product' === $widget->get_current_skin_id());
     }
 
     private function parse_loop_query_args($widget, $query_args)
@@ -305,7 +305,7 @@ class JC_Elementor
         $settings = $this->adjust_setting_for_product_renderer($widget);
 
         // For Products_Renderer.
-        if (! isset($GLOBALS['post'])) {
+        if (!isset($GLOBALS['post'])) {
             $GLOBALS['post'] = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
         }
 
@@ -345,13 +345,13 @@ class JC_Elementor
                 $query_args['tax_query'] = [
                     [
                         'taxonomy' => 'product_cat',
-                        'field'    => 'term_id',
-                        'terms'    => $product_terms,
+                        'field' => 'term_id',
+                        'terms' => $product_terms,
                     ],
                     [
                         'taxonomy' => 'product_tag',
-                        'field'    => 'term_id',
-                        'terms'    => $product_terms,
+                        'field' => 'term_id',
+                        'terms' => $product_terms,
                     ]
                 ];
 

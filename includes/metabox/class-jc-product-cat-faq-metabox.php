@@ -2,21 +2,22 @@
 
 /**
  * includes\metabox\class-jc-product-cat-faq-metabox.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created: 2025.09.15 15:25
  */
 
-
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class JC_Product_Cat_FAQ_Metabox
 {
     public function __construct()
     {
-        add_action('product_cat_edit_form_fields', array($this, 'edit_category_faq_field'));
-        add_action('edited_product_cat', array($this, 'save_category_faq_field'));
+        add_action('product_cat_edit_form_fields', [$this, 'edit_category_faq_field']);
+        add_action('edited_product_cat', [$this, 'save_category_faq_field']);
     }
 
     /**
@@ -25,7 +26,7 @@ class JC_Product_Cat_FAQ_Metabox
     public function edit_category_faq_field($term)
     {
         $faqs = get_term_meta($term->term_id, 'product_cat_faqs', true);
-        $faqs = is_array($faqs) ? $faqs : array();
+        $faqs = is_array($faqs) ? $faqs : [];
 
         echo wp_nonce_field('jc_save_product_cat_faq', 'jc_product_cat_faq_nonce', true, false);
 
@@ -36,25 +37,26 @@ class JC_Product_Cat_FAQ_Metabox
         echo '<td>';
         echo '<div id="product_cat_faqs_container">';
         // 使用通用 repeater 函数生成 FAQ 表单
-        jc_render_repeater_field(array(
+        jc_render_repeater_field([
             'id' => 'product_cat_faqs',
             'name' => 'product_cat_faqs',
+            'title' => __('Category FAQ', 'jelly-catalog'),
             'items' => $faqs,
-            'fields' => array(
-                array(
+            'fields' => [
+                [
                     'type' => 'text',
                     'name' => 'name',
                     'label' => __('Question:', 'jelly-catalog'),
                     'class' => 'repeater-item__key-input'
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'name' => 'value',
                     'label' => __('Answer:', 'jelly-catalog'),
                     'class' => 'repeater-item__value-input'
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
         echo '</div>';
         echo '<p class="description">' . __('Add frequently asked questions for this product category.', 'jelly-catalog') . '</p>';
         echo '</td>';
@@ -79,14 +81,14 @@ class JC_Product_Cat_FAQ_Metabox
 
         // 保存数据
         if (isset($_POST['product_cat_faqs'])) {
-            $raw = $_POST['product_cat_faqs'] ?? array();
-            $clean = array();
+            $raw = $_POST['product_cat_faqs'] ?? [];
+            $clean = [];
 
             foreach ($raw as $item) {
                 $q = sanitize_text_field($item['name'] ?? '');
                 $a = sanitize_textarea_field($item['value'] ?? '');
                 if ($q || $a) {
-                    $clean[] = array('name' => $q, 'value' => $a);
+                    $clean[] = ['name' => $q, 'value' => $a];
                 }
             }
 

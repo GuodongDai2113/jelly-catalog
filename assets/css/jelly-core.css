@@ -10,7 +10,7 @@
   primay-8:#003e85
   primay-9:#00295e
   primay-10:#001638
-  版本：1.0.1
+  版本：1.0.2
   */
 
   --jelly-color-primary: #0572d1;
@@ -82,7 +82,7 @@
 }
 
 .jelly-modal .jelly-modal__title {
-  font-size: 22x;
+  font-size: 22px;
   margin: 0 0 8px 0;
 }
 
@@ -97,11 +97,12 @@
 .jelly-modal .jelly-modal__buttons .button {
   border: 1px solid var(--jelly-color-border);
   border-radius: 4px;
-  padding: 10px 24px;
+  padding: 0 12px;
   background-color: var(--jelly-color-white);
   color: var(--jelly-color-text);
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.625;
+  /* min-width: 72px; */
 }
 
 .jelly-modal .jelly-modal__buttons .button-primary {
@@ -125,12 +126,34 @@
   flex: 1 1 auto;
   overflow-y: auto;
 }
+
+/* 自定义滚动条样式 */
+.jelly-modal .jelly-modal__body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.jelly-modal .jelly-modal__body::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 0;
+  margin: 6px 0;
+}
+
+.jelly-modal .jelly-modal__body::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 120, 0.45);
+  border-radius: 999px;
+}
+
+.jelly-modal .jelly-modal__body::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 120, 120, 0.7);
+}
+
 .jelly-modal .jelly-modal__body p {
   font-size: 14px;
 }
 
 .jelly-modal .jelly-modal__header {
-  padding: 24px 16px 0 16px;
+  padding: 24px 16px 16px 16px;
+  box-shadow: var(--jelly-box-shadow-sm);
 }
 
 .jelly-modal .jelly-modal__footer {
@@ -214,5 +237,11 @@
   to {
     transform: translateY(-20px);
     opacity: 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .jelly-modal .jelly-modal__content {
+    min-width: 90% !important;
   }
 }

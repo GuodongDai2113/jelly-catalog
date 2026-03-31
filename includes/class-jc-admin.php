@@ -8,7 +8,7 @@
  * @created 2025.07.29 14:47
  */
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit; // 禁止直接访问
 }
 
@@ -47,7 +47,7 @@ class JC_Admin
      */
     protected function register_global_hooks()
     {
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
         // add_action('admin_init', [$this, 'register_settings']);
         // add_filter('display_post_states', [$this, 'display_product_page_states'], 10, 2);
     }
@@ -72,12 +72,12 @@ class JC_Admin
      */
     protected function register_product_list_hooks()
     {
-        add_filter('manage_edit-product_columns', array($this, 'columns'), 5);
-        add_filter('manage_edit-product_columns', array($this, 'define_columns'), 10);
-        add_action('manage_product_posts_custom_column', array($this, 'column'), 10, 2);
+        add_filter('manage_edit-product_columns', [$this, 'columns'], 5);
+        add_filter('manage_edit-product_columns', [$this, 'define_columns'], 10);
+        add_action('manage_product_posts_custom_column', [$this, 'column'], 10, 2);
 
-        add_filter('manage_edit-product_sortable_columns', array($this, 'sortable_columns'));
-        add_action('pre_get_posts', array($this, 'product_orderby'));
+        add_filter('manage_edit-product_sortable_columns', [$this, 'sortable_columns']);
+        add_action('pre_get_posts', [$this, 'product_orderby']);
     }
 
     /**
@@ -87,7 +87,7 @@ class JC_Admin
      */
     protected function register_product_filter_hooks()
     {
-        add_action('restrict_manage_posts', array($this, 'product_filters'));
+        add_action('restrict_manage_posts', [$this, 'product_filters']);
     }
 
     /**
@@ -97,8 +97,8 @@ class JC_Admin
      */
     protected function register_product_category_hooks()
     {
-        add_filter('manage_edit-product_cat_columns', array($this, 'product_cat_columns'));
-        add_filter('manage_product_cat_custom_column', array($this, 'product_cat_column'), 10, 3);
+        add_filter('manage_edit-product_cat_columns', [$this, 'product_cat_columns']);
+        add_filter('manage_product_cat_custom_column', [$this, 'product_cat_column'], 10, 3);
     }
 
     /**
@@ -148,15 +148,15 @@ class JC_Admin
         wp_enqueue_style(
             'jelly-catalog-admin',
             JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog.css',
-            array(),
+            [],
             JELLY_CATALOG_VERSION
         );
 
         wp_enqueue_style(
             'jelly-core',
             JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-core.css',
-            array(),
-            JELLY_CATALOG_VERSION
+            [],
+            '1.0.2'
         );
 
         wp_enqueue_media();
@@ -164,33 +164,55 @@ class JC_Admin
         wp_enqueue_script(
             'jelly-core',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-core.js',
-            array('jquery'),
-            JELLY_CATALOG_VERSION,
+            ['jquery'],
+            '1.0.2',
             true
         );
 
         wp_enqueue_script(
             'jelly-catalog-repeater',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-repeater.js',
-            array('jquery'),
+            ['jquery'],
             JELLY_CATALOG_VERSION,
             true
+        );
+
+        wp_localize_script(
+            'jelly-catalog-repeater',
+            'jc_product_i18n',
+            [
+                'postdivrich' => __('Product Description', 'jelly-catalog'),
+                'bulk_create_title' => __('Bulk Create Items', 'jelly-catalog'),
+                'bulk_create_placeholder' => __("Enter content here...\nFor FAQ: First line is Question, second line is Answer\nQuestion 1\nAnswer 1\nQuestion 2\nAnswer 2\n...\n\nFor Attributes: First line is Name, second line is Value\nName 1\nValue 1\nName 2\nValue 2...", 'jelly-catalog'),
+                'create_items_btn' => __('Create Items', 'jelly-catalog'),
+                'cancel_btn' => __('Cancel', 'jelly-catalog'),
+                'success_title' => __('Success', 'jelly-catalog'),
+                'error_title' => __('Error', 'jelly-catalog'),
+                'ok_btn' => __('OK', 'jelly-catalog'),
+                'no_content_error' => __('Please enter content.', 'jelly-catalog'),
+                'no_valid_items_error' => __('No valid items found.', 'jelly-catalog'),
+                'success_created_items' => __('Successfully created {count} items.', 'jelly-catalog'),
+                'delete_item_tooltip' => __('Delete item', 'jelly-catalog'),
+                'add_new_item_btn' => __('Add New Item', 'jelly-catalog'),
+                'bulk_create_tooltip' => __('Bulk Create Items from Text', 'jelly-catalog'),
+                'bulk_create_btn' => __('Bulk Create', 'jelly-catalog'),
+                'faq_question_label' => __('Question', 'jelly-catalog'),
+                'faq_answer_label' => __('Answer', 'jelly-catalog'),
+                'attribute_name_label' => __('Name', 'jelly-catalog'),
+                'attribute_value_label' => __('Value', 'jelly-catalog'),
+                'product_faqs' => __('Product FAQs', 'jelly-catalog'),
+                'product_attributes' => __('Product Attributes', 'jelly-catalog'),
+                'product_cat_faqs' => __('Category FAQs', 'jelly-catalog'),
+            ]
         );
 
         if ($hook === 'post.php' || $hook === 'post-new.php') {
             wp_enqueue_script(
                 'jelly-catalog-product-editor',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-product-editor.js',
-                array('jquery', 'jquery-ui-sortable'),
+                ['jquery', 'jquery-ui-sortable'],
                 JELLY_CATALOG_VERSION,
                 true
-            );
-            wp_localize_script(
-                'jelly-catalog-product-editor',
-                'jc_product_editor_data',
-                array(
-                    'postdivrich' => __('Product Description', 'jelly-catalog'),
-                )
             );
         }
 
@@ -198,7 +220,7 @@ class JC_Admin
             wp_enqueue_script(
                 'jelly-catalog-editor',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-category-editor.js',
-                array('jquery'),
+                ['jquery'],
                 JELLY_CATALOG_VERSION,
                 true
             );
@@ -217,8 +239,8 @@ class JC_Admin
             return $columns;
         }
 
-        $new_columns           = array();
-        $new_columns['cb']     = $columns['cb'];
+        $new_columns = [];
+        $new_columns['cb'] = $columns['cb'];
         $new_columns['jc-thumb'] = __('Image', 'jelly-catalog');
         unset($columns['cb']);
 
@@ -233,13 +255,13 @@ class JC_Admin
      */
     public function define_columns($columns)
     {
-        $reordered = array();
+        $reordered = [];
         foreach ($columns as $key => $value) {
             $reordered[$key] = $value;
 
             if ('title' === $key) {
-                $reordered['product_cat']          = __('Categories', 'jelly-catalog');
-                $reordered['product_tag']          = __('Tags', 'jelly-catalog');
+                $reordered['product_cat'] = __('Categories', 'jelly-catalog');
+                $reordered['product_tag'] = __('Tags', 'jelly-catalog');
                 $reordered['product_completeness'] = __('Completeness', 'jelly-catalog');
             }
         }
@@ -281,7 +303,7 @@ class JC_Admin
     protected function render_product_thumbnail_column($post_id)
     {
         $thumbnail_id = get_post_meta($post_id, '_thumbnail_id', true);
-        $image        = $thumbnail_id ? wp_get_attachment_url($thumbnail_id) : '';
+        $image = $thumbnail_id ? wp_get_attachment_url($thumbnail_id) : '';
 
         if ($thumbnail_id) {
             $gallery_ids = get_post_meta($post_id, '_product_image_gallery', true);
@@ -315,19 +337,19 @@ class JC_Admin
             return;
         }
 
-        $links = array();
+        $links = [];
         foreach ($terms as $term) {
             $level = 0;
             if ($term->parent) {
                 $ancestors = get_ancestors($term->term_id, 'product_cat');
-                $level     = count($ancestors);
+                $level = count($ancestors);
             }
 
             $level_class = 'level-' . max(1, min(3, $level + 1));
 
             $links[] = sprintf(
                 '<a href="%s" class="%s">%s</a>',
-                esc_url(add_query_arg(array('post_type' => 'product', 'product_cat' => $term->slug), 'edit.php')),
+                esc_url(add_query_arg(['post_type' => 'product', 'product_cat' => $term->slug], 'edit.php')),
                 esc_attr($level_class),
                 esc_html(sanitize_term_field('name', $term->name, $term->term_id, 'product_cat', 'display'))
             );
@@ -350,11 +372,11 @@ class JC_Admin
             return;
         }
 
-        $links = array();
+        $links = [];
         foreach ($terms as $term) {
             $links[] = sprintf(
                 '<a href="%s">%s</a>',
-                esc_url(add_query_arg(array('post_type' => 'product', 'product_tag' => $term->slug), 'edit.php')),
+                esc_url(add_query_arg(['post_type' => 'product', 'product_tag' => $term->slug], 'edit.php')),
                 esc_html(sanitize_term_field('name', $term->name, $term->term_id, 'product_tag', 'display'))
             );
         }
@@ -370,16 +392,20 @@ class JC_Admin
      */
     protected function render_product_completeness_column($post_id)
     {
-        $post    = get_post($post_id);
+        $post = get_post($post_id);
+        $title = $post ? $post->post_title : '';
         $excerpt = $post ? $post->post_excerpt : '';
         $content = $post ? $post->post_content : '';
 
+        $title_length = strlen(trim(strip_tags($title)));
         $excerpt_length = strlen(trim(strip_tags($excerpt)));
         $content_length = strlen(trim(strip_tags($content)));
 
+        $title_complete = $title_length > 40;
         $excerpt_complete = $excerpt_length >= 60;
         $content_complete = $content_length >= 100;
 
+        $this->print_completeness_line($title_complete, __('Title', 'jelly-catalog'));
         $this->print_completeness_line($excerpt_complete, __('Description', 'jelly-catalog'));
         $this->print_completeness_line($content_complete, __('Content', 'jelly-catalog'));
     }
@@ -408,7 +434,7 @@ class JC_Admin
      */
     public function product_cat_columns($columns)
     {
-        $new_columns = array();
+        $new_columns = [];
 
         if (isset($columns['cb'])) {
             $new_columns['cb'] = $columns['cb'];
@@ -416,7 +442,7 @@ class JC_Admin
         }
 
         $new_columns['jc-thumb'] = __('Image', 'jelly-catalog');
-        $columns                 = array_merge($new_columns, $columns);
+        $columns = array_merge($new_columns, $columns);
 
         $columns['handle'] = '';
 
@@ -442,7 +468,7 @@ class JC_Admin
         }
 
         if ('description' === $column) {
-            $term     = get_term($term_id, 'product_cat');
+            $term = get_term($term_id, 'product_cat');
             $content .= esc_html($term->description);
         }
 
@@ -458,7 +484,7 @@ class JC_Admin
     protected function render_product_category_thumbnail($term_id)
     {
         $thumbnail_id = get_term_meta($term_id, 'thumbnail_id', true);
-        $image        = $thumbnail_id ? wp_get_attachment_thumb_url($thumbnail_id) : jc_placeholder_img_src();
+        $image = $thumbnail_id ? wp_get_attachment_thumb_url($thumbnail_id) : jc_placeholder_img_src();
 
         $image = str_replace(' ', '%20', $image);
 
@@ -531,12 +557,12 @@ class JC_Admin
     protected function render_product_category_filter()
     {
         $current_cat = isset($_GET['product_cat']) ? sanitize_text_field($_GET['product_cat']) : '';
-        $cat_terms   = get_terms(array(
-            'taxonomy'     => 'product_cat',
-            'hide_empty'   => false,
+        $cat_terms = get_terms([
+            'taxonomy' => 'product_cat',
+            'hide_empty' => false,
             'hierarchical' => true,
-            'orderby'      => 'name',
-        ));
+            'orderby' => 'name',
+        ]);
 
         if (empty($cat_terms) || is_wp_error($cat_terms)) {
             return;
@@ -545,11 +571,11 @@ class JC_Admin
         echo '<select name="product_cat">';
         echo '<option value="">' . esc_html__('All categories', 'jelly-catalog') . '</option>';
 
-        echo walk_category_dropdown_tree($cat_terms, 0, array(
-            'selected'    => $current_cat,
+        echo walk_category_dropdown_tree($cat_terms, 0, [
+            'selected' => $current_cat,
             'value_field' => 'slug',
-            'show_count'  => true,
-        ));
+            'show_count' => true,
+        ]);
 
         echo '</select>';
     }
@@ -562,10 +588,10 @@ class JC_Admin
     protected function render_product_tag_filter()
     {
         $current_tag = isset($_GET['product_tag']) ? sanitize_text_field($_GET['product_tag']) : '';
-        $tag_terms   = get_terms(array(
-            'taxonomy'   => 'product_tag',
+        $tag_terms = get_terms([
+            'taxonomy' => 'product_tag',
             'hide_empty' => false,
-        ));
+        ]);
 
         if (empty($tag_terms) || is_wp_error($tag_terms)) {
             return;

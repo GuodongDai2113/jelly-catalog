@@ -146,16 +146,50 @@ class JC_Post_Meta_Box
             </div>',
         ]);
 
+        // SKU 帮助标签页
         $screen->add_help_tab([
-            'id' => 'product_order_metabox_help',
-            'title' => __('Sort Order', 'jelly-catalog'),
+            'id' => 'product_sku_metabox_help',
+            'title' => __('Product Model/SKU', 'jelly-catalog'),
             'content' => '<div class="edit-description">
-                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Sort Order Guidelines:', 'jelly-catalog') . '</p>
+                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('SKU Management Guidelines:', 'jelly-catalog') . '</p>
                 <ol>
-                    <li>' . esc_html__('Higher numbers will cause the product to appear earlier in listings.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Default sort order is 0. Products with the same sort order will be sorted by date.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Use whole numbers greater than or equal to 0 for best results.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('This setting overrides the default chronological ordering of products.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Enter a unique product model number or SKU to identify your product.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Use alphanumeric characters, hyphens, and underscores for best compatibility.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Avoid using spaces and special characters in SKUs.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Keep SKUs consistent in format across similar products for easier management.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('SKUs help with inventory tracking and e-commerce integration.', 'jelly-catalog') . '</li>
+                </ol>
+            </div>',
+        ]);
+
+        // Keywords 帮助标签页
+        $screen->add_help_tab([
+            'id' => 'longtail_keywords_metabox_help',
+            'title' => __('Long-tail Keywords', 'jelly-catalog'),
+            'content' => '<div class="edit-description">
+                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Long-tail Keywords Guidelines:', 'jelly-catalog') . '</p>
+                <ol>
+                    <li>' . esc_html__('Enter basic keywords to generate related long-tail variations automatically.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Long-tail keywords typically have lower competition and higher conversion rates.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Use generated keywords in product titles, descriptions, and meta fields.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Focus on specific customer intents and use cases for better targeting.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Review and customize generated keywords to match your specific product niche.', 'jelly-catalog') . '</li>
+                </ol>
+            </div>',
+        ]);
+
+        // Video URL 帮助标签页
+        $screen->add_help_tab([
+            'id' => 'product_videourl_metabox_help',
+            'title' => __('Product Video', 'jelly-catalog'),
+            'content' => '<div class="edit-description">
+                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Video Integration Guidelines:', 'jelly-catalog') . '</p>
+                <ol>
+                    <li>' . esc_html__('Enter a full URL to your product video hosted on YouTube, Vimeo, or other platforms.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Videos can significantly improve customer engagement and conversion rates.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Ensure videos are optimized for fast loading and mobile viewing.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Keep videos short and focused on product features and benefits.', 'jelly-catalog') . '</li>
+                    <li>' . esc_html__('Use clear titles and descriptions that complement the product information.', 'jelly-catalog') . '</li>
                 </ol>
             </div>',
         ]);
@@ -194,6 +228,14 @@ class JC_Post_Meta_Box
      */
     private function load_extended_product_metaboxes()
     {
+        // 长尾关键词生成器
+        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-longtail-keywords-metabox.php';
+        new JC_Longtail_Keywords_Metabox();
+
+        // 产品型号/SKU 功能
+        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-sku-metabox.php';
+        new JC_Product_SKU_Metabox();
+
         // FAQ 功能
         include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-faq-metabox.php';
         new JC_Product_FAQ_Metabox();

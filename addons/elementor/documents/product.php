@@ -6,13 +6,12 @@ use Elementor\Controls_Manager;
 use ElementorPro\Modules\ThemeBuilder\Documents\Single_Base;
 use ElementorPro\Plugin;
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
 class Product extends Single_Base
 {
-
     public static function get_properties()
     {
         $properties = parent::get_properties();
@@ -191,7 +190,7 @@ class Product extends Single_Base
             'post_type' => 'product',
         ]);
 
-        if (! empty($latest_posts)) {
+        if (!empty($latest_posts)) {
             $this->update_control(
                 'preview_id',
                 [

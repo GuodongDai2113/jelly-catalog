@@ -5,13 +5,12 @@ namespace Jelly_Catalog\Addons\Elementor\Widgets;
 use ElementorPro\Modules\ThemeBuilder\Widgets\Post_Content;
 use ElementorPro\Plugin;
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
 class Product_Content extends Post_Content
 {
-
     public function get_name()
     {
         return 'jc-product-content';
@@ -39,6 +38,6 @@ class Product_Content extends Post_Content
 
     public function has_widget_inner_wrapper(): bool
     {
-        return ! Plugin::elementor()->experiments->is_feature_active('e_optimized_markup');
+        return !Plugin::elementor()->experiments->is_feature_active('e_optimized_markup');
     }
 }

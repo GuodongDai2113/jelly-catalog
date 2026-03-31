@@ -2,26 +2,27 @@
 
 /**
  * includes\metabox\class-jc-product-attributes-metabox.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created: 2025.09.15 15:25
  */
 
-
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class JC_Product_FAQ_Metabox
 {
     public function __construct()
     {
-        add_action('add_meta_boxes', array($this, 'add_meta_boxes'), 30);
-        add_action('save_post_product', array($this, 'save_metabox'));
+        add_action('add_meta_boxes', [$this, 'add_meta_boxes'], 30);
+        add_action('save_post_product', [$this, 'save_metabox']);
     }
 
-    function add_meta_boxes()
+    public function add_meta_boxes()
     {
-        add_meta_box('product_faq_metabox', __('Product FAQ', 'jelly-catalog'), array($this, 'render_metabox'), 'product', 'normal', 'default');
+        add_meta_box('product_faq_metabox', __('Product FAQ', 'jelly-catalog'), [$this, 'render_metabox'], 'product', 'normal', 'default');
     }
 
     public function render_metabox($post)
@@ -30,25 +31,26 @@ class JC_Product_FAQ_Metabox
         $faqs = is_array($faqs) ? $faqs : [];
         wp_nonce_field('jc_save_product_faq', 'jc_faq');
         // 使用通用 repeater 函数生成 FAQ 表单
-        jc_render_repeater_field(array(
+        jc_render_repeater_field([
             'id' => 'product_faqs',
             'name' => 'product_faqs',
+            'title' => __('Product FAQ', 'jelly-catalog'),
             'items' => $faqs,
-            'fields' => array(
-                array(
+            'fields' => [
+                [
                     'type' => 'text',
                     'name' => 'name',
-                    'label' => __('Question:', 'jelly-frame'),
+                    'label' => __('Question:', 'jelly-catalog'),
                     'class' => 'repeater-item__key-input'
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'name' => 'value',
-                    'label' => __('Answer:', 'jelly-frame'),
+                    'label' => __('Answer:', 'jelly-catalog'),
                     'class' => 'repeater-item__value-input'
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
     }
 
     public function save_metabox($post_id)
@@ -73,7 +75,6 @@ class JC_Product_FAQ_Metabox
 
         // 保存数据
         if (isset($_POST['product_faqs'])) {
-
             $raw = $_POST['product_faqs'] ?? [];
             $clean = [];
 

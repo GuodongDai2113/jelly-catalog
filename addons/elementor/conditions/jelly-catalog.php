@@ -1,20 +1,20 @@
 <?php
+
 /*
  * 摘取文件 elementor-pro\modules\woocommerce\conditions\woocommerce.php
- * 
+ *
  */
 
 namespace Jelly_Catalog\Addons\Elementor\Conditions;
 
 use ElementorPro\Modules\ThemeBuilder as ThemeBuilder;
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
 class Jelly_Catalog extends ThemeBuilder\Conditions\Condition_Base
 {
-
     public static function get_type()
     {
         return 'jelly-catalog';

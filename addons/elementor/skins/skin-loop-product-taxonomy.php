@@ -4,7 +4,7 @@ namespace Jelly_Catalog\Addons\Elementor\Skins;
 
 use ElementorPro\Modules\LoopBuilder\Skins\Skin_Loop_Taxonomy_Base;
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 

@@ -854,14 +854,14 @@ class JC_Port
             $result = get_transient('jc_import_result');
             if ($result) {
                 printf(
-                    '<div class="notice notice-success is-dismissible"><p>%s %d %s, %d %s。<a href="%s">%s</a></p></div>',
-                    __('成功导入', 'jelly-catalog'),
+                    '<div class="notice notice-success is-dismissible"><p>%s %d %s, %d %s. <a href="%s">%s</a></p></div>',
+                    __('Successfully imported', 'jelly-catalog'),
                     $result['imported'],
-                    __('个产品', 'jelly-catalog'),
+                    __('products', 'jelly-catalog'),
                     $result['errors'],
-                    __('个错误', 'jelly-catalog'),
+                    __('errors', 'jelly-catalog'),
                     admin_url('edit.php?post_type=product&page=products-port'),
-                    __('查看详细日志', 'jelly-catalog')
+                    __('View detailed log', 'jelly-catalog')
                 );
                 delete_transient('jc_import_result');
             }
@@ -871,13 +871,13 @@ class JC_Port
             $error_msg = '';
             switch ($_GET['import_error']) {
                 case 'file_upload_failed':
-                    $error_msg = __('文件上传失败。', 'jelly-catalog');
+                    $error_msg = __('File upload failed.', 'jelly-catalog');
                     break;
                 case 'cannot_read_file':
-                    $error_msg = __('无法读取上传的文件。', 'jelly-catalog');
+                    $error_msg = __('Cannot read uploaded file.', 'jelly-catalog');
                     break;
                 default:
-                    $error_msg = __('导入过程中发生未知错误。', 'jelly-catalog');
+                    $error_msg = __('An unknown error occurred during import.', 'jelly-catalog');
             }
 
             printf('<div class="notice notice-error is-dismissible"><p>%s</p></div>', $error_msg);
@@ -927,5 +927,4 @@ class JC_Port
         closedir($handler);
     }
 }
-
 JC_Port::instance();

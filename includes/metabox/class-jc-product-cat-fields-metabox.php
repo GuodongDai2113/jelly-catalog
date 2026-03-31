@@ -2,20 +2,22 @@
 
 /**
  * includes\metabox\class-jc-product-cat-fields-metabox.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created: 2026.01.21 15:30
  */
 
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class JC_Product_Cat_Fields_Metabox
 {
     public function __construct()
     {
-        add_action('product_cat_edit_form_fields', array($this, 'edit_category_fields'));
-        add_action('edited_product_cat', array($this, 'save_category_fields'));
+        add_action('product_cat_edit_form_fields', [$this, 'edit_category_fields']);
+        add_action('edited_product_cat', [$this, 'save_category_fields']);
     }
 
     /**
@@ -58,17 +60,17 @@ class JC_Product_Cat_Fields_Metabox
         echo '<label for="category_why_choose">' . esc_html__('Category Why Choose', 'jelly-catalog') . '</label>';
         echo '</th>';
         echo '<td>';
-        wp_editor($category_why_choose, 'category_why_choose', array(
+        wp_editor($category_why_choose, 'category_why_choose', [
             'textarea_name' => 'category_why_choose',
             'textarea_rows' => 10,
             'media_buttons' => false,
-            'quicktags'     => array('buttons' => 'em,strong,link'),
-            'tinymce'       => array(
+            'quicktags' => ['buttons' => 'em,strong,link'],
+            'tinymce' => [
                 'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
                 'theme_advanced_buttons2' => '',
-            ),
+            ],
             'quicktags' => true
-        ));
+        ]);
         echo '<p class="description">' . esc_html__('Enter the why choose content for this category.', 'jelly-catalog') . '</p>';
         echo '</td>';
         echo '</tr>';
@@ -79,17 +81,17 @@ class JC_Product_Cat_Fields_Metabox
         echo '<label for="category_advantages">' . esc_html__('Category Advantages', 'jelly-catalog') . '</label>';
         echo '</th>';
         echo '<td>';
-        wp_editor($category_advantages, 'category_advantages', array(
+        wp_editor($category_advantages, 'category_advantages', [
             'textarea_name' => 'category_advantages',
             'textarea_rows' => 10,
             'media_buttons' => false,
-            'quicktags'     => array('buttons' => 'em,strong,link'),
-            'tinymce'       => array(
+            'quicktags' => ['buttons' => 'em,strong,link'],
+            'tinymce' => [
                 'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
                 'theme_advanced_buttons2' => '',
-            ),
+            ],
             'quicktags' => true
-        ));
+        ]);
         echo '<p class="description">' . esc_html__('Enter the advantages for this category.', 'jelly-catalog') . '</p>';
         echo '</td>';
         echo '</tr>';

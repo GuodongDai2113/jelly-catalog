@@ -2,13 +2,12 @@
 
 /**
  * Jelly Catalog AJAX 处理类
- * 
+ *
  * 处理所有来自前端的 AJAX 请求，包括产品数据的获取、更新以及分类管理等功能
  */
 
 class JC_Ajax_Action
 {
-
     /**
      * 单例实例
      *
@@ -31,40 +30,39 @@ class JC_Ajax_Action
 
     /**
      * 构造函数
-     * 
+     *
      * 添加 AJAX 钩子
-     * 
+     *
      * @return void
      */
     public function __construct()
     {
-        add_action('admin_enqueue_scripts', array($this, 'admin_ajax_scripts'));
-        add_action('wp_ajax_update_product_category_image', array($this, 'update_product_category_image'));
-        add_action('wp_ajax_update_product_category_description', array($this, 'update_product_category_description'));
-        add_action('wp_ajax_get_products_sheet',  array($this, 'get_products_sheet'));
-        add_action('wp_ajax_save_products_sheet', array($this, 'save_products_sheet'));
+        add_action('admin_enqueue_scripts', [$this, 'admin_ajax_scripts']);
+        add_action('wp_ajax_update_product_category_image', [$this, 'update_product_category_image']);
+        add_action('wp_ajax_update_product_category_description', [$this, 'update_product_category_description']);
+        add_action('wp_ajax_get_products_sheet', [$this, 'get_products_sheet']);
+        add_action('wp_ajax_save_products_sheet', [$this, 'save_products_sheet']);
         // 添加获取分类法术语的AJAX处理
-        add_action('wp_ajax_get_taxonomy_terms', array($this, 'get_taxonomy_terms'));
+        add_action('wp_ajax_get_taxonomy_terms', [$this, 'get_taxonomy_terms']);
     }
 
     public function admin_ajax_scripts()
     {
-        wp_localize_script('jquery', 'jc_ajax', array(
+        wp_localize_script('jquery', 'jc_ajax', [
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce'    => wp_create_nonce('jc_nonce')
-        ));
+            'nonce' => wp_create_nonce('jc_nonce')
+        ]);
     }
 
     /**
      * 更新产品分类描述
-     * 
+     *
      * 该函数用于更新指定产品分类的描述信息，包含安全验证、权限检查和参数验证
-     * 
+     *
      * @return void 返回 JSON 响应
      */
     public function update_product_category_description()
     {
-
         // 验证 nonce 安全令牌
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'jc_nonce')) {
             wp_send_json_error(__('Security verification failed', 'jelly-catalog'));
@@ -85,9 +83,9 @@ class JC_Ajax_Action
         }
 
         // 执行分类描述更新操作
-        $result = wp_update_term($term_id, 'product_cat', array(
+        $result = wp_update_term($term_id, 'product_cat', [
             'description' => $description
-        ));
+        ]);
 
         if (is_wp_error($result)) {
             wp_send_json_error($result->get_error_message());
@@ -98,15 +96,14 @@ class JC_Ajax_Action
 
     /**
      * 更新产品分类图片
-     * 
+     *
      * 该函数用于更新指定产品分类的缩略图图片。
      * 通过AJAX方式接收分类ID和图片ID，验证安全性后更新分类图片。
-     * 
+     *
      * @return void 返回 JSON 响应
      */
     public function update_product_category_image()
     {
-
         // 验证安全令牌，防止CSRF攻击
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'jc_nonce')) {
             wp_send_json_error(__('Security verification failed', 'jelly-catalog'));
@@ -156,13 +153,13 @@ class JC_Ajax_Action
         $per_page = max(10, min(100, $per_page));
 
         // 定义需要获取的元数据键
-        $meta_keys = array(
+        $meta_keys = [
             'rank_math_focus_keyword',
             'rank_math_title',
             'rank_math_description',
             '_thumbnail_id',
             '_product_image_gallery'
-        );
+        ];
 
         // 计算偏移量用于分页查询
         $offset = ($page - 1) * $per_page;
@@ -180,7 +177,7 @@ class JC_Ajax_Action
         // 为每个产品加载所需的 SEO 元数据和分类标签信息
         foreach ($products as &$product) {
             $product_id = $product['ID'];
-            $meta_data = array();
+            $meta_data = [];
 
             foreach ($meta_keys as $meta_key) {
                 $meta_value = get_post_meta($product_id, $meta_key, true);
@@ -190,28 +187,28 @@ class JC_Ajax_Action
                         // 单个特色图片
                         if (!empty($meta_value) && is_numeric($meta_value)) {
                             $attachment_url = wp_get_attachment_image_url($meta_value, 'thumbnail');
-                            $meta_data[$meta_key] = array(
-                                array(
+                            $meta_data[$meta_key] = [
+                                [
                                     'id' => (int)$meta_value,
                                     'url' => $attachment_url ? $attachment_url : ''
-                                )
-                            );
+                                ]
+                            ];
                         } else {
-                            $meta_data[$meta_key] = array();
+                            $meta_data[$meta_key] = [];
                         }
-                    } else if ($meta_key === '_product_image_gallery') {
+                    } elseif ($meta_key === '_product_image_gallery') {
                         // 画廊图片数组
-                        $gallery_images = array();
+                        $gallery_images = [];
                         if (!empty($meta_value)) {
                             $image_ids = explode(',', $meta_value);
                             foreach ($image_ids as $image_id) {
                                 $image_id = trim($image_id);
                                 if (is_numeric($image_id)) {
                                     $attachment_url = wp_get_attachment_image_url($image_id, 'thumbnail');
-                                    $gallery_images[] = array(
+                                    $gallery_images[] = [
                                         'id' => (int)$image_id,
                                         'url' => $attachment_url ? $attachment_url : ''
-                                    );
+                                    ];
                                 }
                             }
                         }
@@ -227,11 +224,11 @@ class JC_Ajax_Action
             $product['categories'] = $categories;
 
             // 获取产品标签
-            $tags = wp_get_post_terms($product_id, 'product_tag', array(
+            $tags = wp_get_post_terms($product_id, 'product_tag', [
                 'fields' => 'ids',
-            ));
+            ]);
 
-            $product['tags'] = !empty($tags) ? $tags : array();
+            $product['tags'] = !empty($tags) ? $tags : [];
 
             $product['meta_data'] = $meta_data;
         }
@@ -242,13 +239,13 @@ class JC_Ajax_Action
         );
 
         // 构造并发送 JSON 响应结果
-        wp_send_json(array(
-            'products' => $products ?: array(),
+        wp_send_json([
+            'products' => $products ?: [],
             'total' => intval($total_products),
             'page' => $page,
             'per_page' => $per_page,
             'total_pages' => ceil($total_products / $per_page)
-        ));
+        ]);
     }
 
     /**
@@ -260,13 +257,13 @@ class JC_Ajax_Action
     private function get_product_category_hierarchy($product_id)
     {
         // 获取产品所有分类
-        $terms = wp_get_post_terms($product_id, 'product_cat', array('fields' => 'all'));
+        $terms = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'all']);
 
         if (empty($terms) || is_wp_error($terms)) {
-            return array();
+            return [];
         }
 
-        $hierarchy = array();
+        $hierarchy = [];
 
         foreach ($terms as $term) {
             $hierarchy[] = $this->build_category_levels($term);
@@ -274,7 +271,6 @@ class JC_Ajax_Action
 
         return $hierarchy;
     }
-
 
     /**
      * 构建分类层级数组
@@ -284,7 +280,7 @@ class JC_Ajax_Action
      */
     private function build_category_levels($term)
     {
-        $levels = array();
+        $levels = [];
 
         // 当前分类 ID
         $levels[] = $term->term_id;
@@ -302,14 +298,12 @@ class JC_Ajax_Action
             $parent_id = $parent->parent;
         }
 
-        return array(
+        return [
             'level_1' => $levels[0] ?? null,
             'level_2' => $levels[1] ?? null,
             'level_3' => $levels[2] ?? null,
-        );
+        ];
     }
-
-
 
     /**
      * 批量保存产品数据的 AJAX 处理函数
@@ -329,18 +323,18 @@ class JC_Ajax_Action
         }
 
         // 获取并检查提交的数据
-        $data = isset($_POST['data']) ? $_POST['data'] : array();
+        $data = isset($_POST['data']) ? $_POST['data'] : [];
 
         if (empty($data)) {
             wp_send_json_error(__('No data needs to be updated', 'jelly-catalog'));
         }
 
         // 定义需要保存的元数据键名列表
-        $meta_keys = array(
+        $meta_keys = [
             'rank_math_focus_keyword',
             'rank_math_title',
             'rank_math_description'
-        );
+        ];
 
         $updated_count = 0;
 
@@ -353,7 +347,7 @@ class JC_Ajax_Action
             }
 
             // 构建待更新的文章基础数据
-            $update_data = array('ID' => $product_id);
+            $update_data = ['ID' => $product_id];
 
             // 只更新有变化的字段，并进行安全过滤
             if (isset($item['post_title'])) {
@@ -369,7 +363,7 @@ class JC_Ajax_Action
             }
 
             if (isset($item['post_status'])) {
-                $update_data['post_status'] = in_array($item['post_status'], array('publish', 'draft')) ? $item['post_status'] : 'draft';
+                $update_data['post_status'] = in_array($item['post_status'], ['publish', 'draft']) ? $item['post_status'] : 'draft';
             }
 
             // 执行文章更新操作
@@ -420,7 +414,7 @@ class JC_Ajax_Action
     private function update_product_terms($product_id, $levels, $taxonomy)
     {
         // 清空现有分类
-        wp_set_object_terms($product_id, array(), $taxonomy);
+        wp_set_object_terms($product_id, [], $taxonomy);
 
         if (empty($levels) || !is_array($levels)) {
             return;
@@ -448,9 +442,8 @@ class JC_Ajax_Action
         }
 
         // 只设置最深层级
-        wp_set_object_terms($product_id, array($term_id), $taxonomy);
+        wp_set_object_terms($product_id, [$term_id], $taxonomy);
     }
-
 
     /**
      * 更新产品的标签
@@ -466,12 +459,12 @@ class JC_Ajax_Action
 
         if (empty($tags)) {
             // 如果没有标签，清空现有的
-            wp_set_object_terms($product_id, array(), 'product_tag');
+            wp_set_object_terms($product_id, [], 'product_tag');
             return;
         }
 
         // 为每个标签检查或创建
-        $tag_ids = array();
+        $tag_ids = [];
         foreach ($tags as $tag_name) {
             $tag = term_exists($tag_name, 'product_tag');
 
@@ -515,25 +508,25 @@ class JC_Ajax_Action
             wp_send_json_success($terms);
         } else {
             // 获取所有术语对象
-            $terms = get_terms(array(
-                'taxonomy'   => $taxonomy,
+            $terms = get_terms([
+                'taxonomy' => $taxonomy,
                 'hide_empty' => false,
-            ));
+            ]);
 
             if (is_wp_error($terms)) {
                 wp_send_json_error($terms->get_error_message());
             }
 
             // 组装返回格式：id / name / slug
-            $result = array();
+            $result = [];
 
             if (!empty($terms)) {
                 foreach ($terms as $term) {
-                    $result[] = array(
-                        'id'   => $term->term_id,
+                    $result[] = [
+                        'id' => $term->term_id,
                         'name' => $term->name,
                         'slug' => $term->slug,
-                    );
+                    ];
                 }
             }
 
@@ -548,24 +541,24 @@ class JC_Ajax_Action
      */
     private function get_category_hierarchy()
     {
-        $terms = get_terms(array(
-            'taxonomy'   => 'product_cat',
+        $terms = get_terms([
+            'taxonomy' => 'product_cat',
             'hide_empty' => false,
-        ));
+        ]);
 
         if (is_wp_error($terms) || empty($terms)) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
 
         foreach ($terms as $term) {
-            $result[] = array(
-                'id'        => $term->term_id,
-                'name'      => $term->name,
-                'slug'      => $term->slug,
+            $result[] = [
+                'id' => $term->term_id,
+                'name' => $term->name,
+                'slug' => $term->slug,
                 'parent_id' => $term->parent ?: 0,
-            );
+            ];
         }
 
         return $result;

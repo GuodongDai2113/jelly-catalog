@@ -7,7 +7,7 @@ use ElementorPro\Modules\LoopBuilder\Widgets\Base as Loop_Widget_Base;
 use Elementor\Controls_Manager;
 use ElementorPro\Modules\QueryControl\Controls\Group_Control_Query;
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
@@ -20,7 +20,6 @@ if (! defined('ABSPATH')) {
  */
 class Skin_Loop_Product extends Skin_Loop_Base
 {
-
     private $product_query_types = [
         'related_products',
     ];

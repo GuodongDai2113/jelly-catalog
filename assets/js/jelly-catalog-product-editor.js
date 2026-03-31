@@ -9,8 +9,10 @@
     "postexcerpt",
     "postdivrich",
     "product_catdiv",
+    "product_sku_metabox",
     "tagsdiv-product_tag",
     "acf-group_product_field",
+    "longtail_keywords_metabox",
     "product_faq_metabox",
     "product_attributes_metabox",
     "product_videourl_metabox",
@@ -32,7 +34,6 @@
     tabNav: ".nav-tab-wrapper",
     tabContent: ".tab-content",
     excerpt: "#excerpt",
-    excerptCount: "#excerpt-character-count",
     gallery: "#jc-gallery .product-images",
     galleryItem: "li.image",
     galleryAddButton: ".jc-add-image a",
@@ -81,7 +82,6 @@
      */
     init() {
       this.resetProductEditor();
-      this.initCharacterCount();
       this.initProductGallery();
     }
 
@@ -132,11 +132,8 @@
 
     getMetaboxTitle(metaboxId, $metabox) {
       if (metaboxId === "postdivrich") {
-        if (
-          window.jc_product_editor_data &&
-          window.jc_product_editor_data.postdivrich
-        ) {
-          return window.jc_product_editor_data.postdivrich;
+        if (window.jc_product_i18n && window.jc_product_i18n.postdivrich) {
+          return window.jc_product_i18n.postdivrich;
         }
 
         return "Content";
@@ -261,92 +258,6 @@
         this.refreshTinyMCEUI(editor);
         $(window).trigger("resize");
       }, TINY_MCE_LAYOUT_DELAY);
-    }
-
-    /**
-     * 初始化短描述字符统计
-     */
-    initCharacterCount() {
-      this.bindTinyMceCountListener();
-      this.bindTextareaCountListener();
-      this.syncInitialCharacterCount();
-    }
-
-    getExcerptEditor() {
-      if (typeof tinymce === "undefined") return null;
-      return tinymce.get(EDITOR_IDS.excerpt);
-    }
-
-    /**
-     * 监听 TinyMCE 内容变化
-     */
-    bindTinyMceCountListener() {
-      $(document).on("tinymce-editor-init", () => {
-        const editor = this.getExcerptEditor();
-        if (!editor) return;
-
-        editor.on("keyup paste cut", () => {
-          this.updateCharacterCountDisplay(
-            this.getExcerptLengthFromEditor(editor)
-          );
-        });
-      });
-    }
-
-    /**
-     * 监听纯文本域内容变化
-     */
-    bindTextareaCountListener() {
-      $(document).on("keyup paste cut", SELECTORS.excerpt, (e) => {
-        this.updateCharacterCountDisplay($(e.currentTarget).val().length);
-      });
-    }
-
-    /**
-     * 页面加载后同步一次默认计数
-     */
-    syncInitialCharacterCount() {
-      setTimeout(() => {
-        const editor = this.getExcerptEditor();
-        if (editor) {
-          this.updateCharacterCountDisplay(
-            this.getExcerptLengthFromEditor(editor)
-          );
-          return;
-        }
-
-        const $textarea = $(SELECTORS.excerpt);
-        if ($textarea.length) {
-          this.updateCharacterCountDisplay($textarea.val().length);
-        }
-      }, CHARACTER_COUNT_SYNC_DELAY);
-    }
-
-    /**
-     * 读取 TinyMCE 纯文本长度
-     */
-    getExcerptLengthFromEditor(editor) {
-      return editor.getContent({ format: "text" }).length;
-    }
-
-    /**
-     * 更新计数标签文字与颜色
-     */
-    updateCharacterCountDisplay(count) {
-      const $countElement = $(SELECTORS.excerptCount);
-      $countElement
-        .text(count)
-        .css("color", this.getCharacterCountColor(count));
-    }
-
-    getCharacterCountColor(count) {
-      if (count > CHARACTER_COUNT_LIMITS.danger) {
-        return CHARACTER_COUNT_COLORS.danger;
-      }
-      if (count > CHARACTER_COUNT_LIMITS.warning) {
-        return CHARACTER_COUNT_COLORS.warning;
-      }
-      return CHARACTER_COUNT_COLORS.ok;
     }
 
     /**

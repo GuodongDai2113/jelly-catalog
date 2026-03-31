@@ -2,7 +2,7 @@
 
 /**
  * addons\elementor\widgets\product-cat-nav.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created : 2026.01.19 21:58
@@ -12,8 +12,9 @@ namespace Jelly_Catalog\Addons\Elementor\Widgets;
 
 use Elementor\Widget_Base;
 
-
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class Product_Cat_Nav extends Widget_Base
 {
@@ -48,19 +49,19 @@ class Product_Cat_Nav extends Widget_Base
             'section_content',
             [
                 'label' => __('Content', 'product-cat-nav'),
-                'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
+                'tab' => \Elementor\Controls_Manager::TAB_CONTENT,
             ]
         );
 
         $this->add_control(
             'hide_empty',
             [
-                'label'        => __('Hide empty categories', 'product-cat-nav'),
-                'type'         => \Elementor\Controls_Manager::SWITCHER,
-                'label_on'     => __('Yes', 'product-cat-nav'),
-                'label_off'    => __('No', 'product-cat-nav'),
+                'label' => __('Hide empty categories', 'product-cat-nav'),
+                'type' => \Elementor\Controls_Manager::SWITCHER,
+                'label_on' => __('Yes', 'product-cat-nav'),
+                'label_off' => __('No', 'product-cat-nav'),
                 'return_value' => 'yes',
-                'default'      => 'yes',
+                'default' => 'yes',
             ]
         );
 
@@ -76,9 +77,13 @@ class Product_Cat_Nav extends Widget_Base
             if ($term && !is_wp_error($term)) {
                 while (!empty($term->parent)) {
                     $term = get_term((int)$term->parent, 'product_cat');
-                    if (!$term || is_wp_error($term)) break;
+                    if (!$term || is_wp_error($term)) {
+                        break;
+                    }
                 }
-                if ($term && !is_wp_error($term)) return (int)$term->term_id;
+                if ($term && !is_wp_error($term)) {
+                    return (int)$term->term_id;
+                }
             }
             return (int)$qo->term_id;
         }
@@ -91,9 +96,13 @@ class Product_Cat_Nav extends Widget_Base
                 $top = $term;
                 while (!empty($top->parent)) {
                     $top = get_term((int)$top->parent, 'product_cat');
-                    if (!$top || is_wp_error($top)) break;
+                    if (!$top || is_wp_error($top)) {
+                        break;
+                    }
                 }
-                if ($top && !is_wp_error($top)) return (int)$top->term_id;
+                if ($top && !is_wp_error($top)) {
+                    return (int)$top->term_id;
+                }
                 return (int)$term->term_id;
             }
         }
@@ -112,11 +121,11 @@ class Product_Cat_Nav extends Widget_Base
         $hide_empty = ($settings['hide_empty'] === 'yes');
 
         $terms = get_terms([
-            'taxonomy'   => 'product_cat',
-            'parent'     => 0,
+            'taxonomy' => 'product_cat',
+            'parent' => 0,
             'hide_empty' => $hide_empty,
-            'orderby'    => 'menu_order',
-            'order'      => 'ASC',
+            'orderby' => 'menu_order',
+            'order' => 'ASC',
         ]);
 
         if (empty($terms) || is_wp_error($terms)) {
@@ -124,21 +133,23 @@ class Product_Cat_Nav extends Widget_Base
         }
 
         $current_top_id = $this->get_current_top_term_id();
-?>
-        <div class="jc-cat-nav">
-            <?php foreach ($terms as $term): ?>
-                <?php
-                $link = get_term_link($term, 'product_cat');
-                if (is_wp_error($link)) continue;
+        ?>
+<div class="jc-cat-nav">
+    <?php foreach ($terms as $term): ?>
+    <?php
+                        $link = get_term_link($term, 'product_cat');
+        if (is_wp_error($link)) {
+            continue;
+        }
 
-                $is_active = ($current_top_id && (int)$term->term_id === (int)$current_top_id);
-                ?>
-                <a class="jc-cat-nav__tab <?php echo $is_active ? 'is-active' : ''; ?>" href="<?php echo esc_url($link); ?>"
-                    role="tab" aria-selected="<?php echo $is_active ? 'true' : 'false'; ?>">
-                    <?php echo esc_html($term->name); ?>
-                </a>
-            <?php endforeach; ?>
-        </div>
+        $is_active = ($current_top_id && (int)$term->term_id === (int)$current_top_id);
+        ?>
+    <a class="jc-cat-nav__tab <?php echo $is_active ? 'is-active' : ''; ?>" href="<?php echo esc_url($link); ?>"
+        role="tab" aria-selected="<?php echo $is_active ? 'true' : 'false'; ?>">
+        <?php echo esc_html($term->name); ?>
+    </a>
+    <?php endforeach; ?>
+</div>
 <?php
     }
 }

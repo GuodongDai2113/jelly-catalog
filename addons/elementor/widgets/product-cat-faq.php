@@ -2,13 +2,12 @@
 
 namespace Jelly_Catalog\Addons\Elementor\Widgets;
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
 class Product_Cat_Faq extends \Elementor\Widget_Base
 {
-
     public function get_name()
     {
         return 'jc-product-cat-faq';
@@ -34,19 +33,20 @@ class Product_Cat_Faq extends \Elementor\Widget_Base
         return ['faq', 'category', 'questions', 'answers'];
     }
 
-    protected function register_controls() {}
+    protected function register_controls()
+    {
+    }
 
     protected function render()
     {
-
-        $faqs = array();
+        $faqs = [];
 
         $queried_object = get_queried_object();
         if (isset($queried_object->term_id)) {
             $faqs = get_term_meta($queried_object->term_id, 'product_cat_faqs', true);
         }
 
-        if (! empty($faqs) && is_array($faqs)) {
+        if (!empty($faqs) && is_array($faqs)) {
             echo "<div class='jc-faq'>";
             foreach ($faqs as $item) {
                 $name = esc_html($item['name'] ?? '');
@@ -54,9 +54,9 @@ class Product_Cat_Faq extends \Elementor\Widget_Base
                 echo "<details class='jc-faq-item'>";
                 echo "<summary class='jc-faq-header'><h3>{$name}</h3></summary>";
                 echo "<div class='jc-faq-content'><p>{$value}</p></div>";
-                echo "</details>";
+                echo '</details>';
             }
-            echo "</div>";
+            echo '</div>';
         }
     }
 }

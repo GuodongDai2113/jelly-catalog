@@ -5,13 +5,12 @@ namespace Jelly_Catalog\Addons\Elementor\Documents;
 use ElementorPro\Modules\ThemeBuilder\Documents\Archive;
 use ElementorPro\Plugin;
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
 class Product_Archive extends Archive
 {
-
     public static function get_properties()
     {
         $properties = parent::get_properties();

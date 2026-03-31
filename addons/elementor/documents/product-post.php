@@ -6,13 +6,12 @@ use Elementor\Core\DocumentTypes\Post;
 use Elementor\Utils;
 use ElementorPro\Core\Behaviors\Feature_Lock;
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
 class Product_Post extends Post
 {
-
     public static function get_properties()
     {
         $properties = parent::get_properties();

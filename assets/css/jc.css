@@ -261,7 +261,9 @@
   height: 10px;
 }
 
-.jc-cat-list__item.is-expanded > .jc-cat-list__header .jc-cat-list__toggle::after {
+.jc-cat-list__item.is-expanded
+  > .jc-cat-list__header
+  .jc-cat-list__toggle::after {
   transform: rotate(90deg);
   opacity: 0;
 }

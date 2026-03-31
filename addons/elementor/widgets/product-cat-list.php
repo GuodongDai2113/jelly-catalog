@@ -2,7 +2,7 @@
 
 /**
  * addons\elementor\widgets\product-cat-list.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created : 2026.03.07 10:00
@@ -13,7 +13,9 @@ namespace Jelly_Catalog\Addons\Elementor\Widgets;
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class Product_Cat_List extends Widget_Base
 {
@@ -48,51 +50,51 @@ class Product_Cat_List extends Widget_Base
             'section_content',
             [
                 'label' => __('Content', 'jelly-catalog'),
-                'tab'   => Controls_Manager::TAB_CONTENT,
+                'tab' => Controls_Manager::TAB_CONTENT,
             ]
         );
 
         $this->add_control(
             'hide_empty',
             [
-                'label'        => __('Hide empty categories', 'jelly-catalog'),
-                'type'         => Controls_Manager::SWITCHER,
-                'label_on'     => __('Yes', 'jelly-catalog'),
-                'label_off'    => __('No', 'jelly-catalog'),
+                'label' => __('Hide empty categories', 'jelly-catalog'),
+                'type' => Controls_Manager::SWITCHER,
+                'label_on' => __('Yes', 'jelly-catalog'),
+                'label_off' => __('No', 'jelly-catalog'),
                 'return_value' => 'yes',
-                'default'      => 'yes',
+                'default' => 'yes',
             ]
         );
 
         $this->add_control(
             'show_count',
             [
-                'label'        => __('Show product count', 'jelly-catalog'),
-                'type'         => Controls_Manager::SWITCHER,
-                'label_on'     => __('Yes', 'jelly-catalog'),
-                'label_off'    => __('No', 'jelly-catalog'),
+                'label' => __('Show product count', 'jelly-catalog'),
+                'type' => Controls_Manager::SWITCHER,
+                'label_on' => __('Yes', 'jelly-catalog'),
+                'label_off' => __('No', 'jelly-catalog'),
                 'return_value' => 'yes',
-                'default'      => 'no',
+                'default' => 'no',
             ]
         );
 
         $this->end_controls_section();
 
         // --- Style Sections ---
-        
+
         // 1. Item Style
         $this->start_controls_section(
             'section_item_style',
             [
                 'label' => __('Item Style', 'jelly-catalog'),
-                'tab'   => Controls_Manager::TAB_STYLE,
+                'tab' => Controls_Manager::TAB_STYLE,
             ]
         );
 
         $this->add_group_control(
             \Elementor\Group_Control_Typography::get_type(),
             [
-                'name'     => 'item_typography',
+                'name' => 'item_typography',
                 'selector' => '{{WRAPPER}} .jc-cat-list__link',
             ]
         );
@@ -109,8 +111,8 @@ class Product_Cat_List extends Widget_Base
         $this->add_control(
             'item_color',
             [
-                'label'     => __('Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__link' => 'color: {{VALUE}};',
                 ],
@@ -120,8 +122,8 @@ class Product_Cat_List extends Widget_Base
         $this->add_control(
             'item_bg_color',
             [
-                'label'     => __('Background Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Background Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__header' => 'background-color: {{VALUE}};',
                 ],
@@ -140,8 +142,8 @@ class Product_Cat_List extends Widget_Base
         $this->add_control(
             'item_color_hover',
             [
-                'label'     => __('Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__header:hover .jc-cat-list__link' => 'color: {{VALUE}};',
                 ],
@@ -151,8 +153,8 @@ class Product_Cat_List extends Widget_Base
         $this->add_control(
             'item_bg_color_hover',
             [
-                'label'     => __('Background Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Background Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__header:hover' => 'background-color: {{VALUE}};',
                 ],
@@ -170,15 +172,15 @@ class Product_Cat_List extends Widget_Base
             'section_active_style',
             [
                 'label' => __('Active Item Style', 'jelly-catalog'),
-                'tab'   => Controls_Manager::TAB_STYLE,
+                'tab' => Controls_Manager::TAB_STYLE,
             ]
         );
 
         $this->add_control(
             'active_color',
             [
-                'label'     => __('Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__item.is-active > .jc-cat-list__header .jc-cat-list__link' => 'color: {{VALUE}};',
                 ],
@@ -188,8 +190,8 @@ class Product_Cat_List extends Widget_Base
         $this->add_control(
             'active_bg_color',
             [
-                'label'     => __('Background Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Background Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__item.is-active > .jc-cat-list__header' => 'background-color: {{VALUE}};',
                 ],
@@ -203,7 +205,7 @@ class Product_Cat_List extends Widget_Base
             'section_count_style',
             [
                 'label' => __('Count Badge', 'jelly-catalog'),
-                'tab'   => Controls_Manager::TAB_STYLE,
+                'tab' => Controls_Manager::TAB_STYLE,
                 'condition' => [
                     'show_count' => 'yes',
                 ],
@@ -213,8 +215,8 @@ class Product_Cat_List extends Widget_Base
         $this->add_control(
             'count_color',
             [
-                'label'     => __('Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__count' => 'color: {{VALUE}};',
                 ],
@@ -224,8 +226,8 @@ class Product_Cat_List extends Widget_Base
         $this->add_control(
             'count_bg_color',
             [
-                'label'     => __('Background Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Background Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__count' => 'background-color: {{VALUE}};',
                 ],
@@ -235,8 +237,8 @@ class Product_Cat_List extends Widget_Base
         $this->add_control(
             'count_active_color',
             [
-                'label'     => __('Active Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Active Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__item.is-active > .jc-cat-list__header .jc-cat-list__count' => 'color: {{VALUE}};',
                 ],
@@ -246,8 +248,8 @@ class Product_Cat_List extends Widget_Base
         $this->add_control(
             'count_active_bg_color',
             [
-                'label'     => __('Active Background Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Active Background Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__item.is-active > .jc-cat-list__header .jc-cat-list__count' => 'background-color: {{VALUE}};',
                 ],
@@ -261,15 +263,15 @@ class Product_Cat_List extends Widget_Base
             'section_toggle_style',
             [
                 'label' => __('Toggle Style', 'jelly-catalog'),
-                'tab'   => Controls_Manager::TAB_STYLE,
+                'tab' => Controls_Manager::TAB_STYLE,
             ]
         );
 
         $this->add_control(
             'toggle_color',
             [
-                'label'     => __('Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__toggle' => 'color: {{VALUE}};',
                     '{{WRAPPER}} .jc-cat-list__toggle::before' => 'background-color: {{VALUE}};',
@@ -281,8 +283,8 @@ class Product_Cat_List extends Widget_Base
         $this->add_control(
             'toggle_color_hover',
             [
-                'label'     => __('Hover Color', 'jelly-catalog'),
-                'type'      => Controls_Manager::COLOR,
+                'label' => __('Hover Color', 'jelly-catalog'),
+                'type' => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .jc-cat-list__toggle:hover' => 'color: {{VALUE}};',
                     '{{WRAPPER}} .jc-cat-list__toggle:hover::before' => 'background-color: {{VALUE}};',
@@ -306,10 +308,10 @@ class Product_Cat_List extends Widget_Base
         $show_count = ($settings['show_count'] === 'yes');
 
         $args = [
-            'taxonomy'   => 'product_cat',
+            'taxonomy' => 'product_cat',
             'hide_empty' => $hide_empty,
-            'orderby'    => 'menu_order',
-            'order'      => 'ASC',
+            'orderby' => 'menu_order',
+            'order' => 'ASC',
         ];
 
         $terms = get_terms($args);
@@ -327,12 +329,12 @@ class Product_Cat_List extends Widget_Base
         $current_term_id = 0;
         $ancestors = [];
         $queried_object = get_queried_object();
-        
+
         // 1. 分类存档页逻辑
         if ($queried_object && isset($queried_object->taxonomy) && $queried_object->taxonomy === 'product_cat') {
             $current_term_id = $queried_object->term_id;
             $ancestors = get_ancestors($current_term_id, 'product_cat');
-        } 
+        }
         // 2. 产品详情页逻辑：取产品的主分类或第一个分类
         elseif (is_singular('product')) {
             $product_terms = get_the_terms(get_the_ID(), 'product_cat');
@@ -358,18 +360,28 @@ class Product_Cat_List extends Widget_Base
         echo '<ul class="jc-cat-list__ul jc-cat-list__depth-' . esc_attr($depth) . '">';
         foreach ($terms_by_parent[$parent_id] as $term) {
             $link = get_term_link($term, 'product_cat');
-            if (is_wp_error($link)) continue;
+            if (is_wp_error($link)) {
+                continue;
+            }
 
             $is_active = ($current_term_id && (int)$term->term_id === (int)$current_term_id);
             $is_ancestor = in_array($term->term_id, $ancestors);
             $has_children = isset($terms_by_parent[$term->term_id]);
             $is_expanded = ($is_active || $is_ancestor);
-            
+
             $li_class = 'jc-cat-list__item';
-            if ($is_active) $li_class .= ' is-active';
-            if ($is_ancestor) $li_class .= ' is-ancestor';
-            if ($has_children) $li_class .= ' has-children';
-            if ($is_expanded) $li_class .= ' is-expanded';
+            if ($is_active) {
+                $li_class .= ' is-active';
+            }
+            if ($is_ancestor) {
+                $li_class .= ' is-ancestor';
+            }
+            if ($has_children) {
+                $li_class .= ' has-children';
+            }
+            if ($is_expanded) {
+                $li_class .= ' is-expanded';
+            }
 
             echo '<li class="' . esc_attr($li_class) . '">';
             echo '<div class="jc-cat-list__header">';

@@ -2,26 +2,27 @@
 
 /**
  * includes\metabox\class-jc-product-attributes-metabox.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created: 2025.09.15 15:25
  */
 
-
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class JC_Product_Videourl_Metabox
 {
     public function __construct()
     {
-        add_action('add_meta_boxes', array($this, 'add_meta_boxes'), 30);
-        add_action('save_post_product', array($this, 'save_metabox'));
+        add_action('add_meta_boxes', [$this, 'add_meta_boxes'], 30);
+        add_action('save_post_product', [$this, 'save_metabox']);
     }
 
-    function add_meta_boxes()
+    public function add_meta_boxes()
     {
-        add_meta_box('product_videourl_metabox', __('Product Video', 'jelly-catalog'), array($this, 'render_metabox'), 'product', 'normal', 'default');
+        add_meta_box('product_videourl_metabox', __('Product Video', 'jelly-catalog'), [$this, 'render_metabox'], 'product', 'normal', 'default');
     }
 
     public function render_metabox($post)

@@ -2,32 +2,33 @@
 
 /**
  * includes\metabox\product-gallery-metabox.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created: 2025.09.10 09:15
  */
 
-
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class JC_Product_Gallery_Metabox
 {
     public function __construct()
     {
-        add_action('add_meta_boxes', array($this, 'add_meta_boxes'), 30);
-        add_action('save_post_product', array($this, 'save_metabox'));
+        add_action('add_meta_boxes', [$this, 'add_meta_boxes'], 30);
+        add_action('save_post_product', [$this, 'save_metabox']);
     }
 
-    function add_meta_boxes()
+    public function add_meta_boxes()
     {
-        add_meta_box('product-images', __('Product Gallery', 'jelly-catalog'), array($this, 'render_metabox'), 'product', 'side', 'low');
+        add_meta_box('product-images', __('Product Gallery', 'jelly-catalog'), [$this, 'render_metabox'], 'product', 'side', 'low');
     }
 
     public function render_metabox($post)
     {
         $gallery_image_ids = get_post_meta($post->ID, '_product_image_gallery', true);
-        $gallery_image_ids = !empty($gallery_image_ids) ? explode(',', $gallery_image_ids) : array();
+        $gallery_image_ids = !empty($gallery_image_ids) ? explode(',', $gallery_image_ids) : [];
         wp_nonce_field('jc_save_product_image_gallery', 'jc_image_gallery');
         echo '<div id="jc-gallery">';
         echo '<ul class="product-images">';

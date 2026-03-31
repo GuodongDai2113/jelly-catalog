@@ -272,23 +272,12 @@
     margin: 0;
   }
 }
+.taxonomy-product_cat .column-jc-thumb img {
+  cursor: pointer;
+}
 
-// ==========================================
-// 摘要输入辅助
-// ==========================================
-
-.short-description-wrapper {
-  height: 175px;
-  width: 100%;
-
-  #excerpt-character-count {
-    font-weight: bold;
-  }
-
-  .character-count {
-    text-align: right;
-    margin-bottom: 5px;
-  }
+.taxonomy-product_cat .column-jc-thumb img:hover {
+  transform: scale(1.05);
 }
 
 .taxonomy-product_cat .inline-editor {
@@ -319,6 +308,7 @@
   background: var(--jelly-color-bg-secondary);
   border: 1px solid var(--jelly-color-border);
   box-shadow: var(--jelly-box-shadow-xs);
+  transition: all 0.3s ease-in-out;
 }
 
 .column-handle {

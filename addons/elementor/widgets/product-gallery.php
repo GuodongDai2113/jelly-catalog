@@ -6,11 +6,12 @@ use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 use Elementor\Icons_Manager;
 
-if (!defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class Product_Gallery extends Widget_Base
 {
-
     public function get_name()
     {
         return 'product_gallery';
@@ -49,7 +50,6 @@ class Product_Gallery extends Widget_Base
                 'label' => esc_html__('Content', 'jelly-catalog'),
             ]
         );
-
 
         $this->end_controls_section();
 
@@ -104,51 +104,51 @@ class Product_Gallery extends Widget_Base
         $video_url = get_post_meta($post_id, '_product_videourl', true);
         $embed_video_url = $video_url ? $this->convert_youtube_url_to_embed($video_url) : '';
         $youtube_id = $video_url ? $this->get_youtube_video_id($video_url) : '';
-?>
-        <?php if (!empty($all_ids)): ?>
-            <div class="jc-product-gallery">
-                <div class="swiper jc-gallery-top">
-                    <div class="swiper-wrapper">
-                        <?php if (!empty($video_url)): ?>
-                            <div class="swiper-slide">
-                                <iframe width="100%" height="100%" src="<?php echo esc_url($embed_video_url); ?>?rel=0&autoplay=0"
-                                    frameborder="0" allowfullscreen></iframe>
-                            </div>
-                        <?php endif; ?>
-                        <?php foreach ($all_ids as $id):
-                            $img_url = wp_get_attachment_url($id); ?>
-                            <div class="swiper-slide">
-                                <img src="<?php echo esc_url($img_url); ?>" alt="">
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                    <div class="swiper-button-next"></div>
-                    <div class="swiper-button-prev"></div>
-                </div>
-                <?php if (count($all_ids) > 1): ?>
-                    <div thumbsSlider="" class="swiper jc-gallery-thumbs">
-                        <div class="swiper-wrapper">
-                            <?php if (!empty($video_url)): ?>
-                                <div class="swiper-slide">
-                                    <img src="https://img.youtube.com/vi/<?php echo esc_attr($youtube_id); ?>/hqdefault.jpg"
-                                        alt="<?php esc_html__('Vieo Thumbnail', 'jelly-frame'); ?>">
-                                </div>
-                            <?php endif; ?>
-                            <?php foreach ($all_ids as $id):
-                                $thumb_url = wp_get_attachment_image_url($id, 'thumbnail'); ?>
-                                <div class="swiper-slide">
-                                    <img src="<?php echo esc_url($thumb_url); ?>" alt="">
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
+        ?>
+<?php if (!empty($all_ids)): ?>
+<div class="jc-product-gallery">
+    <div class="swiper jc-gallery-top">
+        <div class="swiper-wrapper">
+            <?php if (!empty($video_url)): ?>
+            <div class="swiper-slide">
+                <iframe width="100%" height="100%" src="<?php echo esc_url($embed_video_url); ?>?rel=0&autoplay=0"
+                    frameborder="0" allowfullscreen></iframe>
             </div>
-        <?php else: ?>
-            <div class="jc-product-no-gallery">
-                <img src="<?php echo JELLY_CATALOG_PLUGIN_URL . '/assets/images/placeholder.webp' ?>" alt="placeholder">
+            <?php endif; ?>
+            <?php foreach ($all_ids as $id):
+                $img_url = wp_get_attachment_url($id); ?>
+            <div class="swiper-slide">
+                <img src="<?php echo esc_url($img_url); ?>" alt="">
             </div>
-        <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+    <?php if (count($all_ids) > 1): ?>
+    <div thumbsSlider="" class="swiper jc-gallery-thumbs">
+        <div class="swiper-wrapper">
+            <?php if (!empty($video_url)): ?>
+            <div class="swiper-slide">
+                <img src="https://img.youtube.com/vi/<?php echo esc_attr($youtube_id); ?>/hqdefault.jpg"
+                    alt="<?php esc_html__('Video Thumbnail', 'jelly-catalog'); ?>">
+            </div>
+            <?php endif; ?>
+            <?php foreach ($all_ids as $id):
+                $thumb_url = wp_get_attachment_image_url($id, 'thumbnail'); ?>
+            <div class="swiper-slide">
+                <img src="<?php echo esc_url($thumb_url); ?>" alt="">
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+</div>
+<?php else: ?>
+<div class="jc-product-no-gallery">
+    <img src="<?php echo JELLY_CATALOG_PLUGIN_URL . '/assets/images/placeholder.webp' ?>" alt="placeholder">
+</div>
+<?php endif; ?>
 <?php
     }
 

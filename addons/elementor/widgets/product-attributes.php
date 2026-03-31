@@ -2,7 +2,7 @@
 
 /**
  * addons\elementor\widgets\product-attributes.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created : 2026.01.19 19:23
@@ -15,11 +15,12 @@ use Elementor\Controls_Manager;
 use Elementor\Icons_Manager;
 use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
 
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class Product_Attributes extends Widget_Base
 {
-
     public function get_name(): string
     {
         return 'jc-product-attributes';
@@ -59,7 +60,6 @@ class Product_Attributes extends Widget_Base
     {
         return ['widget-icon-list'];
     }
-
 
     protected function register_controls(): void
     {
@@ -274,23 +274,23 @@ class Product_Attributes extends Widget_Base
             $attributes = array_slice($attributes, 0, $max_items, true);
         }
 
-        $grid_columns =  'cols-' . $settings['columns'];
-?>
-        <div class="jc-attributes-wrapper <?php echo esc_attr($grid_columns); ?>">
-            <?php foreach ($attributes as $item): ?>
-                <div class="jc-attribute">
-                    <?php if ($settings['enable_icon'] === 'yes'): ?>
-                        <span class="jc-attribute-icon">
-                            <?php Icons_Manager::render_icon($settings['selected_icon'], ['aria-hidden' => 'true']); ?>
-                        </span>
-                    <?php endif; ?>
-                    <div class="jc-attribute-item">
-                        <span class="jc-attribute-name"><?php echo esc_html($item['name']); ?></span>:&nbsp;
-                        <span class="jc-attribute-value"><?php echo esc_html($item['value']); ?></span>
-                    </div>
-                </div>
-            <?php endforeach; ?>
+        $grid_columns = 'cols-' . $settings['columns'];
+        ?>
+<div class="jc-attributes-wrapper <?php echo esc_attr($grid_columns); ?>">
+    <?php foreach ($attributes as $item): ?>
+    <div class="jc-attribute">
+        <?php if ($settings['enable_icon'] === 'yes'): ?>
+        <span class="jc-attribute-icon">
+            <?php Icons_Manager::render_icon($settings['selected_icon'], ['aria-hidden' => 'true']); ?>
+        </span>
+        <?php endif; ?>
+        <div class="jc-attribute-item">
+            <span class="jc-attribute-name"><?php echo esc_html($item['name']); ?></span>:&nbsp;
+            <span class="jc-attribute-value"><?php echo esc_html($item['value']); ?></span>
         </div>
+    </div>
+    <?php endforeach; ?>
+</div>
 <?php
     }
 }

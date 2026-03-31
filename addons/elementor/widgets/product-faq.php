@@ -2,7 +2,7 @@
 
 /**
  * addons\elementor\widgets\product-faq.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created : 2025.11.10 13:32
@@ -10,11 +10,12 @@
 
 namespace Jelly_Catalog\Addons\Elementor\Widgets;
 
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
 class Product_FAQ extends \Elementor\Widget_Base
 {
-
     public function get_name(): string
     {
         return 'jc-product-faq';
@@ -39,12 +40,15 @@ class Product_FAQ extends \Elementor\Widget_Base
     {
         return ['product', 'faq', 'question', 'answer'];
     }
-    protected function register_controls(): void {}
+
+    protected function register_controls(): void
+    {
+    }
 
     protected function render(): void
     {
         $faqs = get_post_meta(get_the_ID(), '_product_faqs', true);
-        if (! empty($faqs) && is_array($faqs)) {
+        if (!empty($faqs) && is_array($faqs)) {
             echo "<div class='jc-faq'>";
             foreach ($faqs as $item) {
                 $name = esc_html($item['name'] ?? '');
@@ -52,9 +56,9 @@ class Product_FAQ extends \Elementor\Widget_Base
                 echo "<details class='jc-faq-item'>";
                 echo "<summary class='jc-faq-header'><h3>{$name}</h3></summary>";
                 echo "<div class='jc-faq-content'><p>{$value}</p></div>";
-                echo "</details>";
+                echo '</details>';
             }
-            echo "</div>";
+            echo '</div>';
         }
     }
 }

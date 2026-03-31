@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jelly Catalog 1.0.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/jelly-catalog\n"
-"POT-Creation-Date: 2026-03-07T02:44:16+00:00\n"
-"PO-Revision-Date: 2026-03-07 10:52+0800\n"
+"POT-Creation-Date: 2026-03-31T02:24:14+00:00\n"
+"PO-Revision-Date: 2026-03-31 10:26+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -18,8 +18,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #: jelly-catalog.php addons/class-jc-elementor.php:154
 #: addons/elementor/conditions/jelly-catalog.php:30
-#: addons/elementor/documents/product-archive.php:149
-#: addons/elementor/documents/product.php:165 includes/class-jc-admin.php:594
+#: addons/elementor/documents/product-archive.php:148
+#: addons/elementor/documents/product.php:164 includes/class-jc-admin.php:616
 msgid "Jelly Catalog"
 msgstr "Jelly 目录"
 
@@ -39,11 +39,11 @@ msgstr "仅启用产品功能，与 Woocommerce 完全兼容"
 msgid "JellyDai"
 msgstr "JellyDai"
 
-#: addons/class-jc-acf.php:39 addons/elementor/widgets/product-download.php:21
+#: addons/class-jc-acf.php:40 addons/elementor/widgets/product-download.php:22
 msgid "Product Download"
 msgstr "产品下载"
 
-#: addons/class-jc-acf.php:47
+#: addons/class-jc-acf.php:48
 msgid "Product catalog, multiple files can be uploaded in compressed packages"
 msgstr "产品目录，多个文件可以压缩包形式上传"
 
@@ -52,7 +52,7 @@ msgid "Entire Catalog"
 msgstr "整个目录"
 
 #: addons/elementor/conditions/product-archive.php:49
-#: addons/elementor/documents/product-archive.php:145
+#: addons/elementor/documents/product-archive.php:144
 msgid "Product Archive"
 msgstr "产品归档"
 
@@ -61,7 +61,7 @@ msgid "All Product Archives"
 msgstr "所有产品归档"
 
 #: addons/elementor/conditions/product-search.php:35
-#: addons/elementor/documents/product-archive.php:120
+#: addons/elementor/documents/product-archive.php:119
 msgid "Search Results"
 msgstr "搜索结果"
 
@@ -69,19 +69,19 @@ msgstr "搜索结果"
 msgid "Product Page"
 msgstr "产品页"
 
-#: addons/elementor/documents/product-archive.php:32
+#: addons/elementor/documents/product-archive.php:31
 msgid "Products Archive"
 msgstr "产品归档"
 
-#: addons/elementor/documents/product-archive.php:37
+#: addons/elementor/documents/product-archive.php:36
 msgid "Products Archives"
 msgstr "产品归档"
 
-#: addons/elementor/documents/product-archive.php:58
+#: addons/elementor/documents/product-archive.php:57
 msgid "What is a Products Archive Template?"
 msgstr "什么是产品存档模板？"
 
-#: addons/elementor/documents/product-archive.php:59
+#: addons/elementor/documents/product-archive.php:58
 msgid ""
 "A products archive template allows you to easily design the layout and style "
 "of your WooCommerce shop page or other product archive pages - those pages "
@@ -91,7 +91,7 @@ msgstr ""
 "产品归档模板允许您轻松设计 WooCommerce 商店页面或其他产品存档页面的布局和样"
 "式 - 这些页面显示产品列表，可以通过类别、标签等术语进行过滤。"
 
-#: addons/elementor/documents/product-archive.php:60
+#: addons/elementor/documents/product-archive.php:59
 msgid ""
 "You can create multiple products archive templates, and assign each to "
 "different categories of products. This gives you the freedom to customize "
@@ -100,88 +100,90 @@ msgstr ""
 "您可以创建多个产品归档模板，并将每个模板分配给不同的产品类别。这样您就可以自"
 "由地自定义所显示每种产品的外观。"
 
-#: addons/elementor/documents/product-archive.php:106
-#: addons/elementor/documents/product-archive.php:116
-#: addons/elementor/documents/product-archive.php:127
+#: addons/elementor/documents/product-archive.php:105
+#: addons/elementor/documents/product-archive.php:115
+#: addons/elementor/documents/product-archive.php:126
 msgid "Archive"
 msgstr "归档"
 
-#: addons/elementor/documents/product-post.php:43
+#: addons/elementor/documents/product-post.php:42
 msgid "Product Post"
 msgstr "产品帖子"
 
-#: addons/elementor/documents/product-post.php:48
+#: addons/elementor/documents/product-post.php:47
 msgid "Product Posts"
 msgstr "产品帖子"
 
-#: addons/elementor/documents/product-post.php:69
-#: addons/elementor/documents/product.php:160
-#: includes/class-jc-post-types.php:138
+#: addons/elementor/documents/product-post.php:68
+#: addons/elementor/documents/product.php:159
+#: includes/class-jc-post-types.php:136
 msgid "Product"
 msgstr "产品"
 
-#: addons/elementor/documents/product.php:34
+#: addons/elementor/documents/product.php:33
 msgid "Single Product"
 msgstr "单个产品"
 
-#: addons/elementor/documents/product.php:39
+#: addons/elementor/documents/product.php:38
 msgid "Single Products"
 msgstr "单个产品"
 
-#: addons/elementor/skins/skin-loop-product.php:58
-#: includes/class-jc-post-types.php:137
+#: addons/elementor/skins/skin-loop-product.php:57
+#: includes/class-jc-post-types.php:135
 msgid "Products"
 msgstr "产品"
 
-#: addons/elementor/tags/product-cat-advantages.php:29
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:79
+#: addons/elementor/tags/product-cat-advantages.php:28
+#: includes/metabox/class-jc-product-cat-fields-metabox.php:81
 msgid "Category Advantages"
 msgstr "类别优势"
 
 #: addons/elementor/tags/product-cat-banner.php:42
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:29
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:60
+#: includes/metabox/class-jc-product-cat-banner-metabox.php:30
+#: includes/metabox/class-jc-product-cat-banner-metabox.php:61
 msgid "Category Banner"
 msgstr "分类横幅"
 
 #: addons/elementor/tags/product-cat-banner.php:50
-#: addons/elementor/tags/product-cat-image.php:41
+#: addons/elementor/tags/product-cat-image.php:42
 msgid "Fallback"
 msgstr "备选"
 
-#: addons/elementor/tags/product-cat-h1-title.php:29
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:36
+#: addons/elementor/tags/product-cat-h1-title.php:28
+#: includes/metabox/class-jc-product-cat-fields-metabox.php:38
 msgid "Category H1 Title"
 msgstr "类别 H1 标题"
 
-#: addons/elementor/tags/product-cat-image.php:33
+#: addons/elementor/tags/product-cat-image.php:34
 msgid "Category Image"
 msgstr "分类图像"
 
-#: addons/elementor/tags/product-cat-why-choose-title.php:29
+#: addons/elementor/tags/product-cat-why-choose-title.php:28
 msgid "Category Why Choose Title"
 msgstr "分类为什么选择标题"
 
-#: addons/elementor/tags/product-cat-why-choose.php:29
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:58
+#: addons/elementor/tags/product-cat-why-choose.php:28
+#: includes/metabox/class-jc-product-cat-fields-metabox.php:60
 msgid "Category Why Choose"
 msgstr "类别为何选择"
 
-#: addons/elementor/tags/product-excerpt.php:29
-#: includes/metabox/class-jc-product-postexcerpt-metabox.php:23
+#: addons/elementor/tags/product-excerpt.php:28
+#: includes/metabox/class-jc-product-postexcerpt-metabox.php:24
 msgid "Product Short Description"
 msgstr "产品简介"
 
-#: addons/elementor/tags/product-primary-category.php:29
+#: addons/elementor/tags/product-primary-category.php:28
 msgid "Product Primary Category"
 msgstr "产品主要类别"
 
-#: addons/elementor/tags/product-title.php:29
+#: addons/elementor/tags/product-title.php:28
 msgid "Product Title"
 msgstr "产品标题"
 
-#: addons/elementor/widgets/product-attributes.php:30
-#: includes/metabox/class-jc-product-attributes-metabox.php:24
+#: addons/elementor/widgets/product-attributes.php:31
+#: includes/class-jc-admin.php:204
+#: includes/metabox/class-jc-product-attributes-metabox.php:25
+#: includes/metabox/class-jc-product-attributes-metabox.php:37
 msgid "Product Attributes"
 msgstr "产品属性"
 
@@ -226,14 +228,14 @@ msgid "Enable Icon"
 msgstr "启用图标"
 
 #: addons/elementor/widgets/product-attributes.php:116
-#: addons/elementor/widgets/product-cat-list.php:60
-#: addons/elementor/widgets/product-cat-list.php:72
+#: addons/elementor/widgets/product-cat-list.php:62
+#: addons/elementor/widgets/product-cat-list.php:74
 msgid "Yes"
 msgstr "是"
 
 #: addons/elementor/widgets/product-attributes.php:117
-#: addons/elementor/widgets/product-cat-list.php:61
-#: addons/elementor/widgets/product-cat-list.php:73
+#: addons/elementor/widgets/product-cat-list.php:63
+#: addons/elementor/widgets/product-cat-list.php:75
 msgid "No"
 msgstr "否"
 
@@ -281,82 +283,83 @@ msgstr "图标颜色"
 msgid "Size"
 msgstr "大小"
 
-#: addons/elementor/widgets/product-cat-faq.php:19
-#: includes/metabox/class-jc-product-cat-faq-metabox.php:34
+#: addons/elementor/widgets/product-cat-faq.php:18
+#: includes/metabox/class-jc-product-cat-faq-metabox.php:35
+#: includes/metabox/class-jc-product-cat-faq-metabox.php:43
 msgid "Category FAQ"
 msgstr "常见问题分类"
 
-#: addons/elementor/widgets/product-cat-list.php:27
+#: addons/elementor/widgets/product-cat-list.php:29
 msgid "Product Category List"
 msgstr "产品类别列表"
 
-#: addons/elementor/widgets/product-cat-list.php:50
-#: addons/elementor/widgets/product-download.php:49
-#: addons/elementor/widgets/product-gallery.php:49
-#: includes/class-jc-admin.php:384
+#: addons/elementor/widgets/product-cat-list.php:52
+#: addons/elementor/widgets/product-download.php:50
+#: addons/elementor/widgets/product-gallery.php:50
+#: includes/class-jc-admin.php:406
 msgid "Content"
 msgstr "内容"
 
-#: addons/elementor/widgets/product-cat-list.php:58
+#: addons/elementor/widgets/product-cat-list.php:60
 msgid "Hide empty categories"
 msgstr "隐藏空分类"
 
-#: addons/elementor/widgets/product-cat-list.php:70
+#: addons/elementor/widgets/product-cat-list.php:72
 msgid "Show product count"
 msgstr "显示产品数量"
 
-#: addons/elementor/widgets/product-cat-list.php:87
+#: addons/elementor/widgets/product-cat-list.php:89
 msgid "Item Style"
 msgstr "项样式"
 
-#: addons/elementor/widgets/product-cat-list.php:105
+#: addons/elementor/widgets/product-cat-list.php:107
 msgid "Normal"
 msgstr "标准"
 
-#: addons/elementor/widgets/product-cat-list.php:112
-#: addons/elementor/widgets/product-cat-list.php:143
-#: addons/elementor/widgets/product-cat-list.php:180
-#: addons/elementor/widgets/product-cat-list.php:216
-#: addons/elementor/widgets/product-cat-list.php:271
+#: addons/elementor/widgets/product-cat-list.php:114
+#: addons/elementor/widgets/product-cat-list.php:145
+#: addons/elementor/widgets/product-cat-list.php:182
+#: addons/elementor/widgets/product-cat-list.php:218
+#: addons/elementor/widgets/product-cat-list.php:273
 msgid "Color"
 msgstr "颜色"
 
-#: addons/elementor/widgets/product-cat-list.php:123
-#: addons/elementor/widgets/product-cat-list.php:154
-#: addons/elementor/widgets/product-cat-list.php:191
-#: addons/elementor/widgets/product-cat-list.php:227
+#: addons/elementor/widgets/product-cat-list.php:125
+#: addons/elementor/widgets/product-cat-list.php:156
+#: addons/elementor/widgets/product-cat-list.php:193
+#: addons/elementor/widgets/product-cat-list.php:229
 msgid "Background Color"
 msgstr "背景色"
 
-#: addons/elementor/widgets/product-cat-list.php:136
+#: addons/elementor/widgets/product-cat-list.php:138
 msgid "Hover"
 msgstr "悬停"
 
-#: addons/elementor/widgets/product-cat-list.php:172
+#: addons/elementor/widgets/product-cat-list.php:174
 msgid "Active Item Style"
 msgstr "激活项样式"
 
-#: addons/elementor/widgets/product-cat-list.php:205
+#: addons/elementor/widgets/product-cat-list.php:207
 msgid "Count Badge"
 msgstr "统计标识"
 
-#: addons/elementor/widgets/product-cat-list.php:238
+#: addons/elementor/widgets/product-cat-list.php:240
 msgid "Active Color"
 msgstr "激活颜色"
 
-#: addons/elementor/widgets/product-cat-list.php:249
+#: addons/elementor/widgets/product-cat-list.php:251
 msgid "Active Background Color"
 msgstr "激活背景色"
 
-#: addons/elementor/widgets/product-cat-list.php:263
+#: addons/elementor/widgets/product-cat-list.php:265
 msgid "Toggle Style"
 msgstr "切换样式"
 
-#: addons/elementor/widgets/product-cat-list.php:284
+#: addons/elementor/widgets/product-cat-list.php:286
 msgid "Hover Color"
 msgstr "悬停颜色"
 
-#: addons/elementor/widgets/product-cat-list.php:384
+#: addons/elementor/widgets/product-cat-list.php:396
 msgid "Toggle subcategories"
 msgstr "切换子分类"
 
@@ -365,13 +368,14 @@ msgstr "切换子分类"
 msgid "Style"
 msgstr "样式"
 
-#: addons/elementor/widgets/product-faq.php:25
-#: includes/metabox/class-jc-product-faq-metabox.php:24
+#: addons/elementor/widgets/product-faq.php:26
+#: includes/metabox/class-jc-product-faq-metabox.php:25
+#: includes/metabox/class-jc-product-faq-metabox.php:37
 msgid "Product FAQ"
-msgstr "产品常见问题解答"
+msgstr "产品问答"
 
-#: addons/elementor/widgets/product-gallery.php:21
-#: includes/metabox/class-jc-product-gallery-metabox.php:24
+#: addons/elementor/widgets/product-gallery.php:22
+#: includes/metabox/class-jc-product-gallery-metabox.php:25
 msgid "Product Gallery"
 msgstr "产品图库"
 
@@ -383,76 +387,196 @@ msgstr "边框圆角"
 msgid "Border"
 msgstr "边框"
 
-#: includes/class-jc-admin.php:192
+#: addons/elementor/widgets/product-gallery.php:134
+msgid "Video Thumbnail"
+msgstr "视频缩略图"
+
+#: includes/class-jc-admin.php:184
 msgid "Product Description"
 msgstr "产品描述"
 
-#: includes/class-jc-admin.php:222 includes/class-jc-admin.php:418
+#: includes/class-jc-admin.php:185
+msgid "Bulk Create Items"
+msgstr "批量创建内容"
+
+#: includes/class-jc-admin.php:186
+msgid ""
+"Enter content here...\n"
+"For FAQ: First line is Question, second line is Answer\n"
+"Question 1\n"
+"Answer 1\n"
+"Question 2\n"
+"Answer 2\n"
+"...\n"
+"\n"
+"For Attributes: First line is Name, second line is Value\n"
+"Name 1\n"
+"Value 1\n"
+"Name 2\n"
+"Value 2..."
+msgstr ""
+"在此处输入内容……\n"
+"\n"
+"常见问题解答：第一行是问题，第二行是答案\n"
+"\n"
+"问题 1\n"
+"\n"
+"答案 1\n"
+"\n"
+"问题 2\n"
+"\n"
+"答案 2\n"
+"\n"
+"……\n"
+"\n"
+"属性：第一行是名称，第二行是值\n"
+"\n"
+"名称 1\n"
+"\n"
+"值 1\n"
+"\n"
+"名称 2\n"
+"\n"
+"值 2……"
+
+#: includes/class-jc-admin.php:187
+msgid "Create Items"
+msgstr "创建内容"
+
+#: includes/class-jc-admin.php:188
+msgid "Cancel"
+msgstr "取消"
+
+#: includes/class-jc-admin.php:189
+msgid "Success"
+msgstr "成功"
+
+#: includes/class-jc-admin.php:190
+msgid "Error"
+msgstr "失败"
+
+#: includes/class-jc-admin.php:191
+msgid "OK"
+msgstr "确定"
+
+#: includes/class-jc-admin.php:192
+msgid "Please enter content."
+msgstr "请输入内容。"
+
+#: includes/class-jc-admin.php:193
+msgid "No valid items found."
+msgstr "未找到有效项目。"
+
+#: includes/class-jc-admin.php:194
+msgid "Successfully created {count} items."
+msgstr "已成功创建 {count} 个项目。"
+
+#: includes/class-jc-admin.php:195
+msgid "Delete item"
+msgstr "删除内容"
+
+#: includes/class-jc-admin.php:196
+msgid "Add New Item"
+msgstr "添加新的内容"
+
+#: includes/class-jc-admin.php:197
+msgid "Bulk Create Items from Text"
+msgstr "从文本批量创建内容"
+
+#: includes/class-jc-admin.php:198
+msgid "Bulk Create"
+msgstr "批量创建"
+
+#: includes/class-jc-admin.php:199
+msgid "Question"
+msgstr "问题"
+
+#: includes/class-jc-admin.php:200
+msgid "Answer"
+msgstr "答案"
+
+#: includes/class-jc-admin.php:201
+msgid "Name"
+msgstr "名称"
+
+#: includes/class-jc-admin.php:202
+msgid "Value"
+msgstr "值"
+
+#: includes/class-jc-admin.php:203
+msgid "Product FAQs"
+msgstr "产品问答"
+
+#: includes/class-jc-admin.php:205
+msgid "Category FAQs"
+msgstr "分类问答"
+
+#: includes/class-jc-admin.php:244 includes/class-jc-admin.php:440
 msgid "Image"
 msgstr "图片"
 
-#: includes/class-jc-admin.php:241 includes/class-jc-post-meta-box.php:80
+#: includes/class-jc-admin.php:263 includes/class-jc-post-meta-box.php:81
 #: includes/class-jc-post-types.php:48
 msgid "Categories"
 msgstr "分类"
 
-#: includes/class-jc-admin.php:242 includes/class-jc-post-meta-box.php:94
+#: includes/class-jc-admin.php:264 includes/class-jc-post-meta-box.php:95
 msgid "Tags"
 msgstr "标签"
 
-#: includes/class-jc-admin.php:243
+#: includes/class-jc-admin.php:265
 msgid "Completeness"
 msgstr "完整性"
 
-#: includes/class-jc-admin.php:383 includes/class-jc-post-meta-box.php:66
+#: includes/class-jc-admin.php:405 includes/class-jc-post-meta-box.php:67
 msgid "Description"
 msgstr "描述"
 
-#: includes/class-jc-admin.php:468
+#: includes/class-jc-admin.php:490
 msgid "Thumbnail"
 msgstr "缩略图"
 
-#: includes/class-jc-admin.php:546 includes/class-jc-post-types.php:54
+#: includes/class-jc-admin.php:568 includes/class-jc-post-types.php:54
 msgid "All categories"
 msgstr "所有分类"
 
-#: includes/class-jc-admin.php:575 includes/class-jc-post-types.php:89
+#: includes/class-jc-admin.php:597 includes/class-jc-post-types.php:88
 msgid "All tags"
 msgstr "所有标签"
 
-#: includes/class-jc-ajax-action.php:70 includes/class-jc-ajax-action.php:112
+#: includes/class-jc-ajax-action.php:68 includes/class-jc-ajax-action.php:109
 msgid "Security verification failed"
 msgstr "安全认证失败"
 
-#: includes/class-jc-ajax-action.php:75 includes/class-jc-ajax-action.php:117
-#: includes/class-jc-ajax-action.php:149 includes/class-jc-ajax-action.php:328
-#: includes/class-jc-ajax-action.php:503
+#: includes/class-jc-ajax-action.php:73 includes/class-jc-ajax-action.php:114
+#: includes/class-jc-ajax-action.php:146 includes/class-jc-ajax-action.php:322
+#: includes/class-jc-ajax-action.php:496
 msgid "Insufficient permissions"
 msgstr "权限不足"
 
-#: includes/class-jc-ajax-action.php:84 includes/class-jc-ajax-action.php:126
+#: includes/class-jc-ajax-action.php:82 includes/class-jc-ajax-action.php:123
 msgid "Parameter error"
 msgstr "参数错误"
 
-#: includes/class-jc-ajax-action.php:96
+#: includes/class-jc-ajax-action.php:94
 msgid "Description updated successfully"
 msgstr "描述更新成功"
 
-#: includes/class-jc-ajax-action.php:131
+#: includes/class-jc-ajax-action.php:128
 msgid "Category image updated successfully"
 msgstr "类别图片更新成功"
 
-#: includes/class-jc-ajax-action.php:335
+#: includes/class-jc-ajax-action.php:329
 msgid "No data needs to be updated"
 msgstr "无需更新任何数据"
 
 #. translators: %d: Number of products updated
-#: includes/class-jc-ajax-action.php:404
+#: includes/class-jc-ajax-action.php:398
 #, php-format
 msgid "Successfully updated %d products"
 msgstr "已成功更新 %d 个产品"
 
-#: includes/class-jc-ajax-action.php:509
+#: includes/class-jc-ajax-action.php:502
 msgid "Invalid taxonomy"
 msgstr "错误分类法"
 
@@ -518,267 +642,363 @@ msgid "No products found to export."
 msgstr "未找到可导出的产品。"
 
 #: includes/class-jc-port.php:858
-msgid "成功导入"
-msgstr ""
+msgid "Successfully imported"
+msgstr "导入成功"
 
 #: includes/class-jc-port.php:860
-msgid "个产品"
-msgstr ""
+msgid "products"
+msgstr "产品"
 
 #: includes/class-jc-port.php:862
-msgid "个错误"
-msgstr ""
+msgid "errors"
+msgstr "错误"
 
 #: includes/class-jc-port.php:864
-msgid "查看详细日志"
-msgstr ""
+msgid "View detailed log"
+msgstr "显示详细日志"
 
 #: includes/class-jc-port.php:874
-msgid "文件上传失败。"
-msgstr ""
+msgid "File upload failed."
+msgstr "文件上传失败。"
 
 #: includes/class-jc-port.php:877
-msgid "无法读取上传的文件。"
-msgstr ""
+msgid "Cannot read uploaded file."
+msgstr "无法读取上传的文件。"
 
 #: includes/class-jc-port.php:880
-msgid "导入过程中发生未知错误。"
-msgstr ""
+msgid "An unknown error occurred during import."
+msgstr "导入过程中发生未知错误。"
 
-#: includes/class-jc-post-meta-box.php:45 includes/class-jc-settings.php:147
+#: includes/class-jc-post-meta-box.php:46 includes/class-jc-settings.php:147
 msgid "Title"
 msgstr "标题"
 
-#: includes/class-jc-post-meta-box.php:46
+#: includes/class-jc-post-meta-box.php:47
 msgid ""
 "Recommended format: <code>Model number + core product keywords + "
 "specifications/attributes</code>"
 msgstr "推荐格式: <code>型号 + 核心产品词 + 规格/属性</code>"
 
-#: includes/class-jc-post-meta-box.php:51
+#: includes/class-jc-post-meta-box.php:52
 msgid "Short Description"
 msgstr "短描述"
 
-#: includes/class-jc-post-meta-box.php:53
-#: includes/class-jc-post-meta-box.php:68
+#: includes/class-jc-post-meta-box.php:54
+#: includes/class-jc-post-meta-box.php:69
 msgid "Writing Guidelines:"
 msgstr "写作指南："
 
-#: includes/class-jc-post-meta-box.php:55
+#: includes/class-jc-post-meta-box.php:56
 msgid ""
 "The short description should naturally include high-frequency user search "
 msgstr "简短描述应该自然地包含高频用户搜索"
 
-#: includes/class-jc-post-meta-box.php:55
+#: includes/class-jc-post-meta-box.php:56
 msgid "keywords"
 msgstr "关键词"
 
-#: includes/class-jc-post-meta-box.php:55
+#: includes/class-jc-post-meta-box.php:56
 msgid " or "
-msgstr "货"
+msgstr " 或 "
 
-#: includes/class-jc-post-meta-box.php:55
+#: includes/class-jc-post-meta-box.php:56
 msgid "long-tail keywords"
 msgstr "长尾关键词"
 
-#: includes/class-jc-post-meta-box.php:56
+#: includes/class-jc-post-meta-box.php:57
 msgid "Place important keywords at the beginning to improve keyword weighting"
 msgstr "将重要关键词放在开头以提高关键词权重"
 
-#: includes/class-jc-post-meta-box.php:57
+#: includes/class-jc-post-meta-box.php:58
 msgid "Recommended length is between "
 msgstr "建议长度介于"
 
-#: includes/class-jc-post-meta-box.php:57
+#: includes/class-jc-post-meta-box.php:58
 msgid "100-160"
 msgstr "100-160"
 
-#: includes/class-jc-post-meta-box.php:57
+#: includes/class-jc-post-meta-box.php:58
 msgid " characters, providing sufficient value without being overly lengthy"
 msgstr "字符，提供足够的价值，但又不会太长"
 
-#: includes/class-jc-post-meta-box.php:58
+#: includes/class-jc-post-meta-box.php:59
 msgid ""
 "Use clear and concise language, avoiding excessive technical terminology"
 msgstr "使用清晰简洁的语言，避免过多的技术术语"
 
-#: includes/class-jc-post-meta-box.php:59
+#: includes/class-jc-post-meta-box.php:60
 msgid ""
 "Highlight unique product advantages, such as materials, performance, price, "
 "usage scenarios, etc."
 msgstr "突出产品独有的优势，比如材质、性能、价格、使用场景等。"
 
-#: includes/class-jc-post-meta-box.php:70
+#: includes/class-jc-post-meta-box.php:71
 msgid ""
 "It is recommended to use relevant keywords in the details, no less than 5 "
 "times, evenly distributed throughout the page."
 msgstr "建议在详情中使用相关关键词，不少于5次，均匀分布于整个页面。"
 
-#: includes/class-jc-post-meta-box.php:71
+#: includes/class-jc-post-meta-box.php:72
 msgid ""
 "Replace all pronouns in the details with keywords - use specific names "
 "instead of words like \"it\" whenever possible."
 msgstr ""
 "用关键词替换详细信息中的所有代词 - 尽可能使用具体名称而不是“它”之类的词。"
 
-#: includes/class-jc-post-meta-box.php:72
+#: includes/class-jc-post-meta-box.php:73
 msgid "Each paragraph in the details should not exceed "
 msgstr "详细信息中的每个段落不应超过"
 
-#: includes/class-jc-post-meta-box.php:72
+#: includes/class-jc-post-meta-box.php:73
 msgid "500"
 msgstr "500"
 
-#: includes/class-jc-post-meta-box.php:72
+#: includes/class-jc-post-meta-box.php:73
 msgid ""
 " characters. If exceeded, split into paragraphs. The full text should have a "
 "minimum of "
 msgstr "字符。如果超过，则拆分成段落。全文至少应包含"
 
-#: includes/class-jc-post-meta-box.php:72
+#: includes/class-jc-post-meta-box.php:73
 msgid "1000"
 msgstr "1000"
 
-#: includes/class-jc-post-meta-box.php:72
+#: includes/class-jc-post-meta-box.php:73
 msgid " characters."
 msgstr " 字符。"
 
-#: includes/class-jc-post-meta-box.php:73
+#: includes/class-jc-post-meta-box.php:74
 msgid ""
 "Ensure original content in the details. Do not copy directly from the "
 "internet. Page similarity within the website should not exceed "
 msgstr "确保内容细节原创。请勿直接从互联网复制。网站内页面相似度不得超过 "
 
-#: includes/class-jc-post-meta-box.php:73
+#: includes/class-jc-post-meta-box.php:74
 msgid "30%"
 msgstr "30%"
 
-#: includes/class-jc-post-meta-box.php:73
+#: includes/class-jc-post-meta-box.php:74
 msgid "."
 msgstr "。"
 
-#: includes/class-jc-post-meta-box.php:82
+#: includes/class-jc-post-meta-box.php:83
 msgid "Category Selection Guidelines:"
 msgstr "类别选择指南："
 
-#: includes/class-jc-post-meta-box.php:84
+#: includes/class-jc-post-meta-box.php:85
 msgid ""
 "Select the most relevant categories for your product to improve "
 "discoverability."
 msgstr "为您的产品选择最相关的类别以提高可发现性。"
 
-#: includes/class-jc-post-meta-box.php:85
+#: includes/class-jc-post-meta-box.php:86
 msgid "Use specific categories rather than generic ones when possible."
 msgstr "尽可能使用特定类别而不是通用类别。"
 
-#: includes/class-jc-post-meta-box.php:86
+#: includes/class-jc-post-meta-box.php:87
 msgid ""
 "Avoid selecting too many categories - 2-4 relevant categories are "
 "recommended."
 msgstr "避免选择太多类别 - 建议选择 2-4 个相关类别。"
 
-#: includes/class-jc-post-meta-box.php:87
+#: includes/class-jc-post-meta-box.php:88
 msgid ""
 "Check existing categories before creating new ones to maintain consistency."
 msgstr "在创建新类别之前，请检查现有类别以保持一致性。"
 
-#: includes/class-jc-post-meta-box.php:96
+#: includes/class-jc-post-meta-box.php:97
 msgid "Tag Usage Guidelines:"
 msgstr "标签使用指南："
 
-#: includes/class-jc-post-meta-box.php:98
+#: includes/class-jc-post-meta-box.php:99
 msgid ""
 "Use tags to highlight specific features, materials, or use cases of your "
 "product."
 msgstr "使用标签突出显示产品的特定功能、材料或用例。"
 
-#: includes/class-jc-post-meta-box.php:99
+#: includes/class-jc-post-meta-box.php:100
 msgid "Tags should be single words or short phrases separated by commas."
 msgstr "标签应该是用逗号分隔的单个单词或短语。"
 
-#: includes/class-jc-post-meta-box.php:100
+#: includes/class-jc-post-meta-box.php:101
 msgid "Focus on important keywords that customers might search for."
 msgstr "关注客户可能搜索的重要关键词。"
 
-#: includes/class-jc-post-meta-box.php:101
+#: includes/class-jc-post-meta-box.php:102
 msgid ""
 "Avoid duplicate tags and excessive tagging - 5-10 relevant tags are "
 "sufficient."
 msgstr "避免重复标签和过度标签 - 5-10 个相关标签就足够了。"
 
-#: includes/class-jc-post-meta-box.php:108
+#: includes/class-jc-post-meta-box.php:109
 msgid "Download"
 msgstr "下载"
 
-#: includes/class-jc-post-meta-box.php:110
+#: includes/class-jc-post-meta-box.php:111
 msgid "Downloadable Content Guidelines:"
 msgstr "可下载内容指南："
 
-#: includes/class-jc-post-meta-box.php:112
+#: includes/class-jc-post-meta-box.php:113
 msgid "Upload high-quality files in supported formats (PDF, DOC, ZIP, etc.)."
 msgstr "上传支持格式（PDF、DOC、ZIP 等）的高质量文件。"
 
-#: includes/class-jc-post-meta-box.php:113
+#: includes/class-jc-post-meta-box.php:114
 msgid "Ensure files are virus-free and safe for users to download."
 msgstr "确保文件无病毒且可供用户安全下载。"
 
-#: includes/class-jc-post-meta-box.php:114
+#: includes/class-jc-post-meta-box.php:115
 msgid "Provide clear file descriptions to help users understand content."
 msgstr "提供清晰的文件描述以帮助用户理解内容。"
 
-#: includes/class-jc-post-meta-box.php:115
+#: includes/class-jc-post-meta-box.php:116
 msgid "Compress large files to reduce download time and server load."
 msgstr "压缩大文件以减少下载时间和服务器负载。"
 
-#: includes/class-jc-post-meta-box.php:122
+#: includes/class-jc-post-meta-box.php:123
 msgid "FAQ"
 msgstr "FAQ"
 
-#: includes/class-jc-post-meta-box.php:124
+#: includes/class-jc-post-meta-box.php:125
 msgid "FAQ Creation Guidelines:"
 msgstr "常见问题解答创建指南："
 
-#: includes/class-jc-post-meta-box.php:126
+#: includes/class-jc-post-meta-box.php:127
 msgid ""
 "Address common customer questions about product features, usage, and "
 "specifications."
 msgstr "解答客户关于产品功能、用途和规格的常见问题。"
 
-#: includes/class-jc-post-meta-box.php:127
+#: includes/class-jc-post-meta-box.php:128
 msgid "Write clear, concise questions and detailed, helpful answers."
 msgstr "写出清晰、简洁的问题和详细、有用的答案。"
 
-#: includes/class-jc-post-meta-box.php:128
+#: includes/class-jc-post-meta-box.php:129
 msgid "Organize FAQs in order of importance or frequency of questions."
 msgstr "写出清晰、简洁的问题和详细、有用的答案。"
 
-#: includes/class-jc-post-meta-box.php:129
+#: includes/class-jc-post-meta-box.php:130
 msgid "Regularly update FAQs based on customer feedback and new questions."
 msgstr "根据客户反馈和新问题定期更新常见问题解答。"
 
-#: includes/class-jc-post-meta-box.php:136
+#: includes/class-jc-post-meta-box.php:137
 msgid "Attributes"
 msgstr "属性"
 
-#: includes/class-jc-post-meta-box.php:138
+#: includes/class-jc-post-meta-box.php:139
 msgid "Product Attributes Guidelines:"
 msgstr "产品属性指南："
 
-#: includes/class-jc-post-meta-box.php:140
+#: includes/class-jc-post-meta-box.php:141
 msgid "Include all relevant technical specifications and product details."
 msgstr "包括所有相关的技术规格和产品详细信息。"
 
-#: includes/class-jc-post-meta-box.php:141
+#: includes/class-jc-post-meta-box.php:142
 msgid "Use consistent naming conventions for attribute keys."
 msgstr "对属性键使用一致的命名约定。"
 
-#: includes/class-jc-post-meta-box.php:142
+#: includes/class-jc-post-meta-box.php:143
 msgid "Provide accurate measurements and specifications."
 msgstr "提供准确的测量和规格。"
 
-#: includes/class-jc-post-meta-box.php:143
+#: includes/class-jc-post-meta-box.php:144
 msgid "Avoid duplicate attributes and ensure all values are filled in."
 msgstr "避免重复的属性并确保填写所有值。"
+
+#: includes/class-jc-post-meta-box.php:152
+msgid "Product Model/SKU"
+msgstr "产品型号/SKU"
+
+#: includes/class-jc-post-meta-box.php:154
+msgid "SKU Management Guidelines:"
+msgstr "SKU管理指南："
+
+#: includes/class-jc-post-meta-box.php:156
+msgid "Enter a unique product model number or SKU to identify your product."
+msgstr "请输入唯一的商品型号或 SKU 以识别您的商品。"
+
+#: includes/class-jc-post-meta-box.php:157
+msgid ""
+"Use alphanumeric characters, hyphens, and underscores for best compatibility."
+msgstr "为了获得最佳兼容性，请使用字母数字字符、连字符和下划线。"
+
+#: includes/class-jc-post-meta-box.php:158
+msgid "Avoid using spaces and special characters in SKUs."
+msgstr "SKU中请避免使用空格和特殊字符。"
+
+#: includes/class-jc-post-meta-box.php:159
+msgid ""
+"Keep SKUs consistent in format across similar products for easier management."
+msgstr "为了便于管理，请保持类似产品的 SKU 格式一致。"
+
+#: includes/class-jc-post-meta-box.php:160
+msgid "SKUs help with inventory tracking and e-commerce integration."
+msgstr "SKU有助于库存跟踪和电子商务集成。"
+
+#: includes/class-jc-post-meta-box.php:168
+msgid "Long-tail Keywords"
+msgstr "长尾关键词"
+
+#: includes/class-jc-post-meta-box.php:170
+msgid "Long-tail Keywords Guidelines:"
+msgstr "长尾关键词指南："
+
+#: includes/class-jc-post-meta-box.php:172
+msgid ""
+"Enter basic keywords to generate related long-tail variations automatically."
+msgstr "输入基本关键词，即可自动生成相关的长尾关键词变体。"
+
+#: includes/class-jc-post-meta-box.php:173
+msgid ""
+"Long-tail keywords typically have lower competition and higher conversion "
+"rates."
+msgstr "长尾关键词通常竞争较小，转化率较高。"
+
+#: includes/class-jc-post-meta-box.php:174
+msgid ""
+"Use generated keywords in product titles, descriptions, and meta fields."
+msgstr "在产品标题、描述和元字段中使用生成的关键词。"
+
+#: includes/class-jc-post-meta-box.php:175
+msgid "Focus on specific customer intents and use cases for better targeting."
+msgstr "关注具体的客户意图和使用场景，以实现更精准的定位。"
+
+#: includes/class-jc-post-meta-box.php:176
+msgid ""
+"Review and customize generated keywords to match your specific product niche."
+msgstr "查看并自定义生成的关键词，使其与您的特定产品领域相匹配。"
+
+#: includes/class-jc-post-meta-box.php:184
+#: includes/metabox/class-jc-product-videourl-metabox.php:25
+msgid "Product Video"
+msgstr "产品视频"
+
+#: includes/class-jc-post-meta-box.php:186
+msgid "Video Integration Guidelines:"
+msgstr "视频集成指南："
+
+#: includes/class-jc-post-meta-box.php:188
+msgid ""
+"Enter a full URL to your product video hosted on YouTube, Vimeo, or other "
+"platforms."
+msgstr "请输入您产品视频在 YouTube、Vimeo 或其他平台上的完整 URL。"
+
+#: includes/class-jc-post-meta-box.php:189
+msgid ""
+"Videos can significantly improve customer engagement and conversion rates."
+msgstr "视频可以显著提高客户参与度和转化率。"
+
+#: includes/class-jc-post-meta-box.php:190
+msgid "Ensure videos are optimized for fast loading and mobile viewing."
+msgstr "确保视频针对移动设备进行了优化，以实现快速加载和流畅观看。"
+
+#: includes/class-jc-post-meta-box.php:191
+msgid "Keep videos short and focused on product features and benefits."
+msgstr "视频要简短，重点突出产品特性和优势。"
+
+#: includes/class-jc-post-meta-box.php:192
+msgid ""
+"Use clear titles and descriptions that complement the product information."
+msgstr "使用清晰明了的标题和描述，与产品信息相辅相成。"
 
 #: includes/class-jc-post-types.php:50
 msgid "Product categories"
@@ -838,218 +1058,218 @@ msgctxt "Template name"
 msgid "Products by Category"
 msgstr "按类别分类的产品"
 
-#: includes/class-jc-post-types.php:83 includes/class-jc-post-types.php:85
+#: includes/class-jc-post-types.php:82 includes/class-jc-post-types.php:84
 msgid "Product tags"
 msgstr "产品标签"
 
-#: includes/class-jc-post-types.php:86
+#: includes/class-jc-post-types.php:85
 msgid "Tag"
 msgstr "标签"
 
-#: includes/class-jc-post-types.php:87
+#: includes/class-jc-post-types.php:86
 msgctxt "Admin menu name"
 msgid "Tags"
 msgstr "标签"
 
-#: includes/class-jc-post-types.php:88
+#: includes/class-jc-post-types.php:87
 msgid "Search tags"
 msgstr "搜索标签"
 
-#: includes/class-jc-post-types.php:90
+#: includes/class-jc-post-types.php:89
 msgid "Edit tag"
 msgstr "编辑标签"
 
-#: includes/class-jc-post-types.php:91
+#: includes/class-jc-post-types.php:90
 msgid "Update tag"
 msgstr "更新标签"
 
-#: includes/class-jc-post-types.php:92
+#: includes/class-jc-post-types.php:91
 msgid "Add new tag"
 msgstr "添加新标签"
 
-#: includes/class-jc-post-types.php:93
+#: includes/class-jc-post-types.php:92
 msgid "New tag name"
 msgstr "新标签名称"
 
-#: includes/class-jc-post-types.php:94
+#: includes/class-jc-post-types.php:93
 msgid "Popular tags"
 msgstr "热门标签"
 
-#: includes/class-jc-post-types.php:95
+#: includes/class-jc-post-types.php:94
 msgid "Separate tags with commas"
 msgstr "用逗号分隔标签"
 
-#: includes/class-jc-post-types.php:96
+#: includes/class-jc-post-types.php:95
 msgid "Add or remove tags"
 msgstr "添加或删除标签"
 
-#: includes/class-jc-post-types.php:97
+#: includes/class-jc-post-types.php:96
 msgid "Choose from the most used tags"
 msgstr "从最常用的标签中选择"
 
-#: includes/class-jc-post-types.php:98
+#: includes/class-jc-post-types.php:97
 msgid "No tags found"
 msgstr "未找到标签"
 
-#: includes/class-jc-post-types.php:99
+#: includes/class-jc-post-types.php:98
 msgid "Product Tag Link"
 msgstr "产品标签链接"
 
-#: includes/class-jc-post-types.php:100
+#: includes/class-jc-post-types.php:99
 msgid "A link to a product tag."
 msgstr "产品标签的链接。"
 
-#: includes/class-jc-post-types.php:101
+#: includes/class-jc-post-types.php:100
 msgctxt "Template name"
 msgid "Products by Tag"
 msgstr "按标签分类的产品"
 
-#: includes/class-jc-post-types.php:139
+#: includes/class-jc-post-types.php:137
 msgid "All Products"
 msgstr "所有产品"
 
-#: includes/class-jc-post-types.php:140
+#: includes/class-jc-post-types.php:138
 msgctxt "Admin menu name"
 msgid "Products"
 msgstr "产品"
 
-#: includes/class-jc-post-types.php:141
+#: includes/class-jc-post-types.php:139
 msgid "Add New"
 msgstr "添加新的"
 
-#: includes/class-jc-post-types.php:142
+#: includes/class-jc-post-types.php:140
 msgid "Add new product"
 msgstr "添加新产品"
 
-#: includes/class-jc-post-types.php:143
+#: includes/class-jc-post-types.php:141
 msgid "Edit"
 msgstr "编辑"
 
-#: includes/class-jc-post-types.php:144
+#: includes/class-jc-post-types.php:142
 msgid "Edit product"
 msgstr "编辑产品"
 
-#: includes/class-jc-post-types.php:145
+#: includes/class-jc-post-types.php:143
 msgid "New product"
 msgstr "新产品"
 
-#: includes/class-jc-post-types.php:146
+#: includes/class-jc-post-types.php:144
 msgid "View product"
 msgstr "查看产品"
 
-#: includes/class-jc-post-types.php:147
+#: includes/class-jc-post-types.php:145
 msgid "View products"
 msgstr "查看产品"
 
-#: includes/class-jc-post-types.php:148
+#: includes/class-jc-post-types.php:146
 msgid "Search products"
 msgstr "搜索产品"
 
-#: includes/class-jc-post-types.php:149
+#: includes/class-jc-post-types.php:147
 msgid "No products found"
 msgstr "未找到任何产品"
 
-#: includes/class-jc-post-types.php:150
+#: includes/class-jc-post-types.php:148
 msgid "No products found in trash"
 msgstr "回收站中未找到任何产品"
 
-#: includes/class-jc-post-types.php:151
+#: includes/class-jc-post-types.php:149
 msgid "Parent product"
 msgstr "父级产品"
 
-#: includes/class-jc-post-types.php:152
+#: includes/class-jc-post-types.php:150
 msgid "Product image"
 msgstr "产品图片"
 
-#: includes/class-jc-post-types.php:153
+#: includes/class-jc-post-types.php:151
 msgid "Set product image"
 msgstr "设置产品图片"
 
-#: includes/class-jc-post-types.php:154
+#: includes/class-jc-post-types.php:152
 msgid "Remove product image"
 msgstr "删除产品图片"
 
-#: includes/class-jc-post-types.php:155
+#: includes/class-jc-post-types.php:153
 msgid "Use as product image"
 msgstr "用作产品图片"
 
-#: includes/class-jc-post-types.php:156
+#: includes/class-jc-post-types.php:154
 msgid "Insert into product"
 msgstr "插入产品"
 
-#: includes/class-jc-post-types.php:157
+#: includes/class-jc-post-types.php:155
 msgid "Uploaded to this product"
 msgstr "已上传至该产品"
 
-#: includes/class-jc-post-types.php:158
+#: includes/class-jc-post-types.php:156
 msgid "Filter products"
 msgstr "过滤产品"
 
-#: includes/class-jc-post-types.php:159
+#: includes/class-jc-post-types.php:157
 msgid "Products navigation"
 msgstr "产品导航"
 
-#: includes/class-jc-post-types.php:160
+#: includes/class-jc-post-types.php:158
 msgid "Products list"
 msgstr "产品列表"
 
-#: includes/class-jc-post-types.php:161
+#: includes/class-jc-post-types.php:159
 msgid "Product Link"
 msgstr "产品链接"
 
-#: includes/class-jc-post-types.php:162
+#: includes/class-jc-post-types.php:160
 msgid "A link to a product."
 msgstr "产品链接。"
 
-#: includes/class-jc-post-types.php:164
+#: includes/class-jc-post-types.php:162
 msgid "This is where you can browse products in this store."
 msgstr "您可以在这里浏览该商店的商品。"
 
-#: includes/class-jc-post-types.php:198
+#: includes/class-jc-post-types.php:195
 msgid "Category added."
 msgstr "分类已添加。"
 
-#: includes/class-jc-post-types.php:199
+#: includes/class-jc-post-types.php:196
 msgid "Category deleted."
 msgstr "分类已删除。"
 
-#: includes/class-jc-post-types.php:200
+#: includes/class-jc-post-types.php:197
 msgid "Category updated."
 msgstr "分类已更新。"
 
-#: includes/class-jc-post-types.php:201
+#: includes/class-jc-post-types.php:198
 msgid "Category not added."
 msgstr "未添加分类。"
 
-#: includes/class-jc-post-types.php:202
+#: includes/class-jc-post-types.php:199
 msgid "Category not updated."
 msgstr "分类未更新。"
 
-#: includes/class-jc-post-types.php:203
+#: includes/class-jc-post-types.php:200
 msgid "Categories deleted."
 msgstr "分类已删除。"
 
-#: includes/class-jc-post-types.php:208
+#: includes/class-jc-post-types.php:205
 msgid "Tag added."
 msgstr "标签已添加。"
 
-#: includes/class-jc-post-types.php:209
+#: includes/class-jc-post-types.php:206
 msgid "Tag deleted."
 msgstr "标签已删除。"
 
-#: includes/class-jc-post-types.php:210
+#: includes/class-jc-post-types.php:207
 msgid "Tag updated."
 msgstr "标签已更新。"
 
-#: includes/class-jc-post-types.php:211
+#: includes/class-jc-post-types.php:208
 msgid "Tag not added."
 msgstr "未添加标签。"
 
-#: includes/class-jc-post-types.php:212
+#: includes/class-jc-post-types.php:209
 msgid "Tag not updated."
 msgstr "标签未更新。"
 
-#: includes/class-jc-post-types.php:213
+#: includes/class-jc-post-types.php:210
 msgid "Tags deleted."
 msgstr "标签已删除。"
 
@@ -1121,19 +1341,19 @@ msgstr "降序"
 msgid "Select the direction of product ordering."
 msgstr "选择产品排序方向。"
 
-#: includes/class-jc-settings.php:191
+#: includes/class-jc-settings.php:190
 msgid "Product Permalinks"
 msgstr "产品永久链接"
 
-#: includes/class-jc-settings.php:198
+#: includes/class-jc-settings.php:197
 msgid "Product Base"
 msgstr "产品基础"
 
-#: includes/class-jc-settings.php:210
+#: includes/class-jc-settings.php:209
 msgid "Configure the permalink structure for your product catalog."
 msgstr "配置产品目录的永久链接结构。"
 
-#: includes/class-jc-settings.php:222
+#: includes/class-jc-settings.php:221
 msgid "Enter the base slug for your products URL."
 msgstr "请输入您产品网址的基本别名。"
 
@@ -1180,110 +1400,156 @@ msgstr "每页："
 msgid "Save Sheet"
 msgstr "保存表格"
 
-#: includes/jc-functions.php:140
+#: includes/jc-functions.php:143
 msgctxt "slug"
 msgid "products"
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:37
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:70
+#: includes/metabox/class-jc-longtail-keywords-metabox.php:31
+msgid "Long-tail Keyword"
+msgstr "长尾关键词"
+
+#: includes/metabox/class-jc-longtail-keywords-metabox.php:50
+msgid "Basic Keywords"
+msgstr "基本关键词"
+
+#: includes/metabox/class-jc-longtail-keywords-metabox.php:54
+msgid "Please enter basic keywords"
+msgstr "请输入基本关键词"
+
+#: includes/metabox/class-jc-longtail-keywords-metabox.php:56
+msgid "Input a basic keyword to generate various long-tail variants."
+msgstr "输入一个基本关键词，即可生成各种长尾关键词变体。"
+
+#: includes/metabox/class-jc-longtail-keywords-metabox.php:62
+msgid "Generated Long-tail Keywords"
+msgstr "生成的长尾关键词"
+
+#: includes/metabox/class-jc-product-attributes-metabox.php:43
+msgid "Name:"
+msgstr "名称："
+
+#: includes/metabox/class-jc-product-attributes-metabox.php:49
+msgid "Value:"
+msgstr "值："
+
+#: includes/metabox/class-jc-product-cat-banner-metabox.php:38
+#: includes/metabox/class-jc-product-cat-banner-metabox.php:71
 msgid "Select Banner"
 msgstr "选择横幅"
 
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:39
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:72
+#: includes/metabox/class-jc-product-cat-banner-metabox.php:40
+#: includes/metabox/class-jc-product-cat-banner-metabox.php:73
 msgid "Remove Banner"
 msgstr "移除横幅"
 
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:42
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:75
+#: includes/metabox/class-jc-product-cat-banner-metabox.php:43
+#: includes/metabox/class-jc-product-cat-banner-metabox.php:76
 msgid "Select a banner image for this product category."
 msgstr "请为该产品类别选择一张横幅图片。"
 
-#: includes/metabox/class-jc-product-cat-faq-metabox.php:47
+#: includes/metabox/class-jc-product-cat-faq-metabox.php:49
+#: includes/metabox/class-jc-product-faq-metabox.php:43
 msgid "Question:"
 msgstr "描述："
 
-#: includes/metabox/class-jc-product-cat-faq-metabox.php:53
+#: includes/metabox/class-jc-product-cat-faq-metabox.php:55
+#: includes/metabox/class-jc-product-faq-metabox.php:49
 msgid "Answer:"
 msgstr "答案："
 
-#: includes/metabox/class-jc-product-cat-faq-metabox.php:59
+#: includes/metabox/class-jc-product-cat-faq-metabox.php:61
 msgid "Add frequently asked questions for this product category."
 msgstr "添加该产品类别的常见问题。"
 
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:40
+#: includes/metabox/class-jc-product-cat-fields-metabox.php:42
 msgid "Enter the H1 title for this category."
 msgstr "请输入此类别的 H1 标题。"
 
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:47
+#: includes/metabox/class-jc-product-cat-fields-metabox.php:49
 msgid "Why Choose Us Title"
 msgstr "为什么选择我们标题"
 
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:51
+#: includes/metabox/class-jc-product-cat-fields-metabox.php:53
 msgid "Enter the why choose us title for this category."
 msgstr "请在此类别中输入“选择我们的理由”标题。"
 
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:72
+#: includes/metabox/class-jc-product-cat-fields-metabox.php:74
 msgid "Enter the why choose content for this category."
 msgstr "请说明选择此类别内容的理由。"
 
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:93
+#: includes/metabox/class-jc-product-cat-fields-metabox.php:95
 msgid "Enter the advantages for this category."
 msgstr "请列出此类别具有的优势。"
 
-#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:31
+#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:32
 msgid "Category Thumbnail"
 msgstr "分类缩略图"
 
-#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:41
+#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:42
 msgid "Select Thumbnail"
 msgstr "选择缩略图"
 
-#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:43
+#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:44
 msgid "Remove Thumbnail"
 msgstr "删除缩略图"
 
-#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:46
+#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:47
 msgid "Select a thumbnail for this product category."
 msgstr "选择该产品类别的缩略图。"
 
-#: includes/metabox/class-jc-product-gallery-metabox.php:43
-#: includes/metabox/class-jc-product-gallery-metabox.php:54
+#: includes/metabox/class-jc-product-gallery-metabox.php:44
+#: includes/metabox/class-jc-product-gallery-metabox.php:55
 msgid "Delete image"
 msgstr "删除图片"
 
-#: includes/metabox/class-jc-product-gallery-metabox.php:52
+#: includes/metabox/class-jc-product-gallery-metabox.php:53
 msgid "Add Images to Product Gallery"
 msgstr "将图片添加到产品图库"
 
-#: includes/metabox/class-jc-product-gallery-metabox.php:53
+#: includes/metabox/class-jc-product-gallery-metabox.php:54
 msgid "Add to gallery"
 msgstr "添加到图库"
 
-#: includes/metabox/class-jc-product-gallery-metabox.php:55
+#: includes/metabox/class-jc-product-gallery-metabox.php:56
 msgid "Delete"
 msgstr "删除"
 
-#: includes/metabox/class-jc-product-gallery-metabox.php:56
+#: includes/metabox/class-jc-product-gallery-metabox.php:57
 msgid "Add product gallery images"
 msgstr "添加产品图库图片"
 
-#: includes/metabox/class-jc-product-postexcerpt-metabox.php:31
-msgid "Characters:"
-msgstr "字符："
+#: includes/metabox/class-jc-product-sku-metabox.php:24
+msgid "Product Model"
+msgstr "产品型号"
 
-#: includes/metabox/class-jc-product-videourl-metabox.php:24
-msgid "Product Video"
-msgstr "产品视频"
+#: includes/metabox/class-jc-product-sku-metabox.php:33
+msgid "Enter product model or SKU"
+msgstr "请输入产品型号或 SKU"
 
-#: includes/metabox/class-jc-product-videourl-metabox.php:32
+#: includes/metabox/class-jc-product-sku-metabox.php:34
+msgid "Enter the product model number or SKU (Stock Keeping Unit)"
+msgstr "请输入产品型号或 SKU（库存单位）"
+
+#: includes/metabox/class-jc-product-videourl-metabox.php:33
 msgid "Video URL"
 msgstr "视频网址"
 
-#: includes/metabox/class-jc-product-videourl-metabox.php:34
+#: includes/metabox/class-jc-product-videourl-metabox.php:35
 msgid "Enter the full URL to your product video (YouTube, Vimeo, etc.)"
 msgstr "输入您的产品视频的完整 URL（YouTube、Vimeo 等）"
+
+#~ msgid "Sort Order"
+#~ msgstr "排序"
+
+#~ msgid "Sort Order Guidelines:"
+#~ msgstr "排序规则：写作指南："
+
+#~ msgid "Characters:"
+#~ msgstr "字符："
+
+#~ msgid "Model Number"
+#~ msgstr "型号"
 
 #~ msgid "Product Category Field Group"
 #~ msgstr "产品类别字段组"
@@ -1296,6 +1562,3 @@ msgstr "输入您的产品视频的完整 URL（YouTube、Vimeo 等）"
 
 #~ msgid "Export failed"
 #~ msgstr "导出失败"
-
-#~ msgid "No file uploaded"
-#~ msgstr "未上传文件"
