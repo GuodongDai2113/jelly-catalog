@@ -69,7 +69,7 @@ class JC_Ajax_Action
         }
 
         // 检查当前用户是否具有管理分类的权限
-        if (!current_user_can('manage_categories')) {
+        if (!current_user_can('edit_products')) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 
@@ -110,7 +110,7 @@ class JC_Ajax_Action
         }
 
         // 检查当前用户是否具有管理分类的权限
-        if (!current_user_can('manage_categories')) {
+        if (!current_user_can('edit_products')) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 

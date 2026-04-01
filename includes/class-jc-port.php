@@ -153,7 +153,7 @@ class JC_Port
     public function clear_import_log()
     {
         // 检查权限
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('edit_products')) {
             wp_die(__('You do not have sufficient permissions to access this page.', 'jelly-catalog'));
         }
 
@@ -187,7 +187,7 @@ class JC_Port
     public function export_products()
     {
         // 检查权限
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('edit_products')) {
             wp_die(__('You do not have sufficient permissions to access this page.', 'jelly-catalog'));
         }
 
@@ -363,7 +363,7 @@ class JC_Port
     public function import_products()
     {
         // 检查权限
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('edit_products')) {
             wp_die(__('You do not have sufficient permissions to access this page.', 'jelly-catalog'));
         }
 

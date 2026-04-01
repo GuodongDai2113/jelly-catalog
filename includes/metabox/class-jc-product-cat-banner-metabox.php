@@ -85,7 +85,7 @@ class JC_Product_Cat_Banner_Metabox
      */
     public function save_banner_field($term_id)
     {
-        if (!current_user_can('manage_categories')) {
+        if (!current_user_can('edit_products')) {
             return;
         }
 
