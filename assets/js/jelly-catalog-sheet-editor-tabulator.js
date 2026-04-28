@@ -38,7 +38,6 @@ class JellyCatalogSheetTabulator {
     this.loadTaxonomyTerms().then(() => {
       this.loadProducts(1);
       this.bindEvents();
-      console.log("Jelly Catalog Sheet Editor Tabulator Initialized");
     });
   }
 

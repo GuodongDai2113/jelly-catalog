@@ -69,7 +69,6 @@
       // 复用的媒体选择框实例
       this.productGalleryFrame = null;
 
-      console.log("Jelly Catalog Editor Initialized");
       this.init();
     }
 

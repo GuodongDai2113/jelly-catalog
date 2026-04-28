@@ -41,6 +41,62 @@ function jc_is_woocommerce_activated()
 }
 
 /**
+ * 获取当前产品管理入口应使用的基础权限。
+ *
+ * @return string
+ */
+function jc_get_product_edit_capability()
+{
+    $woocommerce_active = (defined('JELLY_CATALOG_WC_ACTIVE') && JELLY_CATALOG_WC_ACTIVE) || jc_is_woocommerce_activated();
+
+    return $woocommerce_active ? 'edit_products' : 'edit_posts';
+}
+
+/**
+ * 判断当前用户是否可以管理产品列表级功能。
+ *
+ * @return bool
+ */
+function jc_current_user_can_edit_products()
+{
+    return current_user_can(jc_get_product_edit_capability());
+}
+
+/**
+ * 判断当前用户是否可以编辑指定产品。
+ *
+ * @param int $product_id 产品 ID。
+ * @return bool
+ */
+function jc_current_user_can_edit_product($product_id)
+{
+    $product_id = absint($product_id);
+
+    if ($product_id <= 0) {
+        return jc_current_user_can_edit_products();
+    }
+
+    return current_user_can('edit_post', $product_id);
+}
+
+/**
+ * 判断当前用户是否可以编辑产品分类法。
+ *
+ * @param string $taxonomy 分类法。
+ * @return bool
+ */
+function jc_current_user_can_edit_product_terms($taxonomy = 'product_cat')
+{
+    $taxonomy_object = get_taxonomy($taxonomy);
+
+    if ($taxonomy_object && !empty($taxonomy_object->cap->edit_terms)) {
+        return current_user_can($taxonomy_object->cap->edit_terms);
+    }
+
+    return jc_current_user_can_edit_products();
+}
+
+/**
  * 通用 repeater 字段渲染函数
  *
  * @param array $args 参数数组

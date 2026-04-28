@@ -19,8 +19,6 @@
 
       // 初始化分类横幅图功能
       this.initProductCategoryBannerModule();
-
-      console.log("Jelly Catalog Category Editor Initialized");
     }
 
     /**

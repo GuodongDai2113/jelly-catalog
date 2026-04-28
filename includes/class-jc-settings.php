@@ -91,14 +91,41 @@ class JC_Settings
         ]);
         register_setting('reading', 'products_orderby', [
             'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
+            'sanitize_callback' => [__CLASS__, 'sanitize_products_orderby'],
             'default' => 'date'
         ]);
         register_setting('reading', 'products_order', [
             'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
+            'sanitize_callback' => [__CLASS__, 'sanitize_products_order'],
             'default' => 'DESC'
         ]);
+    }
+
+    /**
+     * 清理产品排序字段。
+     *
+     * @param string $value 设置值。
+     * @return string
+     */
+    public static function sanitize_products_orderby($value)
+    {
+        $value = sanitize_key($value);
+        $allowed = ['date', 'title', 'menu_order', 'rand', 'modified'];
+
+        return in_array($value, $allowed, true) ? $value : 'date';
+    }
+
+    /**
+     * 清理产品排序方向。
+     *
+     * @param string $value 设置值。
+     * @return string
+     */
+    public static function sanitize_products_order($value)
+    {
+        $value = strtoupper(sanitize_text_field($value));
+
+        return in_array($value, ['ASC', 'DESC'], true) ? $value : 'DESC';
     }
 
     /**

@@ -163,6 +163,7 @@ class JC_Post_Types
                 'public' => true,
                 'show_ui' => true,
                 'menu_icon' => 'dashicons-archive',
+                'capability_type' => 'post',
                 'map_meta_cap' => true,
                 'publicly_queryable' => true,
                 'exclude_from_search' => false,
@@ -248,12 +249,20 @@ class JC_Post_Types
         // 只在产品归档页面且是主查询时修改
         if (!is_admin() && $query->is_main_query()) {
             if (is_jc_product_archive()) {
-                $product_per_page = get_option('products_per_page', 16);
+                $product_per_page = max(1, absint(get_option('products_per_page', 16)));
                 $query->set('posts_per_page', $product_per_page);
 
                 // 增加查询顺序设定
                 $orderby = get_option('products_orderby', 'date');
-                $order = get_option('products_order', 'DESC');
+                $allowed_orderby = ['date', 'title', 'menu_order', 'rand', 'modified'];
+                if (!in_array($orderby, $allowed_orderby, true)) {
+                    $orderby = 'date';
+                }
+
+                $order = strtoupper(get_option('products_order', 'DESC'));
+                if (!in_array($order, ['ASC', 'DESC'], true)) {
+                    $order = 'DESC';
+                }
 
                 $query->set('orderby', $orderby);
                 $query->set('order', $order);

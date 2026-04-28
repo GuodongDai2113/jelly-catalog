@@ -108,29 +108,22 @@ class JC_Admin
      */
     private function is_product_edit_page(): bool
     {
-        // 检查是否在管理后台环境
         if (!is_admin()) {
             return false;
         }
 
-        global $pagenow;
+        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
 
-        // 获取当前页面信息
-        $current_page = isset($pagenow) ? $pagenow : '';
-        $post_type = isset($_GET['post_type']) ? $_GET['post_type'] : '';
-        $taxonomy = isset($_GET['taxonomy']) ? $_GET['taxonomy'] : '';
+        if (!$screen) {
+            return false;
+        }
 
-        // 判断是否为产品相关的编辑页面
-        $is_product_page = (
-            // 编辑
-            (in_array($current_page, ['post.php'])) ||
-            // 产品相关页面（列表、新建、编辑）
-            (in_array($current_page, ['edit.php', 'post-new.php', 'post.php']) && $post_type === 'product') ||
-            // 产品分类相关页面
-            (in_array($current_page, ['edit-tags.php', 'term.php']) && in_array($taxonomy, ['product_cat', 'product_tag']))
-        );
+        if (in_array($screen->base, ['post', 'edit'], true) && 'product' === $screen->post_type) {
+            return true;
+        }
 
-        return $is_product_page;
+        return in_array($screen->base, ['edit-tags', 'term'], true)
+            && in_array($screen->taxonomy, ['product_cat', 'product_tag'], true);
     }
 
     /**
@@ -145,6 +138,9 @@ class JC_Admin
             return;
         }
 
+        $is_product_editor = in_array($hook, ['post.php', 'post-new.php'], true);
+        $is_product_taxonomy = in_array($hook, ['edit-tags.php', 'term.php'], true);
+
         wp_enqueue_style(
             'jelly-catalog-admin',
             JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog.css',
@@ -152,61 +148,63 @@ class JC_Admin
             JELLY_CATALOG_VERSION
         );
 
-        wp_enqueue_style(
-            'jelly-core',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-core.css',
-            [],
-            '1.0.2'
-        );
+        if ($is_product_editor || $is_product_taxonomy) {
+            wp_enqueue_style(
+                'jelly-core',
+                JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-core.css',
+                [],
+                '1.0.2'
+            );
 
-        wp_enqueue_media();
+            wp_enqueue_media();
 
-        wp_enqueue_script(
-            'jelly-core',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-core.js',
-            ['jquery'],
-            '1.0.2',
-            true
-        );
+            wp_enqueue_script(
+                'jelly-core',
+                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-core.js',
+                ['jquery'],
+                '1.0.2',
+                true
+            );
 
-        wp_enqueue_script(
-            'jelly-catalog-repeater',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-repeater.js',
-            ['jquery'],
-            JELLY_CATALOG_VERSION,
-            true
-        );
+            wp_enqueue_script(
+                'jelly-catalog-repeater',
+                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-repeater.js',
+                ['jquery'],
+                JELLY_CATALOG_VERSION,
+                true
+            );
 
-        wp_localize_script(
-            'jelly-catalog-repeater',
-            'jc_product_i18n',
-            [
-                'postdivrich' => __('Product Description', 'jelly-catalog'),
-                'bulk_create_title' => __('Bulk Create Items', 'jelly-catalog'),
-                'bulk_create_placeholder' => __("Enter content here...\nFor FAQ: First line is Question, second line is Answer\nQuestion 1\nAnswer 1\nQuestion 2\nAnswer 2\n...\n\nFor Attributes: First line is Name, second line is Value\nName 1\nValue 1\nName 2\nValue 2...", 'jelly-catalog'),
-                'create_items_btn' => __('Create Items', 'jelly-catalog'),
-                'cancel_btn' => __('Cancel', 'jelly-catalog'),
-                'success_title' => __('Success', 'jelly-catalog'),
-                'error_title' => __('Error', 'jelly-catalog'),
-                'ok_btn' => __('OK', 'jelly-catalog'),
-                'no_content_error' => __('Please enter content.', 'jelly-catalog'),
-                'no_valid_items_error' => __('No valid items found.', 'jelly-catalog'),
-                'success_created_items' => __('Successfully created {count} items.', 'jelly-catalog'),
-                'delete_item_tooltip' => __('Delete item', 'jelly-catalog'),
-                'add_new_item_btn' => __('Add New Item', 'jelly-catalog'),
-                'bulk_create_tooltip' => __('Bulk Create Items from Text', 'jelly-catalog'),
-                'bulk_create_btn' => __('Bulk Create', 'jelly-catalog'),
-                'faq_question_label' => __('Question', 'jelly-catalog'),
-                'faq_answer_label' => __('Answer', 'jelly-catalog'),
-                'attribute_name_label' => __('Name', 'jelly-catalog'),
-                'attribute_value_label' => __('Value', 'jelly-catalog'),
-                'product_faqs' => __('Product FAQs', 'jelly-catalog'),
-                'product_attributes' => __('Product Attributes', 'jelly-catalog'),
-                'product_cat_faqs' => __('Category FAQs', 'jelly-catalog'),
-            ]
-        );
+            wp_localize_script(
+                'jelly-catalog-repeater',
+                'jc_product_i18n',
+                [
+                    'postdivrich' => __('Product Description', 'jelly-catalog'),
+                    'bulk_create_title' => __('Bulk Create Items', 'jelly-catalog'),
+                    'bulk_create_placeholder' => __("Enter content here...\nFor FAQ: First line is Question, second line is Answer\nQuestion 1\nAnswer 1\nQuestion 2\nAnswer 2\n...\n\nFor Attributes: First line is Name, second line is Value\nName 1\nValue 1\nName 2\nValue 2...", 'jelly-catalog'),
+                    'create_items_btn' => __('Create Items', 'jelly-catalog'),
+                    'cancel_btn' => __('Cancel', 'jelly-catalog'),
+                    'success_title' => __('Success', 'jelly-catalog'),
+                    'error_title' => __('Error', 'jelly-catalog'),
+                    'ok_btn' => __('OK', 'jelly-catalog'),
+                    'no_content_error' => __('Please enter content.', 'jelly-catalog'),
+                    'no_valid_items_error' => __('No valid items found.', 'jelly-catalog'),
+                    'success_created_items' => __('Successfully created {count} items.', 'jelly-catalog'),
+                    'delete_item_tooltip' => __('Delete item', 'jelly-catalog'),
+                    'add_new_item_btn' => __('Add New Item', 'jelly-catalog'),
+                    'bulk_create_tooltip' => __('Bulk Create Items from Text', 'jelly-catalog'),
+                    'bulk_create_btn' => __('Bulk Create', 'jelly-catalog'),
+                    'faq_question_label' => __('Question', 'jelly-catalog'),
+                    'faq_answer_label' => __('Answer', 'jelly-catalog'),
+                    'attribute_name_label' => __('Name', 'jelly-catalog'),
+                    'attribute_value_label' => __('Value', 'jelly-catalog'),
+                    'product_faqs' => __('Product FAQs', 'jelly-catalog'),
+                    'product_attributes' => __('Product Attributes', 'jelly-catalog'),
+                    'product_cat_faqs' => __('Category FAQs', 'jelly-catalog'),
+                ]
+            );
+        }
 
-        if ($hook === 'post.php' || $hook === 'post-new.php') {
+        if ($is_product_editor) {
             wp_enqueue_script(
                 'jelly-catalog-product-editor',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-product-editor.js',
@@ -216,7 +214,7 @@ class JC_Admin
             );
         }
 
-        if ($hook === 'edit-tags.php' || $hook === 'term.php') {
+        if ($is_product_taxonomy) {
             wp_enqueue_script(
                 'jelly-catalog-editor',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-category-editor.js',

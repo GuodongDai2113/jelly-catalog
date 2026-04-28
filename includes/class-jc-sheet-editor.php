@@ -70,8 +70,8 @@ class JC_Sheet_Editor
         }
 
         // 引入Tabulator库
-        wp_enqueue_style('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css');
-        wp_enqueue_script('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js', ['jquery'], null, true);
+        wp_enqueue_style('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css', [], '5.5.0');
+        wp_enqueue_script('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js', ['jquery'], '5.5.0', true);
 
         // 加载本地CSS样式文件
         wp_enqueue_style(
@@ -86,7 +86,7 @@ class JC_Sheet_Editor
             'jelly-catalog-sheet-editor',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-sheet-editor-tabulator.js',
             ['jquery', 'tabulator'],
-            null,
+            JELLY_CATALOG_VERSION,
             true
         );
     }
@@ -102,7 +102,7 @@ class JC_Sheet_Editor
             'edit.php?post_type=product',
             __('Product Sheet', 'jelly-catalog'),
             __('Product Sheet', 'jelly-catalog'),
-            'edit_products',
+            jc_get_product_edit_capability(),
             'products-sheet',
             [$this, 'render_products_sheet']
         );

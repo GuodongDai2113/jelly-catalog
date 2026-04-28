@@ -48,6 +48,22 @@ class JC_Ajax_Action
 
     public function admin_ajax_scripts()
     {
+        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+        $post_type = $screen ? $screen->post_type : '';
+        $taxonomy = $screen ? $screen->taxonomy : '';
+        $screen_id = $screen ? $screen->id : '';
+        if (
+            !$screen ||
+            (
+                'product' !== $post_type &&
+                !in_array($taxonomy, ['product_cat', 'product_tag'], true) &&
+                false === strpos($screen_id, 'product_page_') &&
+                false === strpos($screen_id, 'edit-product_page_')
+            )
+        ) {
+            return;
+        }
+
         wp_localize_script('jquery', 'jc_ajax', [
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('jc_nonce')
@@ -64,18 +80,19 @@ class JC_Ajax_Action
     public function update_product_category_description()
     {
         // 验证 nonce 安全令牌
-        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'jc_nonce')) {
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+        if (!$nonce || !wp_verify_nonce($nonce, 'jc_nonce')) {
             wp_send_json_error(__('Security verification failed', 'jelly-catalog'));
         }
 
         // 检查当前用户是否具有管理分类的权限
-        if (!current_user_can('edit_products')) {
+        if (!jc_current_user_can_edit_product_terms('product_cat')) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 
         // 获取并处理请求参数
-        $term_id = isset($_POST['term_id']) ? intval($_POST['term_id']) : 0;
-        $description = isset($_POST['description']) ? wp_kses_post($_POST['description']) : '';
+        $term_id = isset($_POST['term_id']) ? absint(wp_unslash($_POST['term_id'])) : 0;
+        $description = isset($_POST['description']) ? wp_kses_post(wp_unslash($_POST['description'])) : '';
 
         // 验证必要参数是否有效
         if (!$term_id) {
@@ -105,18 +122,19 @@ class JC_Ajax_Action
     public function update_product_category_image()
     {
         // 验证安全令牌，防止CSRF攻击
-        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'jc_nonce')) {
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+        if (!$nonce || !wp_verify_nonce($nonce, 'jc_nonce')) {
             wp_send_json_error(__('Security verification failed', 'jelly-catalog'));
         }
 
         // 检查当前用户是否具有管理分类的权限
-        if (!current_user_can('edit_products')) {
+        if (!jc_current_user_can_edit_product_terms('product_cat')) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 
         // 获取并验证分类ID和图片ID参数
-        $category_id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
-        $image_id = isset($_POST['image_id']) ? intval($_POST['image_id']) : 0;
+        $category_id = isset($_POST['category_id']) ? absint(wp_unslash($_POST['category_id'])) : 0;
+        $image_id = isset($_POST['image_id']) ? absint(wp_unslash($_POST['image_id'])) : 0;
 
         // 检查必要参数是否完整
         if (!$category_id || !$image_id) {
@@ -142,14 +160,15 @@ class JC_Ajax_Action
         global $wpdb;
         check_ajax_referer('jc_nonce', 'nonce');
 
-        if (!current_user_can('edit_products') && !current_user_can('edit_posts')) {
+        if (!jc_current_user_can_edit_products()) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 
         // 获取分页参数
-        $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
-        $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 20;
+        $page = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])) : 1;
+        $per_page = isset($_POST['per_page']) ? absint(wp_unslash($_POST['per_page'])) : 20;
 
+        $page = max(1, $page);
         $per_page = max(10, min(100, $per_page));
 
         // 定义需要获取的元数据键
@@ -163,20 +182,56 @@ class JC_Ajax_Action
 
         // 计算偏移量用于分页查询
         $offset = ($page - 1) * $per_page;
+        $where = "post_type='product' AND post_status IN ('publish', 'draft')";
+        $where_args = [];
+
+        if (!$this->current_user_can_edit_others_products()) {
+            $where .= ' AND post_author = %d';
+            $where_args[] = get_current_user_id();
+        }
 
         // 查询产品基础信息：ID、标题、摘要、内容、状态，并按 ID 倒序排列
+        $query_args = array_merge($where_args, [$per_page, $offset]);
         $products = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT ID, post_title, post_excerpt, post_content, post_status FROM {$wpdb->posts} WHERE post_type='product' AND post_status IN ('publish', 'draft') ORDER BY ID DESC LIMIT %d OFFSET %d",
-                $per_page,
-                $offset
+                "SELECT ID, post_title, post_excerpt, post_content, post_status FROM {$wpdb->posts} WHERE {$where} ORDER BY ID DESC LIMIT %d OFFSET %d",
+                $query_args
             ),
             ARRAY_A
         );
 
+        $product_ids = array_map('absint', wp_list_pluck($products, 'ID'));
+        if (!empty($product_ids)) {
+            update_meta_cache('post', $product_ids);
+            update_object_term_cache($product_ids, 'product');
+        }
+
+        $attachment_ids = [];
+        foreach ($product_ids as $product_id) {
+            $thumbnail_id = absint(get_post_meta($product_id, '_thumbnail_id', true));
+            if ($thumbnail_id) {
+                $attachment_ids[] = $thumbnail_id;
+            }
+
+            $gallery_ids = $this->parse_attachment_ids(get_post_meta($product_id, '_product_image_gallery', true));
+            $attachment_ids = array_merge($attachment_ids, $gallery_ids);
+        }
+
+        $attachment_ids = array_values(array_unique(array_filter($attachment_ids)));
+        if (!empty($attachment_ids)) {
+            update_meta_cache('post', $attachment_ids);
+        }
+
+        $product_category_terms = $this->get_category_terms_map();
+        $response_products = [];
+
         // 为每个产品加载所需的 SEO 元数据和分类标签信息
-        foreach ($products as &$product) {
-            $product_id = $product['ID'];
+        foreach ($products as $product) {
+            $product_id = absint($product['ID']);
+            if (!jc_current_user_can_edit_product($product_id)) {
+                continue;
+            }
+
             $meta_data = [];
 
             foreach ($meta_keys as $meta_key) {
@@ -200,16 +255,12 @@ class JC_Ajax_Action
                         // 画廊图片数组
                         $gallery_images = [];
                         if (!empty($meta_value)) {
-                            $image_ids = explode(',', $meta_value);
-                            foreach ($image_ids as $image_id) {
-                                $image_id = trim($image_id);
-                                if (is_numeric($image_id)) {
-                                    $attachment_url = wp_get_attachment_image_url($image_id, 'thumbnail');
-                                    $gallery_images[] = [
-                                        'id' => (int)$image_id,
-                                        'url' => $attachment_url ? $attachment_url : ''
-                                    ];
-                                }
+                            foreach ($this->parse_attachment_ids($meta_value) as $image_id) {
+                                $attachment_url = wp_get_attachment_image_url($image_id, 'thumbnail');
+                                $gallery_images[] = [
+                                    'id' => (int)$image_id,
+                                    'url' => $attachment_url ? $attachment_url : ''
+                                ];
                             }
                         }
                         $meta_data[$meta_key] = $gallery_images;
@@ -220,27 +271,36 @@ class JC_Ajax_Action
             }
 
             // 获取产品分类（获取完整的分类树结构）
-            $categories = $this->get_product_category_hierarchy($product_id);
+            $categories = $this->get_product_category_hierarchy($product_id, $product_category_terms);
             $product['categories'] = $categories;
 
             // 获取产品标签
-            $tags = wp_get_post_terms($product_id, 'product_tag', [
-                'fields' => 'ids',
-            ]);
-
-            $product['tags'] = !empty($tags) ? $tags : [];
+            $tag_terms = get_the_terms($product_id, 'product_tag');
+            $product['tags'] = (!empty($tag_terms) && !is_wp_error($tag_terms))
+                ? array_map('absint', wp_list_pluck($tag_terms, 'term_id'))
+                : [];
 
             $product['meta_data'] = $meta_data;
+            $response_products[] = $product;
         }
 
         // 获取所有符合条件的产品总数，用于计算总页数
-        $total_products = $wpdb->get_var(
-            "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type='product' AND post_status IN ('publish', 'draft')"
-        );
+        if (!empty($where_args)) {
+            $total_products = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$wpdb->posts} WHERE {$where}",
+                    $where_args
+                )
+            );
+        } else {
+            $total_products = $wpdb->get_var(
+                "SELECT COUNT(*) FROM {$wpdb->posts} WHERE {$where}"
+            );
+        }
 
         // 构造并发送 JSON 响应结果
         wp_send_json([
-            'products' => $products ?: [],
+            'products' => $response_products,
             'total' => intval($total_products),
             'page' => $page,
             'per_page' => $per_page,
@@ -249,15 +309,71 @@ class JC_Ajax_Action
     }
 
     /**
+     * 判断当前用户是否可编辑他人产品。
+     *
+     * @return bool
+     */
+    private function current_user_can_edit_others_products()
+    {
+        return current_user_can('edit_others_products') || current_user_can('edit_others_posts');
+    }
+
+    /**
+     * 将逗号分隔的附件 ID 字符串转换为整数数组。
+     *
+     * @param mixed $value 附件 ID 字符串。
+     * @return array
+     */
+    private function parse_attachment_ids($value)
+    {
+        if (empty($value)) {
+            return [];
+        }
+
+        if (is_array($value)) {
+            $ids = $value;
+        } else {
+            $ids = explode(',', (string) $value);
+        }
+
+        return array_values(array_filter(array_map('absint', $ids)));
+    }
+
+    /**
+     * 获取产品分类术语映射，避免逐项查询父级分类。
+     *
+     * @return array
+     */
+    private function get_category_terms_map()
+    {
+        $terms = get_terms([
+            'taxonomy' => 'product_cat',
+            'hide_empty' => false,
+        ]);
+
+        if (empty($terms) || is_wp_error($terms)) {
+            return [];
+        }
+
+        $map = [];
+        foreach ($terms as $term) {
+            $map[$term->term_id] = $term;
+        }
+
+        return $map;
+    }
+
+    /**
      * 获取产品分类层级结构
      *
      * @param int $product_id 产品ID
+     * @param array $term_map 产品分类映射。
      * @return array 分类层级结构数组
      */
-    private function get_product_category_hierarchy($product_id)
+    private function get_product_category_hierarchy($product_id, $term_map = [])
     {
         // 获取产品所有分类
-        $terms = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'all']);
+        $terms = get_the_terms($product_id, 'product_cat');
 
         if (empty($terms) || is_wp_error($terms)) {
             return [];
@@ -266,7 +382,7 @@ class JC_Ajax_Action
         $hierarchy = [];
 
         foreach ($terms as $term) {
-            $hierarchy[] = $this->build_category_levels($term);
+            $hierarchy[] = $this->build_category_levels($term, $term_map);
         }
 
         return $hierarchy;
@@ -276,9 +392,10 @@ class JC_Ajax_Action
      * 构建分类层级数组
      *
      * @param WP_Term $term 分类对象
+     * @param array   $term_map 产品分类映射。
      * @return array
      */
-    private function build_category_levels($term)
+    private function build_category_levels($term, $term_map = [])
     {
         $levels = [];
 
@@ -288,7 +405,7 @@ class JC_Ajax_Action
 
         // 向上查找父级（最多 3 层）
         while ($parent_id > 0 && count($levels) < 3) {
-            $parent = get_term($parent_id, 'product_cat');
+            $parent = $term_map[$parent_id] ?? get_term($parent_id, 'product_cat');
 
             if (!$parent || is_wp_error($parent)) {
                 break;
@@ -318,14 +435,14 @@ class JC_Ajax_Action
         // 安全检查：验证 nonce 和用户权限
         check_ajax_referer('jc_nonce', 'nonce');
 
-        if (!current_user_can('edit_posts')) {
+        if (!jc_current_user_can_edit_products()) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 
         // 获取并检查提交的数据
-        $data = isset($_POST['data']) ? $_POST['data'] : [];
+        $data = isset($_POST['data']) ? wp_unslash($_POST['data']) : [];
 
-        if (empty($data)) {
+        if (empty($data) || !is_array($data)) {
             wp_send_json_error(__('No data needs to be updated', 'jelly-catalog'));
         }
 
@@ -340,11 +457,22 @@ class JC_Ajax_Action
 
         // 遍历所有产品数据进行更新处理
         foreach ($data as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
             $product_id = isset($item['ID']) ? intval($item['ID']) : 0;
 
             if (!$product_id) {
                 continue;
             }
+
+            $post = get_post($product_id);
+            if (!$post || 'product' !== $post->post_type || !jc_current_user_can_edit_product($product_id)) {
+                continue;
+            }
+
+            $product_updated = false;
 
             // 构建待更新的文章基础数据
             $update_data = ['ID' => $product_id];
@@ -363,11 +491,21 @@ class JC_Ajax_Action
             }
 
             if (isset($item['post_status'])) {
-                $update_data['post_status'] = in_array($item['post_status'], ['publish', 'draft']) ? $item['post_status'] : 'draft';
+                $post_status = sanitize_key($item['post_status']);
+                if (in_array($post_status, ['publish', 'draft'], true)) {
+                    $post_type_object = get_post_type_object('product');
+                    $publish_cap = ($post_type_object && !empty($post_type_object->cap->publish_posts)) ? $post_type_object->cap->publish_posts : 'publish_posts';
+                    if ('publish' !== $post_status || current_user_can($publish_cap)) {
+                        $update_data['post_status'] = $post_status;
+                    }
+                }
             }
 
             // 执行文章更新操作
-            $result = wp_update_post($update_data, true);
+            if (count($update_data) > 1) {
+                $result = wp_update_post($update_data, true);
+                $product_updated = !is_wp_error($result) && $result > 0;
+            }
 
             // 更新相关的元数据字段
             if (isset($item['meta_data']) && is_array($item['meta_data'])) {
@@ -375,22 +513,23 @@ class JC_Ajax_Action
                     if (isset($item['meta_data'][$meta_key])) {
                         $meta_value = $item['meta_data'][$meta_key];
                         update_post_meta($product_id, $meta_key, sanitize_text_field($meta_value));
+                        $product_updated = true;
                     }
                 }
             }
 
             // 更新产品分类（处理分级分类）
             if (isset($item['categories'])) {
-                $this->update_product_terms($product_id, $item['categories'], 'product_cat');
+                $product_updated = $this->update_product_terms($product_id, $item['categories'], 'product_cat') || $product_updated;
             }
 
             // 更新产品标签
             if (isset($item['tags'])) {
-                $this->update_product_tags($product_id, $item['tags']);
+                $product_updated = $this->update_product_tags($product_id, $item['tags']) || $product_updated;
             }
 
             // 统计成功更新的产品数量
-            if (!is_wp_error($result) && $result > 0) {
+            if ($product_updated) {
                 $updated_count++;
             }
         }
@@ -409,15 +548,12 @@ class JC_Ajax_Action
      *                              'level_3' => ''
      *                          ]
      * @param string $taxonomy  分类法名称
-     * @return void
+     * @return bool
      */
     private function update_product_terms($product_id, $levels, $taxonomy)
     {
-        // 清空现有分类
-        wp_set_object_terms($product_id, [], $taxonomy);
-
         if (empty($levels) || !is_array($levels)) {
-            return;
+            return false;
         }
 
         // 按优先级选取最深层级
@@ -432,40 +568,60 @@ class JC_Ajax_Action
         }
 
         if ($term_id <= 0) {
-            return;
+            return false;
         }
 
         // 校验 term 是否存在（防御式）
         $term = get_term($term_id, $taxonomy);
         if (!$term || is_wp_error($term)) {
-            return;
+            return false;
         }
 
         // 只设置最深层级
-        wp_set_object_terms($product_id, [$term_id], $taxonomy);
+        $result = wp_set_object_terms($product_id, [$term_id], $taxonomy);
+
+        return !is_wp_error($result);
     }
 
     /**
      * 更新产品的标签
      *
      * @param int    $product_id 产品ID
-     * @param string $tags_str   逗号分隔的标签字符串
-     * @return void
+     * @param mixed  $tags_value 逗号分隔的标签字符串或标签数组。
+     * @return bool
      */
-    private function update_product_tags($product_id, $tags_str)
+    private function update_product_tags($product_id, $tags_value)
     {
-        // 将逗号分隔的字符串转换为数组
-        $tags = array_filter(array_map('trim', explode(',', $tags_str)));
+        if (is_array($tags_value)) {
+            $tags = $tags_value;
+        } else {
+            $tags = explode(',', (string) $tags_value);
+        }
+
+        $tags = array_filter(array_map('trim', $tags));
 
         if (empty($tags)) {
             // 如果没有标签，清空现有的
-            wp_set_object_terms($product_id, [], 'product_tag');
-            return;
+            $result = wp_set_object_terms($product_id, [], 'product_tag');
+            return !is_wp_error($result);
         }
 
         // 为每个标签检查或创建
         $tag_ids = [];
-        foreach ($tags as $tag_name) {
+        foreach ($tags as $tag_value) {
+            $tag_name = sanitize_text_field($tag_value);
+            if ('' === $tag_name) {
+                continue;
+            }
+
+            if (is_numeric($tag_name)) {
+                $tag = get_term((int) $tag_name, 'product_tag');
+                if ($tag && !is_wp_error($tag)) {
+                    $tag_ids[] = (int) $tag->term_id;
+                    continue;
+                }
+            }
+
             $tag = term_exists($tag_name, 'product_tag');
 
             if (!$tag) {
@@ -480,7 +636,9 @@ class JC_Ajax_Action
         }
 
         // 设置产品的新标签
-        wp_set_object_terms($product_id, $tag_ids, 'product_tag');
+        $result = wp_set_object_terms($product_id, array_values(array_unique($tag_ids)), 'product_tag');
+
+        return !is_wp_error($result);
     }
 
     /**
@@ -492,11 +650,11 @@ class JC_Ajax_Action
     {
         check_ajax_referer('jc_nonce', 'nonce');
 
-        if (!current_user_can('edit_posts')) {
+        if (!jc_current_user_can_edit_products()) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 
-        $taxonomy = isset($_POST['taxonomy']) ? sanitize_text_field($_POST['taxonomy']) : '';
+        $taxonomy = isset($_POST['taxonomy']) ? sanitize_key(wp_unslash($_POST['taxonomy'])) : '';
 
         if (empty($taxonomy) || !taxonomy_exists($taxonomy)) {
             wp_send_json_error(__('Invalid taxonomy', 'jelly-catalog'));

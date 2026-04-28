@@ -337,26 +337,36 @@ class JC_Elementor
             $current_product_id = get_the_ID();
 
             // 获取当前产品的分类和标签
-            $product_terms = wp_get_post_terms($current_product_id, ['product_cat', 'product_tag'], [
+            $product_categories = wp_get_post_terms($current_product_id, 'product_cat', [
+                'fields' => 'ids'
+            ]);
+            $product_tags = wp_get_post_terms($current_product_id, 'product_tag', [
                 'fields' => 'ids'
             ]);
 
-            if (!empty($product_terms) && !is_wp_error($product_terms)) {
-                $query_args['tax_query'] = [
-                    [
-                        'taxonomy' => 'product_cat',
-                        'field' => 'term_id',
-                        'terms' => $product_terms,
-                    ],
-                    [
-                        'taxonomy' => 'product_tag',
-                        'field' => 'term_id',
-                        'terms' => $product_terms,
-                    ]
-                ];
+            $tax_query = [];
 
-                // 使用OR关系查询分类或标签相同的产品
-                $query_args['tax_query']['relation'] = 'OR';
+            if (!empty($product_categories) && !is_wp_error($product_categories)) {
+                $tax_query[] = [
+                    'taxonomy' => 'product_cat',
+                    'field' => 'term_id',
+                    'terms' => $product_categories,
+                ];
+            }
+
+            if (!empty($product_tags) && !is_wp_error($product_tags)) {
+                $tax_query[] = [
+                    'taxonomy' => 'product_tag',
+                    'field' => 'term_id',
+                    'terms' => $product_tags,
+                ];
+            }
+
+            if (!empty($tax_query)) {
+                if (count($tax_query) > 1) {
+                    $tax_query['relation'] = 'OR';
+                }
+                $query_args['tax_query'] = $tax_query;
             }
 
             // 排除当前产品
