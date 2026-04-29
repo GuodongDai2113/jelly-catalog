@@ -12,6 +12,8 @@ namespace Jelly_Catalog\Addons\Elementor\Widgets;
 
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
+use Elementor\Group_Control_Border;
+use Elementor\Group_Control_Typography;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -92,7 +94,7 @@ class Product_Cat_List extends Widget_Base
         );
 
         $this->add_group_control(
-            \Elementor\Group_Control_Typography::get_type(),
+            Group_Control_Typography::get_type(),
             [
                 'name' => 'item_typography',
                 'selector' => '{{WRAPPER}} .jc-cat-list__link',
@@ -164,6 +166,75 @@ class Product_Cat_List extends Widget_Base
         $this->end_controls_tab();
 
         $this->end_controls_tabs();
+
+        $this->add_responsive_control(
+            'list_gap',
+            [
+                'label' => __('Item Gap', 'jelly-catalog'),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => ['px', 'rem', 'em'],
+                'separator' => 'before',
+                'range' => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 80,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .jc-cat-list__ul' => 'display: flex; flex-direction: column; gap: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'item_padding',
+            [
+                'label' => __('Padding', 'jelly-catalog'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'rem', 'em', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .jc-cat-list__header' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Border::get_type(),
+            [
+                'name' => 'item_border',
+                'selector' => '{{WRAPPER}} .jc-cat-list__header',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'item_border_radius',
+            [
+                'label' => __('Border Radius', 'jelly-catalog'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'rem', 'em', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .jc-cat-list__header' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'children_indent',
+            [
+                'label' => __('Children Indent', 'jelly-catalog'),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => ['px', 'rem', 'em'],
+                'range' => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 120,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .jc-cat-list__ul .jc-cat-list__ul' => 'margin-left: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
 
         $this->end_controls_section();
 
@@ -256,6 +327,39 @@ class Product_Cat_List extends Widget_Base
             ]
         );
 
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'name' => 'count_typography',
+                'separator' => 'before',
+                'selector' => '{{WRAPPER}} .jc-cat-list__count',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'count_padding',
+            [
+                'label' => __('Padding', 'jelly-catalog'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'rem', 'em'],
+                'selectors' => [
+                    '{{WRAPPER}} .jc-cat-list__count' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'count_border_radius',
+            [
+                'label' => __('Border Radius', 'jelly-catalog'),
+                'type' => Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'rem', 'em', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .jc-cat-list__count' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
         $this->end_controls_section();
 
         // 4. Toggle Style
@@ -293,6 +397,43 @@ class Product_Cat_List extends Widget_Base
             ]
         );
 
+        $this->add_responsive_control(
+            'toggle_size',
+            [
+                'label' => __('Size', 'jelly-catalog'),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => ['px', 'rem', 'em'],
+                'separator' => 'before',
+                'range' => [
+                    'px' => [
+                        'min' => 8,
+                        'max' => 80,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .jc-cat-list__toggle' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'toggle_spacing',
+            [
+                'label' => __('Spacing', 'jelly-catalog'),
+                'type' => Controls_Manager::SLIDER,
+                'size_units' => ['px', 'rem', 'em'],
+                'range' => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 80,
+                    ],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .jc-cat-list__toggle' => 'margin-left: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
         $this->end_controls_section();
     }
 
@@ -307,14 +448,12 @@ class Product_Cat_List extends Widget_Base
         $hide_empty = ($settings['hide_empty'] === 'yes');
         $show_count = ($settings['show_count'] === 'yes');
 
-        $args = [
+        $terms = get_terms([
             'taxonomy' => 'product_cat',
             'hide_empty' => $hide_empty,
             'orderby' => 'menu_order',
             'order' => 'ASC',
-        ];
-
-        $terms = get_terms($args);
+        ]);
 
         if (empty($terms) || is_wp_error($terms)) {
             return;
@@ -359,7 +498,7 @@ class Product_Cat_List extends Widget_Base
 
         echo '<ul class="jc-cat-list__ul jc-cat-list__depth-' . esc_attr($depth) . '">';
         foreach ($terms_by_parent[$parent_id] as $term) {
-            $link = get_term_link($term, 'product_cat');
+            $link = !empty($term->url) ? $term->url : get_term_link($term, 'product_cat');
             if (is_wp_error($link)) {
                 continue;
             }
@@ -403,5 +542,44 @@ class Product_Cat_List extends Widget_Base
             echo '</li>';
         }
         echo '</ul>';
+    }
+
+    protected function content_template(): void
+    {
+        ?>
+<# var showCount = 'yes' === settings.show_count; #>
+<div class="jc-cat-list">
+    <ul class="jc-cat-list__ul jc-cat-list__depth-0">
+        <li class="jc-cat-list__item is-ancestor has-children is-expanded">
+            <div class="jc-cat-list__header">
+                <a class="jc-cat-list__link" href="#" onclick="return false;">
+                    <?php echo esc_html__('Product Categories', 'jelly-catalog'); ?>
+                    <# if (showCount) { #><span class="jc-cat-list__count">32</span><# } #>
+                </a>
+                <span class="jc-cat-list__toggle" role="button" aria-expanded="true"
+                    aria-label="<?php echo esc_attr__('Toggle subcategories', 'jelly-catalog'); ?>"></span>
+            </div>
+            <ul class="jc-cat-list__ul jc-cat-list__depth-1">
+                <li class="jc-cat-list__item is-active">
+                    <div class="jc-cat-list__header">
+                        <a class="jc-cat-list__link" href="#" onclick="return false;">
+                            <?php echo esc_html__('Industrial Parts', 'jelly-catalog'); ?>
+                            <# if (showCount) { #><span class="jc-cat-list__count">12</span><# } #>
+                        </a>
+                    </div>
+                </li>
+                <li class="jc-cat-list__item">
+                    <div class="jc-cat-list__header">
+                        <a class="jc-cat-list__link" href="#" onclick="return false;">
+                            <?php echo esc_html__('Accessories', 'jelly-catalog'); ?>
+                            <# if (showCount) { #><span class="jc-cat-list__count">8</span><# } #>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<?php
     }
 }

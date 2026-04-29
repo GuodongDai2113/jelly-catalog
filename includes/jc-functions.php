@@ -157,6 +157,52 @@ function jc_render_repeater_field($args)
     echo '</div>';
 }
 
+/**
+ * 获取产品下载文件信息。
+ *
+ * @param int $product_id 产品 ID。
+ * @return array
+ */
+function jc_get_product_download_file($product_id)
+{
+    $product_id = absint($product_id);
+    if (!$product_id) {
+        return [];
+    }
+
+    $file_id = absint(get_post_meta($product_id, 'product_file', true));
+    if (!$file_id) {
+        return [];
+    }
+
+    $file_url = wp_get_attachment_url($file_id);
+    if (!$file_url) {
+        return [];
+    }
+
+    $file_path = get_attached_file($file_id);
+    $url_path = wp_parse_url($file_url, PHP_URL_PATH);
+    $file_name = $file_path ? wp_basename($file_path) : ($url_path ? wp_basename($url_path) : '');
+    $metadata = wp_get_attachment_metadata($file_id);
+    $file_size = 0;
+
+    if (is_array($metadata) && !empty($metadata['filesize'])) {
+        $file_size = absint($metadata['filesize']);
+    }
+
+    if (!$file_size && $file_path && file_exists($file_path)) {
+        $file_size = absint(filesize($file_path));
+    }
+
+    return [
+        'id' => $file_id,
+        'url' => $file_url,
+        'filename' => $file_name ?: get_the_title($file_id),
+        'filesize' => $file_size,
+        'mime_type' => get_post_mime_type($file_id),
+    ];
+}
+
 function is_jc_product_single()
 {
     return is_singular('product');
@@ -215,14 +261,3 @@ function jc_get_permalink_structure()
 
     return $permalinks;
 }
-
-// function jc_template_redirect()
-// {
-//     // phpcs:disable WordPress.Security.NonceVerification.Recommended
-//     // When default permalinks are enabled, redirect shop page to post type archive url.
-//     if (! empty($_GET['page_id']) && '' === get_option('permalink_structure') && jc_get_page_id('products') === absint($_GET['page_id']) && get_post_type_archive_link('product')) {
-//         wp_safe_redirect(get_post_type_archive_link('product'));
-//         exit;
-//     }
-// }
-// add_action('template_redirect', 'jc_template_redirect');

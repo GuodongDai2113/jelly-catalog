@@ -105,7 +105,7 @@ class JC_Post_Meta_Box
         ]);
 
         $screen->add_help_tab([
-            'id' => 'acf-group_product_field_help',
+            'id' => 'product_download_metabox_help',
             'title' => __('Download', 'jelly-catalog'),
             'content' => '<div class="edit-description">
                 <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Downloadable Content Guidelines:', 'jelly-catalog') . '</p>
@@ -239,6 +239,10 @@ class JC_Post_Meta_Box
         // FAQ 功能
         include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-faq-metabox.php';
         new JC_Product_FAQ_Metabox();
+
+        // 产品下载功能
+        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-download-metabox.php';
+        new JC_Product_Download_Metabox();
 
         // 视频链接功能
         include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-videourl-metabox.php';

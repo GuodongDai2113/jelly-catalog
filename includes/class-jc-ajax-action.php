@@ -37,37 +37,12 @@ class JC_Ajax_Action
      */
     public function __construct()
     {
-        add_action('admin_enqueue_scripts', [$this, 'admin_ajax_scripts']);
         add_action('wp_ajax_update_product_category_image', [$this, 'update_product_category_image']);
         add_action('wp_ajax_update_product_category_description', [$this, 'update_product_category_description']);
         add_action('wp_ajax_get_products_sheet', [$this, 'get_products_sheet']);
         add_action('wp_ajax_save_products_sheet', [$this, 'save_products_sheet']);
         // 添加获取分类法术语的AJAX处理
         add_action('wp_ajax_get_taxonomy_terms', [$this, 'get_taxonomy_terms']);
-    }
-
-    public function admin_ajax_scripts()
-    {
-        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
-        $post_type = $screen ? $screen->post_type : '';
-        $taxonomy = $screen ? $screen->taxonomy : '';
-        $screen_id = $screen ? $screen->id : '';
-        if (
-            !$screen ||
-            (
-                'product' !== $post_type &&
-                !in_array($taxonomy, ['product_cat', 'product_tag'], true) &&
-                false === strpos($screen_id, 'product_page_') &&
-                false === strpos($screen_id, 'edit-product_page_')
-            )
-        ) {
-            return;
-        }
-
-        wp_localize_script('jquery', 'jc_ajax', [
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('jc_nonce')
-        ]);
     }
 
     /**

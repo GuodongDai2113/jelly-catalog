@@ -134,6 +134,55 @@
 }
 
 // ==========================================
+// 产品下载字段
+// ==========================================
+
+.jc-product-download-field {
+  .jc-product-download-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    background: #f9fafb;
+
+    .dashicons {
+      width: 32px;
+      height: 32px;
+      font-size: 32px;
+      color: #0572d1;
+    }
+
+    &.is-empty {
+      color: #6b7280;
+
+      .dashicons {
+        color: #9ca3af;
+      }
+    }
+  }
+
+  .jc-product-download-summary {
+    min-width: 0;
+  }
+
+  .jc-product-download-name {
+    display: block;
+    margin-bottom: 4px;
+    word-break: break-word;
+  }
+
+  .jc-product-download-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 8px;
+  }
+}
+
+// ==========================================
 // 描述编辑模块
 // ==========================================
 
@@ -246,10 +295,6 @@
     flex: 1;
     padding: 20px;
     min-height: 700px;
-
-    .acf-field {
-      margin: 0;
-    }
   }
 
   .tab-pane {
@@ -549,11 +594,3 @@ td.column-product_tag {
   }
 }
 
-// ==========================================
-// ACF 兼容性
-// ==========================================
-
-#post-body-content #acf_after_title-sortables.meta-box-sortables {
-  // 与 ACF metabox 保持一致的间距
-  margin: 20px 0;
-}

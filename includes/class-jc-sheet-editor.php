@@ -38,57 +38,11 @@ class JC_Sheet_Editor
 
     /**
      * 构造函数
-     * 注册后台脚本与菜单
+     * 注册后台菜单
      */
     public function __construct()
     {
-        add_action('admin_enqueue_scripts', [$this, 'enqueue_script']);
         add_action('admin_menu', [$this, 'add_menu']);
-    }
-
-    /**
-     * 判断当前是否为产品表格页面
-     *
-     * @return bool
-     */
-    protected function is_product_sheet_screen()
-    {
-        return isset($_GET['post_type'], $_GET['page'])
-            && 'product' === sanitize_text_field(wp_unslash($_GET['post_type']))
-            && 'products-sheet' === sanitize_text_field(wp_unslash($_GET['page']));
-    }
-
-    /**
-     * 后台加载所需脚本与样式
-     *
-     * @return void
-     */
-    public function enqueue_script()
-    {
-        if (!$this->is_product_sheet_screen()) {
-            return;
-        }
-
-        // 引入Tabulator库
-        wp_enqueue_style('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css', [], '5.5.0');
-        wp_enqueue_script('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js', ['jquery'], '5.5.0', true);
-
-        // 加载本地CSS样式文件
-        wp_enqueue_style(
-            'jelly-catalog-sheet-editor',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog.css',
-            [],
-            JELLY_CATALOG_VERSION
-        );
-
-        // 加载基于Tabulator的JavaScript文件
-        wp_enqueue_script(
-            'jelly-catalog-sheet-editor',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-sheet-editor-tabulator.js',
-            ['jquery', 'tabulator'],
-            JELLY_CATALOG_VERSION,
-            true
-        );
     }
 
     /**

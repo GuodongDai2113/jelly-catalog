@@ -47,7 +47,6 @@ class JC_Admin
      */
     protected function register_global_hooks()
     {
-        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
         // add_action('admin_init', [$this, 'register_settings']);
         // add_filter('display_post_states', [$this, 'display_product_page_states'], 10, 2);
     }
@@ -99,130 +98,6 @@ class JC_Admin
     {
         add_filter('manage_edit-product_cat_columns', [$this, 'product_cat_columns']);
         add_filter('manage_product_cat_custom_column', [$this, 'product_cat_column'], 10, 3);
-    }
-
-    /**
-     * 判断当前页面是否与产品后台编辑相关
-     *
-     * @return bool
-     */
-    private function is_product_edit_page(): bool
-    {
-        if (!is_admin()) {
-            return false;
-        }
-
-        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
-
-        if (!$screen) {
-            return false;
-        }
-
-        if (in_array($screen->base, ['post', 'edit'], true) && 'product' === $screen->post_type) {
-            return true;
-        }
-
-        return in_array($screen->base, ['edit-tags', 'term'], true)
-            && in_array($screen->taxonomy, ['product_cat', 'product_tag'], true);
-    }
-
-    /**
-     * 加载后台样式与脚本
-     *
-     * @param string $hook 当前页面 Hook 名称
-     * @return void
-     */
-    public function enqueue_admin_assets($hook)
-    {
-        if (!$this->is_product_edit_page()) {
-            return;
-        }
-
-        $is_product_editor = in_array($hook, ['post.php', 'post-new.php'], true);
-        $is_product_taxonomy = in_array($hook, ['edit-tags.php', 'term.php'], true);
-
-        wp_enqueue_style(
-            'jelly-catalog-admin',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog.css',
-            [],
-            JELLY_CATALOG_VERSION
-        );
-
-        if ($is_product_editor || $is_product_taxonomy) {
-            wp_enqueue_style(
-                'jelly-core',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-core.css',
-                [],
-                '1.0.2'
-            );
-
-            wp_enqueue_media();
-
-            wp_enqueue_script(
-                'jelly-core',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-core.js',
-                ['jquery'],
-                '1.0.2',
-                true
-            );
-
-            wp_enqueue_script(
-                'jelly-catalog-repeater',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-repeater.js',
-                ['jquery'],
-                JELLY_CATALOG_VERSION,
-                true
-            );
-
-            wp_localize_script(
-                'jelly-catalog-repeater',
-                'jc_product_i18n',
-                [
-                    'postdivrich' => __('Product Description', 'jelly-catalog'),
-                    'bulk_create_title' => __('Bulk Create Items', 'jelly-catalog'),
-                    'bulk_create_placeholder' => __("Enter content here...\nFor FAQ: First line is Question, second line is Answer\nQuestion 1\nAnswer 1\nQuestion 2\nAnswer 2\n...\n\nFor Attributes: First line is Name, second line is Value\nName 1\nValue 1\nName 2\nValue 2...", 'jelly-catalog'),
-                    'create_items_btn' => __('Create Items', 'jelly-catalog'),
-                    'cancel_btn' => __('Cancel', 'jelly-catalog'),
-                    'success_title' => __('Success', 'jelly-catalog'),
-                    'error_title' => __('Error', 'jelly-catalog'),
-                    'ok_btn' => __('OK', 'jelly-catalog'),
-                    'no_content_error' => __('Please enter content.', 'jelly-catalog'),
-                    'no_valid_items_error' => __('No valid items found.', 'jelly-catalog'),
-                    'success_created_items' => __('Successfully created {count} items.', 'jelly-catalog'),
-                    'delete_item_tooltip' => __('Delete item', 'jelly-catalog'),
-                    'add_new_item_btn' => __('Add New Item', 'jelly-catalog'),
-                    'bulk_create_tooltip' => __('Bulk Create Items from Text', 'jelly-catalog'),
-                    'bulk_create_btn' => __('Bulk Create', 'jelly-catalog'),
-                    'faq_question_label' => __('Question', 'jelly-catalog'),
-                    'faq_answer_label' => __('Answer', 'jelly-catalog'),
-                    'attribute_name_label' => __('Name', 'jelly-catalog'),
-                    'attribute_value_label' => __('Value', 'jelly-catalog'),
-                    'product_faqs' => __('Product FAQs', 'jelly-catalog'),
-                    'product_attributes' => __('Product Attributes', 'jelly-catalog'),
-                    'product_cat_faqs' => __('Category FAQs', 'jelly-catalog'),
-                ]
-            );
-        }
-
-        if ($is_product_editor) {
-            wp_enqueue_script(
-                'jelly-catalog-product-editor',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-product-editor.js',
-                ['jquery', 'jquery-ui-sortable'],
-                JELLY_CATALOG_VERSION,
-                true
-            );
-        }
-
-        if ($is_product_taxonomy) {
-            wp_enqueue_script(
-                'jelly-catalog-editor',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-category-editor.js',
-                ['jquery'],
-                JELLY_CATALOG_VERSION,
-                true
-            );
-        }
     }
 
     /**

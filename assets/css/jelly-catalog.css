@@ -107,6 +107,43 @@
   border-radius: 12px;
 }
 
+.jc-product-download-field .jc-product-download-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: #f9fafb;
+}
+.jc-product-download-field .jc-product-download-preview .dashicons {
+  width: 32px;
+  height: 32px;
+  font-size: 32px;
+  color: #0572d1;
+}
+.jc-product-download-field .jc-product-download-preview.is-empty {
+  color: #6b7280;
+}
+.jc-product-download-field .jc-product-download-preview.is-empty .dashicons {
+  color: #9ca3af;
+}
+.jc-product-download-field .jc-product-download-summary {
+  min-width: 0;
+}
+.jc-product-download-field .jc-product-download-name {
+  display: block;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+.jc-product-download-field .jc-product-download-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
 .edit-description {
   padding: 16px;
   margin-bottom: 12px;
@@ -197,9 +234,6 @@
   flex: 1;
   padding: 20px;
   min-height: 700px;
-}
-.jc-tabs .tab-content .acf-field {
-  margin: 0;
 }
 .jc-tabs .tab-pane {
   display: none;
@@ -424,6 +458,4 @@ td.column-product_tag a {
     margin-bottom: -1px;
   }
 }
-#post-body-content #acf_after_title-sortables.meta-box-sortables {
-  margin: 20px 0;
-}/*# sourceMappingURL=jelly-catalog.css.map */
+/*# sourceMappingURL=jelly-catalog.css.map */

@@ -39,11 +39,33 @@ msgstr "仅启用产品功能，与 Woocommerce 完全兼容"
 msgid "JellyDai"
 msgstr "JellyDai"
 
-#: addons/class-jc-acf.php:40 addons/elementor/widgets/product-download.php:22
+#: addons/elementor/widgets/product-download.php:22
+#: includes/metabox/class-jc-product-download-metabox.php:25
 msgid "Product Download"
 msgstr "产品下载"
 
-#: addons/class-jc-acf.php:48
+#: includes/metabox/class-jc-product-download-metabox.php:32
+#: includes/metabox/class-jc-product-download-metabox.php:38
+msgid "No file selected"
+msgstr "未选择文件"
+
+#: includes/metabox/class-jc-product-download-metabox.php:51
+msgid "Select Product File"
+msgstr "选择产品文件"
+
+#: includes/metabox/class-jc-product-download-metabox.php:52
+msgid "Use this file"
+msgstr "使用此文件"
+
+#: includes/metabox/class-jc-product-download-metabox.php:53
+msgid "Select File"
+msgstr "选择文件"
+
+#: includes/metabox/class-jc-product-download-metabox.php:56
+msgid "Remove File"
+msgstr "移除文件"
+
+#: includes/metabox/class-jc-product-download-metabox.php:61
 msgid "Product catalog, multiple files can be uploaded in compressed packages"
 msgstr "产品目录，多个文件可以压缩包形式上传"
 

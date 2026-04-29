@@ -40,12 +40,33 @@ msgstr ""
 msgid "JellyDai"
 msgstr ""
 
-#: addons/class-jc-acf.php:40
 #: addons/elementor/widgets/product-download.php:22
+#: includes/metabox/class-jc-product-download-metabox.php:25
 msgid "Product Download"
 msgstr ""
 
-#: addons/class-jc-acf.php:48
+#: includes/metabox/class-jc-product-download-metabox.php:32
+#: includes/metabox/class-jc-product-download-metabox.php:38
+msgid "No file selected"
+msgstr ""
+
+#: includes/metabox/class-jc-product-download-metabox.php:51
+msgid "Select Product File"
+msgstr ""
+
+#: includes/metabox/class-jc-product-download-metabox.php:52
+msgid "Use this file"
+msgstr ""
+
+#: includes/metabox/class-jc-product-download-metabox.php:53
+msgid "Select File"
+msgstr ""
+
+#: includes/metabox/class-jc-product-download-metabox.php:56
+msgid "Remove File"
+msgstr ""
+
+#: includes/metabox/class-jc-product-download-metabox.php:61
 msgid "Product catalog, multiple files can be uploaded in compressed packages"
 msgstr ""
 

@@ -11,7 +11,7 @@
     "product_catdiv",
     "product_sku_metabox",
     "tagsdiv-product_tag",
-    "acf-group_product_field",
+    "product_download_metabox",
     "longtail_keywords_metabox",
     "product_faq_metabox",
     "product_attributes_metabox",
@@ -38,6 +38,13 @@
     galleryItem: "li.image",
     galleryAddButton: ".jc-add-image a",
     galleryField: "#product_image_gallery",
+    productDownload: "#jc-product-download",
+    productDownloadField: "#product_file",
+    productDownloadPreview: ".jc-product-download-preview",
+    productDownloadName: ".jc-product-download-name",
+    productDownloadMeta: ".jc-product-download-meta",
+    productDownloadSelect: ".jc-product-download-select",
+    productDownloadRemove: ".jc-product-download-remove",
     elementorEditor: "#elementor-editor",
     elementorSwitch: "#elementor-switch-mode",
   };
@@ -68,6 +75,7 @@
 
       // 复用的媒体选择框实例
       this.productGalleryFrame = null;
+      this.productDownloadFrame = null;
 
       this.init();
     }
@@ -82,6 +90,7 @@
     init() {
       this.resetProductEditor();
       this.initProductGallery();
+      this.initProductDownload();
     }
 
     /**
@@ -402,6 +411,96 @@
           </div>
         </div>
       `);
+    }
+
+    /**
+     * 初始化产品下载文件选择。
+     */
+    initProductDownload() {
+      const $container = this.getProductDownloadContainer();
+      if (!$container.length) return;
+
+      $(document).on("click", SELECTORS.productDownloadSelect, (e) => {
+        e.preventDefault();
+        this.openProductDownloadFrame(e.currentTarget);
+      });
+
+      $(document).on("click", SELECTORS.productDownloadRemove, (e) => {
+        e.preventDefault();
+        this.clearProductDownload();
+      });
+    }
+
+    getProductDownloadContainer() {
+      return $(SELECTORS.productDownload);
+    }
+
+    openProductDownloadFrame(button) {
+      const $button = $(button);
+
+      if (!window.wp || !wp.media) return;
+
+      if (this.productDownloadFrame) {
+        this.productDownloadFrame.open();
+        return;
+      }
+
+      this.productDownloadFrame = wp.media({
+        title: $button.data("choose") || "Select Product File",
+        button: {
+          text: $button.data("update") || "Use this file",
+        },
+        multiple: false,
+      });
+
+      this.productDownloadFrame.on("select", () => {
+        const attachment = this.productDownloadFrame
+          .state()
+          .get("selection")
+          .first();
+
+        if (!attachment) return;
+
+        this.updateProductDownload(attachment.toJSON());
+      });
+
+      this.productDownloadFrame.open();
+    }
+
+    updateProductDownload(attachment) {
+      const $container = this.getProductDownloadContainer();
+      if (!$container.length || !attachment || !attachment.id) return;
+
+      const meta = [attachment.filesizeHumanReadable, attachment.mime]
+        .filter(Boolean)
+        .join(" / ");
+      const fileName =
+        attachment.filename || attachment.title || attachment.name || "";
+
+      $container
+        .find(SELECTORS.productDownloadField)
+        .val(attachment.id)
+        .trigger("change");
+      $container.find(SELECTORS.productDownloadName).text(fileName);
+      $container.find(SELECTORS.productDownloadMeta).text(meta);
+      $container.find(SELECTORS.productDownloadPreview).removeClass("is-empty");
+      $container.find(SELECTORS.productDownloadRemove).show();
+    }
+
+    clearProductDownload() {
+      const $container = this.getProductDownloadContainer();
+      if (!$container.length) return;
+
+      const emptyText = $container.data("no-file") || "No file selected";
+
+      $container
+        .find(SELECTORS.productDownloadField)
+        .val("")
+        .trigger("change");
+      $container.find(SELECTORS.productDownloadName).text(emptyText);
+      $container.find(SELECTORS.productDownloadMeta).text("");
+      $container.find(SELECTORS.productDownloadPreview).addClass("is-empty");
+      $container.find(SELECTORS.productDownloadRemove).hide();
     }
 
     getGalleryContainer() {
