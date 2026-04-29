@@ -47,12 +47,12 @@ class Product_Gallery extends Widget_Base
 
     public function get_style_depends(): array
     {
-        return $this->should_use_fallback_assets() ? ['jelly-catalog-product-gallery'] : [];
+        return $this->should_use_fallback_assets() ? ['jelly-catalog-gallery'] : [];
     }
 
     public function get_script_depends(): array
     {
-        return $this->should_use_fallback_assets() ? ['jelly-catalog-product-gallery'] : [];
+        return $this->should_use_fallback_assets() ? ['jelly-catalog-gallery'] : [];
     }
 
     protected function register_controls(): void

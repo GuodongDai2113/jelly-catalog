@@ -134,6 +134,7 @@ class JC_Elementor
         include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-advantages.php';
         include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-h1-title.php';
         include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-why-choose-title.php';
+        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-download.php';
 
         $tags = [
             'Product_Title',
@@ -145,6 +146,7 @@ class JC_Elementor
             'Product_Cat_Advantages',
             'Product_Cat_H1_Title',
             'Product_Cat_Why_Choose_Title',
+            'Product_Download',
         ];
 
         /** @var \Elementor\Core\DynamicTags\Manager $module */

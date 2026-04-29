@@ -81,15 +81,15 @@ class JC_Enqueue
     public function register_frontend_assets()
     {
         wp_register_style(
-            'jelly-catalog-product-gallery',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-product-gallery.css',
+            'jelly-catalog-gallery',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-gallery.css',
             [],
             JELLY_CATALOG_VERSION
         );
 
         wp_register_script(
-            'jelly-catalog-product-gallery',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-product-gallery.js',
+            'jelly-catalog-gallery',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-gallery.js',
             ['jquery'],
             JELLY_CATALOG_VERSION,
             true
@@ -108,15 +108,15 @@ class JC_Enqueue
         }
 
         wp_enqueue_style(
-            'jelly-catalog',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jc.css',
+            'jelly-catalog-main',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-main.css',
             [],
             JELLY_CATALOG_VERSION
         );
 
         wp_enqueue_script(
-            'jelly-catalog',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jc.js',
+            'jelly-catalog-main',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-main.js',
             [],
             JELLY_CATALOG_VERSION,
             true
@@ -131,14 +131,14 @@ class JC_Enqueue
     public function enqueue_preview_style()
     {
         wp_enqueue_style(
-            'jelly-catalog-preview',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jc.css',
+            'jelly-catalog-main-preview',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-main.css',
             [],
             JELLY_CATALOG_VERSION
         );
         wp_enqueue_style(
             'jelly-catalog-gallery-preview',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-product-gallery.css',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-gallery.css',
             [],
             JELLY_CATALOG_VERSION
         );
@@ -152,15 +152,15 @@ class JC_Enqueue
     public function enqueue_preview_script()
     {
         wp_enqueue_script(
-            'jelly-catalog-preview',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jc.js',
+            'jelly-catalog-main-preview',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-main.js',
             [],
             JELLY_CATALOG_VERSION,
             true
         );
         wp_enqueue_script(
             'jelly-catalog-gallery-preview',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-product-gallery.js',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-gallery.js',
             [],
             JELLY_CATALOG_VERSION,
             true
@@ -203,15 +203,15 @@ class JC_Enqueue
 
         wp_enqueue_style(
             'jelly-catalog-admin',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog.css',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-admin.css',
             [],
             JELLY_CATALOG_VERSION
         );
 
         if ($is_product_editor || $is_product_taxonomy) {
             wp_enqueue_style(
-                'jelly-core',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-core.css',
+                'jelly-catalog-core',
+                JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-core.css',
                 [],
                 '1.0.2'
             );
@@ -219,23 +219,23 @@ class JC_Enqueue
             wp_enqueue_media();
 
             wp_enqueue_script(
-                'jelly-core',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-core.js',
+                'jelly-catalog-core',
+                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-core.js',
                 ['jquery'],
                 '1.0.2',
                 true
             );
 
             wp_enqueue_script(
-                'jelly-catalog-repeater',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-repeater.js',
+                'jelly-catalog-admin-repeater',
+                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-repeater.js',
                 ['jquery'],
                 JELLY_CATALOG_VERSION,
                 true
             );
 
             wp_localize_script(
-                'jelly-catalog-repeater',
+                'jelly-catalog-admin-repeater',
                 'jc_product_i18n',
                 $this->get_product_i18n()
             );
@@ -243,8 +243,8 @@ class JC_Enqueue
 
         if ($is_product_editor) {
             wp_enqueue_script(
-                'jelly-catalog-product-editor',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-product-editor.js',
+                'jelly-catalog-admin-product',
+                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-product.js',
                 ['jquery', 'jquery-ui-sortable'],
                 JELLY_CATALOG_VERSION,
                 true
@@ -253,8 +253,8 @@ class JC_Enqueue
 
         if ($is_product_taxonomy) {
             wp_enqueue_script(
-                'jelly-catalog-editor',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-category-editor.js',
+                'jelly-catalog-admin-category',
+                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-category.js',
                 ['jquery'],
                 JELLY_CATALOG_VERSION,
                 true
@@ -273,15 +273,15 @@ class JC_Enqueue
         wp_enqueue_script('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js', ['jquery'], '5.5.0', true);
 
         wp_enqueue_style(
-            'jelly-catalog-sheet-editor',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog.css',
+            'jelly-catalog-admin-sheet-editor',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-admin.css',
             [],
             JELLY_CATALOG_VERSION
         );
 
         wp_enqueue_script(
-            'jelly-catalog-sheet-editor',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-sheet-editor-tabulator.js',
+            'jelly-catalog-admin-sheet-editor',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-sheet-editor.js',
             ['jquery', 'tabulator'],
             JELLY_CATALOG_VERSION,
             true
@@ -296,14 +296,14 @@ class JC_Enqueue
     private function enqueue_port_import_assets()
     {
         wp_enqueue_script(
-            'jc-port-import',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-port-import.js',
+            'jelly-catalog-admin-port',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-port.js',
             ['jquery'],
             JELLY_CATALOG_VERSION,
             true
         );
 
-        wp_localize_script('jc-port-import', 'jcPortImport', [
+        wp_localize_script('jelly-catalog-admin-port', 'jcPortImport', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('jc_import_products'),
             'resumeJobId' => isset($_GET['jc_import_job']) ? sanitize_key(wp_unslash($_GET['jc_import_job'])) : '',
@@ -323,8 +323,8 @@ class JC_Enqueue
         ]);
 
         wp_enqueue_style(
-            'jc-port-import',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-port-import.css',
+            'jelly-catalog-admin-port',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-admin-port.css',
             [],
             JELLY_CATALOG_VERSION
         );
