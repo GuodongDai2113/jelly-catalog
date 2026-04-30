@@ -2,25 +2,25 @@
 # This file is distributed under the same license as the Jelly Catalog plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Jelly Catalog 3.0.2\n"
+"Project-Id-Version: Jelly Catalog 3.1.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/jelly-catalog\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-03-31T02:24:14+00:00\n"
+"POT-Creation-Date: 2026-04-30T01:06:51+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jelly-catalog\n"
 
 #. Plugin Name of the plugin
 #: jelly-catalog.php
-#: addons/class-jc-elementor.php:154
+#: addons/class-jc-elementor.php:156
 #: addons/elementor/conditions/jelly-catalog.php:30
 #: addons/elementor/documents/product-archive.php:148
 #: addons/elementor/documents/product.php:164
-#: includes/class-jc-admin.php:616
+#: includes/class-jc-admin.php:493
 msgid "Jelly Catalog"
 msgstr ""
 
@@ -38,36 +38,6 @@ msgstr ""
 #. Author of the plugin
 #: jelly-catalog.php
 msgid "JellyDai"
-msgstr ""
-
-#: addons/elementor/widgets/product-download.php:22
-#: includes/metabox/class-jc-product-download-metabox.php:25
-msgid "Product Download"
-msgstr ""
-
-#: includes/metabox/class-jc-product-download-metabox.php:32
-#: includes/metabox/class-jc-product-download-metabox.php:38
-msgid "No file selected"
-msgstr ""
-
-#: includes/metabox/class-jc-product-download-metabox.php:51
-msgid "Select Product File"
-msgstr ""
-
-#: includes/metabox/class-jc-product-download-metabox.php:52
-msgid "Use this file"
-msgstr ""
-
-#: includes/metabox/class-jc-product-download-metabox.php:53
-msgid "Select File"
-msgstr ""
-
-#: includes/metabox/class-jc-product-download-metabox.php:56
-msgid "Remove File"
-msgstr ""
-
-#: includes/metabox/class-jc-product-download-metabox.php:61
-msgid "Product catalog, multiple files can be uploaded in compressed packages"
 msgstr ""
 
 #: addons/elementor/conditions/jelly-catalog.php:35
@@ -179,6 +149,24 @@ msgstr ""
 msgid "Category Why Choose"
 msgstr ""
 
+#: addons/elementor/tags/product-download.php:53
+#: addons/elementor/widgets/product-download.php:25
+#: includes/metabox/class-jc-product-download-metabox.php:25
+msgid "Product Download"
+msgstr ""
+
+#: addons/elementor/tags/product-download.php:66
+msgid "Output"
+msgstr ""
+
+#: addons/elementor/tags/product-download.php:70
+msgid "File URL"
+msgstr ""
+
+#: addons/elementor/tags/product-download.php:71
+msgid "File Name"
+msgstr ""
+
 #: addons/elementor/tags/product-excerpt.php:28
 #: includes/metabox/class-jc-product-postexcerpt-metabox.php:24
 msgid "Product Short Description"
@@ -192,226 +180,745 @@ msgstr ""
 msgid "Product Title"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:31
-#: includes/class-jc-admin.php:204
+#: addons/elementor/widgets/product-attributes.php:32
+#: includes/class-jc-enqueue.php:446
 #: includes/metabox/class-jc-product-attributes-metabox.php:25
 #: includes/metabox/class-jc-product-attributes-metabox.php:37
 msgid "Product Attributes"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:70
+#: addons/elementor/widgets/product-attributes.php:71
 msgid "Attributes Settings"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:77
+#: addons/elementor/widgets/product-attributes.php:78
 msgid "Columns"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:81
+#: addons/elementor/widgets/product-attributes.php:82
 msgid "1 Column"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:82
+#: addons/elementor/widgets/product-attributes.php:83
 msgid "2 Columns"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:83
+#: addons/elementor/widgets/product-attributes.php:84
 msgid "3 Columns"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:84
+#: addons/elementor/widgets/product-attributes.php:85
 msgid "4 Columns"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:92
+#: addons/elementor/widgets/product-attributes.php:93
 msgid "Max Items to Show"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:94
+#: addons/elementor/widgets/product-attributes.php:95
 msgid "Maximum number of attributes to display"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:107
+#: addons/elementor/widgets/product-attributes.php:108
 msgid "Icon Settings"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:114
+#: addons/elementor/widgets/product-attributes.php:115
 msgid "Enable Icon"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:116
-#: addons/elementor/widgets/product-cat-list.php:62
-#: addons/elementor/widgets/product-cat-list.php:74
+#: addons/elementor/widgets/product-attributes.php:117
+#: addons/elementor/widgets/product-cat-list.php:64
+#: addons/elementor/widgets/product-cat-list.php:76
+#: addons/elementor/widgets/product-cat-nav.php:64
 msgid "Yes"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:117
-#: addons/elementor/widgets/product-cat-list.php:63
-#: addons/elementor/widgets/product-cat-list.php:75
+#: addons/elementor/widgets/product-attributes.php:118
+#: addons/elementor/widgets/product-cat-list.php:65
+#: addons/elementor/widgets/product-cat-list.php:77
+#: addons/elementor/widgets/product-cat-nav.php:65
 msgid "No"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:126
+#: addons/elementor/widgets/product-attributes.php:127
 msgid "Choose Icon"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:145
-msgid "Style Settings"
+#: addons/elementor/widgets/product-attributes.php:146
+#: addons/elementor/widgets/product-gallery.php:84
+msgid "Layout"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:153
+#: addons/elementor/widgets/product-attributes.php:154
+msgid "Items Gap"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:172
+#: addons/elementor/widgets/product-cat-faq.php:71
+#: addons/elementor/widgets/product-faq.php:79
+msgid "Item Padding"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:184
+msgid "Item Background"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:203
+msgid "Item Border Radius"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:215
 msgid "Font Size"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:175
-msgid "Name Color"
+#: addons/elementor/widgets/product-attributes.php:237
+msgid "Item Alignment"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:186
-msgid "Value Color"
-msgstr ""
-
-#: addons/elementor/widgets/product-attributes.php:197
-msgid "Alignment"
-msgstr ""
-
-#: addons/elementor/widgets/product-attributes.php:201
+#: addons/elementor/widgets/product-attributes.php:241
+#: addons/elementor/widgets/product-attributes.php:266
+#: addons/elementor/widgets/product-cat-nav.php:88
 msgid "Left"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:205
+#: addons/elementor/widgets/product-attributes.php:245
+#: addons/elementor/widgets/product-attributes.php:270
+#: addons/elementor/widgets/product-cat-nav.php:92
 msgid "Center"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:209
+#: addons/elementor/widgets/product-attributes.php:249
+#: addons/elementor/widgets/product-attributes.php:274
+#: addons/elementor/widgets/product-cat-nav.php:96
 msgid "Right"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:222
+#: addons/elementor/widgets/product-attributes.php:262
+msgid "Text Alignment"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:289
+#: addons/elementor/widgets/product-download.php:236
+msgid "Text"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:298
+#: addons/elementor/widgets/product-download.php:245
+msgid "Name Typography"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:306
+#: addons/elementor/widgets/product-download.php:253
+msgid "Name Color"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:318
+msgid "Value Typography"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:326
+msgid "Value Color"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:339
+msgid "Icon"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:350
 msgid "Icon Color"
 msgstr ""
 
-#: addons/elementor/widgets/product-attributes.php:235
+#: addons/elementor/widgets/product-attributes.php:362
+#: addons/elementor/widgets/product-attributes.php:450
+#: addons/elementor/widgets/product-cat-list.php:403
+#: addons/elementor/widgets/product-gallery.php:298
 msgid "Size"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-faq.php:18
+#: addons/elementor/widgets/product-attributes.php:388
+#: addons/elementor/widgets/product-cat-faq.php:144
+#: addons/elementor/widgets/product-cat-list.php:422
+#: addons/elementor/widgets/product-faq.php:152
+msgid "Spacing"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:446
+msgid "Material"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:447
+msgid "Stainless Steel"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:451
+msgid "120 x 80 x 40 mm"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:454
+msgid "Application"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:455
+msgid "Industrial Equipment"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:458
+msgid "Warranty"
+msgstr ""
+
+#: addons/elementor/widgets/product-attributes.php:459
+msgid "12 Months"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-faq.php:22
 #: includes/metabox/class-jc-product-cat-faq-metabox.php:35
 #: includes/metabox/class-jc-product-cat-faq-metabox.php:43
 msgid "Category FAQ"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-list.php:29
-msgid "Product Category List"
+#: addons/elementor/widgets/product-cat-faq.php:45
+#: addons/elementor/widgets/product-faq.php:53
+msgid "FAQ Items"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-list.php:52
-#: addons/elementor/widgets/product-download.php:50
-#: addons/elementor/widgets/product-gallery.php:50
-#: includes/class-jc-admin.php:406
-msgid "Content"
+#: addons/elementor/widgets/product-cat-faq.php:53
+#: addons/elementor/widgets/product-faq.php:61
+msgid "Item Spacing"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-list.php:60
-msgid "Hide empty categories"
-msgstr ""
-
-#: addons/elementor/widgets/product-cat-list.php:72
-msgid "Show product count"
-msgstr ""
-
-#: addons/elementor/widgets/product-cat-list.php:89
-msgid "Item Style"
-msgstr ""
-
-#: addons/elementor/widgets/product-cat-list.php:107
-msgid "Normal"
-msgstr ""
-
-#: addons/elementor/widgets/product-cat-list.php:114
-#: addons/elementor/widgets/product-cat-list.php:145
-#: addons/elementor/widgets/product-cat-list.php:182
-#: addons/elementor/widgets/product-cat-list.php:218
-#: addons/elementor/widgets/product-cat-list.php:273
-msgid "Color"
-msgstr ""
-
-#: addons/elementor/widgets/product-cat-list.php:125
-#: addons/elementor/widgets/product-cat-list.php:156
-#: addons/elementor/widgets/product-cat-list.php:193
-#: addons/elementor/widgets/product-cat-list.php:229
+#: addons/elementor/widgets/product-cat-faq.php:83
+#: addons/elementor/widgets/product-cat-list.php:127
+#: addons/elementor/widgets/product-cat-list.php:158
+#: addons/elementor/widgets/product-cat-list.php:264
+#: addons/elementor/widgets/product-cat-list.php:300
+#: addons/elementor/widgets/product-cat-nav.php:177
+#: addons/elementor/widgets/product-cat-nav.php:208
+#: addons/elementor/widgets/product-cat-nav.php:239
+#: addons/elementor/widgets/product-download.php:135
+#: addons/elementor/widgets/product-faq.php:91
+#: addons/elementor/widgets/product-gallery.php:126
+#: addons/elementor/widgets/product-gallery.php:277
 msgid "Background Color"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-list.php:138
+#: addons/elementor/widgets/product-cat-faq.php:102
+#: addons/elementor/widgets/product-cat-list.php:212
+#: addons/elementor/widgets/product-cat-list.php:354
+#: addons/elementor/widgets/product-cat-nav.php:263
+#: addons/elementor/widgets/product-download.php:154
+#: addons/elementor/widgets/product-faq.php:110
+#: addons/elementor/widgets/product-gallery.php:145
+#: addons/elementor/widgets/product-gallery.php:220
+msgid "Border Radius"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-faq.php:116
+#: addons/elementor/widgets/product-faq.php:124
+#: includes/class-jc-enqueue.php:441
+msgid "Question"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-faq.php:132
+#: addons/elementor/widgets/product-cat-faq.php:180
+#: addons/elementor/widgets/product-cat-list.php:116
+#: addons/elementor/widgets/product-cat-list.php:147
+#: addons/elementor/widgets/product-cat-list.php:253
+#: addons/elementor/widgets/product-cat-list.php:289
+#: addons/elementor/widgets/product-cat-list.php:377
+#: addons/elementor/widgets/product-cat-nav.php:166
+#: addons/elementor/widgets/product-cat-nav.php:197
+#: addons/elementor/widgets/product-cat-nav.php:228
+#: addons/elementor/widgets/product-faq.php:140
+#: addons/elementor/widgets/product-faq.php:188
+#: addons/elementor/widgets/product-gallery.php:266
+#: addons/elementor/widgets/product-gallery.php:322
+msgid "Color"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-faq.php:164
+#: addons/elementor/widgets/product-faq.php:172
+#: includes/class-jc-enqueue.php:442
+msgid "Answer"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-faq.php:191
+#: addons/elementor/widgets/product-cat-list.php:192
+#: addons/elementor/widgets/product-cat-list.php:342
+#: addons/elementor/widgets/product-cat-nav.php:145
+#: addons/elementor/widgets/product-download.php:105
+#: addons/elementor/widgets/product-faq.php:199
+msgid "Padding"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-faq.php:232
+msgid "What category information appears here?"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-faq.php:233
+msgid "This preview shows the category FAQ layout when the selected archive has no FAQ data."
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-faq.php:236
+#: addons/elementor/widgets/product-faq.php:239
+msgid "Can these styles be edited?"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-faq.php:237
+#: addons/elementor/widgets/product-faq.php:240
+msgid "Use the style controls to adjust item spacing, borders, question text, and answer text."
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-list.php:31
+msgid "Product Category List"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-list.php:54
+#: addons/elementor/widgets/product-cat-nav.php:54
+#: addons/elementor/widgets/product-download.php:53
+#: includes/class-jc-admin.php:283
+msgid "Content"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-list.php:62
+#: addons/elementor/widgets/product-cat-nav.php:62
+msgid "Hide empty categories"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-list.php:74
+msgid "Show product count"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-list.php:91
+msgid "Item Style"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-list.php:109
+#: addons/elementor/widgets/product-cat-nav.php:159
+msgid "Normal"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-list.php:140
+#: addons/elementor/widgets/product-cat-nav.php:190
 msgid "Hover"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-list.php:174
+#: addons/elementor/widgets/product-cat-list.php:173
+msgid "Item Gap"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-list.php:224
+msgid "Children Indent"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-list.php:245
 msgid "Active Item Style"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-list.php:207
+#: addons/elementor/widgets/product-cat-list.php:278
 msgid "Count Badge"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-list.php:240
+#: addons/elementor/widgets/product-cat-list.php:311
+#: addons/elementor/widgets/product-gallery.php:333
 msgid "Active Color"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-list.php:251
+#: addons/elementor/widgets/product-cat-list.php:322
 msgid "Active Background Color"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-list.php:265
+#: addons/elementor/widgets/product-cat-list.php:369
 msgid "Toggle Style"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-list.php:286
+#: addons/elementor/widgets/product-cat-list.php:390
 msgid "Hover Color"
 msgstr ""
 
-#: addons/elementor/widgets/product-cat-list.php:396
+#: addons/elementor/widgets/product-cat-list.php:535
+#: addons/elementor/widgets/product-cat-list.php:560
 msgid "Toggle subcategories"
 msgstr ""
 
-#: addons/elementor/widgets/product-download.php:59
-#: addons/elementor/widgets/product-gallery.php:59
-msgid "Style"
+#: addons/elementor/widgets/product-cat-list.php:556
+msgid "Product Categories"
 msgstr ""
 
-#: addons/elementor/widgets/product-faq.php:26
+#: addons/elementor/widgets/product-cat-list.php:566
+#: addons/elementor/widgets/product-cat-nav.php:369
+msgid "Industrial Parts"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-list.php:574
+#: addons/elementor/widgets/product-cat-nav.php:372
+msgid "Accessories"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-nav.php:31
+msgid "Product Category Nav"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-nav.php:76
+msgid "Navigation"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-nav.php:84
+msgid "Alignment"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-nav.php:109
+#: addons/elementor/widgets/product-download.php:117
+#: addons/elementor/widgets/product-gallery.php:310
+msgid "Gap"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-nav.php:129
+msgid "Tabs"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-nav.php:221
+msgid "Active"
+msgstr ""
+
+#: addons/elementor/widgets/product-cat-nav.php:366
+#: includes/class-jc-post-types.php:137
+msgid "All Products"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:60
+msgid "File Icon"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:73
+msgid "Download Icon"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:86
+msgid "Empty Message"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:88
+msgid "The product files have not yet been uploaded. Please contact customer service to obtain them."
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:97
+msgid "Download Item"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:176
+msgid "Icons"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:184
+msgid "File Icon Size"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:197
+msgid "File Icon Color"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:209
+msgid "Download Icon Size"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:222
+msgid "Download Icon Color"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:265
+msgid "Size Typography"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:273
+msgid "Size Color"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:285
+msgid "Empty Message Typography"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:293
+msgid "Empty Message Color"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:315
+#: addons/elementor/widgets/product-download.php:352
+msgid "Product Catalog.pdf"
+msgstr ""
+
+#: addons/elementor/widgets/product-download.php:353
+msgid "2.4 MB"
+msgstr ""
+
+#: addons/elementor/widgets/product-faq.php:30
 #: includes/metabox/class-jc-product-faq-metabox.php:25
 #: includes/metabox/class-jc-product-faq-metabox.php:37
 msgid "Product FAQ"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:22
+#: addons/elementor/widgets/product-faq.php:235
+msgid "What product information appears here?"
+msgstr ""
+
+#: addons/elementor/widgets/product-faq.php:236
+msgid "This preview shows the FAQ layout when the current product has no FAQ data."
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:30
 #: includes/metabox/class-jc-product-gallery-metabox.php:25
 msgid "Product Gallery"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:67
-msgid "Border Radius"
+#: addons/elementor/widgets/product-gallery.php:63
+msgid "Gallery"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:80
-msgid "Border"
+#: addons/elementor/widgets/product-gallery.php:70
+msgid "Visible Thumbnails"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:134
+#: addons/elementor/widgets/product-gallery.php:92
+msgid "Column Gap"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:104
+msgid "Thumbnail Gap"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:118
+#: addons/elementor/widgets/product-gallery.php:516
+msgid "Media"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:157
+msgid "Image Fit"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:161
+msgid "Default"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:162
+msgid "Cover"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:163
+msgid "Contain"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:176
+msgid "Thumbnails"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:184
+msgid "Opacity"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:198
+msgid "Active Opacity"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:234
+msgid "Arrows"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:242
+msgid "Button Size"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:254
+msgid "Icon Size"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:290
+msgid "Dots"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:380
+#: addons/elementor/widgets/product-gallery.php:471
+msgid "Product media thumbnails"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:386
+#, php-format
+msgid "Show media %d"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:406
+#: addons/elementor/widgets/product-gallery.php:488
+msgid "Product media gallery"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:425
+#: addons/elementor/widgets/product-gallery.php:501
+msgid "Previous media"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:429
+#: addons/elementor/widgets/product-gallery.php:505
+msgid "Next media"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:434
+#: addons/elementor/widgets/product-gallery.php:510
+msgid "Product media pagination"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:438
+#, php-format
+msgid "Go to media %d"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:441
+#, php-format
+msgid "Media %d"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:459
+#: addons/elementor/widgets/product-gallery.php:461
+#, php-format
+msgid "Preview image %d"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:477
+msgid "Show media"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:514
+msgid "Go to media"
+msgstr ""
+
+#: addons/elementor/widgets/product-gallery.php:545
 msgid "Video Thumbnail"
 msgstr ""
 
-#: includes/class-jc-admin.php:184
+#: includes/class-jc-admin.php:117
+#: includes/class-jc-admin.php:317
+msgid "Image"
+msgstr ""
+
+#: includes/class-jc-admin.php:136
+#: includes/class-jc-post-meta-box.php:81
+#: includes/class-jc-post-types.php:48
+msgid "Categories"
+msgstr ""
+
+#: includes/class-jc-admin.php:137
+#: includes/class-jc-post-meta-box.php:95
+msgid "Tags"
+msgstr ""
+
+#: includes/class-jc-admin.php:138
+msgid "Completeness"
+msgstr ""
+
+#: includes/class-jc-admin.php:281
+#: includes/class-jc-post-meta-box.php:46
+#: includes/class-jc-settings.php:174
+msgid "Title"
+msgstr ""
+
+#: includes/class-jc-admin.php:282
+#: includes/class-jc-post-meta-box.php:67
+msgid "Description"
+msgstr ""
+
+#: includes/class-jc-admin.php:367
+msgid "Thumbnail"
+msgstr ""
+
+#: includes/class-jc-admin.php:445
+#: includes/class-jc-post-types.php:54
+msgid "All categories"
+msgstr ""
+
+#: includes/class-jc-admin.php:474
+#: includes/class-jc-post-types.php:88
+msgid "All tags"
+msgstr ""
+
+#: includes/class-jc-ajax-action.php:60
+#: includes/class-jc-ajax-action.php:102
+msgid "Security verification failed"
+msgstr ""
+
+#: includes/class-jc-ajax-action.php:65
+#: includes/class-jc-ajax-action.php:107
+#: includes/class-jc-ajax-action.php:139
+#: includes/class-jc-ajax-action.php:414
+#: includes/class-jc-ajax-action.php:629
+msgid "Insufficient permissions"
+msgstr ""
+
+#: includes/class-jc-ajax-action.php:74
+#: includes/class-jc-ajax-action.php:116
+msgid "Parameter error"
+msgstr ""
+
+#: includes/class-jc-ajax-action.php:86
+msgid "Description updated successfully"
+msgstr ""
+
+#: includes/class-jc-ajax-action.php:121
+msgid "Category image updated successfully"
+msgstr ""
+
+#: includes/class-jc-ajax-action.php:421
+msgid "No data needs to be updated"
+msgstr ""
+
+#. translators: %d: Number of products updated
+#: includes/class-jc-ajax-action.php:512
+#, php-format
+msgid "Successfully updated %d products"
+msgstr ""
+
+#: includes/class-jc-ajax-action.php:635
+msgid "Invalid taxonomy"
+msgstr ""
+
+#: includes/class-jc-enqueue.php:314
+msgid "Uploading files and preparing import..."
+msgstr ""
+
+#: includes/class-jc-enqueue.php:315
+msgid "Importing products..."
+msgstr ""
+
+#: includes/class-jc-enqueue.php:316
+msgid "Import completed."
+msgstr ""
+
+#: includes/class-jc-enqueue.php:317
+msgid "Import failed."
+msgstr ""
+
+#: includes/class-jc-enqueue.php:318
+msgid "Network error. Please try again."
+msgstr ""
+
+#: includes/class-jc-enqueue.php:319
+msgid "Temporary error. Retrying..."
+msgstr ""
+
+#: includes/class-jc-enqueue.php:320
+msgid "Import paused. You can retry from the last saved position."
+msgstr ""
+
+#: includes/class-jc-enqueue.php:321
+msgid "Import is still locked by another request. Please retry from the last saved position."
+msgstr ""
+
+#: includes/class-jc-enqueue.php:426
 msgid "Product Description"
 msgstr ""
 
-#: includes/class-jc-admin.php:185
+#: includes/class-jc-enqueue.php:427
 msgid "Bulk Create Items"
 msgstr ""
 
-#: includes/class-jc-admin.php:186
+#: includes/class-jc-enqueue.php:428
 msgid ""
 "Enter content here...\n"
 "For FAQ: First line is Question, second line is Answer\n"
@@ -428,251 +935,169 @@ msgid ""
 "Value 2..."
 msgstr ""
 
-#: includes/class-jc-admin.php:187
+#: includes/class-jc-enqueue.php:429
 msgid "Create Items"
 msgstr ""
 
-#: includes/class-jc-admin.php:188
+#: includes/class-jc-enqueue.php:430
 msgid "Cancel"
 msgstr ""
 
-#: includes/class-jc-admin.php:189
+#: includes/class-jc-enqueue.php:431
 msgid "Success"
 msgstr ""
 
-#: includes/class-jc-admin.php:190
+#: includes/class-jc-enqueue.php:432
 msgid "Error"
 msgstr ""
 
-#: includes/class-jc-admin.php:191
+#: includes/class-jc-enqueue.php:433
 msgid "OK"
 msgstr ""
 
-#: includes/class-jc-admin.php:192
+#: includes/class-jc-enqueue.php:434
 msgid "Please enter content."
 msgstr ""
 
-#: includes/class-jc-admin.php:193
+#: includes/class-jc-enqueue.php:435
 msgid "No valid items found."
 msgstr ""
 
-#: includes/class-jc-admin.php:194
+#: includes/class-jc-enqueue.php:436
 msgid "Successfully created {count} items."
 msgstr ""
 
-#: includes/class-jc-admin.php:195
+#: includes/class-jc-enqueue.php:437
 msgid "Delete item"
 msgstr ""
 
-#: includes/class-jc-admin.php:196
+#: includes/class-jc-enqueue.php:438
 msgid "Add New Item"
 msgstr ""
 
-#: includes/class-jc-admin.php:197
+#: includes/class-jc-enqueue.php:439
 msgid "Bulk Create Items from Text"
 msgstr ""
 
-#: includes/class-jc-admin.php:198
+#: includes/class-jc-enqueue.php:440
 msgid "Bulk Create"
 msgstr ""
 
-#: includes/class-jc-admin.php:199
-msgid "Question"
-msgstr ""
-
-#: includes/class-jc-admin.php:200
-msgid "Answer"
-msgstr ""
-
-#: includes/class-jc-admin.php:201
+#: includes/class-jc-enqueue.php:443
 msgid "Name"
 msgstr ""
 
-#: includes/class-jc-admin.php:202
+#: includes/class-jc-enqueue.php:444
 msgid "Value"
 msgstr ""
 
-#: includes/class-jc-admin.php:203
+#: includes/class-jc-enqueue.php:445
 msgid "Product FAQs"
 msgstr ""
 
-#: includes/class-jc-admin.php:205
+#: includes/class-jc-enqueue.php:447
 msgid "Category FAQs"
 msgstr ""
 
-#: includes/class-jc-admin.php:244
-#: includes/class-jc-admin.php:440
-msgid "Image"
-msgstr ""
-
-#: includes/class-jc-admin.php:263
-#: includes/class-jc-post-meta-box.php:81
-#: includes/class-jc-post-types.php:48
-msgid "Categories"
-msgstr ""
-
-#: includes/class-jc-admin.php:264
-#: includes/class-jc-post-meta-box.php:95
-msgid "Tags"
-msgstr ""
-
-#: includes/class-jc-admin.php:265
-msgid "Completeness"
-msgstr ""
-
-#: includes/class-jc-admin.php:405
-#: includes/class-jc-post-meta-box.php:67
-msgid "Description"
-msgstr ""
-
-#: includes/class-jc-admin.php:490
-msgid "Thumbnail"
-msgstr ""
-
-#: includes/class-jc-admin.php:568
-#: includes/class-jc-post-types.php:54
-msgid "All categories"
-msgstr ""
-
-#: includes/class-jc-admin.php:597
-#: includes/class-jc-post-types.php:88
-msgid "All tags"
-msgstr ""
-
-#: includes/class-jc-ajax-action.php:68
-#: includes/class-jc-ajax-action.php:109
-msgid "Security verification failed"
-msgstr ""
-
-#: includes/class-jc-ajax-action.php:73
-#: includes/class-jc-ajax-action.php:114
-#: includes/class-jc-ajax-action.php:146
-#: includes/class-jc-ajax-action.php:322
-#: includes/class-jc-ajax-action.php:496
-msgid "Insufficient permissions"
-msgstr ""
-
-#: includes/class-jc-ajax-action.php:82
-#: includes/class-jc-ajax-action.php:123
-msgid "Parameter error"
-msgstr ""
-
-#: includes/class-jc-ajax-action.php:94
-msgid "Description updated successfully"
-msgstr ""
-
-#: includes/class-jc-ajax-action.php:128
-msgid "Category image updated successfully"
-msgstr ""
-
-#: includes/class-jc-ajax-action.php:329
-msgid "No data needs to be updated"
-msgstr ""
-
-#. translators: %d: Number of products updated
-#: includes/class-jc-ajax-action.php:398
-#, php-format
-msgid "Successfully updated %d products"
-msgstr ""
-
-#: includes/class-jc-ajax-action.php:502
-msgid "Invalid taxonomy"
-msgstr ""
-
-#: includes/class-jc-port.php:80
-#: includes/class-jc-port.php:81
+#: includes/class-jc-port.php:71
+#: includes/class-jc-port.php:72
 msgid "Import/Export"
 msgstr ""
 
-#: includes/class-jc-port.php:97
+#: includes/class-jc-port.php:88
 msgid "Import/Export Products"
 msgstr ""
 
-#: includes/class-jc-port.php:100
-#: includes/class-jc-port.php:105
+#: includes/class-jc-port.php:91
+msgid "Import Logic"
+msgstr ""
+
+#: includes/class-jc-port.php:93
+msgid "Rows with an existing product ID update that product; rows without a valid product ID create a new product."
+msgstr ""
+
+#: includes/class-jc-port.php:95
+msgid "When updating an existing product, CSV columns that are not present are ignored so existing values are kept."
+msgstr ""
+
+#: includes/class-jc-port.php:97
+msgid "Image columns import files by path or filename from the optional images ZIP; missing image files are logged and skipped."
+msgstr ""
+
+#: includes/class-jc-port.php:103
+#: includes/class-jc-port.php:108
 msgid "Export Products"
 msgstr ""
 
-#: includes/class-jc-port.php:101
+#: includes/class-jc-port.php:104
 msgid "Export all products to CSV file with images as separate files."
 msgstr ""
 
-#: includes/class-jc-port.php:110
-#: includes/class-jc-port.php:129
+#: includes/class-jc-port.php:113
+#: includes/class-jc-port.php:133
 msgid "Import Products"
 msgstr ""
 
-#: includes/class-jc-port.php:111
+#: includes/class-jc-port.php:114
 msgid "Import products from CSV file. Upload the CSV file and a ZIP file containing all images."
 msgstr ""
 
-#: includes/class-jc-port.php:118
+#: includes/class-jc-port.php:122
 msgid "CSV File"
 msgstr ""
 
-#: includes/class-jc-port.php:122
+#: includes/class-jc-port.php:126
 msgid "Images ZIP File"
 msgstr ""
 
-#: includes/class-jc-port.php:127
+#: includes/class-jc-port.php:131
 msgid "The images ZIP file should contain all images referenced in the CSV file."
 msgstr ""
 
-#: includes/class-jc-port.php:135
-msgid "Import Log"
+#: includes/class-jc-port.php:139
+msgid "Import Progress"
 msgstr ""
 
-#: includes/class-jc-port.php:141
-msgid "Clear Log"
+#: includes/class-jc-port.php:143
+msgid "Retry Import"
+msgstr ""
+
+#: includes/class-jc-port.php:152
+msgid "Processed"
+msgstr ""
+
+#: includes/class-jc-port.php:155
+msgid "Imported"
 msgstr ""
 
 #: includes/class-jc-port.php:157
-#: includes/class-jc-port.php:191
-#: includes/class-jc-port.php:367
+msgid "Errors"
+msgstr ""
+
+#: includes/class-jc-port.php:166
+msgid "Import Log"
+msgstr ""
+
+#: includes/class-jc-port.php:172
+msgid "Clear Log"
+msgstr ""
+
+#: includes/class-jc-port.php:188
+#: includes/class-jc-port.php:214
+#: includes/trait-jc-port-import.php:46
+#: includes/trait-jc-port-import.php:79
+#: includes/trait-jc-port-import.php:107
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: includes/class-jc-port.php:162
-#: includes/class-jc-port.php:196
-#: includes/class-jc-port.php:372
+#: includes/class-jc-port.php:194
+#: includes/class-jc-port.php:220
+#: includes/trait-jc-port-import.php:51
 msgid "Security check failed"
 msgstr ""
 
-#: includes/class-jc-port.php:209
+#: includes/class-jc-port.php:233
 msgid "No products found to export."
-msgstr ""
-
-#: includes/class-jc-port.php:858
-msgid "Successfully imported"
-msgstr ""
-
-#: includes/class-jc-port.php:860
-msgid "products"
-msgstr ""
-
-#: includes/class-jc-port.php:862
-msgid "errors"
-msgstr ""
-
-#: includes/class-jc-port.php:864
-msgid "View detailed log"
-msgstr ""
-
-#: includes/class-jc-port.php:874
-msgid "File upload failed."
-msgstr ""
-
-#: includes/class-jc-port.php:877
-msgid "Cannot read uploaded file."
-msgstr ""
-
-#: includes/class-jc-port.php:880
-msgid "An unknown error occurred during import."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:46
-#: includes/class-jc-settings.php:147
-msgid "Title"
 msgstr ""
 
 #: includes/class-jc-post-meta-box.php:47
@@ -1090,10 +1515,6 @@ msgctxt "Template name"
 msgid "Products by Tag"
 msgstr ""
 
-#: includes/class-jc-post-types.php:137
-msgid "All Products"
-msgstr ""
-
 #: includes/class-jc-post-types.php:138
 msgctxt "Admin menu name"
 msgid "Products"
@@ -1191,51 +1612,51 @@ msgstr ""
 msgid "This is where you can browse products in this store."
 msgstr ""
 
-#: includes/class-jc-post-types.php:195
+#: includes/class-jc-post-types.php:196
 msgid "Category added."
 msgstr ""
 
-#: includes/class-jc-post-types.php:196
+#: includes/class-jc-post-types.php:197
 msgid "Category deleted."
 msgstr ""
 
-#: includes/class-jc-post-types.php:197
+#: includes/class-jc-post-types.php:198
 msgid "Category updated."
 msgstr ""
 
-#: includes/class-jc-post-types.php:198
+#: includes/class-jc-post-types.php:199
 msgid "Category not added."
 msgstr ""
 
-#: includes/class-jc-post-types.php:199
+#: includes/class-jc-post-types.php:200
 msgid "Category not updated."
 msgstr ""
 
-#: includes/class-jc-post-types.php:200
+#: includes/class-jc-post-types.php:201
 msgid "Categories deleted."
 msgstr ""
 
-#: includes/class-jc-post-types.php:205
+#: includes/class-jc-post-types.php:206
 msgid "Tag added."
 msgstr ""
 
-#: includes/class-jc-post-types.php:206
+#: includes/class-jc-post-types.php:207
 msgid "Tag deleted."
 msgstr ""
 
-#: includes/class-jc-post-types.php:207
+#: includes/class-jc-post-types.php:208
 msgid "Tag updated."
 msgstr ""
 
-#: includes/class-jc-post-types.php:208
+#: includes/class-jc-post-types.php:209
 msgid "Tag not added."
 msgstr ""
 
-#: includes/class-jc-post-types.php:209
+#: includes/class-jc-post-types.php:210
 msgid "Tag not updated."
 msgstr ""
 
-#: includes/class-jc-post-types.php:210
+#: includes/class-jc-post-types.php:211
 msgid "Tags deleted."
 msgstr ""
 
@@ -1259,114 +1680,114 @@ msgstr ""
 msgid "Products Order"
 msgstr ""
 
-#: includes/class-jc-settings.php:109
+#: includes/class-jc-settings.php:136
 msgid "Configure how your products are displayed on your site."
 msgstr ""
 
-#: includes/class-jc-settings.php:122
+#: includes/class-jc-settings.php:149
 msgid "— Select a page —"
 msgstr ""
 
-#: includes/class-jc-settings.php:126
+#: includes/class-jc-settings.php:153
 msgid "Select the page where your products will be displayed."
 msgstr ""
 
-#: includes/class-jc-settings.php:137
+#: includes/class-jc-settings.php:164
 msgid "Set the number of products to display per page."
 msgstr ""
 
-#: includes/class-jc-settings.php:146
+#: includes/class-jc-settings.php:173
 msgid "Date"
 msgstr ""
 
-#: includes/class-jc-settings.php:148
+#: includes/class-jc-settings.php:175
 msgid "Menu Order"
 msgstr ""
 
-#: includes/class-jc-settings.php:149
+#: includes/class-jc-settings.php:176
 msgid "Random"
 msgstr ""
 
-#: includes/class-jc-settings.php:150
+#: includes/class-jc-settings.php:177
 msgid "Last Modified"
 msgstr ""
 
-#: includes/class-jc-settings.php:160
+#: includes/class-jc-settings.php:187
 msgid "Select how products should be ordered."
 msgstr ""
 
-#: includes/class-jc-settings.php:169
+#: includes/class-jc-settings.php:196
 msgid "Ascending"
 msgstr ""
 
-#: includes/class-jc-settings.php:170
+#: includes/class-jc-settings.php:197
 msgid "Descending"
 msgstr ""
 
-#: includes/class-jc-settings.php:180
+#: includes/class-jc-settings.php:207
 msgid "Select the direction of product ordering."
 msgstr ""
 
-#: includes/class-jc-settings.php:190
+#: includes/class-jc-settings.php:217
 msgid "Product Permalinks"
 msgstr ""
 
-#: includes/class-jc-settings.php:197
+#: includes/class-jc-settings.php:224
 msgid "Product Base"
 msgstr ""
 
-#: includes/class-jc-settings.php:209
+#: includes/class-jc-settings.php:236
 msgid "Configure the permalink structure for your product catalog."
 msgstr ""
 
-#: includes/class-jc-settings.php:221
+#: includes/class-jc-settings.php:248
 msgid "Enter the base slug for your products URL."
 msgstr ""
 
-#: includes/class-jc-sheet-editor.php:103
-#: includes/class-jc-sheet-editor.php:104
+#: includes/class-jc-sheet-editor.php:57
+#: includes/class-jc-sheet-editor.php:58
 msgid "Product Sheet"
 msgstr ""
 
-#: includes/class-jc-sheet-editor.php:124
+#: includes/class-jc-sheet-editor.php:78
 msgid "« First"
 msgstr ""
 
-#: includes/class-jc-sheet-editor.php:127
+#: includes/class-jc-sheet-editor.php:81
 msgid "‹ Previous"
 msgstr ""
 
 #. translators: 1: current page placeholder, 2: total pages placeholder
-#: includes/class-jc-sheet-editor.php:133
+#: includes/class-jc-sheet-editor.php:87
 #, php-format
 msgid "Page %1$s of %2$s"
 msgstr ""
 
-#: includes/class-jc-sheet-editor.php:149
+#: includes/class-jc-sheet-editor.php:103
 msgid "Next ›"
 msgstr ""
 
-#: includes/class-jc-sheet-editor.php:152
+#: includes/class-jc-sheet-editor.php:106
 msgid "Last »"
 msgstr ""
 
-#: includes/class-jc-sheet-editor.php:155
+#: includes/class-jc-sheet-editor.php:109
 msgid "Jump to:"
 msgstr ""
 
-#: includes/class-jc-sheet-editor.php:158
+#: includes/class-jc-sheet-editor.php:112
 msgid "Go"
 msgstr ""
 
-#: includes/class-jc-sheet-editor.php:162
+#: includes/class-jc-sheet-editor.php:116
 msgid "Per page:"
 msgstr ""
 
-#: includes/class-jc-sheet-editor.php:170
+#: includes/class-jc-sheet-editor.php:124
 msgid "Save Sheet"
 msgstr ""
 
-#: includes/jc-functions.php:143
+#: includes/jc-functions.php:245
 msgctxt "slug"
 msgid "products"
 msgstr ""
@@ -1464,6 +1885,31 @@ msgstr ""
 msgid "Select a thumbnail for this product category."
 msgstr ""
 
+#: includes/metabox/class-jc-product-download-metabox.php:32
+#: includes/metabox/class-jc-product-download-metabox.php:38
+msgid "No file selected"
+msgstr ""
+
+#: includes/metabox/class-jc-product-download-metabox.php:51
+msgid "Select Product File"
+msgstr ""
+
+#: includes/metabox/class-jc-product-download-metabox.php:52
+msgid "Use this file"
+msgstr ""
+
+#: includes/metabox/class-jc-product-download-metabox.php:53
+msgid "Select File"
+msgstr ""
+
+#: includes/metabox/class-jc-product-download-metabox.php:56
+msgid "Remove File"
+msgstr ""
+
+#: includes/metabox/class-jc-product-download-metabox.php:61
+msgid "Product catalog, multiple files can be uploaded in compressed packages"
+msgstr ""
+
 #: includes/metabox/class-jc-product-gallery-metabox.php:44
 #: includes/metabox/class-jc-product-gallery-metabox.php:55
 msgid "Delete image"
@@ -1503,4 +1949,107 @@ msgstr ""
 
 #: includes/metabox/class-jc-product-videourl-metabox.php:35
 msgid "Enter the full URL to your product video (YouTube, Vimeo, etc.)"
+msgstr ""
+
+#: includes/trait-jc-port-import.php:94
+#: includes/trait-jc-port-import.php:211
+msgid "Import job prepared. Starting batch import..."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:153
+#: includes/trait-jc-port-import.php:1694
+msgid "File upload failed."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:159
+#: includes/trait-jc-port-import.php:1697
+msgid "Invalid CSV file."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:170
+#: includes/trait-jc-port-import.php:179
+#: includes/trait-jc-port-import.php:265
+#: includes/trait-jc-port-import.php:267
+#: includes/trait-jc-port-import.php:275
+#: includes/trait-jc-port-import.php:277
+#: includes/trait-jc-port-import.php:286
+#: includes/trait-jc-port-import.php:288
+#: includes/trait-jc-port-import.php:1071
+#: includes/trait-jc-port-import.php:1081
+#: includes/trait-jc-port-import.php:1700
+msgid "Cannot read uploaded file."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:239
+msgid "Another import request is still running. Checking again..."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:339
+msgid "Product import failed after retries. Skipping this row."
+msgstr ""
+
+#. translators: 1: processed count, 2: total count
+#: includes/trait-jc-port-import.php:350
+#: includes/trait-jc-port-import.php:402
+#: includes/trait-jc-port-import.php:478
+#, php-format
+msgid "Processed %1$d of %2$d products..."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:366
+msgid "Temporary import error. Retrying from the last saved position..."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:374
+msgid "Temporary import error. The import can be retried from the last saved position."
+msgstr ""
+
+#. translators: 1: imported count, 2: error count
+#: includes/trait-jc-port-import.php:383
+#, php-format
+msgid "Import completed. Imported: %1$d, Errors: %2$d."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:432
+msgid "The current row is still within the safe wait window. Checking again..."
+msgstr ""
+
+#. translators: 1: attempt count, 2: max retry count
+#: includes/trait-jc-port-import.php:449
+#, php-format
+msgid "The previous request stopped while importing this row. Retrying it (%1$d/%2$d)."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:463
+msgid "The previous request stopped on this row, but no safe CSV offset was saved. Retrying from the last stable position."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:486
+msgid "The previous request stopped while importing this row. Skipping this product and continuing."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:1297
+#: includes/trait-jc-port-import.php:1302
+#: includes/trait-jc-port-import.php:1306
+msgid "Import job not found."
+msgstr ""
+
+#: includes/trait-jc-port-import.php:1678
+msgid "Successfully imported"
+msgstr ""
+
+#: includes/trait-jc-port-import.php:1680
+msgid "products"
+msgstr ""
+
+#: includes/trait-jc-port-import.php:1682
+msgid "errors"
+msgstr ""
+
+#: includes/trait-jc-port-import.php:1684
+msgid "View detailed log"
+msgstr ""
+
+#: includes/trait-jc-port-import.php:1703
+msgid "An unknown error occurred during import."
 msgstr ""
