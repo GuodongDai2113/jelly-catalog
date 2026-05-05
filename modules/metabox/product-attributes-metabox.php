@@ -8,11 +8,15 @@
  * @created: 2025.09.15 15:25
  */
 
+namespace Jelly_Catalog\Modules\Metabox;
+
+use Jelly_Catalog\Utils;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
 
-class JC_Product_Attributes_Metabox
+class Product_Attributes_Metabox
 {
     public function __construct()
     {
@@ -31,7 +35,7 @@ class JC_Product_Attributes_Metabox
         $attributes = is_array($attributes) ? $attributes : [];
         wp_nonce_field('jc_save_product_attributes', 'jc_attributes');
 
-        jc_render_repeater_field([
+        Utils::render_repeater_field([
             'id' => 'product_attributes',
             'name' => 'product_attributes',
             'title' => __('Product Attributes', 'jelly-catalog'),

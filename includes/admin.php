@@ -8,6 +8,8 @@
  * @created 2025.07.29 14:47
  */
 
+namespace Jelly_Catalog;
+
 if (!defined('ABSPATH')) {
     exit; // 禁止直接访问
 }
@@ -15,49 +17,13 @@ if (!defined('ABSPATH')) {
 /**
  * 后台相关管理逻辑
  */
-class JC_Admin
+class Admin
 {
-    public static $instance;
-
-    public static function instance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
     /**
      * 构造函数
      * 注册后台钩子并按需加载目录模块
      */
     public function __construct()
-    {
-        $this->register_global_hooks();
-
-        if (!jc_is_woocommerce_activated()) {
-            $this->init_catalog_modules();
-        }
-    }
-
-    /**
-     * 注册与后台无关 WooCommerce 状态的通用钩子
-     *
-     * @return void
-     */
-    protected function register_global_hooks()
-    {
-        // add_action('admin_init', [$this, 'register_settings']);
-        // add_filter('display_post_states', [$this, 'display_product_page_states'], 10, 2);
-    }
-
-    /**
-     * 初始化产品目录相关的后台模块
-     * 主要注册列表列、筛选器等钩子
-     *
-     * @return void
-     */
-    public function init_catalog_modules()
     {
         $this->register_product_list_hooks();
         $this->register_product_filter_hooks();
@@ -496,4 +462,3 @@ class JC_Admin
         return $post_states;
     }
 }
-JC_Admin::instance();

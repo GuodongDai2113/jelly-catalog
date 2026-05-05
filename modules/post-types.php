@@ -8,6 +8,10 @@
  * @created : 2025.09.08 10:22
  */
 
+namespace Jelly_Catalog\Modules;
+
+use Jelly_Catalog\Utils;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
@@ -15,30 +19,40 @@ if (!defined('ABSPATH')) {
 /**
  * Post types Class.
  */
-class JC_Post_Types
+class Post_Types
 {
     /**
      * Hook in methods.
      */
-    public static function init()
+    public function __construct()
     {
-        add_action('init', [__CLASS__, 'register_taxonomies'], 5);
-        add_action('init', [__CLASS__, 'register_post_types'], 5);
-        add_filter('term_updated_messages', [__CLASS__, 'updated_term_messages']);
-        add_filter('rest_api_allowed_post_types', [__CLASS__, 'rest_api_allowed_post_types']);
-        add_filter('gutenberg_can_edit_post_type', [__CLASS__, 'gutenberg_can_edit_post_type'], 10, 2);
-        add_filter('use_block_editor_for_post_type', [__CLASS__, 'gutenberg_can_edit_post_type'], 10, 2);
-        add_action('pre_get_posts', [__CLASS__, 'product_query'], 9);
+        add_action('init', [$this, 'register_taxonomies'], 5);
+        add_action('init', [$this, 'register_post_types'], 5);
+        add_action('init', [$this, 'add_dynamic_rewrite_rules'], 20);
+        add_action('init', [$this, 'maybe_flush_rewrite_rules'], 99);
+        add_filter('term_updated_messages', [$this, 'updated_term_messages']);
+        add_filter('rest_api_allowed_post_types', [$this, 'rest_api_allowed_post_types']);
+        add_filter('gutenberg_can_edit_post_type', [$this, 'gutenberg_can_edit_post_type'], 10, 2);
+        add_filter('use_block_editor_for_post_type', [$this, 'gutenberg_can_edit_post_type'], 10, 2);
+        add_filter('post_type_link', [$this, 'filter_product_permalink'], 10, 4);
+        add_filter('term_link', [$this, 'filter_product_cat_link'], 10, 3);
+        add_action('pre_get_posts', [$this, 'product_query'], 9);
+        add_action('created_product_cat', [$this, 'queue_rewrite_flush']);
+        add_action('edited_product_cat', [$this, 'queue_rewrite_flush']);
+        add_action('delete_product_cat', [$this, 'queue_rewrite_flush']);
     }
 
     /**
      * Register core taxonomies.
      */
-    public static function register_taxonomies()
+    public function register_taxonomies()
     {
         if (!is_blog_installed()) {
             return;
         }
+
+        $permalinks = Utils::get_permalink_structure();
+        $category_rewrite_slug = $permalinks['category_rewrite_slug'];
 
         register_taxonomy(
             'product_cat',
@@ -66,11 +80,11 @@ class JC_Post_Types
                 'show_in_rest' => true,
                 'show_ui' => true,
                 'query_var' => true,
-                'rewrite' => [
-                    'slug' => 'product-category',
+                'rewrite' => $category_rewrite_slug ? [
+                    'slug' => $category_rewrite_slug,
                     'with_front' => false,
                     'hierarchical' => true,
-                ],
+                ] : false,
             ]
         );
 
@@ -113,7 +127,7 @@ class JC_Post_Types
     /**
      * Register core post types.
      */
-    public static function register_post_types()
+    public function register_post_types()
     {
         if (!is_blog_installed() || post_type_exists('product')) {
             return;
@@ -122,11 +136,8 @@ class JC_Post_Types
         // $supports   = array('title', 'editor', 'excerpt', 'thumbnail', 'custom-fields', 'publicize', 'wpcom-markdown');
         $supports = ['title', 'editor', 'excerpt', 'thumbnail'];
 
-        $has_archive = 'products';
-
-        $permalinks = jc_get_permalink_structure();
-
-        // $permalinks['product_rewrite_slug']
+        $permalinks = Utils::get_permalink_structure();
+        $has_archive = $permalinks['product_archive_slug'];
 
         register_post_type(
             'product',
@@ -183,13 +194,150 @@ class JC_Post_Types
     }
 
     /**
+     * 添加动态固定链接重写规则。
+     */
+    public function add_dynamic_rewrite_rules()
+    {
+        $permalinks = Utils::get_permalink_structure();
+        $terms = get_terms([
+            'taxonomy' => 'product_cat',
+            'hide_empty' => false,
+        ]);
+
+        if (empty($terms) || is_wp_error($terms)) {
+            return;
+        }
+
+        usort($terms, function ($left, $right) {
+            $left_path = Utils::get_product_category_path($left);
+            $right_path = Utils::get_product_category_path($right);
+
+            return strlen($right_path) <=> strlen($left_path);
+        });
+
+        if (Utils::uses_category_base_without_prefix($permalinks)) {
+            foreach ($terms as $term) {
+                $term_path = Utils::get_product_category_path($term);
+
+                if (!$term_path) {
+                    continue;
+                }
+
+                $term_regex = '^' . preg_quote($term_path, '/') . '/?$';
+                $paged_regex = '^' . preg_quote($term_path, '/') . '/page/([0-9]{1,})/?$';
+
+                add_rewrite_rule($paged_regex, 'index.php?taxonomy=product_cat&term=' . $term->slug . '&paged=$matches[1]', 'top');
+                add_rewrite_rule($term_regex, 'index.php?taxonomy=product_cat&term=' . $term->slug, 'top');
+            }
+        }
+
+        if (!Utils::uses_category_in_product_permalink($permalinks)) {
+            return;
+        }
+
+        foreach ($terms as $term) {
+            $term_path = Utils::get_product_category_path($term);
+
+            if (!$term_path) {
+                continue;
+            }
+
+            $product_regex = '^' . preg_quote($term_path, '/') . '/([^/]+)/?$';
+            add_rewrite_rule($product_regex, 'index.php?post_type=product&name=$matches[1]', 'top');
+        }
+    }
+
+    /**
+     * 过滤产品固定链接。
+     *
+     * @param string   $post_link 产品链接。
+     * @param \WP_Post $post      文章对象。
+     * @param bool     $leavename 是否保留 post name 占位符。
+     * @param bool     $sample    是否为 sample permalink。
+     * @return string
+     */
+    public function filter_product_permalink($post_link, $post, $leavename, $sample)
+    {
+        if ('product' !== $post->post_type) {
+            return $post_link;
+        }
+
+        $permalinks = Utils::get_permalink_structure();
+
+        if (!Utils::uses_category_in_product_permalink($permalinks)) {
+            return $post_link;
+        }
+
+        $post_name = $leavename ? '%postname%' : $post->post_name;
+        if (!$post_name) {
+            $post_name = $sample ? sanitize_title($post->post_title) : $post->post_name;
+        }
+
+        $primary_term = Utils::get_primary_product_category($post);
+        $base_path = $primary_term ? Utils::get_product_category_path($primary_term) : $permalinks['product_archive_slug'];
+        $path = trim($base_path . '/' . $post_name, '/');
+
+        return home_url(user_trailingslashit($path, 'single'));
+    }
+
+    /**
+     * 过滤产品分类固定链接。
+     *
+     * @param string          $termlink 分类链接。
+     * @param \WP_Term|string $term     分类对象。
+     * @param string          $taxonomy 分类法名称。
+     * @return string
+     */
+    public function filter_product_cat_link($termlink, $term, $taxonomy)
+    {
+        if ('product_cat' !== $taxonomy) {
+            return $termlink;
+        }
+
+        $permalinks = Utils::get_permalink_structure();
+
+        if (!Utils::uses_category_base_without_prefix($permalinks)) {
+            return $termlink;
+        }
+
+        $term_path = Utils::get_product_category_path($term);
+
+        if (!$term_path) {
+            return $termlink;
+        }
+
+        return home_url(user_trailingslashit($term_path, 'category'));
+    }
+
+    /**
+     * 标记需要刷新 rewrite 规则。
+     */
+    public function queue_rewrite_flush(...$args)
+    {
+        update_option('jelly_catalog_queue_flush_rewrite', 1);
+    }
+
+    /**
+     * 按需刷新 rewrite 规则。
+     */
+    public function maybe_flush_rewrite_rules()
+    {
+        if (!get_option('jelly_catalog_queue_flush_rewrite')) {
+            return;
+        }
+
+        flush_rewrite_rules(false);
+        delete_option('jelly_catalog_queue_flush_rewrite');
+    }
+
+    /**
      * Customize taxonomies update messages.
      *
      * @param array $messages The list of available messages.
      * @since 4.4.0
      * @return bool
      */
-    public static function updated_term_messages($messages)
+    public function updated_term_messages($messages)
     {
         $messages['product_cat'] = [
             0 => '',
@@ -221,7 +369,7 @@ class JC_Post_Types
      * @param string $post_type The post type being checked.
      * @return bool
      */
-    public static function gutenberg_can_edit_post_type($can_edit, $post_type)
+    public function gutenberg_can_edit_post_type($can_edit, $post_type)
     {
         return 'product' === $post_type ? false : $can_edit;
     }
@@ -232,7 +380,7 @@ class JC_Post_Types
      * @param  array $post_types Post types.
      * @return array
      */
-    public static function rest_api_allowed_post_types($post_types)
+    public function rest_api_allowed_post_types($post_types)
     {
         $post_types[] = 'product';
 
@@ -244,7 +392,7 @@ class JC_Post_Types
      *
      * @param \WP_Query $query 查询对象
      */
-    public static function product_query($query)
+    public function product_query($query)
     {
         // 只在产品归档页面且是主查询时修改
         if (!is_admin() && $query->is_main_query()) {
@@ -270,5 +418,3 @@ class JC_Post_Types
         }
     }
 }
-
-JC_Post_Types::init();

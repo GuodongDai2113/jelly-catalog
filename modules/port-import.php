@@ -1,5 +1,11 @@
 <?php
 
+namespace Jelly_Catalog\Modules;
+
+use WP_Error;
+use Throwable;
+use ZipArchive;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -7,7 +13,7 @@ if (!defined('ABSPATH')) {
 /**
  * 产品导入、断点续传与导入日志能力。
  */
-trait JC_Port_Import
+trait Port_Import
 {
     /**
      * 日志文件路径
@@ -1162,9 +1168,9 @@ trait JC_Port_Import
             return $index;
         }
 
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($images_path, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::LEAVES_ONLY
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($images_path, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::LEAVES_ONLY
         );
 
         $root_path = rtrim(str_replace('\\', '/', $images_path), '/') . '/';
@@ -1381,9 +1387,9 @@ trait JC_Port_Import
             return false;
         }
 
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($root_path, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::SELF_FIRST
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($root_path, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
         );
 
         foreach ($iterator as $file) {
@@ -1442,9 +1448,9 @@ trait JC_Port_Import
         }
 
         // 搜索子目录
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::SELF_FIRST
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
         );
 
         foreach ($iterator as $file) {

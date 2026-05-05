@@ -8,11 +8,15 @@
  * @created: 2025.09.15 15:25
  */
 
+namespace Jelly_Catalog\Modules\Metabox;
+
+use Jelly_Catalog\Utils;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
 
-class JC_Product_Cat_FAQ_Metabox
+class Product_Cat_FAQ_Metabox
 {
     public function __construct()
     {
@@ -37,7 +41,7 @@ class JC_Product_Cat_FAQ_Metabox
         echo '<td>';
         echo '<div id="product_cat_faqs_container">';
         // 使用通用 repeater 函数生成 FAQ 表单
-        jc_render_repeater_field([
+        Utils::render_repeater_field([
             'id' => 'product_cat_faqs',
             'name' => 'product_cat_faqs',
             'title' => __('Category FAQ', 'jelly-catalog'),

@@ -8,37 +8,20 @@
  * @created : 2025.12.20 13:48
  */
 
+namespace Jelly_Catalog\Modules;
+
+use ZipArchive;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
 
-require_once __DIR__ . '/trait-jc-port-import.php';
-
 /**
  * 后台产品导入导出功能
  */
-class JC_Port
+class Port
 {
-    use JC_Port_Import;
-
-    /**
-     * @var JC_Port 单例实例
-     */
-    protected static $instance;
-
-    /**
-     * 获取单例实例
-     *
-     * @return JC_Port
-     */
-    public static function instance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
-    }
+    use Port_Import;
 
     /**
      * 构造函数
@@ -438,4 +421,3 @@ class JC_Port
         closedir($handler);
     }
 }
-JC_Port::instance();

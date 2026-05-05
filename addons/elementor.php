@@ -8,19 +8,20 @@
  * @created : 2025.11.01 19:37
  */
 
+namespace Jelly_Catalog\Addons;
+
 use Elementor\Widget_Base;
 use Elementor\Core\Documents_Manager;
 use ElementorPro\Plugin;
 use ElementorPro\Modules\LoopBuilder\Module as LoopBuilderModule;
+use Jelly_Catalog\Utils;
 
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
 
-class JC_Elementor
+class Elementor
 {
-    public static $instance;
-
     protected $docs_types = [];
 
     public const LOOP_PRODUCT_SKIN_ID = 'product';
@@ -30,17 +31,15 @@ class JC_Elementor
         'theme-post-featured-image',
     ];
 
-    public static function instance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
     public function __construct()
     {
-        // $this->include_elementor();
+        add_action('elementor/dynamic_tags/register', [$this, 'register_tags']);
+
+        add_action('elementor/widgets/register', [$this, 'register_widgets']);
+
+        if (Utils::is_wc_activated()) {
+            return;
+        }
 
         add_action('elementor/template-library/create_new_dialog_fields', [$this, 'add_products_type_to_template_popup'], 11);
         add_action('elementor-pro/modules/loop-builder/documents/loop/query_settings', [$this, 'add_products_type_to_loop_settings_query'], 11);
@@ -48,10 +47,8 @@ class JC_Elementor
         add_action('elementor/template-library/create_new_dialog_fields', [$this, 'add_products_taxonomy_type_to_template_popup'], 13);
         add_action('elementor-pro/modules/loop-builder/documents/loop/query_settings', [$this, 'add_products_taxonomy_type_to_loop_settings_query'], 13);
 
-        add_action('elementor/dynamic_tags/register', [$this, 'register_tags']);
         add_action('elementor/theme/register_conditions', [$this, 'register_conditions']);
         add_action('elementor/documents/register', [$this, 'register_documents']);
-        add_action('elementor/widgets/register', [$this, 'register_widgets']);
 
         add_filter('elementor/theme/need_override_location', [$this, 'theme_template_include'], 10, 2);
         add_filter('elementor/document/config', [$this, 'add_loop_recommended_widgets'], 11, 2);
@@ -125,17 +122,6 @@ class JC_Elementor
 
     public function register_tags()
     {
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-title.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-excerpt.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-primary-category.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-image.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-banner.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-why-choose.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-advantages.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-h1-title.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-cat-why-choose-title.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/tags/product-download.php';
-
         $tags = [
             'Product_Title',
             'Product_Excerpt',
@@ -165,12 +151,7 @@ class JC_Elementor
 
     public function register_conditions($conditions_manager)
     {
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/jelly-catalog.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/products-page.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/product-archive.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/conditions/product-search.php';
-
-        $jc_condition = new Jelly_Catalog\Addons\Elementor\Conditions\Jelly_Catalog();
+        $jc_condition = new Elementor\Conditions\Jelly_Catalog();
 
         $conditions_manager->get_condition('general')->register_sub_condition($jc_condition);
     }
@@ -180,17 +161,13 @@ class JC_Elementor
      */
     public function register_documents($documents_manager)
     {
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/documents/product-archive.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/documents/product-post.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/documents/product.php';
-
         $this->docs_types = [
-            'product-post' => Jelly_Catalog\Addons\Elementor\Documents\Product_Post::get_class_full_name(),
+            'product-post' => Elementor\Documents\Product_Post::get_class_full_name(),
         ];
 
-        $this->docs_types['product'] = Jelly_Catalog\Addons\Elementor\Documents\Product::get_class_full_name();
+        $this->docs_types['product'] = Elementor\Documents\Product::get_class_full_name();
 
-        $this->docs_types['product-archive'] = Jelly_Catalog\Addons\Elementor\Documents\Product_Archive::get_class_full_name();
+        $this->docs_types['product-archive'] = Elementor\Documents\Product_Archive::get_class_full_name();
 
         foreach ($this->docs_types as $type => $class_name) {
             $documents_manager->register_document_type($type, $class_name);
@@ -199,38 +176,26 @@ class JC_Elementor
 
     public function register_skins()
     {
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/skins/skin-loop-product.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/skins/skin-loop-product-taxonomy.php';
-
         foreach (LoopBuilderModule::LOOP_WIDGETS as $widget_type) {
             add_action('elementor/widget/' . $widget_type . '/skins_init', function (Widget_Base $widget) {
-                $widget->add_skin(new Jelly_Catalog\Addons\Elementor\Skins\Skin_Loop_Product($widget));
+                $widget->add_skin(new Elementor\Skins\Skin_Loop_Product($widget));
             });
             add_action('elementor/widget/' . $widget_type . '/skins_init', function (Widget_Base $widget) {
-                $widget->add_skin(new Jelly_Catalog\Addons\Elementor\Skins\Skin_Loop_Product_Taxonomy($widget));
+                $widget->add_skin(new Elementor\Skins\Skin_Loop_Product_Taxonomy($widget));
             }, 13);
         }
     }
 
     public function register_widgets($widgets_manager)
     {
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-faq.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-faq.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-content.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-attributes.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-nav.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-cat-list.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-download.php';
-        include_once JELLY_CATALOG_PLUGIN_PATH . 'addons/elementor/widgets/product-gallery.php';
-
-        $widgets_manager->register(new Jelly_Catalog\Addons\Elementor\Widgets\Product_Content());
-        $widgets_manager->register(new Jelly_Catalog\Addons\Elementor\Widgets\Product_FAQ());
-        $widgets_manager->register(new Jelly_Catalog\Addons\Elementor\Widgets\Product_Cat_FAQ());
-        $widgets_manager->register(new Jelly_Catalog\Addons\Elementor\Widgets\Product_Attributes());
-        $widgets_manager->register(new Jelly_Catalog\Addons\Elementor\Widgets\Product_Cat_Nav());
-        $widgets_manager->register(new Jelly_Catalog\Addons\Elementor\Widgets\Product_Cat_List());
-        $widgets_manager->register(new Jelly_Catalog\Addons\Elementor\Widgets\Product_Download());
-        $widgets_manager->register(new Jelly_Catalog\Addons\Elementor\Widgets\Product_Gallery());
+        $widgets_manager->register(new Elementor\Widgets\Product_Content());
+        $widgets_manager->register(new Elementor\Widgets\Product_FAQ());
+        $widgets_manager->register(new Elementor\Widgets\Product_Cat_FAQ());
+        $widgets_manager->register(new Elementor\Widgets\Product_Attributes());
+        $widgets_manager->register(new Elementor\Widgets\Product_Cat_Nav());
+        $widgets_manager->register(new Elementor\Widgets\Product_Cat_List());
+        $widgets_manager->register(new Elementor\Widgets\Product_Download());
+        $widgets_manager->register(new Elementor\Widgets\Product_Gallery());
     }
 
     public function theme_template_include($need_override_location, $location)
@@ -418,5 +383,3 @@ class JC_Elementor
         return $settings;
     }
 }
-
-JC_Elementor::instance();

@@ -10,11 +10,13 @@
  * @created: 2026.03.27 08:32
  */
 
+namespace Jelly_Catalog\Modules\Metabox;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
 
-class JC_Longtail_Keywords_Metabox
+class Longtail_Keywords_Metabox
 {
     public function __construct()
     {

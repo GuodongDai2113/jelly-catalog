@@ -8,22 +8,14 @@
  * @created : 2025.09.05 15:18
  */
 
+namespace Jelly_Catalog\Addons;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
 
-class JC_Rank_Math
+class Rank_Math
 {
-    public static $instance;
-
-    public static function instance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
     public function __construct()
     {
         add_filter('rank_math/frontend/breadcrumb/items', [$this, 'replace_product_cat_name'], 20, 2);
@@ -31,18 +23,23 @@ class JC_Rank_Math
 
     public function replace_product_cat_name($crumbs, $breadcrumbs)
     {
+        $archive_link = get_post_type_archive_link('product');
+        if (!$archive_link) {
+            $archive_link = home_url('/');
+        }
+
         // 检查是否是产品分类页面
         if (is_tax('product_cat') || is_tax('product_tag') || is_post_type_archive('product')) {
             foreach ($crumbs as $key => $crumb) {
                 if ($crumb[0] === 'Product categories') {
                     $crumb[0] = 'Products';
-                    $crumb[1] = home_url('products/');
+                    $crumb[1] = $archive_link;
                     $crumbs[$key] = $crumb;
                     break;
                 }
                 if ($crumb[0] === 'Product tags') {
                     $crumb[0] = 'Products';
-                    $crumb[1] = home_url('products/');
+                    $crumb[1] = $archive_link;
                     $crumbs[$key] = $crumb;
                     break;
                 }
@@ -51,5 +48,3 @@ class JC_Rank_Math
         return $crumbs;
     }
 }
-
-JC_Rank_Math::instance();

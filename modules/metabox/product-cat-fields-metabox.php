@@ -8,11 +8,13 @@
  * @created: 2026.01.21 15:30
  */
 
+namespace Jelly_Catalog\Modules\Metabox;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
 
-class JC_Product_Cat_Fields_Metabox
+class Product_Cat_Fields_Metabox
 {
     public function __construct()
     {

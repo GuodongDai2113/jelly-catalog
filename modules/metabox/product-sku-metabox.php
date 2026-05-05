@@ -2,33 +2,36 @@
 
 /**
  * includes\metabox\class-jc-product-sku-metabox.php
- * 
+ *
  * @see: https://jellydai.com
  * @author: Jelly Dai <daiguo1003@gmail.com>
  * @created: 2026.03.27
  */
 
+namespace Jelly_Catalog\Modules\Metabox;
 
-if (! defined('ABSPATH')) exit; // 禁止直接访问
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
 
-class JC_Product_SKU_Metabox
+class Product_SKU_Metabox
 {
     public function __construct()
     {
-        add_action('add_meta_boxes', array($this, 'add_meta_boxes'), 30);
-        add_action('save_post_product', array($this, 'save_metabox'));
+        add_action('add_meta_boxes', [$this, 'add_meta_boxes'], 30);
+        add_action('save_post_product', [$this, 'save_metabox']);
     }
 
-    function add_meta_boxes()
+    public function add_meta_boxes()
     {
-        add_meta_box('product_sku_metabox', __('Product Model', 'jelly-catalog'), array($this, 'render_metabox'), 'product', 'side', 'default');
+        add_meta_box('product_sku_metabox', __('Product Model', 'jelly-catalog'), [$this, 'render_metabox'], 'product', 'side', 'default');
     }
 
     public function render_metabox($post)
     {
         $sku = get_post_meta($post->ID, '_product_sku', true);
         wp_nonce_field('jc_save_product_sku', 'jc_sku_nonce');
-        
+
         echo '<div class="product-sku-field">';
         echo '<input type="text" id="product_sku" name="product_sku" value="' . esc_attr($sku) . '" class="widefat" placeholder="' . esc_attr__('Enter product model or SKU', 'jelly-catalog') . '" />';
         echo '<p class="description">' . __('Enter the product model number or SKU (Stock Keeping Unit)', 'jelly-catalog') . '</p>';

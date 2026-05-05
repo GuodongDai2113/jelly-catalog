@@ -8,11 +8,13 @@
  * @created: 2026.04.29
  */
 
+namespace Jelly_Catalog\Modules\Metabox;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
 
-class JC_Product_Download_Metabox
+class Product_Download_Metabox
 {
     public function __construct()
     {
@@ -52,7 +54,8 @@ class JC_Product_Download_Metabox
             data-update="<?php echo esc_attr__('Use this file', 'jelly-catalog'); ?>">
             <?php esc_html_e('Select File', 'jelly-catalog'); ?>
         </button>
-        <button type="button" class="button jc-product-download-remove" <?php echo $file_id ? '' : 'style="display: none;"'; ?>>
+        <button type="button" class="button jc-product-download-remove"
+            <?php echo $file_id ? '' : 'style="display: none;"'; ?>>
             <?php esc_html_e('Remove File', 'jelly-catalog'); ?>
         </button>
     </p>

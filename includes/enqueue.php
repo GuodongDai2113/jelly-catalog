@@ -8,6 +8,8 @@
  * @created 2026.04.29 00:00
  */
 
+namespace Jelly_Catalog;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
@@ -15,37 +17,8 @@ if (!defined('ABSPATH')) {
 /**
  * 统一管理前后台样式与脚本加载。
  */
-class JC_Enqueue
+class Enqueue
 {
-    /**
-     * @var JC_Enqueue|null 单例实例
-     */
-    protected static $instance;
-
-    /**
-     * 获取单例实例。
-     *
-     * @return JC_Enqueue
-     */
-    public static function instance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
-    }
-
-    /**
-     * 判断当前主题是否为 jelly-frame。
-     *
-     * @return bool
-     */
-    public static function is_jelly_frame_theme()
-    {
-        return get_template() === 'jelly-frame' || get_stylesheet() === 'jelly-frame';
-    }
-
     /**
      * 判断是否需要加载前端基础资源。
      *
@@ -208,23 +181,23 @@ class JC_Enqueue
             JELLY_CATALOG_VERSION
         );
 
+        wp_enqueue_script(
+            'jelly-core',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-core.js',
+            ['jquery'],
+            '1.0.2',
+            true
+        );
+
+        wp_enqueue_style(
+            'jelly-core',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-core.css',
+            [],
+            '1.0.2'
+        );
+
         if ($is_product_editor || $is_product_taxonomy) {
-            wp_enqueue_style(
-                'jelly-catalog-core',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-core.css',
-                [],
-                '1.0.2'
-            );
-
             wp_enqueue_media();
-
-            wp_enqueue_script(
-                'jelly-catalog-core',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-core.js',
-                ['jquery'],
-                '1.0.2',
-                true
-            );
 
             wp_enqueue_script(
                 'jelly-catalog-admin-repeater',

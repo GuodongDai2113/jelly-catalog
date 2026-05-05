@@ -6,11 +6,13 @@
  * Product Category Banner Metabox
  */
 
+namespace Jelly_Catalog\Modules\Metabox;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
 
-class JC_Product_Cat_Banner_Metabox
+class Product_Cat_Banner_Metabox
 {
     public function __construct()
     {
@@ -85,7 +87,7 @@ class JC_Product_Cat_Banner_Metabox
      */
     public function save_banner_field($term_id)
     {
-        if (!current_user_can('edit_products')) {
+        if (!current_user_can('manage_categories')) {
             return;
         }
 

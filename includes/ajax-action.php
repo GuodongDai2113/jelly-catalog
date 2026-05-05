@@ -1,33 +1,27 @@
 <?php
 
 /**
+ * includes\ajax-action.php
+ *
+ * @see: https://jellydai.com
+ * @author: Jelly Dai <daiguo1003@gmail.com>
+ * @created : 2026.05.04 17:51
+ */
+
+namespace Jelly_Catalog;
+
+if (!defined('ABSPATH')) {
+    exit;
+} // 禁止直接访问
+
+/**
  * Jelly Catalog AJAX 处理类
  *
  * 处理所有来自前端的 AJAX 请求，包括产品数据的获取、更新以及分类管理等功能
  */
 
-class JC_Ajax_Action
+class Ajax_Action
 {
-    /**
-     * 单例实例
-     *
-     * @var JC_Ajax_Action|null
-     */
-    private static $instance = null;
-
-    /**
-     * 获取单例实例
-     *
-     * @return JC_Ajax_Action
-     */
-    public static function instance()
-    {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
     /**
      * 构造函数
      *
@@ -41,7 +35,6 @@ class JC_Ajax_Action
         add_action('wp_ajax_update_product_category_description', [$this, 'update_product_category_description']);
         add_action('wp_ajax_get_products_sheet', [$this, 'get_products_sheet']);
         add_action('wp_ajax_save_products_sheet', [$this, 'save_products_sheet']);
-        // 添加获取分类法术语的AJAX处理
         add_action('wp_ajax_get_taxonomy_terms', [$this, 'get_taxonomy_terms']);
     }
 
@@ -61,7 +54,7 @@ class JC_Ajax_Action
         }
 
         // 检查当前用户是否具有管理分类的权限
-        if (!jc_current_user_can_edit_product_terms('product_cat')) {
+        if (!current_user_can('manage_categories')) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 
@@ -103,7 +96,7 @@ class JC_Ajax_Action
         }
 
         // 检查当前用户是否具有管理分类的权限
-        if (!jc_current_user_can_edit_product_terms('product_cat')) {
+        if (!current_user_can('manage_categories')) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 
@@ -135,7 +128,7 @@ class JC_Ajax_Action
         global $wpdb;
         check_ajax_referer('jc_nonce', 'nonce');
 
-        if (!jc_current_user_can_edit_products()) {
+        if (!current_user_can('edit_posts')) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 
@@ -160,7 +153,7 @@ class JC_Ajax_Action
         $where = "post_type='product' AND post_status IN ('publish', 'draft')";
         $where_args = [];
 
-        if (!$this->current_user_can_edit_others_products()) {
+        if (!current_user_can('edit_others_posts')) {
             $where .= ' AND post_author = %d';
             $where_args[] = get_current_user_id();
         }
@@ -203,7 +196,7 @@ class JC_Ajax_Action
         // 为每个产品加载所需的 SEO 元数据和分类标签信息
         foreach ($products as $product) {
             $product_id = absint($product['ID']);
-            if (!jc_current_user_can_edit_product($product_id)) {
+            if (!current_user_can('edit_post', $product_id)) {
                 continue;
             }
 
@@ -281,16 +274,6 @@ class JC_Ajax_Action
             'per_page' => $per_page,
             'total_pages' => ceil($total_products / $per_page)
         ]);
-    }
-
-    /**
-     * 判断当前用户是否可编辑他人产品。
-     *
-     * @return bool
-     */
-    private function current_user_can_edit_others_products()
-    {
-        return current_user_can('edit_others_products') || current_user_can('edit_others_posts');
     }
 
     /**
@@ -410,7 +393,7 @@ class JC_Ajax_Action
         // 安全检查：验证 nonce 和用户权限
         check_ajax_referer('jc_nonce', 'nonce');
 
-        if (!jc_current_user_can_edit_products()) {
+        if (!current_user_can('edit_posts')) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 
@@ -443,7 +426,7 @@ class JC_Ajax_Action
             }
 
             $post = get_post($product_id);
-            if (!$post || 'product' !== $post->post_type || !jc_current_user_can_edit_product($product_id)) {
+            if (!$post || 'product' !== $post->post_type || !current_user_can('edit_post', $product_id)) {
                 continue;
             }
 
@@ -468,9 +451,7 @@ class JC_Ajax_Action
             if (isset($item['post_status'])) {
                 $post_status = sanitize_key($item['post_status']);
                 if (in_array($post_status, ['publish', 'draft'], true)) {
-                    $post_type_object = get_post_type_object('product');
-                    $publish_cap = ($post_type_object && !empty($post_type_object->cap->publish_posts)) ? $post_type_object->cap->publish_posts : 'publish_posts';
-                    if ('publish' !== $post_status || current_user_can($publish_cap)) {
+                    if ('publish' !== $post_status || current_user_can('publish_posts')) {
                         $update_data['post_status'] = $post_status;
                     }
                 }
@@ -625,7 +606,7 @@ class JC_Ajax_Action
     {
         check_ajax_referer('jc_nonce', 'nonce');
 
-        if (!jc_current_user_can_edit_products()) {
+        if (!current_user_can('edit_posts')) {
             wp_send_json_error(__('Insufficient permissions', 'jelly-catalog'));
         }
 
@@ -697,5 +678,3 @@ class JC_Ajax_Action
         return $result;
     }
 }
-
-JC_Ajax_Action::instance();

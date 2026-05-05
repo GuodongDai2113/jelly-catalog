@@ -8,6 +8,8 @@
  * @created 2025.10.03 23:37
  */
 
+namespace Jelly_Catalog\Modules;
+
 if (!defined('ABSPATH')) {
     exit; // 禁止直接访问
 }
@@ -15,27 +17,8 @@ if (!defined('ABSPATH')) {
 /**
  * 后台产品表格编辑器
  */
-class JC_Sheet_Editor
+class Sheet_Editor
 {
-    /**
-     * @var JC_Sheet_Editor 单例实例
-     */
-    protected static $instance;
-
-    /**
-     * 获取单例实例
-     *
-     * @return JC_Sheet_Editor
-     */
-    public static function instance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
-    }
-
     /**
      * 构造函数
      * 注册后台菜单
@@ -56,7 +39,7 @@ class JC_Sheet_Editor
             'edit.php?post_type=product',
             __('Product Sheet', 'jelly-catalog'),
             __('Product Sheet', 'jelly-catalog'),
-            jc_get_product_edit_capability(),
+            'edit_posts',
             'products-sheet',
             [$this, 'render_products_sheet']
         );
@@ -128,5 +111,3 @@ class JC_Sheet_Editor
 <?php
     }
 }
-
-JC_Sheet_Editor::instance();

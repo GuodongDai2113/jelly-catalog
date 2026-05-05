@@ -6,11 +6,13 @@
  * Product Category Thumbnail Metabox
  */
 
+namespace Jelly_Catalog\Modules\Metabox;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
 
-class JC_Product_Cat_Thumbnail_Metabox
+class Product_Cat_Thumbnail_Metabox
 {
     public function __construct()
     {

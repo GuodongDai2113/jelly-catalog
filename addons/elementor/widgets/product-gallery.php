@@ -366,7 +366,8 @@ class Product_Gallery extends Widget_Base
 <?php elseif ($gallery_count === 1): ?>
 <?php $item = $gallery_items[0]; ?>
 <div class="product-gallery product-gallery--single" data-widget="product-gallery">
-    <div class="product-gallery__media product-image <?php echo $item['type'] === 'video' ? 'product-gallery__media--video product-image--video' : ''; ?>">
+    <div
+        class="product-gallery__media product-image <?php echo $item['type'] === 'video' ? 'product-gallery__media--video product-image--video' : ''; ?>">
         <?php if ($item['type'] === 'video'): ?>
         <?php $this->render_gallery_video($item['embed_url']); ?>
         <?php else: ?>
@@ -375,7 +376,8 @@ class Product_Gallery extends Widget_Base
     </div>
 </div>
 <?php else: ?>
-<div class="product-gallery product-gallery--interactive" data-product-gallery data-widget="product-gallery" data-visible-thumbs="<?php echo esc_attr($visible_thumbs); ?>">
+<div class="product-gallery product-gallery--interactive" data-product-gallery data-widget="product-gallery"
+    data-visible-thumbs="<?php echo esc_attr($visible_thumbs); ?>">
     <div class="product-gallery__thumbs" role="tablist"
         aria-label="<?php echo esc_attr__('Product media thumbnails', 'jelly-catalog'); ?>">
         <div class="product-gallery__thumbs-viewport" data-gallery-thumbs-viewport>
@@ -462,69 +464,71 @@ class Product_Gallery extends Widget_Base
             ];
         }
         ?>
-<#
-var galleryItems = <?php echo wp_json_encode($preview_items); ?>;
-var visibleThumbs = Math.max(1, Math.min(8, parseInt(settings.visible_thumbs, 10) || 4));
-#>
-<div class="product-gallery product-gallery--interactive" data-product-gallery data-widget="product-gallery" data-visible-thumbs="{{ visibleThumbs }}">
-    <div class="product-gallery__thumbs" role="tablist"
-        aria-label="<?php echo esc_attr__('Product media thumbnails', 'jelly-catalog'); ?>">
-        <div class="product-gallery__thumbs-viewport" data-gallery-thumbs-viewport>
-            <div class="product-gallery__thumbs-track" data-gallery-thumbs-track>
-                <# _.each(galleryItems, function(item, index) { #>
-                <div class="product-gallery__thumb <# if (index === 0) { #>is-active<# } #>" type="button"
-                    data-gallery-thumb="{{ index }}"
-                    aria-label="<?php echo esc_attr__('Show media', 'jelly-catalog'); ?> {{ index + 1 }}"
-                    aria-pressed="<# if (index === 0) { #>true<# } else { #>false<# } #>">
-                    <img src="{{ item.thumb_url }}" alt="{{ item.thumb_alt }}" loading="<# if (index === 0) { #>eager<# } else { #>lazy<# } #>">
+<# var galleryItems=<?php echo wp_json_encode($preview_items); ?>; var visibleThumbs=Math.max(1, Math.min(8,
+    parseInt(settings.visible_thumbs, 10) || 4)); #>
+    <div class="product-gallery product-gallery--interactive" data-product-gallery data-widget="product-gallery"
+        data-visible-thumbs="{{ visibleThumbs }}">
+        <div class="product-gallery__thumbs" role="tablist"
+            aria-label="<?php echo esc_attr__('Product media thumbnails', 'jelly-catalog'); ?>">
+            <div class="product-gallery__thumbs-viewport" data-gallery-thumbs-viewport>
+                <div class="product-gallery__thumbs-track" data-gallery-thumbs-track>
+                    <# _.each(galleryItems, function(item, index) { #>
+                        <div class="product-gallery__thumb <# if (index === 0) { #>is-active<# } #>" type="button"
+                            data-gallery-thumb="{{ index }}"
+                            aria-label="<?php echo esc_attr__('Show media', 'jelly-catalog'); ?> {{ index + 1 }}"
+                            aria-pressed="<# if (index === 0) { #>true<# } else { #>false<# } #>">
+                            <img src="{{ item.thumb_url }}" alt="{{ item.thumb_alt }}"
+                                loading="<# if (index === 0) { #>eager<# } else { #>lazy<# } #>">
+                        </div>
+                        <# }); #>
                 </div>
-                <# }); #>
+            </div>
+        </div>
+
+        <div class="product-gallery__main">
+            <div class="product-gallery__viewport" data-gallery-viewport tabindex="0"
+                aria-label="<?php echo esc_attr__('Product media gallery', 'jelly-catalog'); ?>">
+                <div class="product-gallery__track" data-gallery-track>
+                    <# _.each(galleryItems, function(item, index) { #>
+                        <div class="product-gallery__slide <# if (index === 0) { #>is-active<# } #>"
+                            data-gallery-slide="{{ index }}"
+                            aria-hidden="<# if (index === 0) { #>false<# } else { #>true<# } #>">
+                            <img src="{{ item.image_url }}" alt="{{ item.image_alt }}"
+                                loading="<# if (index === 0) { #>eager<# } else { #>lazy<# } #>">
+                        </div>
+                        <# }); #>
+                </div>
+            </div>
+
+            <div class="product-gallery__nav product-gallery__nav--prev" type="button" data-gallery-prev
+                aria-label="<?php echo esc_attr__('Previous media', 'jelly-catalog'); ?>" disabled>
+                <i class="ri-arrow-left-s-line"></i>
+            </div>
+            <div class="product-gallery__nav product-gallery__nav--next" type="button" data-gallery-next
+                aria-label="<?php echo esc_attr__('Next media', 'jelly-catalog'); ?>">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+
+            <div class="product-gallery__dots" role="tablist"
+                aria-label="<?php echo esc_attr__('Product media pagination', 'jelly-catalog'); ?>">
+                <# _.each(galleryItems, function(item, index) { #>
+                    <div class="product-gallery__dot <# if (index === 0) { #>is-active<# } #>" type="button"
+                        data-gallery-dot="{{ index }}"
+                        aria-label="<?php echo esc_attr__('Go to media', 'jelly-catalog'); ?> {{ index + 1 }}"
+                        aria-pressed="<# if (index === 0) { #>true<# } else { #>false<# } #>">
+                        <span class="screen-reader-text"><?php echo esc_html__('Media', 'jelly-catalog'); ?>
+                            {{ index + 1 }}</span>
+                    </div>
+                    <# }); #>
             </div>
         </div>
     </div>
-
-    <div class="product-gallery__main">
-        <div class="product-gallery__viewport" data-gallery-viewport tabindex="0"
-            aria-label="<?php echo esc_attr__('Product media gallery', 'jelly-catalog'); ?>">
-            <div class="product-gallery__track" data-gallery-track>
-                <# _.each(galleryItems, function(item, index) { #>
-                <div class="product-gallery__slide <# if (index === 0) { #>is-active<# } #>"
-                    data-gallery-slide="{{ index }}"
-                    aria-hidden="<# if (index === 0) { #>false<# } else { #>true<# } #>">
-                    <img src="{{ item.image_url }}" alt="{{ item.image_alt }}" loading="<# if (index === 0) { #>eager<# } else { #>lazy<# } #>">
-                </div>
-                <# }); #>
-            </div>
-        </div>
-
-        <div class="product-gallery__nav product-gallery__nav--prev" type="button" data-gallery-prev
-            aria-label="<?php echo esc_attr__('Previous media', 'jelly-catalog'); ?>" disabled>
-            <i class="ri-arrow-left-s-line"></i>
-        </div>
-        <div class="product-gallery__nav product-gallery__nav--next" type="button" data-gallery-next
-            aria-label="<?php echo esc_attr__('Next media', 'jelly-catalog'); ?>">
-            <i class="ri-arrow-right-s-line"></i>
-        </div>
-
-        <div class="product-gallery__dots" role="tablist"
-            aria-label="<?php echo esc_attr__('Product media pagination', 'jelly-catalog'); ?>">
-            <# _.each(galleryItems, function(item, index) { #>
-            <div class="product-gallery__dot <# if (index === 0) { #>is-active<# } #>" type="button"
-                data-gallery-dot="{{ index }}"
-                aria-label="<?php echo esc_attr__('Go to media', 'jelly-catalog'); ?> {{ index + 1 }}"
-                aria-pressed="<# if (index === 0) { #>true<# } else { #>false<# } #>">
-                <span class="screen-reader-text"><?php echo esc_html__('Media', 'jelly-catalog'); ?> {{ index + 1 }}</span>
-            </div>
-            <# }); #>
-        </div>
-    </div>
-</div>
-<?php
+    <?php
     }
 
     private function should_use_fallback_assets(): bool
     {
-        return !class_exists('\JC_Enqueue') || !\JC_Enqueue::is_jelly_frame_theme();
+        return !(get_template() === 'jelly-frame');
     }
 
     private function get_gallery_items(int $post_id): array
@@ -589,19 +593,19 @@ var visibleThumbs = Math.max(1, Math.min(8, parseInt(settings.visible_thumbs, 10
     private function render_gallery_image($src, $alt, $srcset = '', $sizes = '', $loading = 'lazy', $fetchpriority = ''): void
     {
         ?>
-<img src="<?php echo esc_url($src); ?>" alt="<?php echo esc_attr($alt); ?>"
-    <?php if (!empty($srcset)): ?>srcset="<?php echo esc_attr($srcset); ?>" <?php endif; ?>
-    <?php if (!empty($sizes)): ?>sizes="<?php echo esc_attr($sizes); ?>" <?php endif; ?>
-    loading="<?php echo esc_attr($loading); ?>" <?php if (!empty($fetchpriority)): ?>
-    fetchpriority="<?php echo esc_attr($fetchpriority); ?>" <?php endif; ?>>
-<?php
+    <img src="<?php echo esc_url($src); ?>" alt="<?php echo esc_attr($alt); ?>"
+        <?php if (!empty($srcset)): ?>srcset="<?php echo esc_attr($srcset); ?>" <?php endif; ?>
+        <?php if (!empty($sizes)): ?>sizes="<?php echo esc_attr($sizes); ?>" <?php endif; ?>
+        loading="<?php echo esc_attr($loading); ?>" <?php if (!empty($fetchpriority)): ?>
+        fetchpriority="<?php echo esc_attr($fetchpriority); ?>" <?php endif; ?>>
+    <?php
     }
 
     private function render_gallery_video($embed_url): void
     {
         ?>
-<iframe src="<?php echo esc_url($embed_url); ?>?rel=0&autoplay=0" frameborder="0" allowfullscreen></iframe>
-<?php
+    <iframe src="<?php echo esc_url($embed_url); ?>?rel=0&autoplay=0" frameborder="0" allowfullscreen></iframe>
+    <?php
     }
 
     private function convert_youtube_url_to_embed(string $url): string

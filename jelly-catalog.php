@@ -4,7 +4,7 @@
  * Plugin Name: Jelly Catalog
  * Plugin URI:  https://jellydai.com/
  * Description: Only enable product features, fully compatible with Woocommerce
- * Version:     3.1.0
+ * Version:     3.2.0
  * Author:      JellyDai
  * Author URI:  https://jellydai.com/
  * Text Domain: jelly-catalog
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 } // 禁止直接访问
 
 /** 插件版本 */
-define('JELLY_CATALOG_VERSION', '3.1.0');
+define('JELLY_CATALOG_VERSION', '3.2.0');
 
 /** 插件URL路径 */
 define('JELLY_CATALOG_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -24,42 +24,28 @@ define('JELLY_CATALOG_PLUGIN_URL', plugin_dir_url(__FILE__));
 /** 插件本地路径 */
 define('JELLY_CATALOG_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
-// 基础依赖
-require JELLY_CATALOG_PLUGIN_PATH . 'includes/jc-functions.php';
-require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-enqueue.php';
+/** 静态资源URL路径 */
+define('JELLY_CATALOG_ASSETS_URL', JELLY_CATALOG_PLUGIN_URL . 'assets/');
 
-JC_Enqueue::instance();
+/** 调试模式 */
+define('JELLY_CATALOG_DEBUG', false);
 
-// 优化后的代码结构
-if (!function_exists('is_plugin_active')) {
-    require_once ABSPATH . 'wp-admin/includes/plugin.php';
+/** 为主题提供函数 */
+require JELLY_CATALOG_PLUGIN_PATH . 'functions.php';
+
+/** 插件入口 */
+require JELLY_CATALOG_PLUGIN_PATH . 'includes/plugin.php';
+
+/** 本地化加载文本域*/
+function jelly_catalog_load_plugin_textdomain()
+{
+    load_plugin_textdomain('jelly-catalog', false, basename(dirname(__FILE__)) . '/languages/');
 }
 
-// 检查 WooCommerce 是否激活
-$woocommerce_active = is_plugin_active('woocommerce/woocommerce.php');
-define('JELLY_CATALOG_WC_ACTIVE', $woocommerce_active);
-
-if (!$woocommerce_active) {
-    require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-post-types.php';
-} else {
-    require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-woocommerce.php';
-}
-
-if (is_plugin_active('seo-by-rank-math/rank-math.php') && !jc_is_woocommerce_activated()) {
-    require JELLY_CATALOG_PLUGIN_PATH . 'addons/class-jc-rank-math.php';
-}
-
-if (is_plugin_active('elementor-pro/elementor-pro.php') && !jc_is_woocommerce_activated()) {
-    require JELLY_CATALOG_PLUGIN_PATH . 'addons/class-jc-elementor.php';
-}
+add_action('plugins_loaded', 'jelly_catalog_load_plugin_textdomain');
 
 function jelly_catalog_activate()
 {
-    if (class_exists('JC_Post_Types')) {
-        JC_Post_Types::register_taxonomies();
-        JC_Post_Types::register_post_types();
-    }
-
     flush_rewrite_rules();
 }
 
@@ -71,25 +57,3 @@ function jelly_catalog_deactivate()
 }
 
 register_deactivation_hook(__FILE__, 'jelly_catalog_deactivate');
-
-function jelly_catalog_load_plugin_textdomain()
-{
-    load_plugin_textdomain('jelly-catalog', false, basename(dirname(__FILE__)) . '/languages/');
-}
-
-add_action('plugins_loaded', 'jelly_catalog_load_plugin_textdomain');
-
-function jelly_catalog_init()
-{
-    if (!is_admin()) {
-        return;
-    }
-    require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-admin.php';
-    require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-settings.php';
-    require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-post-meta-box.php';
-    require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-ajax-action.php';
-    require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-sheet-editor.php';
-    require JELLY_CATALOG_PLUGIN_PATH . 'includes/class-jc-port.php';
-}
-
-add_action('plugins_loaded', 'jelly_catalog_init');

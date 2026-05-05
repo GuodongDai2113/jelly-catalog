@@ -8,6 +8,10 @@
  * @created: 2025.07.29 14:47
  */
 
+namespace Jelly_Catalog\Modules;
+
+use Jelly_Catalog\Utils;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
@@ -15,23 +19,18 @@ if (!defined('ABSPATH')) {
 /**
  * 添加自定义 metabox
  */
-class JC_Post_Meta_Box
+class Post_Meta_Box
 {
-    public static $instance;
-
-    public static function instance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
     public function __construct()
     {
         add_action('admin_head', [$this, 'add_help']);
+        // 只在未激活 WooCommerce 时加载基础产品 metaboxes
+        if (!Utils::is_wc_activated()) {
+            $this->load_core_product_metaboxes();
+        }
 
-        $this->initialize_metaboxes();
+        // 始终加载扩展功能 metaboxes
+        $this->load_extended_product_metaboxes();
     }
 
     public function add_help()
@@ -195,32 +194,21 @@ class JC_Post_Meta_Box
         ]);
     }
 
-    private function initialize_metaboxes()
-    {
-        // 只在未激活 WooCommerce 时加载基础产品 metaboxes
-        if (!jc_is_woocommerce_activated()) {
-            $this->load_core_product_metaboxes();
-        }
-
-        // 始终加载扩展功能 metaboxes
-        $this->load_extended_product_metaboxes();
-    }
-
     /**
      * 加载核心产品 metaboxes（仅在无 WooCommerce 时）
      */
     private function load_core_product_metaboxes()
     {
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-gallery-metabox.php';
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-postexcerpt-metabox.php';
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-cat-thumbnail-metabox.php';
-
         // 图片相册功能
-        new JC_Product_Gallery_Metabox();
+        new Metabox\Product_Gallery_Metabox();
         // 产品摘要功能
-        new JC_Product_Postexcerpt_Metabox();
+        new Metabox\Product_Postexcerpt_Metabox();
         // 分类缩略图功能
-        new JC_Product_Cat_Thumbnail_Metabox();
+        new Metabox\Product_Cat_Thumbnail_Metabox();
+        // 产品属性功能
+        new Metabox\Product_Attributes_Metabox();
+        // 产品型号/SKU 功能
+        new Metabox\Product_SKU_Metabox();
     }
 
     /**
@@ -229,40 +217,24 @@ class JC_Post_Meta_Box
     private function load_extended_product_metaboxes()
     {
         // 长尾关键词生成器
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-longtail-keywords-metabox.php';
-        new JC_Longtail_Keywords_Metabox();
-
-        // 产品型号/SKU 功能
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-sku-metabox.php';
-        new JC_Product_SKU_Metabox();
+        new Metabox\Longtail_Keywords_Metabox();
 
         // FAQ 功能
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-faq-metabox.php';
-        new JC_Product_FAQ_Metabox();
+        new Metabox\Product_FAQ_Metabox();
 
         // 产品下载功能
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-download-metabox.php';
-        new JC_Product_Download_Metabox();
+        new Metabox\Product_Download_Metabox();
 
         // 视频链接功能
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-videourl-metabox.php';
-        new JC_Product_VideoURL_Metabox();
-
-        // 产品属性功能
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-attributes-metabox.php';
-        new JC_Product_Attributes_Metabox();
+        new Metabox\Product_Video_Metabox();
 
         // 分类横幅图功能
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-cat-banner-metabox.php';
-        new JC_Product_Cat_Banner_Metabox();
+        new Metabox\Product_Cat_Banner_Metabox();
 
         // 分类产品字段功能
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-cat-fields-metabox.php';
-        new JC_Product_Cat_Fields_Metabox();
+        new Metabox\Product_Cat_Fields_Metabox();
 
         // 分类问答功能
-        include JELLY_CATALOG_PLUGIN_PATH . 'includes/metabox/class-jc-product-cat-faq-metabox.php';
-        new JC_Product_Cat_FAQ_Metabox();
+        new Metabox\Product_Cat_FAQ_Metabox();
     }
 }
-JC_Post_Meta_Box::instance();

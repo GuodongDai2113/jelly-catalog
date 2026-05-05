@@ -1,0 +1,12 @@
+{
+    "name": "jelly-dai/jelly-catalog",
+    "description": "WordPress 产品目录",
+    "type": "project",
+    "authors": [
+        {
+            "name": "JellyDai",
+            "email": "daiguo1003@gmail.com"
+        }
+    ],
+    "require": {}
+}

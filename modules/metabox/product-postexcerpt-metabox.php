@@ -8,11 +8,13 @@
  * @created: 2025.09.15 15:30
  */
 
+namespace Jelly_Catalog\Modules\Metabox;
+
 if (!defined('ABSPATH')) {
     exit;
 } // 禁止直接访问
 
-class JC_Product_Postexcerpt_Metabox
+class Product_Postexcerpt_Metabox
 {
     public function __construct()
     {
