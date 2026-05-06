@@ -12,7 +12,7 @@ namespace Jelly_Catalog\Addons;
 
 use Elementor\Widget_Base;
 use Elementor\Core\Documents_Manager;
-use ElementorPro\Plugin;
+use ElementorPro\Plugin as ElementorProPlugin;
 use ElementorPro\Modules\LoopBuilder\Module as LoopBuilderModule;
 use Jelly_Catalog\Utils;
 
@@ -22,6 +22,18 @@ if (!defined('ABSPATH')) {
 
 class Elementor
 {
+    /**
+     * 是否启用 Elementor Pro 集成功能。
+     *
+     * @var bool $has_elementor_pro Elementor Pro 激活状态
+     */
+    protected $has_elementor_pro = false;
+
+    /**
+     * Elementor 文档类型映射表。
+     *
+     * @var array $docs_types 文档类型与类名的映射关系
+     */
     protected $docs_types = [];
 
     public const LOOP_PRODUCT_SKIN_ID = 'product';
@@ -31,11 +43,24 @@ class Elementor
         'theme-post-featured-image',
     ];
 
-    public function __construct()
+    /**
+     * 初始化 Elementor 集成。
+     *
+     * @param bool $has_elementor_pro 当前站点是否启用了 Elementor Pro
+     *
+     * @return void
+     */
+    public function __construct(bool $has_elementor_pro = false)
     {
-        add_action('elementor/dynamic_tags/register', [$this, 'register_tags']);
-
+        $this->has_elementor_pro = $has_elementor_pro;
+        add_action('elementor/elements/categories_registered', [$this, 'register_widget_categories']);
         add_action('elementor/widgets/register', [$this, 'register_widgets']);
+
+        if (!$this->has_elementor_pro) {
+            return;
+        }
+
+        add_action('elementor/dynamic_tags/register', [$this, 'register_tags']);
 
         if (Utils::is_wc_activated()) {
             return;
@@ -58,6 +83,24 @@ class Elementor
         add_filter('elementor/query/query_args', function ($query_args, $widget) {
             return $this->loop_query($query_args, $widget);
         }, 10, 2);
+    }
+
+    /**
+     * 注册 Jelly Catalog 的 Elementor 组件分类。
+     *
+     * @param object $elements_manager Elementor 组件分类管理器
+     *
+     * @return void
+     */
+    public function register_widget_categories($elements_manager)
+    {
+        $elements_manager->add_category(
+            'jc-elements-single',
+            [
+                'title' => esc_html__('Product', 'jelly-catalog'),
+                'icon' => 'fa fa-plug',
+            ]
+        );
     }
 
     /**
@@ -122,6 +165,10 @@ class Elementor
 
     public function register_tags()
     {
+        if (!$this->has_elementor_pro || !class_exists(ElementorProPlugin::class)) {
+            return;
+        }
+
         $tags = [
             'Product_Title',
             'Product_Excerpt',
@@ -136,7 +183,7 @@ class Elementor
         ];
 
         /** @var \Elementor\Core\DynamicTags\Manager $module */
-        $module = Plugin::elementor()->dynamic_tags;
+        $module = ElementorProPlugin::elementor()->dynamic_tags;
 
         $module->register_group('jelly-catalog', [
             'title' => esc_html__('Jelly Catalog', 'jelly-catalog'),
@@ -176,6 +223,10 @@ class Elementor
 
     public function register_skins()
     {
+        if (!$this->has_elementor_pro) {
+            return;
+        }
+
         foreach (LoopBuilderModule::LOOP_WIDGETS as $widget_type) {
             add_action('elementor/widget/' . $widget_type . '/skins_init', function (Widget_Base $widget) {
                 $widget->add_skin(new Elementor\Skins\Skin_Loop_Product($widget));
@@ -188,7 +239,6 @@ class Elementor
 
     public function register_widgets($widgets_manager)
     {
-        $widgets_manager->register(new Elementor\Widgets\Product_Content());
         $widgets_manager->register(new Elementor\Widgets\Product_FAQ());
         $widgets_manager->register(new Elementor\Widgets\Product_Cat_FAQ());
         $widgets_manager->register(new Elementor\Widgets\Product_Attributes());
@@ -196,6 +246,10 @@ class Elementor
         $widgets_manager->register(new Elementor\Widgets\Product_Cat_List());
         $widgets_manager->register(new Elementor\Widgets\Product_Download());
         $widgets_manager->register(new Elementor\Widgets\Product_Gallery());
+
+        if ($this->has_elementor_pro) {
+            $widgets_manager->register(new Elementor\Widgets\Product_Content());
+        }
     }
 
     public function theme_template_include($need_override_location, $location)

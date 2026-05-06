@@ -89,8 +89,11 @@ class Plugin
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
 
-        if (is_plugin_active('elementor/elementor.php')) {
-            new Addons\Elementor();
+        $is_elementor_active = is_plugin_active('elementor/elementor.php');
+        $is_elementor_pro_active = is_plugin_active('elementor-pro/elementor-pro.php');
+
+        if ($is_elementor_active) {
+            new Addons\Elementor($is_elementor_pro_active);
         }
 
         if (is_plugin_active('seo-by-rank-math/rank-math.php')) {
