@@ -15,13 +15,19 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * 后台产品表格编辑器
+ * 后台产品表格编辑器管理类
+ * 
+ * 提供一个类似 Excel 的表格界面，用于批量编辑产品信息
+ * 支持分页、批量保存等功能，提高产品管理效率
+ * 
+ * @since 1.0.0
  */
 class Sheet_Editor
 {
     /**
      * 构造函数
-     * 注册后台菜单
+     * 
+     * 注册后台菜单钩子，添加产品表格编辑子菜单
      */
     public function __construct()
     {
@@ -30,7 +36,11 @@ class Sheet_Editor
 
     /**
      * 向产品菜单添加“表格编辑”子菜单
-     *
+     * 
+     * 在 WordPress 后台的产品菜单下添加一个子菜单项
+     * 点击后进入类似 Excel 的批量产品编辑界面
+     * 
+     * @since 1.0.0
      * @return void
      */
     public function add_menu()
@@ -46,8 +56,12 @@ class Sheet_Editor
     }
 
     /**
-     * 渲染产品表格页面内容
-     *
+     * 渲染产品表格编辑器页面
+     * 
+     * 输出产品表格编辑器的 HTML 结构
+     * 包括表格容器和分页控件（首页、上一页、下一页、末页、跳转、每页数量、保存按钮）
+     * 
+     * @since 1.0.0
      * @return void
      */
     public function render_products_sheet()

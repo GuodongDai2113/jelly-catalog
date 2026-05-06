@@ -17,10 +17,20 @@ if (!defined('ABSPATH')) {
 } // 禁止直接访问
 
 /**
- * 添加自定义 metabox
+ * 产品后台编辑页面的自定义元框（Meta Box）管理类
+ * 
+ * 负责注册和管理产品编辑页面的各个元框，包括产品图片、属性、FAQ、下载等功能
+ * 同时提供详细的帮助文档指导用户正确填写产品信息
+ * 
+ * @since 1.0.0
  */
 class Post_Meta_Box
 {
+    /**
+     * 构造函数
+     * 
+     * 初始化元框管理器，注册帮助标签页，并根据 WooCommerce 是否激活加载相应的元框
+     */
     public function __construct()
     {
         add_action('admin_head', [$this, 'add_help']);
@@ -33,6 +43,15 @@ class Post_Meta_Box
         $this->load_extended_product_metaboxes();
     }
 
+    /**
+     * 为产品编辑页面添加帮助标签页
+     * 
+     * 在产品编辑页面的右上角“帮助”菜单中添加多个标签页
+     * 每个标签页提供对应字段的填写指导和最佳实践建议
+     * 
+     * @since 1.0.0
+     * @return void
+     */
     public function add_help()
     {
         $screen = get_current_screen();
@@ -195,7 +214,13 @@ class Post_Meta_Box
     }
 
     /**
-     * 加载核心产品 metaboxes（仅在无 WooCommerce 时）
+     * 加载核心产品元框（仅在未安装 WooCommerce 时）
+     * 
+     * 这些是产品管理的基础功能元框，包括图片、摘要、分类、属性等
+     * 如果已安装 WooCommerce，则使用 WooCommerce 提供的相应功能
+     * 
+     * @since 1.0.0
+     * @return void
      */
     private function load_core_product_metaboxes()
     {
@@ -212,7 +237,13 @@ class Post_Meta_Box
     }
 
     /**
-     * 加载扩展功能 metaboxes（始终加载）
+     * 加载扩展功能元框（始终加载）
+     * 
+     * 这些是 Jelly Catalog 插件提供的增强功能，无论是否安装 WooCommerce 都会加载
+     * 包括长尾关键词、FAQ、下载、视频、分类横幅等高级功能
+     * 
+     * @since 1.0.0
+     * @return void
      */
     private function load_extended_product_metaboxes()
     {

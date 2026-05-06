@@ -451,6 +451,16 @@ class Admin
         echo '</select>';
     }
 
+    /**
+     * 在产品列表页显示页面状态标签
+     * 
+     * 如果当前页面被设置为产品列表页，则添加 Jelly Catalog 标识
+     * 
+     * @since 1.0.0
+     * @param array $post_states 页面状态数组
+     * @param \WP_Post $post 当前页面对象
+     * @return array 修改后的页面状态数组
+     */
     public function display_product_page_states($post_states, $post)
     {
         $page_for_products = (int) get_option('page_for_products', 0);

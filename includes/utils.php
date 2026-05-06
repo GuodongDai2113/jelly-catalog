@@ -13,15 +13,36 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+/**
+ * 工具类 - 提供插件常用的辅助功能
+ * 
+ * @since 1.0.0
+ */
 class Utils
 {
+    /** 产品基础路径常量：使用 'products' 作为复数形式 */
     public const PRODUCT_BASE_PRODUCTS = 'products';
+    
+    /** 产品基础路径常量：使用 'product' 作为单数形式 */
     public const PRODUCT_BASE_PRODUCT = 'product';
+    
+    /** 产品基础路径常量：使用分类slug作为路径 */
     public const PRODUCT_BASE_CATEGORY = '%product_cat%';
 
+    /** 分类基础路径常量：默认值 'product-category' */
     public const CATEGORY_BASE_DEFAULT = 'product-category';
+    
+    /** 分类基础路径常量：无前缀（空字符串） */
     public const CATEGORY_BASE_NONE = '';
 
+    /**
+     * 检查 WooCommerce 是否已激活
+     * 
+     * 通过多种方式检测 WooCommerce 插件是否处于激活状态
+     * 
+     * @since 1.0.0
+     * @return bool 如果 WooCommerce 已激活返回 true，否则返回 false
+     */
     public static function is_wc_activated()
     {
         if (!function_exists('is_plugin_active')) {
@@ -41,6 +62,20 @@ class Utils
         return false;
     }
 
+    /**
+     * 获取产品的固定链接结构配置
+     * 
+     * 从选项表中读取保存的固定链接设置，并提供默认值
+     * 同时验证配置值是否在允许范围内，如果无效则重置为默认值
+     * 
+     * @since 1.0.0
+     * @return array 返回包含固定链接配置的数组
+     *               - product_base: 产品基础路径
+     *               - category_base: 分类基础路径
+     *               - product_rewrite_slug: 产品重写slug
+     *               - product_archive_slug: 产品归档slug
+     *               - category_rewrite_slug: 分类重写slug
+     */
     public static function get_permalink_structure()
     {
         $saved_permalinks = (array) get_option('jelly_catalog_permalinks', []);
@@ -84,6 +119,13 @@ class Utils
         return $permalinks;
     }
 
+    /**
+     * 检查是否在产品固定链接中使用分类路径
+     * 
+     * @since 1.0.0
+     * @param array|null $permalinks 固定链接配置数组，如果为 null 则自动获取
+     * @return bool 如果使用分类路径返回 true，否则返回 false
+     */
     public static function uses_category_in_product_permalink($permalinks = null)
     {
         if (null === $permalinks) {
@@ -93,6 +135,13 @@ class Utils
         return isset($permalinks['product_base']) && self::PRODUCT_BASE_CATEGORY === $permalinks['product_base'];
     }
 
+    /**
+     * 检查分类基础路径是否无前缀
+     * 
+     * @since 1.0.0
+     * @param array|null $permalinks 固定链接配置数组，如果为 null 则自动获取
+     * @return bool 如果分类基础路径无前缀返回 true，否则返回 false
+     */
     public static function uses_category_base_without_prefix($permalinks = null)
     {
         if (null === $permalinks) {
@@ -102,6 +151,15 @@ class Utils
         return isset($permalinks['category_base']) && self::CATEGORY_BASE_NONE === $permalinks['category_base'];
     }
 
+    /**
+     * 获取产品分类的完整路径
+     * 
+     * 构建从根分类到当前分类的完整路径，用斜杠分隔
+     * 
+     * @since 1.0.0
+     * @param \WP_Term|int $term 分类对象或分类ID
+     * @return string 返回分类路径字符串，如果获取失败返回空字符串
+     */
     public static function get_product_category_path($term)
     {
         $term = $term instanceof \WP_Term ? $term : get_term($term, 'product_cat');
@@ -126,6 +184,16 @@ class Utils
         return trim(implode('/', array_filter($slugs)), '/');
     }
 
+    /**
+     * 获取产品的主要分类
+     * 
+     * 优先使用 SEO 插件（Rank Math 或 Yoast）设置的主要分类
+     * 如果没有设置，则返回层级最深的分类
+     * 
+     * @since 1.0.0
+     * @param \WP_Post|int $product 产品对象或产品ID
+     * @return \WP_Term|null 返回主要分类对象，如果没有分类则返回 null
+     */
     public static function get_primary_product_category($product)
     {
         $product_id = $product instanceof \WP_Post ? (int) $product->ID : absint($product);
@@ -159,6 +227,17 @@ class Utils
         return $terms[0];
     }
 
+    /**
+     * 对分类数组按层级深度排序
+     * 
+     * 用于排序产品分类，层级深的排在前面
+     * 如果层级相同，则按名称字母顺序排序
+     * 
+     * @since 1.0.0
+     * @param \WP_Term $left 左侧分类对象
+     * @param \WP_Term $right 右侧分类对象
+     * @return int 返回排序比较结果
+     */
     public static function sort_terms_by_depth($left, $right)
     {
         $left_depth = count(get_ancestors($left->term_id, 'product_cat', 'taxonomy'));

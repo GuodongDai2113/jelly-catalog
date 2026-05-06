@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * 产品导入功能 Trait
+ * 
+ * 提供产品批量导入、断点续传和导入日志记录能力
+ * 支持 CSV 文件导入、图片导入、FAQ 和属性导入
+ * 具有错误处理、重试机制和进度跟踪功能
+ * 
+ * @since 1.0.0
+ * @package Jelly_Catalog\Modules
+ */
+
 namespace Jelly_Catalog\Modules;
 
 use WP_Error;
@@ -12,16 +23,34 @@ if (!defined('ABSPATH')) {
 
 /**
  * 产品导入、断点续传与导入日志能力。
+ * 
+ * 此 Trait 提供了完整的产品导入解决方案，包括：
+ * - CSV 文件解析和产品数据导入
+ * - 图片文件处理和媒体库导入
+ * - 断点续传支持（通过 job 状态保存）
+ * - 日志记录功能
+ * - 错误处理和重试机制
+ * - AJAX 接口支持
  */
 trait Port_Import
 {
     /**
      * 日志文件路径
+     * 
+     * @var string
      */
     private $log_file;
 
     /**
-     * 写入日志
+     * 写入日志到日志文件
+     * 
+     * 根据日志级别过滤和记录导入过程中的事件
+     * 日志文件可用于调试和监控导入进度
+     * 
+     * @since 1.0.0
+     * @param string $message 日志消息内容
+     * @param string $level 日志级别 (debug, notice, warning, error)
+     * @return void
      */
     private function log($message, $level = 'debug')
     {
@@ -44,7 +73,13 @@ trait Port_Import
     }
 
     /**
-     * 导入产品
+     * 导入产品入口方法（表单提交方式）
+     * 
+     * 处理传统的表单提交导入请求
+     * 验证权限和 nonce 后创建导入任务
+     * 
+     * @since 1.0.0
+     * @return void 重定向到导入页面或错误页面
      */
     public function import_products()
     {
@@ -75,6 +110,12 @@ trait Port_Import
 
     /**
      * AJAX 初始化导入任务
+     * 
+     * 通过 AJAX 请求创建新的导入任务
+     * 返回任务 ID 供后续分批处理使用
+     * 
+     * @since 1.0.0
+     * @return void 输出 JSON 响应
      */
     public function ajax_start_import_products()
     {
@@ -103,6 +144,12 @@ trait Port_Import
 
     /**
      * AJAX 分批处理导入任务
+     * 
+     * 通过 AJAX 请求分批处理导入任务
+     * 支持断点续传，每次处理一批产品
+     * 
+     * @since 1.0.0
+     * @return void 输出 JSON 响应，包含导入进度和状态
      */
     public function ajax_process_import_products()
     {
@@ -138,7 +185,14 @@ trait Port_Import
     }
 
     /**
-     * 创建导入任务，保存上传文件与导入状态。
+     * 创建导入任务，保存上传文件与导入状态
+     * 
+     * 处理上传的 CSV 文件，创建临时目录
+     * 解析 CSV 文件信息，准备图片资源
+     * 创建导入任务并保存到选项表中
+     * 
+     * @since 1.0.0
+     * @return array|WP_Error 成功返回任务数组，失败返回 WP_Error
      */
     private function create_import_job()
     {
@@ -226,7 +280,15 @@ trait Port_Import
     }
 
     /**
-     * 分批处理导入任务。
+     * 分批处理导入任务
+     * 
+     * 从 CSV 文件中读取一批产品数据进行导入
+     * 支持断点续传，通过文件指针位置记录进度
+     * 使用锁机制防止并发导入冲突
+     * 
+     * @since 1.0.0
+     * @param array $job 导入任务数据
+     * @return array|WP_Error 更新后的任务数组或错误对象
      */
     private function process_import_batch($job)
     {
