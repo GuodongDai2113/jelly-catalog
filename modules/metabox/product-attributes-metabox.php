@@ -34,6 +34,7 @@ class Product_Attributes_Metabox
         $attributes = get_post_meta($post->ID, '_product_attributes', true);
         $attributes = is_array($attributes) ? $attributes : [];
         wp_nonce_field('jc_save_product_attributes', 'jc_attributes');
+        echo '<p class="description">' . __('Add key specifications and values to describe the product clearly', 'jelly-catalog') . '</p>';
 
         Utils::render_repeater_field([
             'id' => 'product_attributes',

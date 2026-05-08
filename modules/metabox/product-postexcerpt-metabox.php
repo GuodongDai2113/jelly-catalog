@@ -38,6 +38,7 @@ class Product_Postexcerpt_Metabox
             ],
         ];
 
+        echo '<p class="description">' . __('Enter a concise product summary.', 'jelly-catalog') . '</p>';
         wp_editor(htmlspecialchars_decode($post->post_excerpt, ENT_QUOTES), 'excerpt', $settings);
     }
 }

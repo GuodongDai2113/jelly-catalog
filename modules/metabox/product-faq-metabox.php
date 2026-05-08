@@ -34,6 +34,7 @@ class Product_FAQ_Metabox
         $faqs = get_post_meta($post->ID, '_product_faqs', true);
         $faqs = is_array($faqs) ? $faqs : [];
         wp_nonce_field('jc_save_product_faq', 'jc_faq');
+        echo '<p class="description">' . __('Add common customer questions and answers for this product', 'jelly-catalog') . '</p>';
         // 使用通用 repeater 函数生成 FAQ 表单
         Utils::render_repeater_field([
             'id' => 'product_faqs',

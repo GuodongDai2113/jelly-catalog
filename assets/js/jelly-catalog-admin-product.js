@@ -5,35 +5,22 @@
    * 产品编辑器
    * 负责将后台产品编辑页面的 metabox 整理成更友好的编辑体验
    */
-  const METABOX_IDS = [
-    "postexcerpt",
-    "postdivrich",
-    "product_catdiv",
-    "product_sku_metabox",
-    "tagsdiv-product_tag",
-    "product_download_metabox",
-    "longtail_keywords_metabox",
-    "product_faq_metabox",
-    "product_attributes_metabox",
-    "product_videourl_metabox",
-    "rank_math_metabox",
-  ];
-
   const EDITOR_IDS = {
     content: "content",
-    excerpt: "excerpt",
   };
 
   const SELECTORS = {
     body: "body",
     titleDiv: "#poststuff #titlediv",
-    titleDescription: ".title-description",
-    titleField: "#title",
-    tabs: ".jc-tabs",
-    tabPane: ".tab-pane",
-    tabNav: ".nav-tab-wrapper",
-    tabContent: ".tab-content",
-    excerpt: "#excerpt",
+    editorContent: ".jc-product-editor__content",
+    sidebarContainer: "#postbox-container-1",
+    sidebarSortables: "#postbox-container-1 #side-sortables, #postbox-container-1 .meta-box-sortables",
+    submitBox: "#submitdiv",
+    postbox: ".postbox",
+    postboxHandle: ".postbox .hndle, .postbox .handlediv",
+    postboxInside: ".postbox .inside",
+    postboxHandleActions: ".postbox .handle-actions, .postbox .handlediv",
+    metaBoxSortables: ".meta-box-sortables",
     gallery: "#jc-gallery .product-images",
     galleryItem: "li.image",
     galleryAddButton: ".jc-add-image a",
@@ -49,19 +36,63 @@
     elementorSwitch: "#elementor-switch-mode",
   };
 
-  const CHARACTER_COUNT_LIMITS = {
-    warning: 130,
-    danger: 160,
-  };
-
-  const CHARACTER_COUNT_COLORS = {
-    ok: "#52c41a",
-    warning: "#faad14",
-    danger: "#ff4d4f",
-  };
-
-  const CHARACTER_COUNT_SYNC_DELAY = 1000;
   const TINY_MCE_LAYOUT_DELAY = 50;
+  const PRODUCT_SECTION_IDS = {
+    summary: "summary",
+    details: "details",
+  };
+
+  /**
+   * 产品编辑页布局配置
+   * 负责定义 summary/details 两个连续分区中的内容顺序
+   */
+  const PRODUCT_EDITOR_LAYOUT = [
+    {
+      id: PRODUCT_SECTION_IDS.summary,
+      sectionClass: "jc-product-section-summary",
+      columns: [
+        {
+          className: "jc-product-pane__media",
+          blocks: [
+            { type: "metabox", id: "postimagediv" },
+            { type: "metabox", id: "product-images" },
+            { type: "metabox", id: "product_videourl_metabox" },
+          ],
+        },
+        {
+          className: "jc-product-pane__main",
+          blocks: [
+            { type: "title" },
+            { type: "metabox", id: "product_sku_metabox" },
+            { type: "metabox", id: "postexcerpt" },
+            { type: "metabox", id: "product_attributes_metabox" },
+            { type: "metabox", id: "product_download_metabox" },
+          ],
+        },
+      ],
+    },
+    {
+      id: PRODUCT_SECTION_IDS.details,
+      sectionClass: "jc-product-section-details",
+      columns: [
+        {
+          className: "jc-product-pane__full",
+          blocks: [
+            {
+              type: "metabox",
+              id: "postdivrich",
+              wrapper: "postbox",
+              wrapperClass: "jc-layout-postbox",
+              fallbackTitle: "Product Details",
+            },
+            { type: "metabox", id: "product_faq_metabox" },
+            { type: "metabox", id: "longtail_keywords_metabox" },
+            { type: "metabox", id: "rank_math_metabox" },
+          ],
+        },
+      ],
+    },
+  ];
 
   class JellyCatalogProductEditor {
     constructor() {
@@ -71,11 +102,11 @@
         return;
       }
 
-      this.metaboxIds = METABOX_IDS;
-
       // 复用的媒体选择框实例
       this.productGalleryFrame = null;
       this.productDownloadFrame = null;
+      this.postboxLockHandler = null;
+      this.postboxObserver = null;
 
       this.init();
     }
@@ -89,123 +120,197 @@
      */
     init() {
       this.resetProductEditor();
+      this.lockPostboxes();
       this.initProductGallery();
       this.initProductDownload();
+      this.fixTinyMCELayout(EDITOR_IDS.content);
     }
 
     /**
-     * 重构 metabox 布局为标签页
+     * 重构 metabox 布局为连续滑动分区
      */
     resetProductEditor() {
       const $titleDiv = $(SELECTORS.titleDiv);
 
       if (!$titleDiv.length) return;
 
-      const $tabContainer = this.createTabContainer();
-      $titleDiv.after($tabContainer);
+      const $editorContainer = this.createEditorContainer();
+      $titleDiv.after($editorContainer);
 
-      this.generateTabs(this.metaboxIds, $tabContainer);
+      this.generateSections(PRODUCT_EDITOR_LAYOUT, $editorContainer);
+      this.moveSidebarMetaboxes();
       this.appendElementorControls();
-      this.bindTabEvents();
-
-      this.moveTitleDescription();
     }
-    moveTitleDescription() {
-      const $titleDescription = $(SELECTORS.titleDescription).first();
-      const $titleField = $(SELECTORS.titleField);
 
-      if ($titleDescription.length && $titleField.length) {
-        $titleField.after($titleDescription);
-      }
-    }
     /**
-     * 创建标签页容器骨架
+     * 创建编辑器布局容器骨架
      */
-    createTabContainer() {
+    createEditorContainer() {
       return $(`
-        <div class="jc-tabs">
-          <div class="nav-tab-wrapper"></div>
-          <div class="tab-content"></div>
+        <div class="jc-product-editor">
+          <div class="jc-product-editor__content"></div>
         </div>
       `);
     }
 
-    getTabPaneId(metaboxId) {
-      return "tab-" + metaboxId;
+    getSectionId(sectionId) {
+      return "section-" + sectionId;
     }
 
-    getTabPane(metaboxId) {
-      return $("#" + this.getTabPaneId(metaboxId));
-    }
-
-    getMetaboxTitle(metaboxId, $metabox) {
-      if (metaboxId === "postdivrich") {
-        if (window.jc_product_i18n && window.jc_product_i18n.postdivrich) {
-          return window.jc_product_i18n.postdivrich;
-        }
-
-        return "Content";
-      }
-
-      const title = $metabox.find("h2.hndle").text();
-      return title || metaboxId;
-    }
-
-    getMetaboxContent(metaboxId, $metabox) {
-      if (metaboxId === "postdivrich") {
-        return $metabox;
-      }
-
-      return $metabox.find(".inside").children();
+    getSection(sectionId) {
+      return $("#" + this.getSectionId(sectionId));
     }
 
     /**
-     * 根据 metabox 列表生成标签页内容
+     * 获取布局块的 postbox 标题
      */
-    generateTabs(metaboxIds, $tabContainer) {
-      const $navWrapper = $tabContainer.find(SELECTORS.tabNav);
-      const $contentWrapper = $tabContainer.find(SELECTORS.tabContent);
-      let hasActiveTab = false;
+    getBlockTitle(block) {
+      if (window.jc_product_i18n && window.jc_product_i18n[block.id]) {
+        return window.jc_product_i18n[block.id];
+      }
 
-      metaboxIds.forEach((metaboxId) => {
-        const $metabox = $("#" + metaboxId);
-        if (!$metabox.length) return;
+      return block.fallbackTitle || block.id;
+    }
 
-        const isActive = !hasActiveTab;
-        hasActiveTab = true;
+    /**
+     * 将标题模块包装进布局块，便于参与网格排版
+     */
+    buildTitleBlock() {
+      const $titleDiv = $(SELECTORS.titleDiv);
+      if (!$titleDiv.length) return $();
 
-        const tabTitle = this.getMetaboxTitle(metaboxId, $metabox);
-        const $tabLink = $(`
-          <a href="#" class="nav-tab ${
-            isActive ? "nav-tab-active" : ""
-          }" data-tab="${metaboxId}">
-            ${tabTitle}
-          </a>
+      return $('<div class="jc-product-block jc-product-block-title"></div>').append(
+        $titleDiv
+      );
+    }
+
+    /**
+     * 将 metabox 包装进布局块，但不改变其原有样式与交互
+     */
+    buildMetaboxBlock(block) {
+      const metaboxId = block.id;
+      const $metabox = $("#" + metaboxId);
+      if (!$metabox.length) return $();
+
+      const $block = $('<div class="jc-product-block"></div>');
+
+      if (block.wrapper === "postbox") {
+        const $wrapper = $(`
+          <div class="postbox ${block.wrapperClass || ""}">
+            <div class="postbox-header">
+              <h2 class="hndle">${this.getBlockTitle(block)}</h2>
+            </div>
+            <div class="inside"></div>
+          </div>
         `);
-        $navWrapper.append($tabLink);
 
-        const $tabPane = $(`
-          <div class="tab-pane ${
-            isActive ? "active" : ""
-          }" id="${this.getTabPaneId(metaboxId)}"></div>
-        `);
+        $wrapper.find(".inside").append($metabox);
+        return $block.append($wrapper);
+      }
 
-        const $metaboxContent = this.getMetaboxContent(metaboxId, $metabox);
-        const $description = $(
-          `#tab-panel-${metaboxId}_help .edit-description`
-        );
+      return $block.append($metabox);
+    }
 
-        if ($description.length && $metaboxContent.length) {
-          $tabPane.append($description);
-        }
+    /**
+     * 获取需要插入布局块中的 DOM 节点
+     */
+    getLayoutBlock(block) {
+      if (block.type === "title") {
+        return this.buildTitleBlock();
+      }
 
-        $tabPane.append($metaboxContent);
-        $contentWrapper.append($tabPane);
+      if (block.type === "metabox") {
+        return this.buildMetaboxBlock(block);
+      }
 
-        if (metaboxId !== "postdivrich") {
-          $metabox.remove();
+      return $();
+    }
+
+    /**
+     * 构建单个分区中的列布局
+     */
+    buildSectionColumns(columns, $section) {
+      columns.forEach((column) => {
+        const $column = $(`<div class="${column.className}"></div>`);
+
+        column.blocks.forEach((block) => {
+          const $block = this.getLayoutBlock(block);
+          if ($block.length) {
+            $column.append($block);
+          }
+        });
+
+        if ($column.children().length) {
+          $section.append($column);
         }
       });
+    }
+
+    /**
+     * 根据布局配置生成连续内容分区
+     */
+    generateSections(layoutSections, $editorContainer) {
+      const $contentWrapper = $editorContainer.find(SELECTORS.editorContent);
+
+      layoutSections.forEach((section) => {
+        const $section = $(`
+          <section class="jc-product-section ${section.sectionClass}" id="${this.getSectionId(
+            section.id
+          )}"></section>
+        `);
+
+        this.buildSectionColumns(section.columns, $section);
+        $contentWrapper.append($section);
+      });
+    }
+
+    /**
+     * 将指定 metabox 放回右侧原生侧栏
+     */
+    moveSidebarMetaboxes() {
+      const $sidebarSortables = $(SELECTORS.sidebarSortables).first();
+      const $sidebarContainer = $(SELECTORS.sidebarContainer).first();
+      const $categoryMetabox = $("#product_catdiv");
+      const $tagMetabox = $("#tagsdiv-product_tag");
+      const $submitBox = $(SELECTORS.submitBox).first();
+
+      if ($sidebarSortables.length) {
+        if ($submitBox.length && $submitBox.parent()[0] === $sidebarSortables[0]) {
+          if ($categoryMetabox.length) {
+            $submitBox.after($categoryMetabox);
+          }
+
+          if ($tagMetabox.length) {
+            if ($categoryMetabox.length) {
+              $categoryMetabox.after($tagMetabox);
+            } else {
+              $submitBox.after($tagMetabox);
+            }
+          }
+
+          return;
+        }
+
+        if ($categoryMetabox.length) {
+          $sidebarSortables.append($categoryMetabox);
+        }
+
+        if ($tagMetabox.length) {
+          $sidebarSortables.append($tagMetabox);
+        }
+
+        return;
+      }
+
+      if ($sidebarContainer.length) {
+        if ($categoryMetabox.length) {
+          $sidebarContainer.append($categoryMetabox);
+        }
+
+        if ($tagMetabox.length) {
+          $sidebarContainer.append($tagMetabox);
+        }
+      }
     }
 
     /**
@@ -216,34 +321,101 @@
       const $elementorSwitch = $(SELECTORS.elementorSwitch);
       if (!$elementorEditor.length || !$elementorSwitch.length) return;
 
-      const $content = this.getTabPane("postdivrich");
-      if (!$content.length) return;
+      const $detailsSection = this.getSection(PRODUCT_SECTION_IDS.details);
+      const $editorMetabox = $("#postdivrich");
+      if (!$detailsSection.length) return;
 
-      $content.append($elementorSwitch, $elementorEditor);
+      if ($editorMetabox.length) {
+        $editorMetabox.after($elementorSwitch, $elementorEditor);
+        return;
+      }
+
+      $detailsSection.append($elementorSwitch, $elementorEditor);
     }
 
     /**
-     * 标签页点击切换逻辑
+     * 禁用 WordPress 默认 metabox 的拖拽与折叠能力，固定编辑页布局
      */
-    bindTabEvents() {
-      const $tabs = $(SELECTORS.tabs);
-      if (!$tabs.length) return;
+    lockPostboxes() {
+      $(SELECTORS.postbox).removeClass("closed");
+      $(SELECTORS.postboxInside).show();
 
-      $tabs.on("click", ".nav-tab", (e) => {
-        e.preventDefault();
-        const $tab = $(e.currentTarget);
-        const tabId = $tab.data("tab");
+      $(SELECTORS.metaBoxSortables).each((_, container) => {
+        const $container = $(container);
 
-        $tabs.find(".nav-tab").removeClass("nav-tab-active");
-        $tab.addClass("nav-tab-active");
-
-        $tabs.find(SELECTORS.tabPane).removeClass("active");
-        this.getTabPane(tabId).addClass("active");
-
-        if (tabId === "postdivrich") {
-          // 重置 TinyMCE 编辑器的大小调整功能
-          this.fixTinyMCELayout(EDITOR_IDS.content);
+        if ($container.hasClass("ui-sortable")) {
+          try {
+            $container.sortable("destroy");
+          } catch (e) {}
         }
+      });
+
+      $(document).off(".jcLockPostbox");
+      $(document).on(
+        "click.jcLockPostbox mousedown.jcLockPostbox dblclick.jcLockPostbox keydown.jcLockPostbox",
+        SELECTORS.postboxHandle,
+        (e) => {
+          if (
+            e.type === "keydown" &&
+            e.key !== "Enter" &&
+            e.key !== " " &&
+            e.key !== "Spacebar"
+          ) {
+            return;
+          }
+
+          e.preventDefault();
+          e.stopImmediatePropagation();
+        }
+      );
+
+      if (this.postboxLockHandler) {
+        document.removeEventListener(
+          "click",
+          this.postboxLockHandler,
+          true
+        );
+        document.removeEventListener(
+          "mousedown",
+          this.postboxLockHandler,
+          true
+        );
+        document.removeEventListener(
+          "dblclick",
+          this.postboxLockHandler,
+          true
+        );
+      }
+
+      this.postboxLockHandler = (e) => {
+        const target = e.target;
+        if (!(target instanceof Element)) return;
+
+        if (!target.closest(SELECTORS.postboxHandle)) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      };
+
+      document.addEventListener("click", this.postboxLockHandler, true);
+      document.addEventListener("mousedown", this.postboxLockHandler, true);
+      document.addEventListener("dblclick", this.postboxLockHandler, true);
+
+      if (this.postboxObserver) {
+        this.postboxObserver.disconnect();
+      }
+
+      this.postboxObserver = new MutationObserver(() => {
+        $(SELECTORS.postbox).removeClass("closed");
+        $(SELECTORS.postboxInside).show();
+      });
+
+      $(SELECTORS.postbox).each((_, postbox) => {
+        this.postboxObserver.observe(postbox, {
+          attributes: true,
+          attributeFilter: ["class"],
+        });
       });
     }
 
@@ -508,6 +680,20 @@
     }
 
     /**
+     * 将新图片插入到“新增图片”入口之前，保持入口始终位于末尾
+     */
+    insertGalleryImage($container, markup) {
+      const $addTrigger = $container.find(".jc-add-image").first();
+
+      if ($addTrigger.length) {
+        $addTrigger.before(markup);
+        return;
+      }
+
+      $container.append(markup);
+    }
+
+    /**
      * 初始化产品画廊排序与按钮
      */
     initProductGallery() {
@@ -595,14 +781,15 @@
           const data = attachment.toJSON();
           if (!data.id) return;
 
-          $galleryContainer.append(`
+          this.insertGalleryImage(
+            $galleryContainer,
+            `
             <li class="image" data-attachment_id="${data.id}">
               <img src="${data.sizes.thumbnail.url}" alt="" />
-              <ul class="actions">
-                <li><a href="#" class="delete" title="${deleteText}"></a></li>
-              </ul>
+              <a href="#" class="actions delete" title="${deleteText}"></a>
             </li>
-          `);
+          `
+          );
         });
 
         this.updateGalleryImages();

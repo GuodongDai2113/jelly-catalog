@@ -31,10 +31,9 @@ class Product_SKU_Metabox
     {
         $sku = get_post_meta($post->ID, '_product_sku', true);
         wp_nonce_field('jc_save_product_sku', 'jc_sku_nonce');
-
+        echo '<p class="description">' . __('Enter the product model number or SKU (Stock Keeping Unit)', 'jelly-catalog') . '</p>';
         echo '<div class="product-sku-field">';
         echo '<input type="text" id="product_sku" name="product_sku" value="' . esc_attr($sku) . '" class="widefat" placeholder="' . esc_attr__('Enter product model or SKU', 'jelly-catalog') . '" />';
-        echo '<p class="description">' . __('Enter the product model number or SKU (Stock Keeping Unit)', 'jelly-catalog') . '</p>';
         echo '</div>';
     }
 

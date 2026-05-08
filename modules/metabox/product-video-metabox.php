@@ -31,11 +31,11 @@ class Product_Video_Metabox
     {
         $video_url = get_post_meta($post->ID, '_product_videourl', true);
         wp_nonce_field('jc_save_product_videourl', 'jc_videourl');
-        echo '<p>';
-        echo '<label for="product_video_url">' . __('Video URL', 'jelly-catalog') . ':</label>';
-        echo '<input type="url" id="product_videourl" name="product_videourl" value="' . esc_url($video_url) . '" class="large-text" />';
-        echo '<span class="description">' . __('Enter the full URL to your product video (YouTube, Vimeo, etc.)', 'jelly-catalog') . '</span>';
-        echo '</p>';
+        echo '<p class="description">' . __('Enter the YouTube URL to your product video', 'jelly-catalog') . '</p>';
+
+        echo '<div class="product-videourl-field">';
+        echo '<input type="url" id="product_videourl" name="product_videourl" value="' . esc_url($video_url) . '" class="large-text" placeholder="' . esc_attr__('Video URL', 'jelly-catalog') . '" />';
+        echo '</div>';
     }
 
     public function save_metabox($post_id)

@@ -36,6 +36,9 @@ class Product_Download_Metabox
 
         wp_nonce_field('jc_save_product_download', 'jc_product_download_nonce');
         ?>
+<p class="description">
+    <?php esc_html_e('Product catalog, multiple files can be uploaded in compressed packages', 'jelly-catalog'); ?>
+</p>
 <div id="jc-product-download" class="jc-product-download-field"
     data-no-file="<?php echo esc_attr__('No file selected', 'jelly-catalog'); ?>">
     <input type="hidden" id="product_file" name="product_file" value="<?php echo esc_attr($file_id); ?>">
@@ -60,9 +63,7 @@ class Product_Download_Metabox
         </button>
     </p>
 
-    <p class="description">
-        <?php esc_html_e('Product catalog, multiple files can be uploaded in compressed packages', 'jelly-catalog'); ?>
-    </p>
+
 </div>
 <?php
     }
