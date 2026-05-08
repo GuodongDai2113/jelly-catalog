@@ -2,11 +2,11 @@
 
 /**
  * 产品导入功能 Trait
- * 
+ *
  * 提供产品批量导入、断点续传和导入日志记录能力
  * 支持 CSV 文件导入、图片导入、FAQ 和属性导入
  * 具有错误处理、重试机制和进度跟踪功能
- * 
+ *
  * @since 1.0.0
  * @package Jelly_Catalog\Modules
  */
@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
 
 /**
  * 产品导入、断点续传与导入日志能力。
- * 
+ *
  * 此 Trait 提供了完整的产品导入解决方案，包括：
  * - CSV 文件解析和产品数据导入
  * - 图片文件处理和媒体库导入
@@ -36,17 +36,17 @@ trait Port_Import
 {
     /**
      * 日志文件路径
-     * 
+     *
      * @var string
      */
     private $log_file;
 
     /**
      * 写入日志到日志文件
-     * 
+     *
      * 根据日志级别过滤和记录导入过程中的事件
      * 日志文件可用于调试和监控导入进度
-     * 
+     *
      * @since 1.0.0
      * @param string $message 日志消息内容
      * @param string $level 日志级别 (debug, notice, warning, error)
@@ -74,10 +74,10 @@ trait Port_Import
 
     /**
      * 导入产品入口方法（表单提交方式）
-     * 
+     *
      * 处理传统的表单提交导入请求
      * 验证权限和 nonce 后创建导入任务
-     * 
+     *
      * @since 1.0.0
      * @return void 重定向到导入页面或错误页面
      */
@@ -101,6 +101,14 @@ trait Port_Import
             exit;
         }
 
+        if (!empty($job['status']) && 'complete' === $job['status'] && empty($job['id'])) {
+            wp_safe_redirect(add_query_arg(
+                ['import_success' => 1],
+                admin_url('edit.php?post_type=product&page=products-port')
+            ));
+            exit;
+        }
+
         wp_safe_redirect(add_query_arg(
             ['jc_import_job' => $job['id']],
             admin_url('edit.php?post_type=product&page=products-port')
@@ -110,10 +118,10 @@ trait Port_Import
 
     /**
      * AJAX 初始化导入任务
-     * 
+     *
      * 通过 AJAX 请求创建新的导入任务
      * 返回任务 ID 供后续分批处理使用
-     * 
+     *
      * @since 1.0.0
      * @return void 输出 JSON 响应
      */
@@ -136,18 +144,19 @@ trait Port_Import
             ], 400);
         }
 
-        wp_send_json_success($this->format_import_job_response(
-            $job,
-            __('Import job prepared. Starting batch import...', 'jelly-catalog')
-        ));
+        $response_message = (!empty($job['status']) && 'complete' === $job['status'])
+            ? ''
+            : __('Import job prepared. Starting batch import...', 'jelly-catalog');
+
+        wp_send_json_success($this->format_import_job_response($job, $response_message));
     }
 
     /**
      * AJAX 分批处理导入任务
-     * 
+     *
      * 通过 AJAX 请求分批处理导入任务
      * 支持断点续传，每次处理一批产品
-     * 
+     *
      * @since 1.0.0
      * @return void 输出 JSON 响应，包含导入进度和状态
      */
@@ -186,11 +195,11 @@ trait Port_Import
 
     /**
      * 创建导入任务，保存上传文件与导入状态
-     * 
+     *
      * 处理上传的 CSV 文件，创建临时目录
      * 解析 CSV 文件信息，准备图片资源
      * 创建导入任务并保存到选项表中
-     * 
+     *
      * @since 1.0.0
      * @return array|WP_Error 成功返回任务数组，失败返回 WP_Error
      */
@@ -208,18 +217,13 @@ trait Port_Import
 
         $this->log('开始导入产品', 'notice');
 
-        if (!isset($_FILES['csv_file']) || $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK) {
-            $this->log('CSV文件上传失败: ' . ($_FILES['csv_file']['error'] ?? '未知错误'), 'error');
-            return new WP_Error('file_upload_failed', __('File upload failed.', 'jelly-catalog'));
-        }
+        $has_product_csv = $this->has_import_upload('csv_file');
+        $has_category_csv = $this->has_import_upload('category_csv');
 
-        $csv_name = sanitize_file_name($_FILES['csv_file']['name']);
-        if ('csv' !== strtolower(pathinfo($csv_name, PATHINFO_EXTENSION))) {
-            $this->log('CSV文件扩展名无效: ' . $csv_name, 'error');
-            return new WP_Error('invalid_csv_file', __('Invalid CSV file.', 'jelly-catalog'));
+        if (!$has_product_csv && !$has_category_csv) {
+            $this->log('未上传产品CSV或分类CSV', 'error');
+            return new WP_Error('missing_import_file', __('Please upload a product CSV or a category CSV.', 'jelly-catalog'));
         }
-
-        $this->log('CSV文件上传成功: ' . $csv_name);
 
         $upload_dir = wp_upload_dir();
         $job_id = sanitize_key(str_replace('-', '', wp_generate_uuid4()));
@@ -232,15 +236,69 @@ trait Port_Import
 
         $this->log('创建临时目录: ' . $temp_dir);
 
-        $csv_file = trailingslashit($temp_dir) . 'products.csv';
-        if (!$this->move_uploaded_file_to_path($_FILES['csv_file']['tmp_name'], $csv_file)) {
-            $this->log('无法保存CSV文件到临时目录', 'error');
+        $category_result = [
+            'total' => 0,
+            'imported' => 0,
+            'errors' => 0,
+        ];
+
+        if ($has_category_csv) {
+            $category_csv_file = trailingslashit($temp_dir) . 'product-categories.csv';
+            $category_upload = $this->get_import_upload('category_csv');
+            $category_save = $this->save_uploaded_import_csv($category_upload, $category_csv_file, '分类CSV');
+
+            if (is_wp_error($category_save)) {
+                $this->rrmdir($temp_dir);
+                return $category_save;
+            }
+
+            $category_result = $this->import_product_categories_from_csv($category_csv_file);
+            if (is_wp_error($category_result)) {
+                $this->rrmdir($temp_dir);
+                return $category_result;
+            }
+        }
+
+        if (!$has_product_csv) {
+            if (is_dir($temp_dir)) {
+                $this->rrmdir($temp_dir);
+            }
+
+            set_transient('jc_import_result', [
+                'imported' => 0,
+                'errors' => 0,
+                'categories_imported' => absint($category_result['imported']),
+                'category_errors' => absint($category_result['errors']),
+                'categories_only' => true,
+            ], 60);
+
+            return [
+                'id' => '',
+                'status' => 'complete',
+                'total' => absint($category_result['total']),
+                'processed' => absint($category_result['total']),
+                'imported' => absint($category_result['imported']),
+                'errors' => absint($category_result['errors']),
+                'message' => sprintf(
+                    /* translators: 1: imported count, 2: error count */
+                    __('Category import completed. Imported: %1$d, Errors: %2$d.', 'jelly-catalog'),
+                    absint($category_result['imported']),
+                    absint($category_result['errors'])
+                ),
+            ];
+        }
+
+        $product_csv_file = trailingslashit($temp_dir) . 'products.csv';
+        $product_upload = $this->get_import_upload('csv_file');
+        $product_save = $this->save_uploaded_import_csv($product_upload, $product_csv_file, '产品CSV');
+
+        if (is_wp_error($product_save)) {
             $this->rrmdir($temp_dir);
-            return new WP_Error('cannot_read_file', __('Cannot read uploaded file.', 'jelly-catalog'));
+            return $product_save;
         }
 
         $images_path = $this->prepare_import_images($temp_dir);
-        $csv_info = $this->inspect_import_csv($csv_file);
+        $csv_info = $this->inspect_import_csv($product_csv_file);
 
         if (is_wp_error($csv_info)) {
             $this->rrmdir($temp_dir);
@@ -255,7 +313,7 @@ trait Port_Import
             'id' => $job_id,
             'user_id' => get_current_user_id(),
             'status' => 'pending',
-            'csv_file' => $csv_file,
+            'csv_file' => $product_csv_file,
             'temp_dir' => $temp_dir,
             'images_path' => $images_path,
             'image_index_file' => $image_index_file,
@@ -267,6 +325,8 @@ trait Port_Import
             'processed' => 0,
             'imported' => 0,
             'errors' => 0,
+            'categories_imported' => absint($category_result['imported']),
+            'category_errors' => absint($category_result['errors']),
             'max_retries' => max(0, absint(apply_filters('jc_import_row_max_retries', 2))),
             'message' => __('Import job prepared. Starting batch import...', 'jelly-catalog'),
             'created_at' => time(),
@@ -280,12 +340,60 @@ trait Port_Import
     }
 
     /**
+     * 判断导入文件是否已上传。
+     *
+     * @param string $field_name 文件字段名
+     * @return bool
+     */
+    private function has_import_upload($field_name)
+    {
+        return isset($_FILES[$field_name]) && (int) ($_FILES[$field_name]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK;
+    }
+
+    /**
+     * 获取导入上传文件信息。
+     *
+     * @param string $field_name 文件字段名
+     * @return array
+     */
+    private function get_import_upload($field_name)
+    {
+        return isset($_FILES[$field_name]) && is_array($_FILES[$field_name]) ? $_FILES[$field_name] : [];
+    }
+
+    /**
+     * 保存上传的 CSV 文件到临时目录。
+     *
+     * @param array $upload 文件上传数组
+     * @param string $target_file 目标文件路径
+     * @param string $label 日志标签
+     * @return true|\WP_Error
+     */
+    private function save_uploaded_import_csv($upload, $target_file, $label)
+    {
+        $csv_name = sanitize_file_name($upload['name'] ?? '');
+        if ('csv' !== strtolower(pathinfo($csv_name, PATHINFO_EXTENSION))) {
+            $this->log($label . '扩展名无效: ' . $csv_name, 'error');
+            return new WP_Error('invalid_csv_file', __('Invalid CSV file.', 'jelly-catalog'));
+        }
+
+        $this->log($label . '上传成功: ' . $csv_name);
+
+        if (!$this->move_uploaded_file_to_path($upload['tmp_name'] ?? '', $target_file)) {
+            $this->log('无法保存' . $label . '到临时目录', 'error');
+            return new WP_Error('cannot_read_file', __('Cannot read uploaded file.', 'jelly-catalog'));
+        }
+
+        return true;
+    }
+
+    /**
      * 分批处理导入任务
-     * 
+     *
      * 从 CSV 文件中读取一批产品数据进行导入
      * 支持断点续传，通过文件指针位置记录进度
      * 使用锁机制防止并发导入冲突
-     * 
+     *
      * @since 1.0.0
      * @param array $job 导入任务数据
      * @return array|WP_Error 更新后的任务数组或错误对象
@@ -456,6 +564,8 @@ trait Port_Import
             set_transient('jc_import_result', [
                 'imported' => absint($job['imported']),
                 'errors' => absint($job['errors']),
+                'categories_imported' => absint($job['categories_imported'] ?? 0),
+                'category_errors' => absint($job['category_errors'] ?? 0),
             ], 60);
 
             $this->log('导入过程结束，清理临时文件');
@@ -710,10 +820,12 @@ trait Port_Import
 
         $this->maybe_import_featured_image($post_id, $data, $images_path, $image_index);
         $this->maybe_import_gallery_images($post_id, $data, $images_path, $image_index);
-        $this->maybe_update_import_terms($post_id, $data, 'Categories', 'product_cat');
+        $this->maybe_update_import_product_categories($post_id, $data);
         $this->maybe_update_import_terms($post_id, $data, 'Tags', 'product_tag');
         $this->maybe_update_import_collection_meta($post_id, '_product_faqs', $this->parse_import_faqs($data, $faq_count), 'FAQ数据');
         $this->maybe_update_import_collection_meta($post_id, '_product_attributes', $this->parse_import_attributes($data, $attribute_count), '属性数据');
+        $this->maybe_update_import_product_meta($post_id, $data);
+        $this->maybe_update_import_rank_math_meta($post_id, $data);
 
         $title = array_key_exists('Title', $data) ? (string) $data['Title'] : '';
         $this->log('产品处理完成: ' . $title . "\n---");
@@ -749,13 +861,16 @@ trait Port_Import
             }
         }
 
-        if (!$is_update) {
-            $post_data['post_status'] = 'publish';
-        } elseif (array_key_exists('Status', $data)) {
-            $post_status = sanitize_key($data['Status']);
-            if (in_array($post_status, ['publish', 'draft', 'pending', 'private'], true)) {
-                $post_data['post_status'] = $post_status;
+        if (array_key_exists('Slug', $data)) {
+            $post_slug = $this->sanitize_import_post_slug($data['Slug'] ?? '');
+            if ('' !== $post_slug) {
+                $post_data['post_name'] = $post_slug;
             }
+        }
+
+        $post_status = $this->get_import_post_status($data, $is_update ? '' : 'publish');
+        if ('' !== $post_status) {
+            $post_data['post_status'] = $post_status;
         }
 
         $post_field_updates = array_diff(array_keys($post_data), ['ID', 'post_type']);
@@ -778,6 +893,29 @@ trait Port_Import
         $this->log('产品保存成功，ID: ' . $post_id);
 
         return absint($post_id);
+    }
+
+    /**
+     * 获取导入产品状态。
+     *
+     * 当 CSV 存在 Status 列时，允许新建和更新都使用该状态
+     *
+     * @param array $data CSV 行数据
+     * @param string $default_status 默认状态
+     * @return string
+     */
+    private function get_import_post_status($data, $default_status = '')
+    {
+        if (!array_key_exists('Status', $data)) {
+            return (string) $default_status;
+        }
+
+        $post_status = sanitize_key((string) $data['Status']);
+        if (in_array($post_status, ['publish', 'draft', 'pending', 'private'], true)) {
+            return $post_status;
+        }
+
+        return (string) $default_status;
     }
 
     /**
@@ -804,7 +942,49 @@ trait Port_Import
             }
         }
 
+        $existing_post_id = $this->find_existing_import_post_id_by_slug($data);
+        if ($existing_post_id) {
+            $this->log('根据 Slug 匹配到现有产品 ID: ' . $existing_post_id);
+            return $existing_post_id;
+        }
+
         return 0;
+    }
+
+    /**
+     * 根据 CSV 中的 Slug 查找现有产品。
+     *
+     * @param array $data CSV 行数据
+     * @return int
+     */
+    private function find_existing_import_post_id_by_slug($data)
+    {
+        if (!array_key_exists('Slug', $data)) {
+            return 0;
+        }
+
+        $post_slug = $this->sanitize_import_post_slug($data['Slug'] ?? '');
+        if ('' === $post_slug) {
+            return 0;
+        }
+
+        $existing_post = get_page_by_path($post_slug, OBJECT, 'product');
+        if (!$existing_post instanceof \WP_Post) {
+            return 0;
+        }
+
+        return absint($existing_post->ID);
+    }
+
+    /**
+     * 规范化导入的产品 Slug。
+     *
+     * @param string $post_slug 产品 slug
+     * @return string
+     */
+    private function sanitize_import_post_slug($post_slug)
+    {
+        return sanitize_title((string) $post_slug);
     }
 
     /**
@@ -935,6 +1115,379 @@ trait Port_Import
     }
 
     /**
+     * 更新产品分类。
+     *
+     * 支持名称路径与 slug 路径，优先使用 slug 路径创建和匹配层级分类
+     *
+     * @param int $post_id 产品 ID
+     * @param array $data CSV 行数据
+     * @return void
+     */
+    private function maybe_update_import_product_categories($post_id, $data)
+    {
+        $has_name_column = array_key_exists('Categories', $data);
+        $has_slug_column = array_key_exists('Category Slugs', $data);
+
+        if (!$has_name_column && !$has_slug_column) {
+            return;
+        }
+
+        $name_paths = $has_name_column ? $this->parse_import_multi_value_list($data['Categories'] ?? '') : [];
+        $slug_paths = $has_slug_column ? $this->parse_import_multi_value_list($data['Category Slugs'] ?? '') : [];
+
+        if (empty($name_paths) && empty($slug_paths)) {
+            wp_set_post_terms($post_id, [], 'product_cat');
+            $this->log('产品分类已清空');
+            return;
+        }
+
+        $term_ids = [];
+        $max_items = max(count($name_paths), count($slug_paths));
+
+        for ($index = 0; $index < $max_items; $index++) {
+            $name_path = $name_paths[$index] ?? '';
+            $slug_path = $slug_paths[$index] ?? '';
+            $term_id = $this->resolve_import_product_category_term($slug_path, $name_path);
+
+            if ($term_id) {
+                $term_ids[] = $term_id;
+            }
+        }
+
+        $result = wp_set_post_terms($post_id, array_values(array_unique($term_ids)), 'product_cat');
+        if (is_wp_error($result)) {
+            $this->log('设置产品分类失败: ' . $result->get_error_message(), 'warning');
+            return;
+        }
+
+        $this->log('产品分类已设置，IDs: ' . implode(',', array_values(array_unique($term_ids))));
+    }
+
+    /**
+     * 解析多值列表。
+     *
+     * @param string $value 原始值
+     * @return array
+     */
+    private function parse_import_multi_value_list($value)
+    {
+        return array_values(array_filter(array_map('trim', explode('|', (string) $value)), 'strlen'));
+    }
+
+    /**
+     * 解析分类名称路径。
+     *
+     * @param string $path 分类路径
+     * @return array
+     */
+    private function parse_import_category_name_path($path)
+    {
+        return array_values(array_filter(array_map('sanitize_text_field', preg_split('/\s*>\s*/', (string) $path)), 'strlen'));
+    }
+
+    /**
+     * 解析分类 slug 路径。
+     *
+     * @param string $path 分类 slug 路径
+     * @return array
+     */
+    private function parse_import_category_slug_path($path)
+    {
+        return array_values(array_filter(array_map('sanitize_title', explode('/', trim((string) $path, '/'))), 'strlen'));
+    }
+
+    /**
+     * 解析或创建产品分类层级。
+     *
+     * @param string $slug_path 分类 slug 路径
+     * @param string $name_path 分类名称路径
+     * @return int
+     */
+    private function resolve_import_product_category_term($slug_path, $name_path)
+    {
+        $slug_segments = $this->parse_import_category_slug_path($slug_path);
+        $name_segments = $this->parse_import_category_name_path($name_path);
+        $depth = max(count($slug_segments), count($name_segments));
+        $parent_id = 0;
+
+        if ($depth < 1) {
+            return 0;
+        }
+
+        for ($index = 0; $index < $depth; $index++) {
+            $slug = $slug_segments[$index] ?? sanitize_title($name_segments[$index] ?? '');
+            $name = $name_segments[$index] ?? $this->format_import_category_name_from_slug($slug);
+
+            if ('' === $slug) {
+                continue;
+            }
+
+            $term = get_term_by('slug', $slug, 'product_cat');
+            if ($term && !is_wp_error($term)) {
+                $term_id = absint($term->term_id);
+
+                if ($parent_id && (int) $term->parent !== $parent_id) {
+                    wp_update_term($term_id, 'product_cat', ['parent' => $parent_id]);
+                }
+
+                $parent_id = $term_id;
+                continue;
+            }
+
+            $result = wp_insert_term($name, 'product_cat', [
+                'slug' => $slug,
+                'parent' => $parent_id,
+            ]);
+
+            if (is_wp_error($result)) {
+                if ('term_exists' === $result->get_error_code()) {
+                    $parent_id = absint($result->get_error_data());
+                    continue;
+                }
+
+                $this->log('创建层级分类失败: ' . $slug . ' (' . $result->get_error_message() . ')', 'warning');
+                return 0;
+            }
+
+            $parent_id = absint($result['term_id']);
+            $this->log('创建层级分类成功: ' . $name . ' (ID: ' . $parent_id . ')');
+        }
+
+        return $parent_id;
+    }
+
+    /**
+     * 根据 slug 生成兜底分类名称。
+     *
+     * @param string $slug 分类 slug
+     * @return string
+     */
+    private function format_import_category_name_from_slug($slug)
+    {
+        $slug = (string) $slug;
+        if ('' === $slug) {
+            return '';
+        }
+
+        return ucwords(str_replace(['-', '_'], ' ', $slug));
+    }
+
+    /**
+     * 从分类 CSV 导入产品分类。
+     *
+     * @param string $csv_file 分类 CSV 文件路径
+     * @return array|\WP_Error
+     */
+    private function import_product_categories_from_csv($csv_file)
+    {
+        $handle = fopen($csv_file, 'r');
+        if (!$handle) {
+            $this->log('无法打开分类CSV文件', 'error');
+            return new WP_Error('cannot_read_file', __('Cannot read uploaded file.', 'jelly-catalog'));
+        }
+
+        $this->skip_csv_bom($handle);
+        $headers = fgetcsv($handle);
+        if (empty($headers) || !is_array($headers)) {
+            fclose($handle);
+            $this->log('分类CSV表头为空或格式无效', 'error');
+            return new WP_Error('invalid_csv_file', __('Invalid CSV file.', 'jelly-catalog'));
+        }
+
+        $headers = array_map(function ($header) {
+            return trim((string) $header);
+        }, $headers);
+
+        if (isset($headers[0])) {
+            $headers[0] = preg_replace('/^\xEF\xBB\xBF/', '', $headers[0]);
+        }
+
+        $rows = [];
+        while (false !== ($row = fgetcsv($handle))) {
+            $data = array_combine($headers, $row);
+            if (false === $data) {
+                continue;
+            }
+
+            $rows[] = $data;
+        }
+
+        fclose($handle);
+
+        $result = [
+            'total' => count($rows),
+            'imported' => 0,
+            'errors' => 0,
+        ];
+
+        if (empty($rows)) {
+            return $result;
+        }
+
+        $pending_rows = array_values($rows);
+        $max_passes = max(1, count($pending_rows));
+
+        for ($pass = 0; $pass < $max_passes && !empty($pending_rows); $pass++) {
+            $next_pending_rows = [];
+            $progress_made = false;
+
+            foreach ($pending_rows as $row_data) {
+                $row_result = $this->import_product_category_row($row_data);
+
+                if ('defer' === $row_result) {
+                    $next_pending_rows[] = $row_data;
+                    continue;
+                }
+
+                $progress_made = true;
+
+                if ($row_result) {
+                    $result['imported']++;
+                } else {
+                    $result['errors']++;
+                }
+            }
+
+            if (!$progress_made) {
+                break;
+            }
+
+            $pending_rows = $next_pending_rows;
+        }
+
+        if (!empty($pending_rows)) {
+            foreach ($pending_rows as $row_data) {
+                $title = sanitize_text_field((string) ($row_data['Title'] ?? ''));
+                $slug = sanitize_title((string) ($row_data['Slug'] ?? ''));
+                $this->log('分类导入失败，未能解析父级关系: ' . ($title ?: $slug), 'warning');
+                $result['errors']++;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * 导入单个分类 CSV 行。
+     *
+     * @param array $data CSV 行数据
+     * @return int|string
+     */
+    private function import_product_category_row($data)
+    {
+        $title = sanitize_text_field((string) ($data['Title'] ?? ''));
+        $slug = sanitize_title((string) ($data['Slug'] ?? ''));
+        $description = wp_kses_post((string) ($data['Description'] ?? ''));
+        $parent_slug = sanitize_title((string) ($data['Parent Slug'] ?? ''));
+        $parent_id = 0;
+
+        if ('' === $slug) {
+            $slug = sanitize_title($title);
+        }
+
+        if ('' === $title) {
+            $title = $this->format_import_category_name_from_slug($slug);
+        }
+
+        if ('' === $slug || '' === $title) {
+            $this->log('分类CSV缺少有效标题或 slug，已跳过', 'warning');
+            return 0;
+        }
+
+        if ('' !== $parent_slug) {
+            $parent_term = get_term_by('slug', $parent_slug, 'product_cat');
+            if (!$parent_term || is_wp_error($parent_term)) {
+                return 'defer';
+            }
+
+            $parent_id = absint($parent_term->term_id);
+        }
+
+        $term = get_term_by('slug', $slug, 'product_cat');
+        if ($term && !is_wp_error($term)) {
+            $term_id = absint($term->term_id);
+            $update_result = wp_update_term($term_id, 'product_cat', [
+                'name' => $title,
+                'description' => $description,
+                'parent' => $parent_id,
+                'slug' => $slug,
+            ]);
+
+            if (is_wp_error($update_result)) {
+                $this->log('更新分类失败: ' . $slug . ' (' . $update_result->get_error_message() . ')', 'warning');
+                return 0;
+            }
+        } else {
+            $insert_result = wp_insert_term($title, 'product_cat', [
+                'slug' => $slug,
+                'description' => $description,
+                'parent' => $parent_id,
+            ]);
+
+            if (is_wp_error($insert_result)) {
+                $this->log('创建分类失败: ' . $slug . ' (' . $insert_result->get_error_message() . ')', 'warning');
+                return 0;
+            }
+
+            $term_id = absint($insert_result['term_id']);
+        }
+
+        $this->maybe_update_import_product_category_meta($term_id, $data);
+        $this->log('分类已导入: ' . $title . ' (ID: ' . $term_id . ')');
+
+        return $term_id;
+    }
+
+    /**
+     * 更新分类 Rank Math 元数据。
+     *
+     * @param int $term_id 分类 ID
+     * @param array $data CSV 行数据
+     * @return void
+     */
+    private function maybe_update_import_product_category_meta($term_id, $data)
+    {
+        $meta_map = [
+            'rank_math_focus_keyword' => [
+                'Focus Keyword',
+                'rank_math_focus_keyword',
+            ],
+            'rank_math_title' => [
+                'SEO Title',
+                'rank_math_title',
+            ],
+            'rank_math_description' => [
+                'Meta Description',
+                'rank_math_description',
+            ],
+        ];
+
+        foreach ($meta_map as $meta_key => $column_names) {
+            $matched_column = '';
+
+            foreach ($column_names as $column_name) {
+                if (array_key_exists($column_name, $data)) {
+                    $matched_column = $column_name;
+                    break;
+                }
+            }
+
+            if ('' === $matched_column) {
+                continue;
+            }
+
+            $meta_value = sanitize_text_field((string) ($data[$matched_column] ?? ''));
+
+            if ('' === $meta_value) {
+                delete_term_meta($term_id, $meta_key);
+                continue;
+            }
+
+            update_term_meta($term_id, $meta_key, $meta_value);
+        }
+    }
+
+    /**
      * 解析 FAQ 数据。返回 null 表示缺列跳过。
      */
     private function parse_import_faqs($data, $faq_count)
@@ -1037,6 +1590,114 @@ trait Port_Import
 
         update_post_meta($post_id, $meta_key, $items);
         $this->log($label . '已保存，共 ' . count($items) . ' 条');
+    }
+
+    /**
+     * 更新产品基础元数据。
+     *
+     * 当前用于导入 SKU，兼容字段名 product_sku 与 SKU
+     *
+     * @param int $post_id 产品 ID
+     * @param array $data CSV 行数据
+     * @return void
+     */
+    private function maybe_update_import_product_meta($post_id, $data)
+    {
+        $meta_map = [
+            'product_sku' => [
+                'product_sku',
+                'SKU',
+            ],
+        ];
+
+        foreach ($meta_map as $meta_key => $column_names) {
+            $matched_column = '';
+
+            foreach ($column_names as $column_name) {
+                if (array_key_exists($column_name, $data)) {
+                    $matched_column = $column_name;
+                    break;
+                }
+            }
+
+            if ('' === $matched_column) {
+                continue;
+            }
+
+            $meta_value = sanitize_text_field((string) ($data[$matched_column] ?? ''));
+
+            if ('' === $meta_value) {
+                delete_post_meta($post_id, $meta_key);
+                $this->log('产品字段已清空: ' . $meta_key);
+                continue;
+            }
+
+            update_post_meta($post_id, $meta_key, $meta_value);
+            $this->log('产品字段已保存: ' . $meta_key);
+        }
+    }
+
+    /**
+     * 更新 Rank Math SEO 元数据。
+     *
+     * 支持导入导出页面生成的英文列名，也兼容直接使用原始 meta key
+     *
+     * @param int $post_id 产品 ID
+     * @param array $data CSV 行数据
+     * @return void
+     */
+    private function maybe_update_import_rank_math_meta($post_id, $data)
+    {
+        $meta_map = $this->get_import_rank_math_meta_map();
+
+        foreach ($meta_map as $meta_key => $column_names) {
+            $matched_column = '';
+
+            foreach ($column_names as $column_name) {
+                if (array_key_exists($column_name, $data)) {
+                    $matched_column = $column_name;
+                    break;
+                }
+            }
+
+            if ('' === $matched_column) {
+                continue;
+            }
+
+            $meta_value = sanitize_text_field((string) ($data[$matched_column] ?? ''));
+
+            if ('' === $meta_value) {
+                delete_post_meta($post_id, $meta_key);
+                $this->log('SEO 字段已清空: ' . $meta_key);
+                continue;
+            }
+
+            update_post_meta($post_id, $meta_key, $meta_value);
+            $this->log('SEO 字段已保存: ' . $meta_key);
+        }
+    }
+
+    /**
+     * 获取 Rank Math 导入字段映射。
+     *
+     * @return array
+     */
+    private function get_import_rank_math_meta_map()
+    {
+        return [
+            'rank_math_focus_keyword' => [
+                'Focus Keyword',
+                'rank_math_focus_keyword',
+            ],
+            'rank_math_title' => [
+                'SEO Title',
+                'rank_math_title',
+            ],
+            'rank_math_description' => [
+                'Meta Description',
+                'rank_math_description',
+            ],
+        ];
     }
 
     /**
@@ -1391,12 +2052,12 @@ trait Port_Import
     private function format_import_job_response($job, $message = '')
     {
         $response = [
-            'job_id' => $job['id'],
-            'status' => $job['status'],
-            'total' => absint($job['total']),
-            'processed' => absint($job['processed']),
-            'imported' => absint($job['imported']),
-            'errors' => absint($job['errors']),
+            'job_id' => $job['id'] ?? '',
+            'status' => $job['status'] ?? 'pending',
+            'total' => absint($job['total'] ?? 0),
+            'processed' => absint($job['processed'] ?? 0),
+            'imported' => absint($job['imported'] ?? 0),
+            'errors' => absint($job['errors'] ?? 0),
             'message' => $message ?: ($job['message'] ?? ''),
         ];
 
@@ -1415,6 +2076,7 @@ trait Port_Import
         $code = $error instanceof WP_Error ? $error->get_error_code() : '';
         $allowed_codes = [
             'file_upload_failed',
+            'missing_import_file',
             'invalid_csv_file',
             'cannot_read_file',
             'import_batch_failed',
@@ -1741,13 +2403,43 @@ trait Port_Import
         if (isset($_GET['import_success'])) {
             $result = get_transient('jc_import_result');
             if ($result) {
+                $messages = [];
+
+                if (!empty($result['categories_only'])) {
+                    $messages[] = sprintf(
+                        '%s %d %s',
+                        esc_html__('Successfully imported', 'jelly-catalog'),
+                        absint($result['categories_imported'] ?? 0),
+                        esc_html__('categories', 'jelly-catalog')
+                    );
+                } else {
+                    $messages[] = sprintf(
+                        '%s %d %s',
+                        esc_html__('Successfully imported', 'jelly-catalog'),
+                        absint($result['imported'] ?? 0),
+                        esc_html__('products', 'jelly-catalog')
+                    );
+                }
+
+                if (!empty($result['categories_imported']) || !empty($result['category_errors'])) {
+                    $messages[] = sprintf(
+                        '%d %s, %d %s',
+                        absint($result['categories_imported'] ?? 0),
+                        esc_html__('categories imported', 'jelly-catalog'),
+                        absint($result['category_errors'] ?? 0),
+                        esc_html__('category errors', 'jelly-catalog')
+                    );
+                }
+
+                $messages[] = sprintf(
+                    '%d %s',
+                    absint($result['errors'] ?? 0),
+                    esc_html__('errors', 'jelly-catalog')
+                );
+
                 printf(
-                    '<div class="notice notice-success is-dismissible"><p>%s %d %s, %d %s. <a href="%s">%s</a></p></div>',
-                    esc_html__('Successfully imported', 'jelly-catalog'),
-                    absint($result['imported']),
-                    esc_html__('products', 'jelly-catalog'),
-                    absint($result['errors']),
-                    esc_html__('errors', 'jelly-catalog'),
+                    '<div class="notice notice-success is-dismissible"><p>%s. <a href="%s">%s</a></p></div>',
+                    esc_html(implode(', ', $messages)),
                     esc_url(admin_url('edit.php?post_type=product&page=products-port')),
                     esc_html__('View detailed log', 'jelly-catalog')
                 );
@@ -1760,6 +2452,9 @@ trait Port_Import
             switch (sanitize_key(wp_unslash($_GET['import_error']))) {
                 case 'file_upload_failed':
                     $error_msg = __('File upload failed.', 'jelly-catalog');
+                    break;
+                case 'missing_import_file':
+                    $error_msg = __('Please upload a product CSV or a category CSV.', 'jelly-catalog');
                     break;
                 case 'invalid_csv_file':
                     $error_msg = __('Invalid CSV file.', 'jelly-catalog');

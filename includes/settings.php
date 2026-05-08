@@ -10,6 +10,8 @@
 
 namespace Jelly_Catalog;
 
+use Jelly_Catalog\Modules\Permalinks;
+
 if (!defined('ABSPATH')) {
     exit; // 禁止直接访问
 }
@@ -249,13 +251,13 @@ class Settings
      */
     public function render_product_base_input()
     {
-        $permalinks = Utils::get_permalink_structure();
+        $permalinks = Permalinks::get_permalink_structure();
         $product_base = $permalinks['product_base'];
 
         $options = [
-            Utils::PRODUCT_BASE_PRODUCTS => __('products', 'jelly-catalog'),
-            Utils::PRODUCT_BASE_PRODUCT => __('product', 'jelly-catalog'),
-            Utils::PRODUCT_BASE_CATEGORY => __('Primary category slug', 'jelly-catalog'),
+            Permalinks::PRODUCT_BASE_PRODUCTS => __('products', 'jelly-catalog'),
+            Permalinks::PRODUCT_BASE_PRODUCT => __('product', 'jelly-catalog'),
+            Permalinks::PRODUCT_BASE_CATEGORY => __('Selected category slug', 'jelly-catalog'),
         ];
 
         foreach ($options as $value => $label) {
@@ -265,7 +267,7 @@ class Settings
             echo '</label>';
         }
 
-        echo '<p class="description">' . __('Choose whether product URLs use /products/, /product/, or the product primary category path.', 'jelly-catalog') . '</p>';
+        echo '<p class="description">' . __('Choose whether product URLs use /products/, /product/, or the deepest assigned category slug.', 'jelly-catalog') . '</p>';
     }
 
     /**
@@ -273,12 +275,12 @@ class Settings
      */
     public function render_category_base_input()
     {
-        $permalinks = Utils::get_permalink_structure();
+        $permalinks = Permalinks::get_permalink_structure();
         $category_base = $permalinks['category_base'];
 
         $options = [
-            Utils::CATEGORY_BASE_DEFAULT => __('product-category', 'jelly-catalog'),
-            Utils::CATEGORY_BASE_NONE => __('Category slug', 'jelly-catalog'),
+            Permalinks::CATEGORY_BASE_DEFAULT => __('product-category', 'jelly-catalog'),
+            Permalinks::CATEGORY_BASE_NONE => __('Category slug', 'jelly-catalog'),
         ];
 
         foreach ($options as $value => $label) {
@@ -312,32 +314,32 @@ class Settings
             check_admin_referer('update-permalink');
         }
 
-        $permalinks = Utils::get_permalink_structure();
+        $permalinks = Permalinks::get_permalink_structure();
         $updated_permalinks = $permalinks;
 
         if (isset($_POST['jelly_catalog_product_base'])) {
             $product_base = sanitize_text_field(wp_unslash($_POST['jelly_catalog_product_base']));
             $allowed_product_bases = [
-                Utils::PRODUCT_BASE_PRODUCTS,
-                Utils::PRODUCT_BASE_PRODUCT,
-                Utils::PRODUCT_BASE_CATEGORY,
+                Permalinks::PRODUCT_BASE_PRODUCTS,
+                Permalinks::PRODUCT_BASE_PRODUCT,
+                Permalinks::PRODUCT_BASE_CATEGORY,
             ];
 
             $updated_permalinks['product_base'] = in_array($product_base, $allowed_product_bases, true)
                 ? $product_base
-                : Utils::PRODUCT_BASE_PRODUCTS;
+                : Permalinks::PRODUCT_BASE_PRODUCTS;
         }
 
         if (isset($_POST['jelly_catalog_category_base'])) {
             $category_base = sanitize_text_field(wp_unslash($_POST['jelly_catalog_category_base']));
             $allowed_category_bases = [
-                Utils::CATEGORY_BASE_DEFAULT,
-                Utils::CATEGORY_BASE_NONE,
+                Permalinks::CATEGORY_BASE_DEFAULT,
+                Permalinks::CATEGORY_BASE_NONE,
             ];
 
             $updated_permalinks['category_base'] = in_array($category_base, $allowed_category_bases, true)
                 ? $category_base
-                : Utils::CATEGORY_BASE_DEFAULT;
+                : Permalinks::CATEGORY_BASE_DEFAULT;
         }
 
         if ($updated_permalinks !== $permalinks) {
@@ -345,7 +347,8 @@ class Settings
                 'product_base' => $updated_permalinks['product_base'],
                 'category_base' => $updated_permalinks['category_base'],
             ]);
-            update_option('jelly_catalog_queue_flush_rewrite', 1);
         }
+
+        flush_rewrite_rules(false);
     }
 }

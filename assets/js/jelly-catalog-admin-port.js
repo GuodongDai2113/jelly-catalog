@@ -216,6 +216,18 @@
                 jobId = response.data.job_id;
                 updateResumeUrl(jobId);
                 setProgress(response.data);
+
+                if (response.data.status === 'complete') {
+                    isRunning = false;
+                    lockWaits = 0;
+                    setFormDisabled(false);
+                    $submit.prop('disabled', false);
+                    $retry.addClass('hidden').hide();
+                    updateResumeUrl('');
+                    $message.text(response.data.message || settings.messages.complete);
+                    return;
+                }
+
                 $message.text(settings.messages.processing);
                 processNextBatch(0);
             }).fail(function (xhr) {
@@ -237,6 +249,16 @@
             event.preventDefault();
 
             if (isRunning) {
+                return;
+            }
+
+            var productFile = $form.find('input[name="csv_file"]').get(0);
+            var categoryFile = $form.find('input[name="category_csv"]').get(0);
+            var hasProductFile = !!(productFile && productFile.files && productFile.files.length);
+            var hasCategoryFile = !!(categoryFile && categoryFile.files && categoryFile.files.length);
+
+            if (!hasProductFile && !hasCategoryFile) {
+                window.alert(settings.messages.missingFiles || 'Please upload a product CSV or a category CSV.');
                 return;
             }
 

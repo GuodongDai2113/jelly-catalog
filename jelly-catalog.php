@@ -38,7 +38,7 @@ require JELLY_CATALOG_PLUGIN_PATH . 'includes/plugin.php';
 
 /**
  * 加载插件文本域以实现本地化
- * 
+ *
  * 此函数在 plugins_loaded 钩子中调用，用于加载插件的翻译文件
  * 翻译文件位于 /languages 目录下
  */
@@ -51,7 +51,7 @@ add_action('plugins_loaded', 'jelly_catalog_load_plugin_textdomain');
 
 /**
  * 插件激活时执行的回调函数
- * 
+ *
  * 刷新重写规则以确保自定义文章类型的固定链接正常工作
  */
 function jelly_catalog_activate()
@@ -63,7 +63,7 @@ register_activation_hook(__FILE__, 'jelly_catalog_activate');
 
 /**
  * 插件停用时执行的回调函数
- * 
+ *
  * 刷新重写规则以清理自定义文章类型的固定链接规则
  */
 function jelly_catalog_deactivate()

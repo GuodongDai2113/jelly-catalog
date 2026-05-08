@@ -268,6 +268,13 @@ class Enqueue
      */
     private function enqueue_port_import_assets()
     {
+        wp_enqueue_style(
+            'jelly-core',
+            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-core.css',
+            [],
+            '1.0.2'
+        );
+
         wp_enqueue_script(
             'jelly-catalog-admin-port',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-port.js',
@@ -288,6 +295,7 @@ class Enqueue
                 'processing' => __('Importing products...', 'jelly-catalog'),
                 'complete' => __('Import completed.', 'jelly-catalog'),
                 'failed' => __('Import failed.', 'jelly-catalog'),
+                'missingFiles' => __('Please upload a product CSV or a category CSV.', 'jelly-catalog'),
                 'networkError' => __('Network error. Please try again.', 'jelly-catalog'),
                 'retrying' => __('Temporary error. Retrying...', 'jelly-catalog'),
                 'resumeReady' => __('Import paused. You can retry from the last saved position.', 'jelly-catalog'),

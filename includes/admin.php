@@ -453,9 +453,9 @@ class Admin
 
     /**
      * 在产品列表页显示页面状态标签
-     * 
+     *
      * 如果当前页面被设置为产品列表页，则添加 Jelly Catalog 标识
-     * 
+     *
      * @since 1.0.0
      * @param array $post_states 页面状态数组
      * @param \WP_Post $post 当前页面对象

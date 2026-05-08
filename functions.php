@@ -71,7 +71,7 @@ function jc_get_product_download_file($product_id)
 
 /**
  * 判断当前页面是否为产品详情页
- * 
+ *
  * @return bool 如果是产品详情页返回 true，否则返回 false
  */
 function is_jc_product_single()
@@ -81,7 +81,7 @@ function is_jc_product_single()
 
 /**
  * 判断当前页面是否为产品分类或标签归档页
- * 
+ *
  * @return bool 如果是产品分类或标签页返回 true，否则返回 false
  */
 function is_jc_product_category()
@@ -91,7 +91,7 @@ function is_jc_product_category()
 
 /**
  * 判断当前页面是否为产品归档页（包括分类、标签）
- * 
+ *
  * @return bool 如果是产品归档页返回 true，否则返回 false
  */
 function is_jc_product_archive()
@@ -101,7 +101,7 @@ function is_jc_product_archive()
 
 /**
  * 判断当前页面是否为产品搜索结果页
- * 
+ *
  * @return bool 如果是产品搜索页返回 true，否则返回 false
  */
 function is_jc_product_search()
@@ -111,7 +111,7 @@ function is_jc_product_search()
 
 /**
  * 判断当前页面是否为产品列表页或产品归档页
- * 
+ *
  * @return bool 如果是产品列表页返回 true，否则返回 false
  */
 function is_jc_products()
@@ -121,7 +121,7 @@ function is_jc_products()
 
 /**
  * 获取指定页面的 ID
- * 
+ *
  * @param string $page 页面类型，目前支持 'products'
  * @return int 页面 ID，如果未找到则返回 -1
  */

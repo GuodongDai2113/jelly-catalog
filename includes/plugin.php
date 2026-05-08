@@ -71,6 +71,7 @@ class Plugin
         $this->register_autoloader();
         if (!Utils::is_wc_activated()) {
             new Modules\Post_Types();
+            new Modules\Permalinks();
         }
         new Enqueue();
 
