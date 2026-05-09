@@ -2,25 +2,25 @@
 # This file is distributed under the same license as the Jelly Catalog plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Jelly Catalog 3.1.4\n"
+"Project-Id-Version: Jelly Catalog 3.3.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/jelly-catalog\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-04-30T01:06:51+00:00\n"
+"POT-Creation-Date: 2026-05-09T06:51:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jelly-catalog\n"
 
 #. Plugin Name of the plugin
 #: jelly-catalog.php
-#: addons/class-jc-elementor.php:156
+#: addons/elementor.php:189
 #: addons/elementor/conditions/jelly-catalog.php:30
 #: addons/elementor/documents/product-archive.php:148
 #: addons/elementor/documents/product.php:164
-#: includes/class-jc-admin.php:493
+#: includes/admin.php:487
 msgid "Jelly Catalog"
 msgstr ""
 
@@ -38,6 +38,13 @@ msgstr ""
 #. Author of the plugin
 #: jelly-catalog.php
 msgid "JellyDai"
+msgstr ""
+
+#: addons/elementor.php:100
+#: addons/elementor/documents/product-post.php:68
+#: addons/elementor/documents/product.php:159
+#: modules/post-types.php:140
+msgid "Product"
 msgstr ""
 
 #: addons/elementor/conditions/jelly-catalog.php:35
@@ -96,12 +103,6 @@ msgstr ""
 msgid "Product Posts"
 msgstr ""
 
-#: addons/elementor/documents/product-post.php:68
-#: addons/elementor/documents/product.php:159
-#: includes/class-jc-post-types.php:136
-msgid "Product"
-msgstr ""
-
 #: addons/elementor/documents/product.php:33
 msgid "Single Product"
 msgstr ""
@@ -111,18 +112,18 @@ msgid "Single Products"
 msgstr ""
 
 #: addons/elementor/skins/skin-loop-product.php:57
-#: includes/class-jc-post-types.php:135
+#: modules/post-types.php:139
 msgid "Products"
 msgstr ""
 
 #: addons/elementor/tags/product-cat-advantages.php:28
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:81
+#: modules/metabox/product-cat-fields-metabox.php:83
 msgid "Category Advantages"
 msgstr ""
 
 #: addons/elementor/tags/product-cat-banner.php:42
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:30
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:61
+#: modules/metabox/product-cat-banner-metabox.php:32
+#: modules/metabox/product-cat-banner-metabox.php:63
 msgid "Category Banner"
 msgstr ""
 
@@ -132,7 +133,7 @@ msgid "Fallback"
 msgstr ""
 
 #: addons/elementor/tags/product-cat-h1-title.php:28
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:38
+#: modules/metabox/product-cat-fields-metabox.php:40
 msgid "Category H1 Title"
 msgstr ""
 
@@ -145,13 +146,13 @@ msgid "Category Why Choose Title"
 msgstr ""
 
 #: addons/elementor/tags/product-cat-why-choose.php:28
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:60
+#: modules/metabox/product-cat-fields-metabox.php:62
 msgid "Category Why Choose"
 msgstr ""
 
 #: addons/elementor/tags/product-download.php:53
 #: addons/elementor/widgets/product-download.php:25
-#: includes/metabox/class-jc-product-download-metabox.php:25
+#: modules/metabox/product-download-metabox.php:27
 msgid "Product Download"
 msgstr ""
 
@@ -168,7 +169,7 @@ msgid "File Name"
 msgstr ""
 
 #: addons/elementor/tags/product-excerpt.php:28
-#: includes/metabox/class-jc-product-postexcerpt-metabox.php:24
+#: modules/metabox/product-postexcerpt-metabox.php:26
 msgid "Product Short Description"
 msgstr ""
 
@@ -181,9 +182,9 @@ msgid "Product Title"
 msgstr ""
 
 #: addons/elementor/widgets/product-attributes.php:32
-#: includes/class-jc-enqueue.php:446
-#: includes/metabox/class-jc-product-attributes-metabox.php:25
-#: includes/metabox/class-jc-product-attributes-metabox.php:37
+#: includes/enqueue.php:460
+#: modules/metabox/product-attributes-metabox.php:29
+#: modules/metabox/product-attributes-metabox.php:42
 msgid "Product Attributes"
 msgstr ""
 
@@ -372,8 +373,8 @@ msgid "12 Months"
 msgstr ""
 
 #: addons/elementor/widgets/product-cat-faq.php:22
-#: includes/metabox/class-jc-product-cat-faq-metabox.php:35
-#: includes/metabox/class-jc-product-cat-faq-metabox.php:43
+#: modules/metabox/product-cat-faq-metabox.php:39
+#: modules/metabox/product-cat-faq-metabox.php:47
 msgid "Category FAQ"
 msgstr ""
 
@@ -415,7 +416,7 @@ msgstr ""
 
 #: addons/elementor/widgets/product-cat-faq.php:116
 #: addons/elementor/widgets/product-faq.php:124
-#: includes/class-jc-enqueue.php:441
+#: includes/enqueue.php:455
 msgid "Question"
 msgstr ""
 
@@ -438,7 +439,7 @@ msgstr ""
 
 #: addons/elementor/widgets/product-cat-faq.php:164
 #: addons/elementor/widgets/product-faq.php:172
-#: includes/class-jc-enqueue.php:442
+#: includes/enqueue.php:456
 msgid "Answer"
 msgstr ""
 
@@ -476,7 +477,7 @@ msgstr ""
 #: addons/elementor/widgets/product-cat-list.php:54
 #: addons/elementor/widgets/product-cat-nav.php:54
 #: addons/elementor/widgets/product-download.php:53
-#: includes/class-jc-admin.php:283
+#: includes/admin.php:252
 msgid "Content"
 msgstr ""
 
@@ -582,7 +583,7 @@ msgid "Active"
 msgstr ""
 
 #: addons/elementor/widgets/product-cat-nav.php:366
-#: includes/class-jc-post-types.php:137
+#: modules/post-types.php:141
 msgid "All Products"
 msgstr ""
 
@@ -652,8 +653,8 @@ msgid "2.4 MB"
 msgstr ""
 
 #: addons/elementor/widgets/product-faq.php:30
-#: includes/metabox/class-jc-product-faq-metabox.php:25
-#: includes/metabox/class-jc-product-faq-metabox.php:37
+#: modules/metabox/product-faq-metabox.php:29
+#: modules/metabox/product-faq-metabox.php:42
 msgid "Product FAQ"
 msgstr ""
 
@@ -666,7 +667,7 @@ msgid "This preview shows the FAQ layout when the current product has no FAQ dat
 msgstr ""
 
 #: addons/elementor/widgets/product-gallery.php:30
-#: includes/metabox/class-jc-product-gallery-metabox.php:25
+#: modules/metabox/product-gallery-metabox.php:33
 msgid "Product Gallery"
 msgstr ""
 
@@ -687,7 +688,7 @@ msgid "Thumbnail Gap"
 msgstr ""
 
 #: addons/elementor/widgets/product-gallery.php:118
-#: addons/elementor/widgets/product-gallery.php:516
+#: addons/elementor/widgets/product-gallery.php:519
 msgid "Media"
 msgstr ""
 
@@ -735,190 +736,200 @@ msgstr ""
 msgid "Dots"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:380
-#: addons/elementor/widgets/product-gallery.php:471
+#: addons/elementor/widgets/product-gallery.php:382
+#: addons/elementor/widgets/product-gallery.php:472
 msgid "Product media thumbnails"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:386
+#: addons/elementor/widgets/product-gallery.php:388
 #, php-format
 msgid "Show media %d"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:406
-#: addons/elementor/widgets/product-gallery.php:488
+#: addons/elementor/widgets/product-gallery.php:408
+#: addons/elementor/widgets/product-gallery.php:490
 msgid "Product media gallery"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:425
-#: addons/elementor/widgets/product-gallery.php:501
+#: addons/elementor/widgets/product-gallery.php:427
+#: addons/elementor/widgets/product-gallery.php:504
 msgid "Previous media"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:429
-#: addons/elementor/widgets/product-gallery.php:505
+#: addons/elementor/widgets/product-gallery.php:431
+#: addons/elementor/widgets/product-gallery.php:508
 msgid "Next media"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:434
-#: addons/elementor/widgets/product-gallery.php:510
+#: addons/elementor/widgets/product-gallery.php:436
+#: addons/elementor/widgets/product-gallery.php:513
 msgid "Product media pagination"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:438
+#: addons/elementor/widgets/product-gallery.php:440
 #, php-format
 msgid "Go to media %d"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:441
+#: addons/elementor/widgets/product-gallery.php:443
 #, php-format
 msgid "Media %d"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:459
 #: addons/elementor/widgets/product-gallery.php:461
+#: addons/elementor/widgets/product-gallery.php:463
 #, php-format
 msgid "Preview image %d"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:477
+#: addons/elementor/widgets/product-gallery.php:478
 msgid "Show media"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:514
+#: addons/elementor/widgets/product-gallery.php:517
 msgid "Go to media"
 msgstr ""
 
-#: addons/elementor/widgets/product-gallery.php:545
+#: addons/elementor/widgets/product-gallery.php:549
 msgid "Video Thumbnail"
 msgstr ""
 
-#: includes/class-jc-admin.php:117
-#: includes/class-jc-admin.php:317
+#: includes/admin.php:83
+#: includes/admin.php:286
 msgid "Image"
 msgstr ""
 
-#: includes/class-jc-admin.php:136
-#: includes/class-jc-post-meta-box.php:81
-#: includes/class-jc-post-types.php:48
+#: includes/admin.php:102
+#: modules/port.php:645
+#: modules/post-meta-box.php:100
+#: modules/post-types.php:55
 msgid "Categories"
 msgstr ""
 
-#: includes/class-jc-admin.php:137
-#: includes/class-jc-post-meta-box.php:95
+#: includes/admin.php:103
+#: modules/port.php:655
+#: modules/post-meta-box.php:114
 msgid "Tags"
 msgstr ""
 
-#: includes/class-jc-admin.php:138
+#: includes/admin.php:104
 msgid "Completeness"
 msgstr ""
 
-#: includes/class-jc-admin.php:281
-#: includes/class-jc-post-meta-box.php:46
-#: includes/class-jc-settings.php:174
+#: includes/admin.php:250
+#: includes/settings.php:176
+#: modules/port.php:603
+#: modules/post-meta-box.php:65
 msgid "Title"
 msgstr ""
 
-#: includes/class-jc-admin.php:282
-#: includes/class-jc-post-meta-box.php:67
+#: includes/admin.php:251
+#: modules/port.php:640
+#: modules/post-meta-box.php:86
 msgid "Description"
 msgstr ""
 
-#: includes/class-jc-admin.php:367
+#: includes/admin.php:346
 msgid "Thumbnail"
 msgstr ""
 
-#: includes/class-jc-admin.php:445
-#: includes/class-jc-post-types.php:54
+#: includes/admin.php:429
+#: modules/post-types.php:61
 msgid "All categories"
 msgstr ""
 
-#: includes/class-jc-admin.php:474
-#: includes/class-jc-post-types.php:88
+#: includes/admin.php:458
+#: modules/post-types.php:95
 msgid "All tags"
 msgstr ""
 
-#: includes/class-jc-ajax-action.php:60
-#: includes/class-jc-ajax-action.php:102
+#: includes/ajax-action.php:53
+#: includes/ajax-action.php:95
 msgid "Security verification failed"
 msgstr ""
 
-#: includes/class-jc-ajax-action.php:65
-#: includes/class-jc-ajax-action.php:107
-#: includes/class-jc-ajax-action.php:139
-#: includes/class-jc-ajax-action.php:414
-#: includes/class-jc-ajax-action.php:629
+#: includes/ajax-action.php:58
+#: includes/ajax-action.php:100
+#: includes/ajax-action.php:132
+#: includes/ajax-action.php:397
+#: includes/ajax-action.php:610
 msgid "Insufficient permissions"
 msgstr ""
 
-#: includes/class-jc-ajax-action.php:74
-#: includes/class-jc-ajax-action.php:116
+#: includes/ajax-action.php:67
+#: includes/ajax-action.php:109
 msgid "Parameter error"
 msgstr ""
 
-#: includes/class-jc-ajax-action.php:86
+#: includes/ajax-action.php:79
 msgid "Description updated successfully"
 msgstr ""
 
-#: includes/class-jc-ajax-action.php:121
+#: includes/ajax-action.php:114
 msgid "Category image updated successfully"
 msgstr ""
 
-#: includes/class-jc-ajax-action.php:421
+#: includes/ajax-action.php:404
 msgid "No data needs to be updated"
 msgstr ""
 
 #. translators: %d: Number of products updated
-#: includes/class-jc-ajax-action.php:512
+#: includes/ajax-action.php:493
 #, php-format
 msgid "Successfully updated %d products"
 msgstr ""
 
-#: includes/class-jc-ajax-action.php:635
+#: includes/ajax-action.php:616
 msgid "Invalid taxonomy"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:314
+#: includes/enqueue.php:327
 msgid "Uploading files and preparing import..."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:315
+#: includes/enqueue.php:328
 msgid "Importing products..."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:316
+#: includes/enqueue.php:329
 msgid "Import completed."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:317
+#: includes/enqueue.php:330
 msgid "Import failed."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:318
+#: includes/enqueue.php:331
+#: modules/port-import.php:225
+#: modules/port-import.php:2457
+msgid "Please upload a product CSV or a category CSV."
+msgstr ""
+
+#: includes/enqueue.php:332
 msgid "Network error. Please try again."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:319
+#: includes/enqueue.php:333
 msgid "Temporary error. Retrying..."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:320
+#: includes/enqueue.php:334
 msgid "Import paused. You can retry from the last saved position."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:321
+#: includes/enqueue.php:335
 msgid "Import is still locked by another request. Please retry from the last saved position."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:426
+#: includes/enqueue.php:440
 msgid "Product Description"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:427
+#: includes/enqueue.php:441
 msgid "Bulk Create Items"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:428
+#: includes/enqueue.php:442
 msgid ""
 "Enter content here...\n"
 "For FAQ: First line is Question, second line is Answer\n"
@@ -935,1121 +946,1287 @@ msgid ""
 "Value 2..."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:429
+#: includes/enqueue.php:443
 msgid "Create Items"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:430
+#: includes/enqueue.php:444
 msgid "Cancel"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:431
+#: includes/enqueue.php:445
 msgid "Success"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:432
+#: includes/enqueue.php:446
 msgid "Error"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:433
+#: includes/enqueue.php:447
 msgid "OK"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:434
+#: includes/enqueue.php:448
 msgid "Please enter content."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:435
+#: includes/enqueue.php:449
 msgid "No valid items found."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:436
+#: includes/enqueue.php:450
 msgid "Successfully created {count} items."
 msgstr ""
 
-#: includes/class-jc-enqueue.php:437
+#: includes/enqueue.php:451
 msgid "Delete item"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:438
+#: includes/enqueue.php:452
 msgid "Add New Item"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:439
+#: includes/enqueue.php:453
 msgid "Bulk Create Items from Text"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:440
+#: includes/enqueue.php:454
 msgid "Bulk Create"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:443
+#: includes/enqueue.php:457
 msgid "Name"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:444
+#: includes/enqueue.php:458
 msgid "Value"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:445
+#: includes/enqueue.php:459
 msgid "Product FAQs"
 msgstr ""
 
-#: includes/class-jc-enqueue.php:447
+#: includes/enqueue.php:461
 msgid "Category FAQs"
 msgstr ""
 
-#: includes/class-jc-port.php:71
-#: includes/class-jc-port.php:72
-msgid "Import/Export"
-msgstr ""
-
-#: includes/class-jc-port.php:88
-msgid "Import/Export Products"
-msgstr ""
-
-#: includes/class-jc-port.php:91
-msgid "Import Logic"
-msgstr ""
-
-#: includes/class-jc-port.php:93
-msgid "Rows with an existing product ID update that product; rows without a valid product ID create a new product."
-msgstr ""
-
-#: includes/class-jc-port.php:95
-msgid "When updating an existing product, CSV columns that are not present are ignored so existing values are kept."
-msgstr ""
-
-#: includes/class-jc-port.php:97
-msgid "Image columns import files by path or filename from the optional images ZIP; missing image files are logged and skipped."
-msgstr ""
-
-#: includes/class-jc-port.php:103
-#: includes/class-jc-port.php:108
-msgid "Export Products"
-msgstr ""
-
-#: includes/class-jc-port.php:104
-msgid "Export all products to CSV file with images as separate files."
-msgstr ""
-
-#: includes/class-jc-port.php:113
-#: includes/class-jc-port.php:133
-msgid "Import Products"
-msgstr ""
-
-#: includes/class-jc-port.php:114
-msgid "Import products from CSV file. Upload the CSV file and a ZIP file containing all images."
-msgstr ""
-
-#: includes/class-jc-port.php:122
-msgid "CSV File"
-msgstr ""
-
-#: includes/class-jc-port.php:126
-msgid "Images ZIP File"
-msgstr ""
-
-#: includes/class-jc-port.php:131
-msgid "The images ZIP file should contain all images referenced in the CSV file."
-msgstr ""
-
-#: includes/class-jc-port.php:139
-msgid "Import Progress"
-msgstr ""
-
-#: includes/class-jc-port.php:143
-msgid "Retry Import"
-msgstr ""
-
-#: includes/class-jc-port.php:152
-msgid "Processed"
-msgstr ""
-
-#: includes/class-jc-port.php:155
-msgid "Imported"
-msgstr ""
-
-#: includes/class-jc-port.php:157
-msgid "Errors"
-msgstr ""
-
-#: includes/class-jc-port.php:166
-msgid "Import Log"
-msgstr ""
-
-#: includes/class-jc-port.php:172
-msgid "Clear Log"
-msgstr ""
-
-#: includes/class-jc-port.php:188
-#: includes/class-jc-port.php:214
-#: includes/trait-jc-port-import.php:46
-#: includes/trait-jc-port-import.php:79
-#: includes/trait-jc-port-import.php:107
-msgid "You do not have sufficient permissions to access this page."
-msgstr ""
-
-#: includes/class-jc-port.php:194
-#: includes/class-jc-port.php:220
-#: includes/trait-jc-port-import.php:51
-msgid "Security check failed"
-msgstr ""
-
-#: includes/class-jc-port.php:233
-msgid "No products found to export."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:47
-msgid "Recommended format: <code>Model number + core product keywords + specifications/attributes</code>"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:52
-msgid "Short Description"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:54
-#: includes/class-jc-post-meta-box.php:69
-msgid "Writing Guidelines:"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:56
-msgid "The short description should naturally include high-frequency user search "
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:56
-msgid "keywords"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:56
-msgid " or "
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:56
-msgid "long-tail keywords"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:57
-msgid "Place important keywords at the beginning to improve keyword weighting"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:58
-msgid "Recommended length is between "
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:58
-msgid "100-160"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:58
-msgid " characters, providing sufficient value without being overly lengthy"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:59
-msgid "Use clear and concise language, avoiding excessive technical terminology"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:60
-msgid "Highlight unique product advantages, such as materials, performance, price, usage scenarios, etc."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:71
-msgid "It is recommended to use relevant keywords in the details, no less than 5 times, evenly distributed throughout the page."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:72
-msgid "Replace all pronouns in the details with keywords - use specific names instead of words like \"it\" whenever possible."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:73
-msgid "Each paragraph in the details should not exceed "
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:73
-msgid "500"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:73
-msgid " characters. If exceeded, split into paragraphs. The full text should have a minimum of "
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:73
-msgid "1000"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:73
-msgid " characters."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:74
-msgid "Ensure original content in the details. Do not copy directly from the internet. Page similarity within the website should not exceed "
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:74
-msgid "30%"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:74
-msgid "."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:83
-msgid "Category Selection Guidelines:"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:85
-msgid "Select the most relevant categories for your product to improve discoverability."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:86
-msgid "Use specific categories rather than generic ones when possible."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:87
-msgid "Avoid selecting too many categories - 2-4 relevant categories are recommended."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:88
-msgid "Check existing categories before creating new ones to maintain consistency."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:97
-msgid "Tag Usage Guidelines:"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:99
-msgid "Use tags to highlight specific features, materials, or use cases of your product."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:100
-msgid "Tags should be single words or short phrases separated by commas."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:101
-msgid "Focus on important keywords that customers might search for."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:102
-msgid "Avoid duplicate tags and excessive tagging - 5-10 relevant tags are sufficient."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:109
-msgid "Download"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:111
-msgid "Downloadable Content Guidelines:"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:113
-msgid "Upload high-quality files in supported formats (PDF, DOC, ZIP, etc.)."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:114
-msgid "Ensure files are virus-free and safe for users to download."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:115
-msgid "Provide clear file descriptions to help users understand content."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:116
-msgid "Compress large files to reduce download time and server load."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:123
-msgid "FAQ"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:125
-msgid "FAQ Creation Guidelines:"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:127
-msgid "Address common customer questions about product features, usage, and specifications."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:128
-msgid "Write clear, concise questions and detailed, helpful answers."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:129
-msgid "Organize FAQs in order of importance or frequency of questions."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:130
-msgid "Regularly update FAQs based on customer feedback and new questions."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:137
-msgid "Attributes"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:139
-msgid "Product Attributes Guidelines:"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:141
-msgid "Include all relevant technical specifications and product details."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:142
-msgid "Use consistent naming conventions for attribute keys."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:143
-msgid "Provide accurate measurements and specifications."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:144
-msgid "Avoid duplicate attributes and ensure all values are filled in."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:152
-msgid "Product Model/SKU"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:154
-msgid "SKU Management Guidelines:"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:156
-msgid "Enter a unique product model number or SKU to identify your product."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:157
-msgid "Use alphanumeric characters, hyphens, and underscores for best compatibility."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:158
-msgid "Avoid using spaces and special characters in SKUs."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:159
-msgid "Keep SKUs consistent in format across similar products for easier management."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:160
-msgid "SKUs help with inventory tracking and e-commerce integration."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:168
-msgid "Long-tail Keywords"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:170
-msgid "Long-tail Keywords Guidelines:"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:172
-msgid "Enter basic keywords to generate related long-tail variations automatically."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:173
-msgid "Long-tail keywords typically have lower competition and higher conversion rates."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:174
-msgid "Use generated keywords in product titles, descriptions, and meta fields."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:175
-msgid "Focus on specific customer intents and use cases for better targeting."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:176
-msgid "Review and customize generated keywords to match your specific product niche."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:184
-#: includes/metabox/class-jc-product-videourl-metabox.php:25
-msgid "Product Video"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:186
-msgid "Video Integration Guidelines:"
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:188
-msgid "Enter a full URL to your product video hosted on YouTube, Vimeo, or other platforms."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:189
-msgid "Videos can significantly improve customer engagement and conversion rates."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:190
-msgid "Ensure videos are optimized for fast loading and mobile viewing."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:191
-msgid "Keep videos short and focused on product features and benefits."
-msgstr ""
-
-#: includes/class-jc-post-meta-box.php:192
-msgid "Use clear titles and descriptions that complement the product information."
-msgstr ""
-
-#: includes/class-jc-post-types.php:50
-msgid "Product categories"
-msgstr ""
-
-#: includes/class-jc-post-types.php:51
-msgid "Category"
-msgstr ""
-
-#: includes/class-jc-post-types.php:52
-msgctxt "Admin menu name"
-msgid "Categories"
-msgstr ""
-
-#: includes/class-jc-post-types.php:53
-msgid "Search categories"
-msgstr ""
-
-#: includes/class-jc-post-types.php:55
-msgid "Parent category"
-msgstr ""
-
-#: includes/class-jc-post-types.php:56
-msgid "Parent category:"
-msgstr ""
-
-#: includes/class-jc-post-types.php:57
-msgid "Edit category"
-msgstr ""
-
-#: includes/class-jc-post-types.php:58
-msgid "Update category"
-msgstr ""
-
-#: includes/class-jc-post-types.php:59
-msgid "Add new category"
-msgstr ""
-
-#: includes/class-jc-post-types.php:60
-msgid "New category name"
-msgstr ""
-
-#: includes/class-jc-post-types.php:61
-msgid "No categories found"
-msgstr ""
-
-#: includes/class-jc-post-types.php:62
-msgid "Product Category Link"
-msgstr ""
-
-#: includes/class-jc-post-types.php:63
-msgid "A link to a product category."
-msgstr ""
-
-#: includes/class-jc-post-types.php:64
-msgctxt "Template name"
-msgid "Products by Category"
-msgstr ""
-
-#: includes/class-jc-post-types.php:82
-#: includes/class-jc-post-types.php:84
-msgid "Product tags"
-msgstr ""
-
-#: includes/class-jc-post-types.php:85
-msgid "Tag"
-msgstr ""
-
-#: includes/class-jc-post-types.php:86
-msgctxt "Admin menu name"
-msgid "Tags"
-msgstr ""
-
-#: includes/class-jc-post-types.php:87
-msgid "Search tags"
-msgstr ""
-
-#: includes/class-jc-post-types.php:89
-msgid "Edit tag"
-msgstr ""
-
-#: includes/class-jc-post-types.php:90
-msgid "Update tag"
-msgstr ""
-
-#: includes/class-jc-post-types.php:91
-msgid "Add new tag"
-msgstr ""
-
-#: includes/class-jc-post-types.php:92
-msgid "New tag name"
-msgstr ""
-
-#: includes/class-jc-post-types.php:93
-msgid "Popular tags"
-msgstr ""
-
-#: includes/class-jc-post-types.php:94
-msgid "Separate tags with commas"
-msgstr ""
-
-#: includes/class-jc-post-types.php:95
-msgid "Add or remove tags"
-msgstr ""
-
-#: includes/class-jc-post-types.php:96
-msgid "Choose from the most used tags"
-msgstr ""
-
-#: includes/class-jc-post-types.php:97
-msgid "No tags found"
-msgstr ""
-
-#: includes/class-jc-post-types.php:98
-msgid "Product Tag Link"
-msgstr ""
-
-#: includes/class-jc-post-types.php:99
-msgid "A link to a product tag."
-msgstr ""
-
-#: includes/class-jc-post-types.php:100
-msgctxt "Template name"
-msgid "Products by Tag"
-msgstr ""
-
-#: includes/class-jc-post-types.php:138
-msgctxt "Admin menu name"
-msgid "Products"
-msgstr ""
-
-#: includes/class-jc-post-types.php:139
-msgid "Add New"
-msgstr ""
-
-#: includes/class-jc-post-types.php:140
-msgid "Add new product"
-msgstr ""
-
-#: includes/class-jc-post-types.php:141
-msgid "Edit"
-msgstr ""
-
-#: includes/class-jc-post-types.php:142
-msgid "Edit product"
-msgstr ""
-
-#: includes/class-jc-post-types.php:143
-msgid "New product"
-msgstr ""
-
-#: includes/class-jc-post-types.php:144
-msgid "View product"
-msgstr ""
-
-#: includes/class-jc-post-types.php:145
-msgid "View products"
-msgstr ""
-
-#: includes/class-jc-post-types.php:146
-msgid "Search products"
-msgstr ""
-
-#: includes/class-jc-post-types.php:147
-msgid "No products found"
-msgstr ""
-
-#: includes/class-jc-post-types.php:148
-msgid "No products found in trash"
-msgstr ""
-
-#: includes/class-jc-post-types.php:149
-msgid "Parent product"
-msgstr ""
-
-#: includes/class-jc-post-types.php:150
-msgid "Product image"
-msgstr ""
-
-#: includes/class-jc-post-types.php:151
-msgid "Set product image"
-msgstr ""
-
-#: includes/class-jc-post-types.php:152
-msgid "Remove product image"
-msgstr ""
-
-#: includes/class-jc-post-types.php:153
-msgid "Use as product image"
-msgstr ""
-
-#: includes/class-jc-post-types.php:154
-msgid "Insert into product"
-msgstr ""
-
-#: includes/class-jc-post-types.php:155
-msgid "Uploaded to this product"
-msgstr ""
-
-#: includes/class-jc-post-types.php:156
-msgid "Filter products"
-msgstr ""
-
-#: includes/class-jc-post-types.php:157
-msgid "Products navigation"
-msgstr ""
-
-#: includes/class-jc-post-types.php:158
-msgid "Products list"
-msgstr ""
-
-#: includes/class-jc-post-types.php:159
-msgid "Product Link"
-msgstr ""
-
-#: includes/class-jc-post-types.php:160
-msgid "A link to a product."
-msgstr ""
-
-#: includes/class-jc-post-types.php:162
-msgid "This is where you can browse products in this store."
-msgstr ""
-
-#: includes/class-jc-post-types.php:196
-msgid "Category added."
-msgstr ""
-
-#: includes/class-jc-post-types.php:197
-msgid "Category deleted."
-msgstr ""
-
-#: includes/class-jc-post-types.php:198
-msgid "Category updated."
-msgstr ""
-
-#: includes/class-jc-post-types.php:199
-msgid "Category not added."
-msgstr ""
-
-#: includes/class-jc-post-types.php:200
-msgid "Category not updated."
-msgstr ""
-
-#: includes/class-jc-post-types.php:201
-msgid "Categories deleted."
-msgstr ""
-
-#: includes/class-jc-post-types.php:206
-msgid "Tag added."
-msgstr ""
-
-#: includes/class-jc-post-types.php:207
-msgid "Tag deleted."
-msgstr ""
-
-#: includes/class-jc-post-types.php:208
-msgid "Tag updated."
-msgstr ""
-
-#: includes/class-jc-post-types.php:209
-msgid "Tag not added."
-msgstr ""
-
-#: includes/class-jc-post-types.php:210
-msgid "Tag not updated."
-msgstr ""
-
-#: includes/class-jc-post-types.php:211
-msgid "Tags deleted."
-msgstr ""
-
-#: includes/class-jc-settings.php:40
+#: includes/settings.php:42
 msgid "Products Settings"
 msgstr ""
 
-#: includes/class-jc-settings.php:48
+#: includes/settings.php:50
 msgid "Products Page"
 msgstr ""
 
-#: includes/class-jc-settings.php:58
+#: includes/settings.php:60
 msgid "Products Per Page"
 msgstr ""
 
-#: includes/class-jc-settings.php:68
+#: includes/settings.php:70
 msgid "Products Order By"
 msgstr ""
 
-#: includes/class-jc-settings.php:78
+#: includes/settings.php:80
 msgid "Products Order"
 msgstr ""
 
-#: includes/class-jc-settings.php:136
+#: includes/settings.php:138
 msgid "Configure how your products are displayed on your site."
 msgstr ""
 
-#: includes/class-jc-settings.php:149
+#: includes/settings.php:151
 msgid "— Select a page —"
 msgstr ""
 
-#: includes/class-jc-settings.php:153
+#: includes/settings.php:155
 msgid "Select the page where your products will be displayed."
 msgstr ""
 
-#: includes/class-jc-settings.php:164
+#: includes/settings.php:166
 msgid "Set the number of products to display per page."
 msgstr ""
 
-#: includes/class-jc-settings.php:173
+#: includes/settings.php:175
 msgid "Date"
 msgstr ""
 
-#: includes/class-jc-settings.php:175
+#: includes/settings.php:177
 msgid "Menu Order"
 msgstr ""
 
-#: includes/class-jc-settings.php:176
+#: includes/settings.php:178
 msgid "Random"
 msgstr ""
 
-#: includes/class-jc-settings.php:177
+#: includes/settings.php:179
 msgid "Last Modified"
 msgstr ""
 
-#: includes/class-jc-settings.php:187
+#: includes/settings.php:189
 msgid "Select how products should be ordered."
 msgstr ""
 
-#: includes/class-jc-settings.php:196
+#: includes/settings.php:198
 msgid "Ascending"
 msgstr ""
 
-#: includes/class-jc-settings.php:197
+#: includes/settings.php:199
 msgid "Descending"
 msgstr ""
 
-#: includes/class-jc-settings.php:207
+#: includes/settings.php:209
 msgid "Select the direction of product ordering."
 msgstr ""
 
-#: includes/class-jc-settings.php:217
+#: includes/settings.php:219
 msgid "Product Permalinks"
 msgstr ""
 
-#: includes/class-jc-settings.php:224
+#: includes/settings.php:226
 msgid "Product Base"
 msgstr ""
 
-#: includes/class-jc-settings.php:236
+#: includes/settings.php:234
+msgid "Category Base"
+msgstr ""
+
+#: includes/settings.php:246
 msgid "Configure the permalink structure for your product catalog."
 msgstr ""
 
-#: includes/class-jc-settings.php:248
-msgid "Enter the base slug for your products URL."
-msgstr ""
-
-#: includes/class-jc-sheet-editor.php:57
-#: includes/class-jc-sheet-editor.php:58
-msgid "Product Sheet"
-msgstr ""
-
-#: includes/class-jc-sheet-editor.php:78
-msgid "« First"
-msgstr ""
-
-#: includes/class-jc-sheet-editor.php:81
-msgid "‹ Previous"
-msgstr ""
-
-#. translators: 1: current page placeholder, 2: total pages placeholder
-#: includes/class-jc-sheet-editor.php:87
-#, php-format
-msgid "Page %1$s of %2$s"
-msgstr ""
-
-#: includes/class-jc-sheet-editor.php:103
-msgid "Next ›"
-msgstr ""
-
-#: includes/class-jc-sheet-editor.php:106
-msgid "Last »"
-msgstr ""
-
-#: includes/class-jc-sheet-editor.php:109
-msgid "Jump to:"
-msgstr ""
-
-#: includes/class-jc-sheet-editor.php:112
-msgid "Go"
-msgstr ""
-
-#: includes/class-jc-sheet-editor.php:116
-msgid "Per page:"
-msgstr ""
-
-#: includes/class-jc-sheet-editor.php:124
-msgid "Save Sheet"
-msgstr ""
-
-#: includes/jc-functions.php:245
-msgctxt "slug"
+#: includes/settings.php:258
+#: modules/port-import.php:2420
 msgid "products"
 msgstr ""
 
-#: includes/metabox/class-jc-longtail-keywords-metabox.php:31
+#: includes/settings.php:259
+msgid "product"
+msgstr ""
+
+#: includes/settings.php:260
+msgid "Selected category slug"
+msgstr ""
+
+#: includes/settings.php:270
+msgid "Choose whether product URLs use /products/, /product/, or the deepest assigned category slug."
+msgstr ""
+
+#: includes/settings.php:282
+msgid "product-category"
+msgstr ""
+
+#: includes/settings.php:283
+msgid "Category slug"
+msgstr ""
+
+#: includes/settings.php:293
+msgid "Choose whether category URLs use /product-category/ or the category hierarchy directly."
+msgstr ""
+
+#: includes/utils.php:225
+#: modules/metabox/product-cat-faq-metabox.php:48
+#: modules/metabox/product-faq-metabox.php:43
+#: modules/post-meta-box.php:142
+msgid "FAQ"
+msgstr ""
+
+#: includes/utils.php:235
+#: modules/metabox/product-attributes-metabox.php:43
+msgid "Attribute"
+msgstr ""
+
+#: modules/metabox/longtail-keywords-metabox.php:33
 msgid "Long-tail Keyword"
 msgstr ""
 
-#: includes/metabox/class-jc-longtail-keywords-metabox.php:50
+#: modules/metabox/longtail-keywords-metabox.php:52
 msgid "Basic Keywords"
 msgstr ""
 
-#: includes/metabox/class-jc-longtail-keywords-metabox.php:54
+#: modules/metabox/longtail-keywords-metabox.php:56
 msgid "Please enter basic keywords"
 msgstr ""
 
-#: includes/metabox/class-jc-longtail-keywords-metabox.php:56
+#: modules/metabox/longtail-keywords-metabox.php:58
 msgid "Input a basic keyword to generate various long-tail variants."
 msgstr ""
 
-#: includes/metabox/class-jc-longtail-keywords-metabox.php:62
+#: modules/metabox/longtail-keywords-metabox.php:64
 msgid "Generated Long-tail Keywords"
 msgstr ""
 
-#: includes/metabox/class-jc-product-attributes-metabox.php:43
+#: modules/metabox/product-attributes-metabox.php:37
+msgid "Add key specifications and values to describe the product clearly"
+msgstr ""
+
+#: modules/metabox/product-attributes-metabox.php:50
 msgid "Name:"
 msgstr ""
 
-#: includes/metabox/class-jc-product-attributes-metabox.php:49
+#: modules/metabox/product-attributes-metabox.php:56
 msgid "Value:"
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:38
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:71
+#: modules/metabox/product-cat-banner-metabox.php:40
+#: modules/metabox/product-cat-banner-metabox.php:73
 msgid "Select Banner"
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:40
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:73
+#: modules/metabox/product-cat-banner-metabox.php:42
+#: modules/metabox/product-cat-banner-metabox.php:75
 msgid "Remove Banner"
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:43
-#: includes/metabox/class-jc-product-cat-banner-metabox.php:76
+#: modules/metabox/product-cat-banner-metabox.php:45
+#: modules/metabox/product-cat-banner-metabox.php:78
 msgid "Select a banner image for this product category."
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-faq-metabox.php:49
-#: includes/metabox/class-jc-product-faq-metabox.php:43
+#: modules/metabox/product-cat-faq-metabox.php:55
+#: modules/metabox/product-faq-metabox.php:50
 msgid "Question:"
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-faq-metabox.php:55
-#: includes/metabox/class-jc-product-faq-metabox.php:49
+#: modules/metabox/product-cat-faq-metabox.php:61
+#: modules/metabox/product-faq-metabox.php:56
 msgid "Answer:"
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-faq-metabox.php:61
+#: modules/metabox/product-cat-faq-metabox.php:67
 msgid "Add frequently asked questions for this product category."
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:42
+#: modules/metabox/product-cat-fields-metabox.php:44
 msgid "Enter the H1 title for this category."
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:49
+#: modules/metabox/product-cat-fields-metabox.php:51
 msgid "Why Choose Us Title"
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:53
+#: modules/metabox/product-cat-fields-metabox.php:55
 msgid "Enter the why choose us title for this category."
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:74
+#: modules/metabox/product-cat-fields-metabox.php:76
 msgid "Enter the why choose content for this category."
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-fields-metabox.php:95
+#: modules/metabox/product-cat-fields-metabox.php:97
 msgid "Enter the advantages for this category."
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:32
+#: modules/metabox/product-cat-thumbnail-metabox.php:34
 msgid "Category Thumbnail"
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:42
+#: modules/metabox/product-cat-thumbnail-metabox.php:44
 msgid "Select Thumbnail"
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:44
+#: modules/metabox/product-cat-thumbnail-metabox.php:46
 msgid "Remove Thumbnail"
 msgstr ""
 
-#: includes/metabox/class-jc-product-cat-thumbnail-metabox.php:47
+#: modules/metabox/product-cat-thumbnail-metabox.php:49
 msgid "Select a thumbnail for this product category."
 msgstr ""
 
-#: includes/metabox/class-jc-product-download-metabox.php:32
-#: includes/metabox/class-jc-product-download-metabox.php:38
+#: modules/metabox/product-download-metabox.php:34
+#: modules/metabox/product-download-metabox.php:43
 msgid "No file selected"
 msgstr ""
 
-#: includes/metabox/class-jc-product-download-metabox.php:51
-msgid "Select Product File"
-msgstr ""
-
-#: includes/metabox/class-jc-product-download-metabox.php:52
-msgid "Use this file"
-msgstr ""
-
-#: includes/metabox/class-jc-product-download-metabox.php:53
-msgid "Select File"
-msgstr ""
-
-#: includes/metabox/class-jc-product-download-metabox.php:56
-msgid "Remove File"
-msgstr ""
-
-#: includes/metabox/class-jc-product-download-metabox.php:61
+#: modules/metabox/product-download-metabox.php:40
 msgid "Product catalog, multiple files can be uploaded in compressed packages"
 msgstr ""
 
-#: includes/metabox/class-jc-product-gallery-metabox.php:44
-#: includes/metabox/class-jc-product-gallery-metabox.php:55
+#: modules/metabox/product-download-metabox.php:56
+msgid "Select Product File"
+msgstr ""
+
+#: modules/metabox/product-download-metabox.php:57
+msgid "Use this file"
+msgstr ""
+
+#: modules/metabox/product-download-metabox.php:58
+msgid "Select File"
+msgstr ""
+
+#: modules/metabox/product-download-metabox.php:62
+msgid "Remove File"
+msgstr ""
+
+#: modules/metabox/product-faq-metabox.php:37
+msgid "Add common customer questions and answers for this product"
+msgstr ""
+
+#: modules/metabox/product-gallery-metabox.php:44
+msgid "Upload multiple product images and drag to reorder the gallery"
+msgstr ""
+
+#: modules/metabox/product-gallery-metabox.php:56
+#: modules/metabox/product-gallery-metabox.php:90
 msgid "Delete image"
 msgstr ""
 
-#: includes/metabox/class-jc-product-gallery-metabox.php:53
+#: modules/metabox/product-gallery-metabox.php:88
 msgid "Add Images to Product Gallery"
 msgstr ""
 
-#: includes/metabox/class-jc-product-gallery-metabox.php:54
+#: modules/metabox/product-gallery-metabox.php:89
 msgid "Add to gallery"
 msgstr ""
 
-#: includes/metabox/class-jc-product-gallery-metabox.php:56
+#: modules/metabox/product-gallery-metabox.php:91
 msgid "Delete"
 msgstr ""
 
-#: includes/metabox/class-jc-product-gallery-metabox.php:57
+#: modules/metabox/product-gallery-metabox.php:92
 msgid "Add product gallery images"
 msgstr ""
 
-#: includes/metabox/class-jc-product-sku-metabox.php:24
+#: modules/metabox/product-navigation-metabox.php:41
+msgid "Product Navigation"
+msgstr ""
+
+#: modules/metabox/product-navigation-metabox.php:61
+msgid "Previous Product"
+msgstr ""
+
+#: modules/metabox/product-navigation-metabox.php:62
+msgid "Next Product"
+msgstr ""
+
+#: modules/metabox/product-navigation-metabox.php:122
+msgid "No product available"
+msgstr ""
+
+#: modules/metabox/product-navigation-metabox.php:123
+msgid "(no title)"
+msgstr ""
+
+#: modules/metabox/product-postexcerpt-metabox.php:41
+msgid "Enter a concise product summary."
+msgstr ""
+
+#: modules/metabox/product-sku-metabox.php:27
 msgid "Product Model"
 msgstr ""
 
-#: includes/metabox/class-jc-product-sku-metabox.php:33
-msgid "Enter product model or SKU"
-msgstr ""
-
-#: includes/metabox/class-jc-product-sku-metabox.php:34
+#: modules/metabox/product-sku-metabox.php:34
 msgid "Enter the product model number or SKU (Stock Keeping Unit)"
 msgstr ""
 
-#: includes/metabox/class-jc-product-videourl-metabox.php:33
+#: modules/metabox/product-sku-metabox.php:36
+msgid "Enter product model or SKU"
+msgstr ""
+
+#: modules/metabox/product-video-metabox.php:27
+#: modules/post-meta-box.php:203
+msgid "Product Video"
+msgstr ""
+
+#: modules/metabox/product-video-metabox.php:34
+msgid "Enter the YouTube URL to your product video"
+msgstr ""
+
+#: modules/metabox/product-video-metabox.php:37
 msgid "Video URL"
 msgstr ""
 
-#: includes/metabox/class-jc-product-videourl-metabox.php:35
-msgid "Enter the full URL to your product video (YouTube, Vimeo, etc.)"
+#: modules/port-import.php:87
+#: modules/port-import.php:134
+#: modules/port-import.php:169
+#: modules/port.php:241
+#: modules/port.php:331
+#: modules/port.php:447
+#: modules/port.php:489
+msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: includes/trait-jc-port-import.php:94
-#: includes/trait-jc-port-import.php:211
+#: modules/port-import.php:92
+#: modules/port.php:247
+#: modules/port.php:337
+#: modules/port.php:452
+#: modules/port.php:495
+msgid "Security check failed"
+msgstr ""
+
+#: modules/port-import.php:149
+#: modules/port-import.php:331
 msgid "Import job prepared. Starting batch import..."
 msgstr ""
 
-#: includes/trait-jc-port-import.php:153
-#: includes/trait-jc-port-import.php:1694
-msgid "File upload failed."
-msgstr ""
-
-#: includes/trait-jc-port-import.php:159
-#: includes/trait-jc-port-import.php:1697
-msgid "Invalid CSV file."
-msgstr ""
-
-#: includes/trait-jc-port-import.php:170
-#: includes/trait-jc-port-import.php:179
-#: includes/trait-jc-port-import.php:265
-#: includes/trait-jc-port-import.php:267
-#: includes/trait-jc-port-import.php:275
-#: includes/trait-jc-port-import.php:277
-#: includes/trait-jc-port-import.php:286
-#: includes/trait-jc-port-import.php:288
-#: includes/trait-jc-port-import.php:1071
-#: includes/trait-jc-port-import.php:1081
-#: includes/trait-jc-port-import.php:1700
+#: modules/port-import.php:234
+#: modules/port-import.php:384
+#: modules/port-import.php:441
+#: modules/port-import.php:443
+#: modules/port-import.php:451
+#: modules/port-import.php:453
+#: modules/port-import.php:462
+#: modules/port-import.php:464
+#: modules/port-import.php:1286
+#: modules/port-import.php:1800
+#: modules/port-import.php:1810
+#: modules/port-import.php:2463
 msgid "Cannot read uploaded file."
 msgstr ""
 
-#: includes/trait-jc-port-import.php:239
+#. translators: 1: imported count, 2: error count
+#: modules/port-import.php:284
+#, php-format
+msgid "Category import completed. Imported: %1$d, Errors: %2$d."
+msgstr ""
+
+#: modules/port-import.php:377
+#: modules/port-import.php:1294
+#: modules/port-import.php:2460
+msgid "Invalid CSV file."
+msgstr ""
+
+#: modules/port-import.php:415
 msgid "Another import request is still running. Checking again..."
 msgstr ""
 
-#: includes/trait-jc-port-import.php:339
+#: modules/port-import.php:515
 msgid "Product import failed after retries. Skipping this row."
 msgstr ""
 
 #. translators: 1: processed count, 2: total count
-#: includes/trait-jc-port-import.php:350
-#: includes/trait-jc-port-import.php:402
-#: includes/trait-jc-port-import.php:478
+#: modules/port-import.php:526
+#: modules/port-import.php:580
+#: modules/port-import.php:656
 #, php-format
 msgid "Processed %1$d of %2$d products..."
 msgstr ""
 
-#: includes/trait-jc-port-import.php:366
+#: modules/port-import.php:542
 msgid "Temporary import error. Retrying from the last saved position..."
 msgstr ""
 
-#: includes/trait-jc-port-import.php:374
+#: modules/port-import.php:550
 msgid "Temporary import error. The import can be retried from the last saved position."
 msgstr ""
 
 #. translators: 1: imported count, 2: error count
-#: includes/trait-jc-port-import.php:383
+#: modules/port-import.php:559
 #, php-format
 msgid "Import completed. Imported: %1$d, Errors: %2$d."
 msgstr ""
 
-#: includes/trait-jc-port-import.php:432
+#: modules/port-import.php:610
 msgid "The current row is still within the safe wait window. Checking again..."
 msgstr ""
 
 #. translators: 1: attempt count, 2: max retry count
-#: includes/trait-jc-port-import.php:449
+#: modules/port-import.php:627
 #, php-format
 msgid "The previous request stopped while importing this row. Retrying it (%1$d/%2$d)."
 msgstr ""
 
-#: includes/trait-jc-port-import.php:463
+#: modules/port-import.php:641
 msgid "The previous request stopped on this row, but no safe CSV offset was saved. Retrying from the last stable position."
 msgstr ""
 
-#: includes/trait-jc-port-import.php:486
+#: modules/port-import.php:664
 msgid "The previous request stopped while importing this row. Skipping this product and continuing."
 msgstr ""
 
-#: includes/trait-jc-port-import.php:1297
-#: includes/trait-jc-port-import.php:1302
-#: includes/trait-jc-port-import.php:1306
+#: modules/port-import.php:2026
+#: modules/port-import.php:2031
+#: modules/port-import.php:2035
 msgid "Import job not found."
 msgstr ""
 
-#: includes/trait-jc-port-import.php:1678
+#: modules/port-import.php:2411
+#: modules/port-import.php:2418
 msgid "Successfully imported"
 msgstr ""
 
-#: includes/trait-jc-port-import.php:1680
-msgid "products"
+#: modules/port-import.php:2413
+msgid "categories"
 msgstr ""
 
-#: includes/trait-jc-port-import.php:1682
+#: modules/port-import.php:2428
+msgid "categories imported"
+msgstr ""
+
+#: modules/port-import.php:2430
+msgid "category errors"
+msgstr ""
+
+#: modules/port-import.php:2437
 msgid "errors"
 msgstr ""
 
-#: includes/trait-jc-port-import.php:1684
+#: modules/port-import.php:2444
 msgid "View detailed log"
 msgstr ""
 
-#: includes/trait-jc-port-import.php:1703
+#: modules/port-import.php:2454
+msgid "File upload failed."
+msgstr ""
+
+#: modules/port-import.php:2466
 msgid "An unknown error occurred during import."
+msgstr ""
+
+#: modules/port.php:57
+#: modules/port.php:58
+msgid "Import/Export"
+msgstr ""
+
+#: modules/port.php:86
+#: modules/port.php:118
+msgid "Export Products"
+msgstr ""
+
+#: modules/port.php:89
+msgid "Export all products to CSV file with images as separate files."
+msgstr ""
+
+#: modules/port.php:94
+msgid "Export Fields"
+msgstr ""
+
+#: modules/port.php:114
+msgid "ID is required. Uncheck image fields to export CSV only without packaging images."
+msgstr ""
+
+#: modules/port.php:125
+msgid "Category CSV Export"
+msgstr ""
+
+#: modules/port.php:128
+msgid "Export product categories as a dedicated CSV file including hierarchy and Rank Math fields."
+msgstr ""
+
+#: modules/port.php:133
+msgid "Export Categories CSV"
+msgstr ""
+
+#: modules/port.php:140
+msgid "SEO JSON Export"
+msgstr ""
+
+#: modules/port.php:142
+msgid "Export product titles and slugs to JSON for SEO link diagnostics."
+msgstr ""
+
+#: modules/port.php:147
+msgid "Export Products JSON"
+msgstr ""
+
+#: modules/port.php:154
+msgid "Import Products / Categories"
+msgstr ""
+
+#: modules/port.php:158
+msgid "Import products and product categories from CSV files. Upload a product CSV, a category CSV, and an optional images ZIP file."
+msgstr ""
+
+#: modules/port.php:166
+msgid "CSV File"
+msgstr ""
+
+#: modules/port.php:171
+msgid "Category CSV File"
+msgstr ""
+
+#: modules/port.php:175
+msgid "Images ZIP File"
+msgstr ""
+
+#: modules/port.php:180
+msgid "Upload a product CSV, a category CSV, or both. When both are provided, categories are created first. The images ZIP file should contain all images referenced in the product CSV."
+msgstr ""
+
+#: modules/port.php:183
+msgid "Start Import"
+msgstr ""
+
+#: modules/port.php:188
+msgid "Import Progress"
+msgstr ""
+
+#: modules/port.php:192
+msgid "Retry Import"
+msgstr ""
+
+#: modules/port.php:201
+msgid "Processed"
+msgstr ""
+
+#: modules/port.php:204
+msgid "Imported"
+msgstr ""
+
+#: modules/port.php:206
+msgid "Errors"
+msgstr ""
+
+#: modules/port.php:216
+msgid "Import Log"
+msgstr ""
+
+#: modules/port.php:219
+msgid "Clear Log"
+msgstr ""
+
+#: modules/port.php:353
+#: modules/port.php:502
+msgid "No products found to export."
+msgstr ""
+
+#: modules/port.php:457
+msgid "No product categories found to export."
+msgstr ""
+
+#: modules/port.php:536
+msgid "JSON export failed."
+msgstr ""
+
+#: modules/port.php:597
+msgid "ID"
+msgstr ""
+
+#: modules/port.php:608
+msgid "Slug"
+msgstr ""
+
+#: modules/port.php:613
+msgid "SKU"
+msgstr ""
+
+#: modules/port.php:618
+msgid "Status"
+msgstr ""
+
+#: modules/port.php:623
+msgid "Featured Image"
+msgstr ""
+
+#: modules/port.php:629
+msgid "Gallery Images"
+msgstr ""
+
+#: modules/port.php:635
+#: modules/post-meta-box.php:71
+msgid "Short Description"
+msgstr ""
+
+#: modules/port.php:650
+msgid "Category Slugs"
+msgstr ""
+
+#: modules/port.php:660
+msgid "FAQs"
+msgstr ""
+
+#: modules/port.php:665
+#: modules/post-meta-box.php:156
+msgid "Attributes"
+msgstr ""
+
+#: modules/port.php:673
+msgid "Focus Keyword"
+msgstr ""
+
+#: modules/port.php:678
+msgid "SEO Title"
+msgstr ""
+
+#: modules/port.php:683
+msgid "Meta Description"
+msgstr ""
+
+#: modules/post-meta-box.php:66
+msgid "Recommended format: <code>Model number + core product keywords + specifications/attributes</code>"
+msgstr ""
+
+#: modules/post-meta-box.php:73
+#: modules/post-meta-box.php:88
+msgid "Writing Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:75
+msgid "The short description should naturally include high-frequency user search "
+msgstr ""
+
+#: modules/post-meta-box.php:75
+msgid "keywords"
+msgstr ""
+
+#: modules/post-meta-box.php:75
+msgid " or "
+msgstr ""
+
+#: modules/post-meta-box.php:75
+msgid "long-tail keywords"
+msgstr ""
+
+#: modules/post-meta-box.php:76
+msgid "Place important keywords at the beginning to improve keyword weighting"
+msgstr ""
+
+#: modules/post-meta-box.php:77
+msgid "Recommended length is between "
+msgstr ""
+
+#: modules/post-meta-box.php:77
+msgid "100-160"
+msgstr ""
+
+#: modules/post-meta-box.php:77
+msgid " characters, providing sufficient value without being overly lengthy"
+msgstr ""
+
+#: modules/post-meta-box.php:78
+msgid "Use clear and concise language, avoiding excessive technical terminology"
+msgstr ""
+
+#: modules/post-meta-box.php:79
+msgid "Highlight unique product advantages, such as materials, performance, price, usage scenarios, etc."
+msgstr ""
+
+#: modules/post-meta-box.php:90
+msgid "It is recommended to use relevant keywords in the details, no less than 5 times, evenly distributed throughout the page."
+msgstr ""
+
+#: modules/post-meta-box.php:91
+msgid "Replace all pronouns in the details with keywords - use specific names instead of words like \"it\" whenever possible."
+msgstr ""
+
+#: modules/post-meta-box.php:92
+msgid "Each paragraph in the details should not exceed "
+msgstr ""
+
+#: modules/post-meta-box.php:92
+msgid "500"
+msgstr ""
+
+#: modules/post-meta-box.php:92
+msgid " characters. If exceeded, split into paragraphs. The full text should have a minimum of "
+msgstr ""
+
+#: modules/post-meta-box.php:92
+msgid "1000"
+msgstr ""
+
+#: modules/post-meta-box.php:92
+msgid " characters."
+msgstr ""
+
+#: modules/post-meta-box.php:93
+msgid "Ensure original content in the details. Do not copy directly from the internet. Page similarity within the website should not exceed "
+msgstr ""
+
+#: modules/post-meta-box.php:93
+msgid "30%"
+msgstr ""
+
+#: modules/post-meta-box.php:93
+msgid "."
+msgstr ""
+
+#: modules/post-meta-box.php:102
+msgid "Category Selection Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:104
+msgid "Select the most relevant categories for your product to improve discoverability."
+msgstr ""
+
+#: modules/post-meta-box.php:105
+msgid "Use specific categories rather than generic ones when possible."
+msgstr ""
+
+#: modules/post-meta-box.php:106
+msgid "Avoid selecting too many categories - 2-4 relevant categories are recommended."
+msgstr ""
+
+#: modules/post-meta-box.php:107
+msgid "Check existing categories before creating new ones to maintain consistency."
+msgstr ""
+
+#: modules/post-meta-box.php:116
+msgid "Tag Usage Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:118
+msgid "Use tags to highlight specific features, materials, or use cases of your product."
+msgstr ""
+
+#: modules/post-meta-box.php:119
+msgid "Tags should be single words or short phrases separated by commas."
+msgstr ""
+
+#: modules/post-meta-box.php:120
+msgid "Focus on important keywords that customers might search for."
+msgstr ""
+
+#: modules/post-meta-box.php:121
+msgid "Avoid duplicate tags and excessive tagging - 5-10 relevant tags are sufficient."
+msgstr ""
+
+#: modules/post-meta-box.php:128
+msgid "Download"
+msgstr ""
+
+#: modules/post-meta-box.php:130
+msgid "Downloadable Content Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:132
+msgid "Upload high-quality files in supported formats (PDF, DOC, ZIP, etc.)."
+msgstr ""
+
+#: modules/post-meta-box.php:133
+msgid "Ensure files are virus-free and safe for users to download."
+msgstr ""
+
+#: modules/post-meta-box.php:134
+msgid "Provide clear file descriptions to help users understand content."
+msgstr ""
+
+#: modules/post-meta-box.php:135
+msgid "Compress large files to reduce download time and server load."
+msgstr ""
+
+#: modules/post-meta-box.php:144
+msgid "FAQ Creation Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:146
+msgid "Address common customer questions about product features, usage, and specifications."
+msgstr ""
+
+#: modules/post-meta-box.php:147
+msgid "Write clear, concise questions and detailed, helpful answers."
+msgstr ""
+
+#: modules/post-meta-box.php:148
+msgid "Organize FAQs in order of importance or frequency of questions."
+msgstr ""
+
+#: modules/post-meta-box.php:149
+msgid "Regularly update FAQs based on customer feedback and new questions."
+msgstr ""
+
+#: modules/post-meta-box.php:158
+msgid "Product Attributes Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:160
+msgid "Include all relevant technical specifications and product details."
+msgstr ""
+
+#: modules/post-meta-box.php:161
+msgid "Use consistent naming conventions for attribute keys."
+msgstr ""
+
+#: modules/post-meta-box.php:162
+msgid "Provide accurate measurements and specifications."
+msgstr ""
+
+#: modules/post-meta-box.php:163
+msgid "Avoid duplicate attributes and ensure all values are filled in."
+msgstr ""
+
+#: modules/post-meta-box.php:171
+msgid "Product Model/SKU"
+msgstr ""
+
+#: modules/post-meta-box.php:173
+msgid "SKU Management Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:175
+msgid "Enter a unique product model number or SKU to identify your product."
+msgstr ""
+
+#: modules/post-meta-box.php:176
+msgid "Use alphanumeric characters, hyphens, and underscores for best compatibility."
+msgstr ""
+
+#: modules/post-meta-box.php:177
+msgid "Avoid using spaces and special characters in SKUs."
+msgstr ""
+
+#: modules/post-meta-box.php:178
+msgid "Keep SKUs consistent in format across similar products for easier management."
+msgstr ""
+
+#: modules/post-meta-box.php:179
+msgid "SKUs help with inventory tracking and e-commerce integration."
+msgstr ""
+
+#: modules/post-meta-box.php:187
+msgid "Long-tail Keywords"
+msgstr ""
+
+#: modules/post-meta-box.php:189
+msgid "Long-tail Keywords Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:191
+msgid "Enter basic keywords to generate related long-tail variations automatically."
+msgstr ""
+
+#: modules/post-meta-box.php:192
+msgid "Long-tail keywords typically have lower competition and higher conversion rates."
+msgstr ""
+
+#: modules/post-meta-box.php:193
+msgid "Use generated keywords in product titles, descriptions, and meta fields."
+msgstr ""
+
+#: modules/post-meta-box.php:194
+msgid "Focus on specific customer intents and use cases for better targeting."
+msgstr ""
+
+#: modules/post-meta-box.php:195
+msgid "Review and customize generated keywords to match your specific product niche."
+msgstr ""
+
+#: modules/post-meta-box.php:205
+msgid "Video Integration Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:207
+msgid "Enter a full URL to your product video hosted on YouTube, Vimeo, or other platforms."
+msgstr ""
+
+#: modules/post-meta-box.php:208
+msgid "Videos can significantly improve customer engagement and conversion rates."
+msgstr ""
+
+#: modules/post-meta-box.php:209
+msgid "Ensure videos are optimized for fast loading and mobile viewing."
+msgstr ""
+
+#: modules/post-meta-box.php:210
+msgid "Keep videos short and focused on product features and benefits."
+msgstr ""
+
+#: modules/post-meta-box.php:211
+msgid "Use clear titles and descriptions that complement the product information."
+msgstr ""
+
+#: modules/post-meta-box.php:233
+msgid "Loading editor..."
+msgstr ""
+
+#: modules/post-types.php:57
+msgid "Product categories"
+msgstr ""
+
+#: modules/post-types.php:58
+msgid "Category"
+msgstr ""
+
+#: modules/post-types.php:59
+msgctxt "Admin menu name"
+msgid "Categories"
+msgstr ""
+
+#: modules/post-types.php:60
+msgid "Search categories"
+msgstr ""
+
+#: modules/post-types.php:62
+msgid "Parent category"
+msgstr ""
+
+#: modules/post-types.php:63
+msgid "Parent category:"
+msgstr ""
+
+#: modules/post-types.php:64
+msgid "Edit category"
+msgstr ""
+
+#: modules/post-types.php:65
+msgid "Update category"
+msgstr ""
+
+#: modules/post-types.php:66
+msgid "Add new category"
+msgstr ""
+
+#: modules/post-types.php:67
+msgid "New category name"
+msgstr ""
+
+#: modules/post-types.php:68
+msgid "No categories found"
+msgstr ""
+
+#: modules/post-types.php:69
+msgid "Product Category Link"
+msgstr ""
+
+#: modules/post-types.php:70
+msgid "A link to a product category."
+msgstr ""
+
+#: modules/post-types.php:71
+msgctxt "Template name"
+msgid "Products by Category"
+msgstr ""
+
+#: modules/post-types.php:89
+#: modules/post-types.php:91
+msgid "Product tags"
+msgstr ""
+
+#: modules/post-types.php:92
+msgid "Tag"
+msgstr ""
+
+#: modules/post-types.php:93
+msgctxt "Admin menu name"
+msgid "Tags"
+msgstr ""
+
+#: modules/post-types.php:94
+msgid "Search tags"
+msgstr ""
+
+#: modules/post-types.php:96
+msgid "Edit tag"
+msgstr ""
+
+#: modules/post-types.php:97
+msgid "Update tag"
+msgstr ""
+
+#: modules/post-types.php:98
+msgid "Add new tag"
+msgstr ""
+
+#: modules/post-types.php:99
+msgid "New tag name"
+msgstr ""
+
+#: modules/post-types.php:100
+msgid "Popular tags"
+msgstr ""
+
+#: modules/post-types.php:101
+msgid "Separate tags with commas"
+msgstr ""
+
+#: modules/post-types.php:102
+msgid "Add or remove tags"
+msgstr ""
+
+#: modules/post-types.php:103
+msgid "Choose from the most used tags"
+msgstr ""
+
+#: modules/post-types.php:104
+msgid "No tags found"
+msgstr ""
+
+#: modules/post-types.php:105
+msgid "Product Tag Link"
+msgstr ""
+
+#: modules/post-types.php:106
+msgid "A link to a product tag."
+msgstr ""
+
+#: modules/post-types.php:107
+msgctxt "Template name"
+msgid "Products by Tag"
+msgstr ""
+
+#: modules/post-types.php:142
+msgctxt "Admin menu name"
+msgid "Products"
+msgstr ""
+
+#: modules/post-types.php:143
+msgid "Add New"
+msgstr ""
+
+#: modules/post-types.php:144
+msgid "Add new product"
+msgstr ""
+
+#: modules/post-types.php:145
+msgid "Edit"
+msgstr ""
+
+#: modules/post-types.php:146
+msgid "Edit product"
+msgstr ""
+
+#: modules/post-types.php:147
+msgid "New product"
+msgstr ""
+
+#: modules/post-types.php:148
+msgid "View product"
+msgstr ""
+
+#: modules/post-types.php:149
+msgid "View products"
+msgstr ""
+
+#: modules/post-types.php:150
+msgid "Search products"
+msgstr ""
+
+#: modules/post-types.php:151
+msgid "No products found"
+msgstr ""
+
+#: modules/post-types.php:152
+msgid "No products found in trash"
+msgstr ""
+
+#: modules/post-types.php:153
+msgid "Parent product"
+msgstr ""
+
+#: modules/post-types.php:154
+msgid "Product image"
+msgstr ""
+
+#: modules/post-types.php:155
+msgid "Set product image"
+msgstr ""
+
+#: modules/post-types.php:156
+msgid "Remove product image"
+msgstr ""
+
+#: modules/post-types.php:157
+msgid "Use as product image"
+msgstr ""
+
+#: modules/post-types.php:158
+msgid "Insert into product"
+msgstr ""
+
+#: modules/post-types.php:159
+msgid "Uploaded to this product"
+msgstr ""
+
+#: modules/post-types.php:160
+msgid "Filter products"
+msgstr ""
+
+#: modules/post-types.php:161
+msgid "Products navigation"
+msgstr ""
+
+#: modules/post-types.php:162
+msgid "Products list"
+msgstr ""
+
+#: modules/post-types.php:163
+msgid "Product Link"
+msgstr ""
+
+#: modules/post-types.php:164
+msgid "A link to a product."
+msgstr ""
+
+#: modules/post-types.php:166
+msgid "This is where you can browse products in this store."
+msgstr ""
+
+#: modules/post-types.php:200
+msgid "Category added."
+msgstr ""
+
+#: modules/post-types.php:201
+msgid "Category deleted."
+msgstr ""
+
+#: modules/post-types.php:202
+msgid "Category updated."
+msgstr ""
+
+#: modules/post-types.php:203
+msgid "Category not added."
+msgstr ""
+
+#: modules/post-types.php:204
+msgid "Category not updated."
+msgstr ""
+
+#: modules/post-types.php:205
+msgid "Categories deleted."
+msgstr ""
+
+#: modules/post-types.php:210
+msgid "Tag added."
+msgstr ""
+
+#: modules/post-types.php:211
+msgid "Tag deleted."
+msgstr ""
+
+#: modules/post-types.php:212
+msgid "Tag updated."
+msgstr ""
+
+#: modules/post-types.php:213
+msgid "Tag not added."
+msgstr ""
+
+#: modules/post-types.php:214
+msgid "Tag not updated."
+msgstr ""
+
+#: modules/post-types.php:215
+msgid "Tags deleted."
+msgstr ""
+
+#: modules/sheet-editor.php:50
+#: modules/sheet-editor.php:51
+msgid "Product Sheet"
+msgstr ""
+
+#: modules/sheet-editor.php:75
+msgid "« First"
+msgstr ""
+
+#: modules/sheet-editor.php:78
+msgid "‹ Previous"
+msgstr ""
+
+#. translators: 1: current page placeholder, 2: total pages placeholder
+#: modules/sheet-editor.php:84
+#, php-format
+msgid "Page %1$s of %2$s"
+msgstr ""
+
+#: modules/sheet-editor.php:100
+msgid "Next ›"
+msgstr ""
+
+#: modules/sheet-editor.php:103
+msgid "Last »"
+msgstr ""
+
+#: modules/sheet-editor.php:106
+msgid "Jump to:"
+msgstr ""
+
+#: modules/sheet-editor.php:109
+msgid "Go"
+msgstr ""
+
+#: modules/sheet-editor.php:113
+msgid "Per page:"
+msgstr ""
+
+#: modules/sheet-editor.php:121
+msgid "Save Sheet"
 msgstr ""
