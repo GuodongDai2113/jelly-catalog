@@ -40,6 +40,8 @@ class Product_Attributes_Metabox
             'id' => 'product_attributes',
             'name' => 'product_attributes',
             'title' => __('Product Attributes', 'jelly-catalog'),
+            'item_label' => __('Attribute', 'jelly-catalog'),
+            'variant' => 'attributes',
             'items' => $attributes,
             'fields' => [
                 [
@@ -90,7 +92,12 @@ class Product_Attributes_Metabox
                 }
             }
 
-            update_post_meta($post_id, '_product_attributes', $clean);
+            if (!empty($clean)) {
+                update_post_meta($post_id, '_product_attributes', $clean);
+                return;
+            }
+
+            delete_post_meta($post_id, '_product_attributes');
         } else {
             delete_post_meta($post_id, '_product_attributes');
         }

@@ -12,9 +12,15 @@
   const SELECTORS = {
     body: "body",
     titleDiv: "#poststuff #titlediv",
+    adminBar: "#wpadminbar",
+    editorNavList: ".jc-product-editor__nav-list",
+    editorNavButton: ".jc-product-editor__nav-button",
+    editorNavSecondary: ".jc-product-editor__nav-secondary",
+    loadingOverlay: ".jc-admin-loading-overlay",
     editorContent: ".jc-product-editor__content",
     sidebarContainer: "#postbox-container-1",
-    sidebarSortables: "#postbox-container-1 #side-sortables, #postbox-container-1 .meta-box-sortables",
+    sidebarSortables:
+      "#postbox-container-1 #side-sortables, #postbox-container-1 .meta-box-sortables",
     submitBox: "#submitdiv",
     postbox: ".postbox",
     postboxHandle: ".postbox .hndle, .postbox .handlediv",
@@ -37,18 +43,23 @@
   };
 
   const TINY_MCE_LAYOUT_DELAY = 50;
+  const EDITOR_READY_DELAY = 420;
+  const POST_LAYOUT_LOADING_DELAY = 500;
   const PRODUCT_SECTION_IDS = {
     summary: "summary",
     details: "details",
+    extras: "extras",
+    seo: "seo",
   };
 
   /**
    * 产品编辑页布局配置
-   * 负责定义 summary/details 两个连续分区中的内容顺序
+   * 负责定义 summary/details/seo 连续分区中的内容顺序
    */
   const PRODUCT_EDITOR_LAYOUT = [
     {
       id: PRODUCT_SECTION_IDS.summary,
+      navLabel: "Summary",
       sectionClass: "jc-product-section-summary",
       columns: [
         {
@@ -73,6 +84,7 @@
     },
     {
       id: PRODUCT_SECTION_IDS.details,
+      navLabel: "Details",
       sectionClass: "jc-product-section-details",
       columns: [
         {
@@ -86,9 +98,28 @@
               fallbackTitle: "Product Details",
             },
             { type: "metabox", id: "product_faq_metabox" },
-            { type: "metabox", id: "longtail_keywords_metabox" },
-            { type: "metabox", id: "rank_math_metabox" },
           ],
+        },
+      ],
+    },
+    {
+      id: PRODUCT_SECTION_IDS.extras,
+      sectionClass: "jc-product-section-extras",
+      columns: [
+        {
+          className: "jc-product-pane__full",
+          blocks: [{ type: "metabox", id: "longtail_keywords_metabox" }],
+        },
+      ],
+    },
+    {
+      id: PRODUCT_SECTION_IDS.seo,
+      navLabel: "SEO",
+      sectionClass: "jc-product-section-seo",
+      columns: [
+        {
+          className: "jc-product-pane__full",
+          blocks: [{ type: "metabox", id: "rank_math_metabox" }],
         },
       ],
     },
@@ -107,6 +138,7 @@
       this.productDownloadFrame = null;
       this.postboxLockHandler = null;
       this.postboxObserver = null;
+      this.sectionObserver = null;
 
       this.init();
     }
@@ -119,11 +151,13 @@
      * 核心初始化流程
      */
     init() {
+      this.startLoadingState();
       this.resetProductEditor();
       this.lockPostboxes();
       this.initProductGallery();
       this.initProductDownload();
       this.fixTinyMCELayout(EDITOR_IDS.content);
+      this.finalizeInitialLayout();
     }
 
     /**
@@ -137,9 +171,14 @@
       const $editorContainer = this.createEditorContainer();
       $titleDiv.after($editorContainer);
 
-      this.generateSections(PRODUCT_EDITOR_LAYOUT, $editorContainer);
+      const renderedSections = this.generateSections(
+        PRODUCT_EDITOR_LAYOUT,
+        $editorContainer
+      );
       this.moveSidebarMetaboxes();
       this.appendElementorControls();
+      this.initSectionNavigation(renderedSections, $editorContainer);
+      this.moveNavigationMetabox($editorContainer);
     }
 
     /**
@@ -148,6 +187,19 @@
     createEditorContainer() {
       return $(`
         <div class="jc-product-editor">
+          <aside class="jc-product-editor__nav" aria-label="Product section navigation">
+            <div class="jc-product-editor__nav-card postbox">
+              <div class="postbox-header jc-product-editor__nav-header">
+                <div class="jc-product-editor__nav-heading">
+                  <h2 class="hndle">Menu</h2>
+                </div>
+              </div>
+              <div class="inside">
+                <div class="jc-product-editor__nav-list"></div>
+              </div>
+            </div>
+            <div class="jc-product-editor__nav-secondary"></div>
+          </aside>
           <div class="jc-product-editor__content"></div>
         </div>
       `);
@@ -159,6 +211,134 @@
 
     getSection(sectionId) {
       return $("#" + this.getSectionId(sectionId));
+    }
+
+    /**
+     * 标记编辑页进入布局加载状态
+     */
+    startLoadingState() {
+      const $body = $(SELECTORS.body);
+
+      $body.addClass("jc-product-editor-is-loading");
+      $body.addClass("is-jc-loading");
+    }
+
+    /**
+     * 结束编辑页加载状态并展示最终布局
+     */
+    finishLoadingState() {
+      const $body = $(SELECTORS.body);
+      const $loadingOverlay = $(SELECTORS.loadingOverlay).first();
+
+      $body.removeClass("jc-product-editor-is-loading");
+      $body.removeClass("is-jc-loading");
+
+      $loadingOverlay.addClass("is-leaving");
+
+      window.setTimeout(() => {
+        $loadingOverlay.remove();
+      }, 220);
+    }
+
+    /**
+     * 清理默认焦点，避免 TinyMCE 初始化时将页面拉到中部
+     */
+    blurEditorFocus() {
+      const activeElement = document.activeElement;
+
+      if (activeElement && typeof activeElement.blur === "function") {
+        activeElement.blur();
+      }
+
+      if (!window.tinymce || !Array.isArray(window.tinymce.editors)) {
+        return;
+      }
+
+      window.tinymce.editors.forEach((editor) => {
+        if (!editor || typeof editor.getBody !== "function") {
+          return;
+        }
+
+        const body = editor.getBody();
+
+        if (body && typeof body.blur === "function") {
+          body.blur();
+        }
+      });
+    }
+
+    /**
+     * 将初始化后的视口强制拉回顶部
+     */
+    resetInitialViewport() {
+      const resetDelays = [0, 60, 180, 320];
+
+      resetDelays.forEach((delay) => {
+        window.setTimeout(() => {
+          this.blurEditorFocus();
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+        }, delay);
+      });
+    }
+
+    /**
+     * 在布局和编辑器刷新后完成首屏展示
+     */
+    finalizeInitialLayout() {
+      window.setTimeout(() => {
+        this.resetInitialViewport();
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => {
+            window.setTimeout(() => {
+              this.finishLoadingState();
+            }, POST_LAYOUT_LOADING_DELAY);
+          });
+        });
+      }, EDITOR_READY_DELAY);
+    }
+
+    /**
+     * 获取分区内部承载内容的首列容器
+     */
+    getSectionPane(sectionId) {
+      const $section = this.getSection(sectionId);
+      if (!$section.length) return $();
+
+      return $section.children().first();
+    }
+
+    /**
+     * 按需创建一个空分区，用于承载运行时追加的扩展内容
+     */
+    ensureSectionPane(sectionId, sectionClass, insertBeforeSectionId) {
+      const $existingPane = this.getSectionPane(sectionId);
+      if ($existingPane.length) {
+        return $existingPane;
+      }
+
+      const $contentWrapper = $(SELECTORS.editorContent).first();
+      if (!$contentWrapper.length) return $();
+
+      const $section = $(`
+        <section class="jc-product-section ${sectionClass}" id="${this.getSectionId(
+        sectionId
+      )}">
+          <div class="jc-product-pane__full"></div>
+        </section>
+      `);
+      const $insertBeforeSection = insertBeforeSectionId
+        ? this.getSection(insertBeforeSectionId)
+        : $();
+
+      if ($insertBeforeSection.length) {
+        $insertBeforeSection.before($section);
+      } else {
+        $contentWrapper.append($section);
+      }
+
+      return $section.children().first();
     }
 
     /**
@@ -179,9 +359,9 @@
       const $titleDiv = $(SELECTORS.titleDiv);
       if (!$titleDiv.length) return $();
 
-      return $('<div class="jc-product-block jc-product-block-title"></div>').append(
-        $titleDiv
-      );
+      return $(
+        '<div class="jc-product-block jc-product-block-title"></div>'
+      ).append($titleDiv);
     }
 
     /**
@@ -230,6 +410,8 @@
      * 构建单个分区中的列布局
      */
     buildSectionColumns(columns, $section) {
+      let hasVisibleBlock = false;
+
       columns.forEach((column) => {
         const $column = $(`<div class="${column.className}"></div>`);
 
@@ -237,6 +419,7 @@
           const $block = this.getLayoutBlock(block);
           if ($block.length) {
             $column.append($block);
+            hasVisibleBlock = true;
           }
         });
 
@@ -244,6 +427,8 @@
           $section.append($column);
         }
       });
+
+      return hasVisibleBlock;
     }
 
     /**
@@ -251,16 +436,165 @@
      */
     generateSections(layoutSections, $editorContainer) {
       const $contentWrapper = $editorContainer.find(SELECTORS.editorContent);
+      const renderedSections = [];
 
       layoutSections.forEach((section) => {
         const $section = $(`
-          <section class="jc-product-section ${section.sectionClass}" id="${this.getSectionId(
-            section.id
-          )}"></section>
+          <section class="jc-product-section ${
+            section.sectionClass
+          }" id="${this.getSectionId(section.id)}"></section>
         `);
 
-        this.buildSectionColumns(section.columns, $section);
+        const hasVisibleBlock = this.buildSectionColumns(
+          section.columns,
+          $section
+        );
+
+        if (!hasVisibleBlock) {
+          return;
+        }
+
         $contentWrapper.append($section);
+        renderedSections.push({
+          id: section.id,
+          navLabel: section.navLabel || "",
+        });
+      });
+
+      return renderedSections;
+    }
+
+    /**
+     * 构建左侧分区导航按钮
+     */
+    buildSectionNavigationItem(section) {
+      return $(`
+        <button type="button" class="jc-product-editor__nav-button" data-target="${section.id}">
+          ${section.navLabel}
+        </button>
+      `);
+    }
+
+    /**
+     * 计算滚动定位时需要避开的顶部高度
+     */
+    getScrollOffset() {
+      const adminBarHeight = $(SELECTORS.adminBar).outerHeight() || 0;
+
+      return adminBarHeight + 24;
+    }
+
+    /**
+     * 平滑滚动到指定分区
+     */
+    scrollToSection(sectionId) {
+      const $section = this.getSection(sectionId);
+      if (!$section.length) return;
+
+      this.setActiveSectionNav(sectionId);
+
+      const targetTop = $section.offset().top - this.getScrollOffset();
+
+      window.scrollTo({
+        top: Math.max(targetTop, 0),
+        behavior: "smooth",
+      });
+    }
+
+    /**
+     * 根据当前可见分区更新左侧导航激活态
+     */
+    setActiveSectionNav(sectionId) {
+      $(SELECTORS.editorNavButton).removeClass("is-active");
+      $(SELECTORS.editorNavButton)
+        .filter(`[data-target="${sectionId}"]`)
+        .addClass("is-active");
+    }
+
+    /**
+     * 初始化分区导航与滚动监听
+     */
+    initSectionNavigation(renderedSections, $editorContainer) {
+      const navSections = renderedSections.filter(
+        (section) => section.navLabel
+      );
+      const $navList = $editorContainer.find(SELECTORS.editorNavList);
+      const $nav = $navList.closest(".jc-product-editor__nav");
+
+      if (!$navList.length || !navSections.length) {
+        $nav.hide();
+        return;
+      }
+
+      $nav.show();
+      $navList.empty();
+
+      navSections.forEach((section) => {
+        $navList.append(this.buildSectionNavigationItem(section));
+      });
+
+      $(document)
+        .off("click.jcSectionNav", SELECTORS.editorNavButton)
+        .on("click.jcSectionNav", SELECTORS.editorNavButton, (e) => {
+          const sectionId = $(e.currentTarget).data("target");
+          if (!sectionId) return;
+
+          this.scrollToSection(sectionId);
+        });
+
+      this.setActiveSectionNav(navSections[0].id);
+      this.observeSectionNavigation(navSections);
+    }
+
+    /**
+     * 将产品前后跳转 metabox 移动到左侧菜单下方
+     */
+    moveNavigationMetabox($editorContainer) {
+      const $navSecondary = $editorContainer.find(SELECTORS.editorNavSecondary);
+      const $navigationMetabox = $("#product_navigation_metabox");
+
+      if (!$navSecondary.length || !$navigationMetabox.length) {
+        return;
+      }
+
+      $navSecondary.append($navigationMetabox);
+    }
+
+    /**
+     * 使用 IntersectionObserver 同步导航高亮
+     */
+    observeSectionNavigation(navSections) {
+      if (this.sectionObserver) {
+        this.sectionObserver.disconnect();
+      }
+
+      if (!("IntersectionObserver" in window)) {
+        return;
+      }
+
+      this.sectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+
+            const sectionId = entry.target.id.replace("section-", "");
+            this.setActiveSectionNav(sectionId);
+          });
+        },
+        {
+          root: null,
+          rootMargin: `-${this.getScrollOffset()}px 0px -55% 0px`,
+          threshold: 0.15,
+        }
+      );
+
+      navSections.forEach((section) => {
+        const sectionElement = document.getElementById(
+          this.getSectionId(section.id)
+        );
+        if (!sectionElement) return;
+
+        this.sectionObserver.observe(sectionElement);
       });
     }
 
@@ -275,7 +609,10 @@
       const $submitBox = $(SELECTORS.submitBox).first();
 
       if ($sidebarSortables.length) {
-        if ($submitBox.length && $submitBox.parent()[0] === $sidebarSortables[0]) {
+        if (
+          $submitBox.length &&
+          $submitBox.parent()[0] === $sidebarSortables[0]
+        ) {
           if ($categoryMetabox.length) {
             $submitBox.after($categoryMetabox);
           }
@@ -321,16 +658,33 @@
       const $elementorSwitch = $(SELECTORS.elementorSwitch);
       if (!$elementorEditor.length || !$elementorSwitch.length) return;
 
-      const $detailsSection = this.getSection(PRODUCT_SECTION_IDS.details);
+      const $extrasPane = this.ensureSectionPane(
+        PRODUCT_SECTION_IDS.extras,
+        "jc-product-section-extras",
+        PRODUCT_SECTION_IDS.seo
+      );
+      const $detailsPane = this.getSectionPane(PRODUCT_SECTION_IDS.details);
       const $editorMetabox = $("#postdivrich");
-      if (!$detailsSection.length) return;
+      const $longtailMetabox = $("#longtail_keywords_metabox");
 
-      if ($editorMetabox.length) {
-        $editorMetabox.after($elementorSwitch, $elementorEditor);
+      if ($extrasPane.length && $longtailMetabox.length) {
+        $longtailMetabox.after($elementorSwitch, $elementorEditor);
         return;
       }
 
-      $detailsSection.append($elementorSwitch, $elementorEditor);
+      if ($extrasPane.length) {
+        $extrasPane.append($elementorSwitch, $elementorEditor);
+        return;
+      }
+
+      if ($detailsPane.length && !$editorMetabox.length) {
+        $detailsPane.append($elementorSwitch, $elementorEditor);
+        return;
+      }
+
+      if ($editorMetabox.length) {
+        $editorMetabox.after($elementorSwitch, $elementorEditor);
+      }
     }
 
     /**
@@ -370,21 +724,13 @@
       );
 
       if (this.postboxLockHandler) {
-        document.removeEventListener(
-          "click",
-          this.postboxLockHandler,
-          true
-        );
+        document.removeEventListener("click", this.postboxLockHandler, true);
         document.removeEventListener(
           "mousedown",
           this.postboxLockHandler,
           true
         );
-        document.removeEventListener(
-          "dblclick",
-          this.postboxLockHandler,
-          true
-        );
+        document.removeEventListener("dblclick", this.postboxLockHandler, true);
       }
 
       this.postboxLockHandler = (e) => {
@@ -665,10 +1011,7 @@
 
       const emptyText = $container.data("no-file") || "No file selected";
 
-      $container
-        .find(SELECTORS.productDownloadField)
-        .val("")
-        .trigger("change");
+      $container.find(SELECTORS.productDownloadField).val("").trigger("change");
       $container.find(SELECTORS.productDownloadName).text(emptyText);
       $container.find(SELECTORS.productDownloadMeta).text("");
       $container.find(SELECTORS.productDownloadPreview).addClass("is-empty");

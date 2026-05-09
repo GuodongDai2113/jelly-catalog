@@ -142,6 +142,8 @@ class Utils
      *  - name: 字段名称
      *  - items: 项目数组
      *  - fields: 字段定义数组
+     *  - variant: 布局变体，例如 faq / attributes
+     *  - item_label: 单条记录标题
      */
     public static function render_repeater_field($args)
     {
@@ -150,42 +152,52 @@ class Utils
             'name' => '',
             'title' => '',
             'items' => [],
-            'fields' => []
+            'fields' => [],
+            'variant' => '',
+            'item_label' => '',
         ];
 
         $args = wp_parse_args($args, $defaults);
+        $config = self::get_repeater_variant_config($args);
+        $items = self::normalize_repeater_items($args['items'], $args['fields']);
 
-        echo '<div class="jc-repeater-wrapper" data-key="' . esc_attr($args['name']) . '">';
+        echo '<div class="jc-repeater-wrapper ' . esc_attr($config['wrapper_class']) . '" data-key="' . esc_attr($args['name']) . '">';
         $index = 1;
-        foreach ($args['items'] as $key => $item) {
-            echo '<div class="repeater-item">';
+        foreach ($items as $item) {
+            echo '<div class="repeater-item ' . esc_attr($config['item_class']) . '">';
             echo '<div class="repeater-item-header">';
-            $title = esc_html(str_replace('_', ' ', $args['title']));
-            echo '<span class="item-title">' . esc_html($index) . '. ' . $title . '</span>';
+            echo '<span class="item-title">' . esc_html($index) . '. ' . esc_html($config['item_label']) . '</span>';
 
             echo '</div>';
+            echo '<div class="repeater-item__body ' . esc_attr($config['body_class']) . '">';
+            echo '<div class="repeater-item__field-group">';
 
             foreach ($args['fields'] as $field) {
                 $field_name = $field['name'];
                 $field_value = isset($item[$field_name]) ? $item[$field_name] : '';
+                $field_class = self::get_repeater_field_class($field_name, $config);
+                $input_class = isset($field['class']) ? $field['class'] : '';
 
-                echo '<div class="repeater-item__' . esc_attr($field_name) . '">';
+                echo '<div class="repeater-item__' . esc_attr($field_name) . ' repeater-item__field ' . esc_attr($field_class) . '">';
                 echo '<label for="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']">';
                 echo esc_html($field['label']);
                 echo '</label>';
 
                 switch ($field['type']) {
                     case 'textarea':
-                        echo '<textarea rows="5" class="' . esc_attr($field['class']) . '" id="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" name="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']">' . esc_textarea($field_value) . '</textarea>';
+                        echo '<textarea rows="5" class="' . esc_attr($input_class) . '" id="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" name="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']">' . esc_textarea($field_value) . '</textarea>';
                         break;
                     case 'text':
                     default:
-                        echo '<input class="' . esc_attr($field['class']) . '" type="text" id="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" name="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" value="' . esc_attr($field_value) . '" />';
+                        echo '<input class="' . esc_attr($input_class) . '" type="text" id="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" name="' . esc_attr($args['name']) . '[' . $index . '][' . $field_name . ']" value="' . esc_attr($field_value) . '" />';
                         break;
                 }
 
                 echo '</div>';
             }
+
+            echo '</div>';
+            echo '</div>';
 
             $index++;
 
@@ -193,5 +205,91 @@ class Utils
         }
 
         echo '</div>';
+    }
+
+    /**
+     * 获取指定 repeater 变体的渲染配置
+     *
+     * @param array $args repeater 渲染参数。
+     * @return array
+     */
+    private static function get_repeater_variant_config($args)
+    {
+        $item_label = !empty($args['item_label']) ? $args['item_label'] : $args['title'];
+
+        $configs = [
+            'faq' => [
+                'wrapper_class' => 'jc-repeater-wrapper--faq',
+                'item_class' => 'repeater-item--faq',
+                'body_class' => 'repeater-item__body--faq',
+                'item_label' => $item_label ?: __('FAQ', 'jelly-catalog'),
+                'field_classes' => [
+                    'name' => 'repeater-item__field--question',
+                    'value' => 'repeater-item__field--answer',
+                ],
+            ],
+            'attributes' => [
+                'wrapper_class' => 'jc-repeater-wrapper--attributes',
+                'item_class' => 'repeater-item--attributes',
+                'body_class' => 'repeater-item__body--attributes',
+                'item_label' => $item_label ?: __('Attribute', 'jelly-catalog'),
+                'field_classes' => [
+                    'name' => 'repeater-item__field--name',
+                    'value' => 'repeater-item__field--value',
+                ],
+            ],
+        ];
+
+        $variant = isset($configs[$args['variant']]) ? $configs[$args['variant']] : [
+            'wrapper_class' => '',
+            'item_class' => '',
+            'body_class' => '',
+            'item_label' => $item_label,
+            'field_classes' => [],
+        ];
+
+        return $variant;
+    }
+
+    /**
+     * 在无数据时补一条空记录，确保后台默认可填写
+     *
+     * @param array $items 当前 repeater 数据。
+     * @param array $fields 字段定义列表。
+     * @return array
+     */
+    private static function normalize_repeater_items($items, $fields)
+    {
+        if (!empty($items)) {
+            return $items;
+        }
+
+        $empty_item = [];
+
+        foreach ($fields as $field) {
+            if (empty($field['name'])) {
+                continue;
+            }
+
+            $empty_item[$field['name']] = '';
+        }
+
+        return [$empty_item];
+    }
+
+    /**
+     * 获取当前字段对应的布局类名
+     *
+     * @param string $field_name 字段名。
+     * @param array $config 变体配置。
+     * @return string
+     */
+    private static function get_repeater_field_class($field_name, $config)
+    {
+        if (!isset($config['field_classes'][$field_name])) {
+            return '';
+        }
+
+        return $config['field_classes'][$field_name];
     }
 }

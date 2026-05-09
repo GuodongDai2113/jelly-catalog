@@ -8,6 +8,12 @@
         return;
       }
 
+      /** @type {wp.media.view.MediaFrame.Select|null} 分类列表图片选择器实例 */
+      this.categoryListImageFrame = null;
+
+      /** @type {jQuery|null} 当前正在编辑的分类列表单元格 */
+      this.activeCategoryImageCell = null;
+
       // 初始化产品分类图片功能
       this.initProductCategoryImageModule();
 
@@ -22,6 +28,68 @@
     }
 
     /**
+     * 显示提示信息。
+     *
+     * @param {string} message 提示文案
+     * @param {string} type 提示类型
+     * @returns {void}
+     */
+    showNotice(message, type = "info") {
+      if (typeof window.jellyShowNotice === "function") {
+        window.jellyShowNotice(message, type);
+        return;
+      }
+
+      window.alert(message);
+    }
+
+    /**
+     * 获取分类列表单元格对应的分类 ID。
+     *
+     * @param {jQuery} cell 分类列表单元格
+     * @returns {string}
+     */
+    getCategoryIdFromCell(cell) {
+      return (cell.closest("tr").attr("id") || "").replace("tag-", "");
+    }
+
+    /**
+     * 生成分类列表缩略图单元格内容。
+     *
+     * @param {string} imageUrl 图片地址
+     * @returns {string}
+     */
+    renderCategoryListImageMarkup(imageUrl) {
+      if (!imageUrl) {
+        return `
+          <div class="jc-thumbnail-wrap">
+            <span class="dashicons dashicons-format-image"></span>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="jc-thumbnail-wrap">
+          <img src="${imageUrl}" alt="Thumbnail" class="wp-post-image" height="48" width="48" />
+        </div>
+      `;
+    }
+
+    /**
+     * 更新分类列表单元格中的图片预览。
+     *
+     * @param {jQuery} cell 分类列表单元格
+     * @param {Object} attachment 媒体库返回的附件对象
+     * @returns {void}
+     */
+    updateCategoryListImagePreview(cell, attachment) {
+      const imageUrl =
+        attachment?.sizes?.thumbnail?.url || attachment?.url || "";
+
+      cell.html(this.renderCategoryListImageMarkup(imageUrl));
+    }
+
+    /**
      * 初始化产品分类图片模块
      */
     initProductCategoryImageModule() {
@@ -29,37 +97,81 @@
         return;
       }
 
-      $(".column-thumb, .column-jc-thumb").on("click", function () {
-        let frame;
-        if (frame) {
-          frame.open();
+      $(document).on("click", ".column-thumb, .column-jc-thumb", (event) => {
+        event.preventDefault();
+
+        if (!window.wp || !wp.media) {
+          this.showNotice("Media library is unavailable.", "error");
           return;
         }
 
-        frame = wp.media({
-          multiple: false,
-        });
+        this.activeCategoryImageCell = $(event.currentTarget);
 
-        frame.on(
-          "select",
-          function () {
-            const attachment = frame.state().get("selection").first().toJSON();
-            $(this).find("img").attr("src", attachment.url);
-            const categoryId = $(this).parent().attr("id").replace("tag-", "");
-            $.ajax({
-              url: jc_ajax.ajax_url,
-              type: "POST",
-              data: {
-                action: "update_product_category_image",
-                category_id: categoryId,
-                image_id: attachment.id,
-                nonce: jc_ajax.nonce,
-              },
-              success: (response) => {},
-            });
-          }.bind(this)
-        );
-        frame.open();
+        if (!this.categoryListImageFrame) {
+          this.categoryListImageFrame = wp.media({
+            multiple: false,
+          });
+
+          this.categoryListImageFrame.on("select", () => {
+            this.handleCategoryListImageSelection();
+          });
+        }
+
+        this.categoryListImageFrame.open();
+      });
+    }
+
+    /**
+     * 处理分类列表图片选择结果。
+     *
+     * @returns {void}
+     */
+    handleCategoryListImageSelection() {
+      const cell = this.activeCategoryImageCell;
+      const selection = this.categoryListImageFrame
+        ?.state()
+        .get("selection")
+        .first();
+
+      if (!cell || !cell.length || !selection) {
+        return;
+      }
+
+      const attachment = selection.toJSON();
+      const categoryId = this.getCategoryIdFromCell(cell);
+
+      if (!categoryId || !attachment?.id) {
+        this.showNotice("Unable to determine the selected category image.", "error");
+        return;
+      }
+
+      $.ajax({
+        url: jc_ajax.ajax_url,
+        type: "POST",
+        data: {
+          action: "update_product_category_image",
+          category_id: categoryId,
+          image_id: attachment.id,
+          nonce: jc_ajax.nonce,
+        },
+        success: (response) => {
+          if (!response?.success) {
+            this.showNotice(
+              response?.data || "Failed to update category image.",
+              "error"
+            );
+            return;
+          }
+
+          this.updateCategoryListImagePreview(cell, attachment);
+          this.showNotice(
+            response?.data || "Category image updated successfully.",
+            "success"
+          );
+        },
+        error: () => {
+          this.showNotice("Network error. Please try again.", "error");
+        },
       });
     }
 
@@ -117,14 +229,27 @@
               description: updatedDescription,
               nonce: jc_ajax.nonce,
             },
-            success: function (response) {
+            success: (response) => {
               if (response.success) {
                 // 更新显示的描述
                 cell.html("<p>" + updatedDescription + "</p>");
+                this.showNotice(
+                  response.data || "Description updated successfully.",
+                  "success"
+                );
+                return;
               }
+
+              this.showNotice(
+                response?.data || "Failed to update description.",
+                "error"
+              );
+            },
+            error: () => {
+              this.showNotice("Network error. Please try again.", "error");
             },
           });
-        });
+        }.bind(this));
 
         cancelBtn.on("click", function (e) {
           e.preventDefault();

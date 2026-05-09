@@ -141,6 +141,7 @@ class Admin
      */
     protected function render_product_thumbnail_column($post_id)
     {
+        echo '<div class="jc-thumbnail-wrap">';
         $thumbnail_id = get_post_meta($post_id, '_thumbnail_id', true);
         $image = $thumbnail_id ? wp_get_attachment_url($thumbnail_id) : '';
 
@@ -149,17 +150,19 @@ class Admin
             if (!empty($gallery_ids)) {
                 $gallery = array_filter(explode(',', $gallery_ids));
                 printf(
-                    '<div class="jc-gallery-count">%d</div>',
+                    '<span class="jc-gallery-count">%d</span>',
                     count($gallery) + 1 // +1 代表封面图
                 );
             }
         }
 
         if (empty($image)) {
+            echo '<span class="dashicons dashicons-format-image"></span>';
             $image = jc_placeholder_img_src();
+        } else {
+            echo '<img src="' . esc_url($image) . '" alt="Thumbnail" class="wp-post-image" height="48" width="48" />';
         }
-
-        echo '<img src="' . esc_url($image) . '" alt="Thumbnail" class="wp-post-image" height="48" width="48" />';
+        echo '</div>';
     }
 
     /**
@@ -323,15 +326,30 @@ class Admin
     protected function render_product_category_thumbnail($term_id)
     {
         $thumbnail_id = get_term_meta($term_id, 'thumbnail_id', true);
-        $image = $thumbnail_id ? wp_get_attachment_thumb_url($thumbnail_id) : jc_placeholder_img_src();
+        $image = $thumbnail_id ? wp_get_attachment_thumb_url($thumbnail_id) : '';
 
-        $image = str_replace(' ', '%20', $image);
+        if (!empty($image)) {
+            $image = str_replace(' ', '%20', $image);
+        }
 
-        return sprintf(
-            '<img src="%s" alt="%s" class="wp-post-image" height="48" width="48" />',
-            esc_url($image),
-            esc_attr__('Thumbnail', 'jelly-catalog')
-        );
+        /**
+         * 与产品列表缩略图列保持一致的 DOM 结构。
+         */
+        $html = '<div class="jc-thumbnail-wrap">';
+
+        if (empty($image)) {
+            $html .= '<span class="dashicons dashicons-format-image"></span>';
+        } else {
+            $html .= sprintf(
+                '<img src="%s" alt="%s" class="wp-post-image" height="48" width="48" />',
+                esc_url($image),
+                esc_attr__('Thumbnail', 'jelly-catalog')
+            );
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 
     /**

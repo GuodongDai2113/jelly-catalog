@@ -4,6 +4,7 @@
   const SELECTORS = {
     wrapper: ".jc-repeater-wrapper",
     repeaterItem: ".repeater-item",
+    repeaterItemHeader: ".repeater-item-header",
     repeaterAddWrapper: ".repeater-add-wrapper",
     repeaterAddNew: ".repeater-add-new",
     repeaterRemove: ".repeater-item .remove-repeater",
@@ -11,6 +12,54 @@
     bulkCreateText: ".jc-bulk-item-text",
     keyInput: ".repeater-item__key-input",
     valueInput: ".repeater-item__value-input",
+  };
+
+  /**
+   * Repeater 类型配置
+   * 负责为 FAQ、属性等不同场景提供独立的布局与文案
+   */
+  const REPEATER_TYPES = {
+    product_faqs: {
+      title: () => jc_product_i18n.product_faqs || "Product FAQ",
+      itemLabel: () => jc_product_i18n.product_faq_singular || "FAQ",
+      wrapperClass: "jc-repeater-wrapper--faq",
+      itemClass: "repeater-item--faq",
+      bodyClass: "repeater-item__body repeater-item__body--faq",
+      keyFieldClass: "repeater-item__field repeater-item__field--question",
+      valueFieldClass: "repeater-item__field repeater-item__field--answer",
+      addButtonText: () => jc_product_i18n.add_new_faq_btn || "Add FAQ",
+      bulkPlaceholder: () =>
+        jc_product_i18n.bulk_create_faq_placeholder ||
+        "Question 1\nAnswer 1\nQuestion 2\nAnswer 2",
+    },
+    product_cat_faqs: {
+      title: () => jc_product_i18n.product_cat_faqs || "Category FAQ",
+      itemLabel: () => jc_product_i18n.category_faq_singular || "FAQ",
+      wrapperClass: "jc-repeater-wrapper--faq",
+      itemClass: "repeater-item--faq",
+      bodyClass: "repeater-item__body repeater-item__body--faq",
+      keyFieldClass: "repeater-item__field repeater-item__field--question",
+      valueFieldClass: "repeater-item__field repeater-item__field--answer",
+      addButtonText: () => jc_product_i18n.add_new_faq_btn || "Add FAQ",
+      bulkPlaceholder: () =>
+        jc_product_i18n.bulk_create_faq_placeholder ||
+        "Question 1\nAnswer 1\nQuestion 2\nAnswer 2",
+    },
+    product_attributes: {
+      title: () => jc_product_i18n.product_attributes || "Product Attributes",
+      itemLabel: () =>
+        jc_product_i18n.product_attribute_singular || "Attribute",
+      wrapperClass: "jc-repeater-wrapper--attributes",
+      itemClass: "repeater-item--attributes",
+      bodyClass: "repeater-item__body repeater-item__body--attributes",
+      keyFieldClass: "repeater-item__field repeater-item__field--name",
+      valueFieldClass: "repeater-item__field repeater-item__field--value",
+      addButtonText: () =>
+        jc_product_i18n.add_new_attribute_btn || "Add Attribute",
+      bulkPlaceholder: () =>
+        jc_product_i18n.bulk_create_attribute_placeholder ||
+        "Name 1\nValue 1\nName 2\nValue 2",
+    },
   };
 
   /**
@@ -23,6 +72,22 @@
       this.bulkCreateModal = null;
       this.init();
       this.initBulkCreateModal();
+    }
+
+    /**
+     * 调用新版 jelly-core 通知接口，并在缺失时降级为浏览器提示。
+     *
+     * @param {string} message 通知文案。
+     * @param {string} type 通知类型。
+     * @returns {void}
+     */
+    showNotice(message, type = "info") {
+      if (typeof window.jellyShowNotice === "function") {
+        window.jellyShowNotice(message, type);
+        return;
+      }
+
+      window.alert(message);
     }
 
     /**
@@ -52,6 +117,7 @@
         `,
         confirmText: jc_product_i18n.create_items_btn || "Create Items",
         cancelText: jc_product_i18n.cancel_btn || "Cancel",
+        onOpen: () => this.focusBulkCreateTextArea(),
         onConfirm: () => this.processBulkCreate(),
         onClose: () => this.resetBulkCreateState(),
       });
@@ -62,6 +128,8 @@
      */
     showBulkCreateModal(button) {
       this.currentWrapper = button.closest(SELECTORS.wrapper);
+      this.syncBulkCreateModal();
+
       if (this.bulkCreateModal) {
         this.bulkCreateModal.open();
       }
@@ -74,8 +142,9 @@
       const $textArea = this.getBulkCreateTextArea();
       const text = $textArea.val().trim();
       if (!text) {
-        jellyShowError(
-          jc_product_i18n.no_content_error || "Please enter content."
+        this.showNotice(
+          jc_product_i18n.no_content_error || "Please enter content.",
+          "error"
         );
         return false;
       }
@@ -97,8 +166,9 @@
       }
 
       if (items.length === 0) {
-        jellyShowError(
-          jc_product_i18n.no_valid_items_error || "No valid items found."
+        this.showNotice(
+          jc_product_i18n.no_valid_items_error || "No valid items found.",
+          "error"
         );
         return false;
       }
@@ -109,7 +179,7 @@
 
       items.forEach((item) => {
         const itemCount = $wrapper.find(SELECTORS.repeaterItem).length;
-        const $newItem = this.buildRepeaterItem(key, itemCount + 1);
+        const $newItem = this.buildRepeaterItem($wrapper, key, itemCount + 1);
 
         if ($newItem) {
           // 设置值
@@ -120,14 +190,17 @@
         }
       });
 
+      this.refreshRepeaterItems($wrapper);
+
       $textArea.val("");
       this.currentWrapper = null;
 
-      jellyShowSuccess(
-        jc_product_i18n.success_created_items.replace(
-          "{count}",
-          items.length
-        ) || `Successfully created ${items.length} items.`
+      this.showNotice(
+        (
+          jc_product_i18n.success_created_items ||
+          "Successfully created {count} items."
+        ).replace("{count}", items.length),
+        "success"
       );
       return true;
     }
@@ -140,11 +213,79 @@
       this.currentWrapper = null;
     }
 
+    /**
+     * 聚焦当前模态框中的批量输入框。
+     *
+     * @returns {void}
+     */
+    focusBulkCreateTextArea() {
+      const $textArea = this.getBulkCreateTextArea();
+      if ($textArea.length) {
+        $textArea.trigger("focus");
+      }
+    }
+
+    /**
+     * 获取批量创建输入框的 jQuery 包装对象。
+     *
+     * 新版 jelly-core 的 `find()` 返回原生 DOM 节点，这里统一包装成 jQuery，
+     * 避免后续 `.val()`、`.trigger()` 等调用失效。
+     *
+     * @returns {jQuery}
+     */
     getBulkCreateTextArea() {
       if (!this.bulkCreateModal) {
         return $(SELECTORS.bulkCreateText);
       }
-      return this.bulkCreateModal.find(SELECTORS.bulkCreateText);
+
+      const textAreaElement = this.bulkCreateModal.find(
+        SELECTORS.bulkCreateText
+      );
+
+      return $(textAreaElement || []);
+    }
+
+    /**
+     * 获取指定 repeater 的类型配置
+     *
+     * @param {jQuery} repeaterWrapper 当前容器。
+     * @returns {object}
+     */
+    getRepeaterConfig(repeaterWrapper) {
+      const key = repeaterWrapper.data("key");
+
+      return REPEATER_TYPES[key] || {};
+    }
+
+    /**
+     * 返回当前类型的批量导入占位说明
+     *
+     * @param {jQuery} repeaterWrapper 当前容器。
+     * @returns {string}
+     */
+    getBulkPlaceholder(repeaterWrapper) {
+      const config = this.getRepeaterConfig(repeaterWrapper);
+
+      if (typeof config.bulkPlaceholder === "function") {
+        return config.bulkPlaceholder();
+      }
+
+      return jc_product_i18n.bulk_create_placeholder || "Enter content here...";
+    }
+
+    /**
+     * 同步批量导入弹窗文案，使 FAQ 与属性各自匹配
+     */
+    syncBulkCreateModal() {
+      const $textArea = this.getBulkCreateTextArea();
+      if (!$textArea.length || !this.currentWrapper) {
+        return;
+      }
+
+      $textArea.attr(
+        "placeholder",
+        this.getBulkPlaceholder(this.currentWrapper)
+      );
     }
 
     /**
@@ -153,8 +294,88 @@
     prepareExistingRepeaters() {
       $(SELECTORS.wrapper).each((_, wrapper) => {
         const $wrapper = $(wrapper);
+        this.decorateRepeaterWrapper($wrapper);
         this.addDeleteButtons($wrapper);
         this.ensureAddButton($wrapper);
+      });
+    }
+
+    /**
+     * 为现有 repeater 容器和条目补齐类型类名
+     *
+     * @param {jQuery} repeaterWrapper 当前容器。
+     * @returns {void}
+     */
+    decorateRepeaterWrapper(repeaterWrapper) {
+      const config = this.getRepeaterConfig(repeaterWrapper);
+
+      if (config.wrapperClass) {
+        repeaterWrapper.addClass(config.wrapperClass);
+      }
+
+      repeaterWrapper.find(SELECTORS.repeaterItem).each((index, item) => {
+        this.decorateRepeaterItem(repeaterWrapper, $(item), index + 1);
+      });
+    }
+
+    /**
+     * 为单个条目补齐类型类名和标题
+     *
+     * @param {jQuery} repeaterWrapper 当前容器。
+     * @param {jQuery} repeaterItem 当前条目。
+     * @param {number} index 当前序号。
+     * @returns {void}
+     */
+    decorateRepeaterItem(repeaterWrapper, repeaterItem, index) {
+      const config = this.getRepeaterConfig(repeaterWrapper);
+      const itemLabel =
+        typeof config.itemLabel === "function"
+          ? config.itemLabel()
+          : repeaterWrapper.data("key");
+      const $header = repeaterItem.find(SELECTORS.repeaterItemHeader).first();
+
+      if (config.itemClass) {
+        repeaterItem.addClass(config.itemClass);
+      }
+
+      if ($header.length) {
+        $header.find(".item-title").text(`${index}. ${itemLabel}`);
+      }
+
+      if (!repeaterItem.find(".repeater-item__body").length) {
+        const bodyClass =
+          typeof config.bodyClass === "string" ? config.bodyClass : "";
+        const $body = $(`<div class="${bodyClass}"></div>`);
+
+        repeaterItem
+          .children()
+          .not(SELECTORS.repeaterItemHeader)
+          .appendTo($body);
+
+        repeaterItem.append($body);
+      }
+
+      const $keyField = repeaterItem.find(".repeater-item__key").first();
+      const $valueField = repeaterItem.find(".repeater-item__value").first();
+
+      if ($keyField.length && config.keyFieldClass) {
+        $keyField.addClass(config.keyFieldClass);
+      }
+
+      if ($valueField.length && config.valueFieldClass) {
+        $valueField.addClass(config.valueFieldClass);
+      }
+    }
+
+    /**
+     * 重新整理容器内的条目标题顺序
+     *
+     * @param {jQuery} repeaterWrapper 当前容器。
+     * @returns {void}
+     */
+    refreshRepeaterItems(repeaterWrapper) {
+      repeaterWrapper.find(SELECTORS.repeaterItem).each((index, item) => {
+        this.decorateRepeaterItem(repeaterWrapper, $(item), index + 1);
       });
     }
 
@@ -164,7 +385,9 @@
     bindRepeaterEvents() {
       $(document).on("click", SELECTORS.repeaterRemove, (e) => {
         e.preventDefault();
+        const $wrapper = $(e.currentTarget).closest(SELECTORS.wrapper);
         $(e.currentTarget).closest(SELECTORS.repeaterItem).remove();
+        this.refreshRepeaterItems($wrapper);
       });
 
       $(document).on("click", SELECTORS.repeaterAddNew, (e) => {
@@ -206,11 +429,17 @@
     ensureAddButton(repeaterWrapper) {
       if (repeaterWrapper.find(SELECTORS.repeaterAddNew).length) return;
 
+      const config = this.getRepeaterConfig(repeaterWrapper);
+      const addButtonText =
+        typeof config.addButtonText === "function"
+          ? config.addButtonText()
+          : jc_product_i18n.add_new_item_btn || "Add New Item";
+
       repeaterWrapper.append(`
         <div class="repeater-add-wrapper">
           <button type="button" class="button button-secondary repeater-add-new">
             <span class="dashicons dashicons-plus"></span>
-            ${jc_product_i18n.add_new_item_btn || "Add New Item"}
+            ${addButtonText}
           </button>
           <button type="button" class="button button-secondary bulk-create" style="margin-left: 10px;" title="${
             jc_product_i18n.bulk_create_tooltip || "Bulk Create Items from Text"
@@ -228,40 +457,51 @@
     addNewRepeaterItem(repeaterWrapper) {
       const key = repeaterWrapper.data("key");
       const itemCount = repeaterWrapper.find(SELECTORS.repeaterItem).length;
-      const $newItem = this.buildRepeaterItem(key, itemCount + 1);
+      const $newItem = this.buildRepeaterItem(
+        repeaterWrapper,
+        key,
+        itemCount + 1
+      );
 
       if (!$newItem) return;
 
       repeaterWrapper.find(SELECTORS.repeaterAddWrapper).before($newItem);
+      this.refreshRepeaterItems(repeaterWrapper);
     }
 
     /**
      * 构建指定类型的 repeater DOM
      */
-    buildRepeaterItem(key, index) {
+    buildRepeaterItem(repeaterWrapper, key, index) {
       const builders = {
         product_faqs: () => this.buildFaqItem(index),
         product_attributes: () => this.buildAttributeItem(index),
         product_cat_faqs: () => this.buildCategoryFaqItem(index),
       };
+      const config = this.getRepeaterConfig(repeaterWrapper);
+      const itemLabel =
+        typeof config.itemLabel === "function"
+          ? config.itemLabel()
+          : key.replace(/_/g, " ");
+      const bodyClass =
+        typeof config.bodyClass === "string" ? config.bodyClass : "";
 
       const builder = builders[key];
       if (!builder) return null;
       const $item = $(`
-        <div class="repeater-item">
+        <div class="repeater-item ${config.itemClass || ""}">
         <div class="repeater-item-header">
-          <span class="item-title">${index}. ${
-        jc_product_i18n[key.replace(/_/g, "_")] || key.replace(/_/g, " ")
-      }</span>
+          <span class="item-title">${index}. ${itemLabel}</span>
           <div type="button" class="remove-repeater" title="${
             jc_product_i18n.delete_item_tooltip || "Delete item"
           }">
             <span class="dashicons dashicons-no-alt"></span>
           </div>
         </div>
+        <div class="${bodyClass}"></div>
       `);
 
-      builder().appendTo($item);
+      builder().appendTo($item.find(".repeater-item__body"));
       return $item;
     }
 
@@ -270,14 +510,14 @@
      */
     buildFaqItem(index) {
       return $(`
-        <div>
-          <div class="repeater-item__key">
+        <div class="repeater-item__field-group">
+          <div class="repeater-item__key repeater-item__field repeater-item__field--question">
             <label for="product_faqs[${index}][name]">${
         jc_product_i18n.faq_question_label || "Question"
       }:</label>
             <input class="repeater-item__key-input" type="text" id="product_faqs[${index}][name]" name="product_faqs[${index}][name]" value="" />
           </div>
-          <div class="repeater-item__value">
+          <div class="repeater-item__value repeater-item__field repeater-item__field--answer">
             <label for="product_faqs[${index}][value]">${
         jc_product_i18n.faq_answer_label || "Answer"
       }:</label>
@@ -292,14 +532,14 @@
      */
     buildAttributeItem(index) {
       return $(`
-        <div>
-          <div class="repeater-item__key">
+        <div class="repeater-item__field-group">
+          <div class="repeater-item__key repeater-item__field repeater-item__field--name">
             <label for="product_attributes[${index}][name]">${
         jc_product_i18n.attribute_name_label || "Name"
       }:</label>
             <input class="repeater-item__key-input" type="text" id="product_attributes[${index}][name]" name="product_attributes[${index}][name]" value="" />
           </div>
-          <div class="repeater-item__value">
+          <div class="repeater-item__value repeater-item__field repeater-item__field--value">
             <label for="product_attributes[${index}][value]">${
         jc_product_i18n.attribute_value_label || "Value"
       }:</label>
@@ -314,14 +554,14 @@
      */
     buildCategoryFaqItem(index) {
       return $(`
-        <div>
-          <div class="repeater-item__key">
+        <div class="repeater-item__field-group">
+          <div class="repeater-item__key repeater-item__field repeater-item__field--question">
             <label for="product_cat_faqs[${index}][name]">${
         jc_product_i18n.faq_question_label || "Question"
       }:</label>
             <input class="repeater-item__key-input" type="text" id="product_cat_faqs[${index}][name]" name="product_cat_faqs[${index}][name]" value="" />
           </div>
-          <div class="repeater-item__value">
+          <div class="repeater-item__value repeater-item__field repeater-item__field--answer">
             <label for="product_cat_faqs[${index}][value]">${
         jc_product_i18n.faq_answer_label || "Answer"
       }:</label>

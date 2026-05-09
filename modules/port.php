@@ -79,30 +79,13 @@ class Port
         ?>
 <div class="wrap jc-port-page">
     <div class="jc-port-shell">
-        <section class="jc-port-hero">
-            <div class="jc-port-hero__content">
-                <span class="jelly-badge primary solid"><?php esc_html_e('Jelly Catalog', 'jelly-catalog'); ?></span>
-                <h1 class="jc-port-hero__title"><?php _e('Import/Export Products', 'jelly-catalog'); ?></h1>
-                <p class="jc-port-hero__description">
-                    <?php esc_html_e('Manage product migration files, SEO diagnostics exports, and long-running import tasks from one place.', 'jelly-catalog'); ?>
-                </p>
-            </div>
-            <div class="jc-port-hero__badges">
-                <span class="jelly-badge success"><?php esc_html_e('CSV + ZIP', 'jelly-catalog'); ?></span>
-                <span class="jelly-badge primary"><?php esc_html_e('JSON SEO', 'jelly-catalog'); ?></span>
-                <span class="jelly-badge warnings"><?php esc_html_e('Category CSV', 'jelly-catalog'); ?></span>
-            </div>
-        </section>
 
         <div class="jc-port-grid">
             <section class="jc-port-section">
                 <div class="jc-port-section__header">
-                    <div>
-                        <span class="jelly-badge primary"><?php esc_html_e('Export', 'jelly-catalog'); ?></span>
-                        <h2 class="jc-port-section__title"><?php _e('Export Products', 'jelly-catalog'); ?></h2>
-                    </div>
+                    <h2 class="jc-port-section__title"><?php _e('Export Products', 'jelly-catalog'); ?></h2>
                 </div>
-                <p class="jc-port-section__description">
+                <p class="description">
                     <?php _e('Export all products to CSV file with images as separate files.', 'jelly-catalog'); ?></p>
                 <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" class="jc-port-form">
                     <?php wp_nonce_field('jc_export_products', 'jc_export_nonce'); ?>
@@ -123,8 +106,6 @@ class Port
                                 <span
                                     class="jc-port-check__label"><?php echo esc_html($field_definition['label']); ?></span>
                                 <?php if (!empty($field_definition['required'])): ?>
-                                <span
-                                    class="jelly-badge primary"><?php esc_html_e('Required', 'jelly-catalog'); ?></span>
                                 <?php endif; ?>
                             </label>
                             <?php endforeach; ?>
@@ -143,7 +124,7 @@ class Port
                 <div class="jc-port-subsection">
                     <h3 class="jc-port-subsection__title"><?php esc_html_e('Category CSV Export', 'jelly-catalog'); ?>
                     </h3>
-                    <p class="jc-port-section__description">
+                    <p class="description">
                         <?php _e('Export product categories as a dedicated CSV file including hierarchy and Rank Math fields.', 'jelly-catalog'); ?>
                     </p>
                     <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" class="jc-port-actions">
@@ -157,7 +138,7 @@ class Port
 
                 <div class="jc-port-subsection">
                     <h3 class="jc-port-subsection__title"><?php esc_html_e('SEO JSON Export', 'jelly-catalog'); ?></h3>
-                    <p class="jc-port-section__description">
+                    <p class="description">
                         <?php _e('Export product titles and slugs to JSON for SEO link diagnostics.', 'jelly-catalog'); ?>
                     </p>
                     <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" class="jc-port-actions">
@@ -170,13 +151,10 @@ class Port
 
             <section class="jc-port-section">
                 <div class="jc-port-section__header">
-                    <div>
-                        <span class="jelly-badge success"><?php esc_html_e('Import', 'jelly-catalog'); ?></span>
-                        <h2 class="jc-port-section__title"><?php _e('Import Products / Categories', 'jelly-catalog'); ?>
-                        </h2>
-                    </div>
+                    <h2 class="jc-port-section__title"><?php _e('Import Products / Categories', 'jelly-catalog'); ?>
+                    </h2>
                 </div>
-                <p class="jc-port-section__description">
+                <p class="description">
                     <?php _e('Import products and product categories from CSV files. Upload a product CSV, a category CSV, and an optional images ZIP file.', 'jelly-catalog'); ?>
                 </p>
                 <form id="jc-import-form" method="post" action="<?php echo admin_url('admin-post.php'); ?>"
@@ -232,14 +210,10 @@ class Port
                 </div>
             </section>
         </div>
-
         <?php if (!empty($import_log_entries)): ?>
         <section class="jc-port-section jc-port-section--log">
             <div class="jc-port-section__header">
-                <div>
-                    <span class="jelly-badge error"><?php esc_html_e('Logs', 'jelly-catalog'); ?></span>
-                    <h2 class="jc-port-section__title"><?php _e('Import Log', 'jelly-catalog'); ?></h2>
-                </div>
+                <h2 class="jc-port-section__title"><?php _e('Import Log', 'jelly-catalog'); ?></h2>
                 <a href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=jc_clear_import_log'), 'clear_import_log'); ?>"
                     class="button">
                     <?php _e('Clear Log', 'jelly-catalog'); ?>

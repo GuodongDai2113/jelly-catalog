@@ -34,6 +34,7 @@ class Post_Meta_Box
     public function __construct()
     {
         add_action('admin_head', [$this, 'add_help']);
+        add_action('all_admin_notices', [$this, 'render_product_editor_loading_overlay']);
         // 只在未激活 WooCommerce 时加载基础产品 metaboxes
         if (!Utils::is_wc_activated()) {
             $this->load_core_product_metaboxes();
@@ -214,6 +215,55 @@ class Post_Meta_Box
     }
 
     /**
+     * 在产品编辑页初始输出加载遮罩层。
+     *
+     * 通过后台钩子提前渲染，避免页面内容先闪现后再由 JS 插入遮罩。
+     *
+     * @return void
+     */
+    public function render_product_editor_loading_overlay()
+    {
+        if (!$this->is_product_editor_screen()) {
+            return;
+        }
+
+        echo '
+        <div id="jc-admin-loading-overlay" class="jc-admin-loading-overlay is-active" aria-hidden="true">
+            <span class="jc-admin-loading-overlay__spinner"></span>
+            <span class="jc-admin-loading-overlay__text">' . esc_html__('Loading editor...', 'jelly-catalog') . '</span>
+        </div>
+        <script>
+            (function () {
+                var overlay = document.getElementById("jc-admin-loading-overlay");
+
+                if (!overlay || !document.body) {
+                    return;
+                }
+
+                document.body.appendChild(overlay);
+            })();
+        </script>';
+    }
+
+    /**
+     * 判断当前后台页面是否为产品编辑页。
+     *
+     * @return bool
+     */
+    protected function is_product_editor_screen()
+    {
+        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+
+        if (!$screen) {
+            return false;
+        }
+
+        return 'product' === ($screen->id ?? '')
+            && 'post' === ($screen->base ?? '')
+            && 'product' === ($screen->post_type ?? '');
+    }
+
+    /**
      * 加载核心产品元框（仅在未安装 WooCommerce 时）
      *
      * 这些是产品管理的基础功能元框，包括图片、摘要、分类、属性等
@@ -258,6 +308,9 @@ class Post_Meta_Box
 
         // 视频链接功能
         new Metabox\Product_Video_Metabox();
+
+        // 产品前后跳转功能
+        new Metabox\Product_Navigation_Metabox();
 
         // 分类横幅图功能
         new Metabox\Product_Cat_Banner_Metabox();

@@ -164,6 +164,57 @@ class Enqueue
     }
 
     /**
+     * 获取 jelly-core 资源版本。
+     *
+     * 使用文件修改时间作为版本号，确保替换核心库后能够立即刷新缓存。
+     *
+     * @param string $relative_path 相对于插件根目录的资源路径。
+     * @return string
+     */
+    private function get_jelly_core_asset_version($relative_path)
+    {
+        $absolute_path = JELLY_CATALOG_PLUGIN_PATH . ltrim($relative_path, '/');
+
+        if (file_exists($absolute_path)) {
+            return (string) filemtime($absolute_path);
+        }
+
+        return JELLY_CATALOG_VERSION;
+    }
+
+    /**
+     * 加载 jelly-core 脚本与样式资源。
+     *
+     * @param bool $with_script 是否同时加载脚本。
+     * @return void
+     */
+    private function enqueue_jelly_core_assets($with_script = true)
+    {
+        $style_relative_path = 'assets/css/jelly-core.min.css';
+
+        wp_enqueue_style(
+            'jelly-core',
+            JELLY_CATALOG_PLUGIN_URL . $style_relative_path,
+            [],
+            $this->get_jelly_core_asset_version($style_relative_path)
+        );
+
+        if (!$with_script) {
+            return;
+        }
+
+        $script_relative_path = 'assets/js/jelly-core.min.js';
+
+        wp_enqueue_script(
+            'jelly-core',
+            JELLY_CATALOG_PLUGIN_URL . $script_relative_path,
+            ['jquery'],
+            $this->get_jelly_core_asset_version($script_relative_path),
+            true
+        );
+    }
+
+    /**
      * 加载产品编辑、列表、分类相关后台资源。
      *
      * @param string $hook 当前后台页面 hook。
@@ -181,20 +232,7 @@ class Enqueue
             JELLY_CATALOG_VERSION
         );
 
-        wp_enqueue_script(
-            'jelly-core',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-core.js',
-            ['jquery'],
-            '1.0.2',
-            true
-        );
-
-        wp_enqueue_style(
-            'jelly-core',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-core.css',
-            [],
-            '1.0.2'
-        );
+        $this->enqueue_jelly_core_assets();
 
         if ($is_product_editor || $is_product_taxonomy) {
             wp_enqueue_media();
@@ -202,7 +240,7 @@ class Enqueue
             wp_enqueue_script(
                 'jelly-catalog-admin-repeater',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-repeater.js',
-                ['jquery'],
+                ['jquery', 'jelly-core'],
                 JELLY_CATALOG_VERSION,
                 true
             );
@@ -268,12 +306,7 @@ class Enqueue
      */
     private function enqueue_port_import_assets()
     {
-        wp_enqueue_style(
-            'jelly-core',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-core.css',
-            [],
-            '1.0.2'
-        );
+        $this->enqueue_jelly_core_assets(false);
 
         wp_enqueue_script(
             'jelly-catalog-admin-port',
