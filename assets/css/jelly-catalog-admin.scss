@@ -21,15 +21,29 @@
 
 #jc-gallery {
   .product-images {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 12px;
+    --jc-gallery-columns: 5;
+    --jc-gallery-gap: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--jc-gallery-gap);
     margin: 0;
     padding: 0;
     list-style: none;
 
     > li {
-      width: 100%;
+      flex: 0 0
+        calc(
+          (100% - (var(--jc-gallery-columns) - 1) * var(--jc-gallery-gap)) /
+            var(--jc-gallery-columns)
+        );
+      width: calc(
+        (100% - (var(--jc-gallery-columns) - 1) * var(--jc-gallery-gap)) /
+          var(--jc-gallery-columns)
+      );
+      max-width: calc(
+        (100% - (var(--jc-gallery-columns) - 1) * var(--jc-gallery-gap)) /
+          var(--jc-gallery-columns)
+      );
       min-width: 0;
     }
 
@@ -125,21 +139,21 @@
     }
 
     .ui-sortable-placeholder {
-      width: 100% !important;
       min-height: 0 !important;
       aspect-ratio: 1 / 1;
       border: 2px dashed var(--jelly-color-border);
       border-radius: var(--jelly-border-radius);
       background: var(--jelly-color-bg-secondary);
       box-sizing: border-box;
+      flex: 0 0 auto;
       visibility: visible !important;
     }
 
     .ui-sortable-helper {
-      width: 100% !important;
       height: auto !important;
       transform: rotate(4deg);
       box-shadow: var(--jelly-box-shadow-lg);
+      flex: 0 0 auto;
 
       img {
         width: 100%;
@@ -222,60 +236,6 @@
 // 产品编辑布局
 // ==========================================
 
-body {
-  &.is-jc-loading {
-    position: relative;
-    height: 100vh;
-    min-height: 100vh;
-    overflow: hidden;
-  }
-}
-
-.jc-admin-loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 999999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  background: color-mix(
-    in srgb,
-    var(--jelly-color-bg-secondary) 92%,
-    transparent
-  );
-  backdrop-filter: blur(2px);
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.22s ease-in-out, visibility 0.22s ease-in-out;
-}
-
-.jc-admin-loading-overlay.is-leaving {
-  opacity: 0;
-  visibility: hidden;
-}
-
-.jc-admin-loading-overlay__spinner {
-  width: 28px;
-  height: 28px;
-  border: 2px solid var(--jelly-color-border);
-  border-top-color: var(--jelly-color-primary-border);
-  border-radius: 999px;
-  animation: jc-admin-spin 0.8s linear infinite;
-}
-
-.jc-admin-loading-overlay__text {
-  color: var(--jelly-color-description);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 .jc-product-editor {
   display: grid;
   grid-template-columns: minmax(128px, 168px) minmax(0, 1fr);
@@ -338,15 +298,37 @@ body {
 
     &:hover {
       color: var(--jelly-color-text);
-      border-left-color: var(--jelly-color-primary-border);
-      background: var(--jelly-color-primary-bg);
+      border-left-color: var(--jelly-color-info-border);
+      background: var(--jelly-color-info-bg);
     }
 
     &.is-active {
-      color: var(--jelly-color-primary);
-      border-left-color: var(--jelly-color-primary-border);
-      background: var(--jelly-color-primary-bg);
+      color: var(--jelly-color-info);
+      border-left-color: var(--jelly-color-info-border);
+      background: var(--jelly-color-info-bg);
     }
+  }
+
+  .jc-product-editor__tooltip-group + .jc-product-editor__tooltip-group {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+  }
+
+  .jc-product-editor__tooltip-title,
+  .jc-product-editor__tooltip-line {
+    margin: 0;
+  }
+
+  .jc-product-editor__tooltip-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgb(255 255 255 / 0.95);
+  }
+
+  .jc-product-editor__tooltip-line {
+    margin-top: 4px;
+    color: rgb(255 255 255 / 0.78);
   }
 
   .jc-product-editor__content {
@@ -870,16 +852,6 @@ td.column-product_tag a {
   max-width: 200px;
 }
 
-@keyframes jc-admin-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 // ==========================================
 // 响应式适配
 // ==========================================
@@ -902,7 +874,7 @@ td.column-product_tag a {
   }
 
   #jc-gallery .product-images {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    --jc-gallery-columns: 4;
   }
 }
 
@@ -971,7 +943,8 @@ td.column-product_tag a {
   }
 
   #jc-gallery .product-images {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    --jc-gallery-columns: 3;
+    --jc-gallery-gap: 10px;
     gap: 10px;
   }
 
@@ -1058,16 +1031,11 @@ td.column-product_tag a {
   .banner-preview {
     padding: 16px;
   }
-
-  .jc-admin-loading-overlay {
-    gap: 10px;
-    padding: 16px;
-  }
 }
 
 @media screen and (max-width: 600px) {
   #jc-gallery .product-images {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    --jc-gallery-columns: 2;
   }
 
   .jc-product-editor {

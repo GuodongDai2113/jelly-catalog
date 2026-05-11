@@ -82,8 +82,8 @@
      * @returns {void}
      */
     showNotice(message, type = "info") {
-      if (typeof window.jellyShowNotice === "function") {
-        window.jellyShowNotice(message, type);
+      if (typeof window.jellyShowMessage === "function") {
+        window.jellyShowMessage(message, type);
         return;
       }
 

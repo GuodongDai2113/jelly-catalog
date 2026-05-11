@@ -35,8 +35,8 @@
      * @returns {void}
      */
     showNotice(message, type = "info") {
-      if (typeof window.jellyShowNotice === "function") {
-        window.jellyShowNotice(message, type);
+      if (typeof window.jellyShowMessage === "function") {
+        window.jellyShowMessage(message, type);
         return;
       }
 
@@ -141,7 +141,10 @@
       const categoryId = this.getCategoryIdFromCell(cell);
 
       if (!categoryId || !attachment?.id) {
-        this.showNotice("Unable to determine the selected category image.", "error");
+        this.showNotice(
+          "Unable to determine the selected category image.",
+          "error"
+        );
         return;
       }
 
@@ -217,39 +220,42 @@
           $(".inline-edit-row")
         ).clone();
 
-        saveBtn.on("click", function (e) {
-          e.preventDefault();
-          const updatedDescription = textarea.val();
-          $.ajax({
-            url: jc_ajax.ajax_url,
-            type: "POST",
-            data: {
-              action: "update_product_category_description",
-              term_id: termId,
-              description: updatedDescription,
-              nonce: jc_ajax.nonce,
-            },
-            success: (response) => {
-              if (response.success) {
-                // 更新显示的描述
-                cell.html("<p>" + updatedDescription + "</p>");
-                this.showNotice(
-                  response.data || "Description updated successfully.",
-                  "success"
-                );
-                return;
-              }
+        saveBtn.on(
+          "click",
+          function (e) {
+            e.preventDefault();
+            const updatedDescription = textarea.val();
+            $.ajax({
+              url: jc_ajax.ajax_url,
+              type: "POST",
+              data: {
+                action: "update_product_category_description",
+                term_id: termId,
+                description: updatedDescription,
+                nonce: jc_ajax.nonce,
+              },
+              success: (response) => {
+                if (response.success) {
+                  // 更新显示的描述
+                  cell.html("<p>" + updatedDescription + "</p>");
+                  this.showNotice(
+                    response.data || "Description updated successfully.",
+                    "success"
+                  );
+                  return;
+                }
 
-              this.showNotice(
-                response?.data || "Failed to update description.",
-                "error"
-              );
-            },
-            error: () => {
-              this.showNotice("Network error. Please try again.", "error");
-            },
-          });
-        }.bind(this));
+                this.showNotice(
+                  response?.data || "Failed to update description.",
+                  "error"
+                );
+              },
+              error: () => {
+                this.showNotice("Network error. Please try again.", "error");
+              },
+            });
+          }.bind(this)
+        );
 
         cancelBtn.on("click", function (e) {
           e.preventDefault();

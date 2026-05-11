@@ -34,7 +34,6 @@ class Post_Meta_Box
     public function __construct()
     {
         add_action('admin_head', [$this, 'add_help']);
-        add_action('all_admin_notices', [$this, 'render_product_editor_loading_overlay']);
         // 只在未激活 WooCommerce 时加载基础产品 metaboxes
         if (!Utils::is_wc_activated()) {
             $this->load_core_product_metaboxes();
@@ -60,207 +59,88 @@ class Post_Meta_Box
             return;
         }
 
+        // 产品图片帮助标签页
+        $screen->add_help_tab([
+            'id' => 'product-images',
+            'title' => __('Product Images', 'jelly-catalog'),
+            'content' => __('Use high-quality images at least 800x800 pixels with white background, ensure clear product details and consistent lighting across all images', 'jelly-catalog'),
+        ]);
+
+        // 特色图片帮助标签页
+        $screen->add_help_tab([
+            'id' => 'postimagediv',
+            'title' => __('Featured Image', 'jelly-catalog'),
+            'content' => __('Set a representative featured image at 800x800 pixels with white background, this image will be used as the main thumbnail in product listings', 'jelly-catalog'),
+        ]);
+
         $screen->add_help_tab([
             'id' => 'title_help',
             'title' => __('Title', 'jelly-catalog'),
-            'content' => '<div class="title-description">' . __('Recommended format: <code>Model number + core product keywords + specifications/attributes</code>', 'jelly-catalog') . '</div>',
+            'content' => __('Recommended format: Model number + core product keywords + specifications/attributes', 'jelly-catalog'),
         ]);
 
         $screen->add_help_tab([
             'id' => 'postexcerpt_help',
             'title' => __('Short Description', 'jelly-catalog'),
-            'content' => '<div class="edit-description">
-                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Writing Guidelines:', 'jelly-catalog') . '</p>
-                <ol>
-                    <li>' . esc_html__('The short description should naturally include high-frequency user search ', 'jelly-catalog') . '<code>' . esc_html__('keywords', 'jelly-catalog') . '</code>' . esc_html__(' or ', 'jelly-catalog') . '<code>' . esc_html__('long-tail keywords', 'jelly-catalog') . '</code></li>
-                    <li>' . esc_html__('Place important keywords at the beginning to improve keyword weighting', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Recommended length is between ', 'jelly-catalog') . '<code>' . esc_html__('100-160', 'jelly-catalog') . '</code>' . esc_html__(' characters, providing sufficient value without being overly lengthy', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Use clear and concise language, avoiding excessive technical terminology', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Highlight unique product advantages, such as materials, performance, price, usage scenarios, etc.', 'jelly-catalog') . '</li>
-                </ol>
-            </div>',
+            'content' => __('Include high-frequency keywords at the beginning, recommended length 100-160 characters, highlight unique product advantages', 'jelly-catalog'),
         ]);
 
         $screen->add_help_tab([
             'id' => 'postdivrich_help',
             'title' => __('Description', 'jelly-catalog'),
-            'content' => '<div class="edit-description">
-                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Writing Guidelines:', 'jelly-catalog') . '</p>
-                <ol>
-                    <li>' . esc_html__('It is recommended to use relevant keywords in the details, no less than 5 times, evenly distributed throughout the page.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Replace all pronouns in the details with keywords - use specific names instead of words like "it" whenever possible.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Each paragraph in the details should not exceed ', 'jelly-catalog') . '<code>' . esc_html__('500', 'jelly-catalog') . '</code>' . esc_html__(' characters. If exceeded, split into paragraphs. The full text should have a minimum of ', 'jelly-catalog') . '<code>' . esc_html__('1000', 'jelly-catalog') . '</code>' . esc_html__(' characters.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Ensure original content in the details. Do not copy directly from the internet. Page similarity within the website should not exceed ', 'jelly-catalog') . '<code>' . esc_html__('30%', 'jelly-catalog') . '</code>' . esc_html__('.', 'jelly-catalog') . '</li>
-                </ol>
-            </div>',
+            'content' => __('Use keywords at least 5 times, paragraphs under 500 characters, minimum 1000 characters total, ensure original content with similarity under 30%', 'jelly-catalog'),
         ]);
 
         $screen->add_help_tab([
             'id' => 'product_catdiv_help',
             'title' => __('Categories', 'jelly-catalog'),
-            'content' => '<div class="edit-description">
-                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Category Selection Guidelines:', 'jelly-catalog') . '</p>
-                <ol>
-                    <li>' . esc_html__('Select the most relevant categories for your product to improve discoverability.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Use specific categories rather than generic ones when possible.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Avoid selecting too many categories - 2-4 relevant categories are recommended.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Check existing categories before creating new ones to maintain consistency.', 'jelly-catalog') . '</li>
-                </ol>
-            </div>',
+            'content' => __('Select 2-4 most relevant categories, use specific categories, avoid creating duplicates', 'jelly-catalog'),
         ]);
 
         $screen->add_help_tab([
             'id' => 'tagsdiv-product_tag_help',
             'title' => __('Tags', 'jelly-catalog'),
-            'content' => '<div class="edit-description">
-                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Tag Usage Guidelines:', 'jelly-catalog') . '</p>
-                <ol>
-                    <li>' . esc_html__('Use tags to highlight specific features, materials, or use cases of your product.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Tags should be single words or short phrases separated by commas.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Focus on important keywords that customers might search for.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Avoid duplicate tags and excessive tagging - 5-10 relevant tags are sufficient.', 'jelly-catalog') . '</li>
-                </ol>
-            </div>',
+            'content' => __('Use 5-10 relevant tags highlighting features, materials, or use cases, separated by commas', 'jelly-catalog'),
         ]);
 
         $screen->add_help_tab([
             'id' => 'product_download_metabox_help',
             'title' => __('Download', 'jelly-catalog'),
-            'content' => '<div class="edit-description">
-                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Downloadable Content Guidelines:', 'jelly-catalog') . '</p>
-                <ol>
-                    <li>' . esc_html__('Upload high-quality files in supported formats (PDF, DOC, ZIP, etc.).', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Ensure files are virus-free and safe for users to download.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Provide clear file descriptions to help users understand content.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Compress large files to reduce download time and server load.', 'jelly-catalog') . '</li>
-                </ol>
-            </div>',
+            'content' => __('Upload virus-free files in supported formats with clear descriptions, compress large files', 'jelly-catalog'),
         ]);
 
         $screen->add_help_tab([
             'id' => 'product_faq_metabox_help',
             'title' => __('FAQ', 'jelly-catalog'),
-            'content' => '<div class="edit-description">
-                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('FAQ Creation Guidelines:', 'jelly-catalog') . '</p>
-                <ol>
-                    <li>' . esc_html__('Address common customer questions about product features, usage, and specifications.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Write clear, concise questions and detailed, helpful answers.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Organize FAQs in order of importance or frequency of questions.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Regularly update FAQs based on customer feedback and new questions.', 'jelly-catalog') . '</li>
-                </ol>
-            </div>',
+            'content' => __('Address common customer questions with clear answers, organize by importance, update regularly based on feedback', 'jelly-catalog'),
         ]);
 
         $screen->add_help_tab([
             'id' => 'product_attributes_metabox_help',
             'title' => __('Attributes', 'jelly-catalog'),
-            'content' => '<div class="edit-description">
-                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Product Attributes Guidelines:', 'jelly-catalog') . '</p>
-                <ol>
-                    <li>' . esc_html__('Include all relevant technical specifications and product details.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Use consistent naming conventions for attribute keys.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Provide accurate measurements and specifications.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Avoid duplicate attributes and ensure all values are filled in.', 'jelly-catalog') . '</li>
-                </ol>
-            </div>',
+            'content' => __('Include all technical specifications with consistent naming, provide accurate measurements, avoid duplicates', 'jelly-catalog'),
         ]);
 
         // SKU 帮助标签页
         $screen->add_help_tab([
             'id' => 'product_sku_metabox_help',
             'title' => __('Product Model/SKU', 'jelly-catalog'),
-            'content' => '<div class="edit-description">
-                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('SKU Management Guidelines:', 'jelly-catalog') . '</p>
-                <ol>
-                    <li>' . esc_html__('Enter a unique product model number or SKU to identify your product.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Use alphanumeric characters, hyphens, and underscores for best compatibility.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Avoid using spaces and special characters in SKUs.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Keep SKUs consistent in format across similar products for easier management.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('SKUs help with inventory tracking and e-commerce integration.', 'jelly-catalog') . '</li>
-                </ol>
-            </div>',
+            'content' => __('Enter unique alphanumeric SKU without spaces or special characters, maintain consistent format across products', 'jelly-catalog'),
         ]);
 
         // Keywords 帮助标签页
         $screen->add_help_tab([
             'id' => 'longtail_keywords_metabox_help',
             'title' => __('Long-tail Keywords', 'jelly-catalog'),
-            'content' => '<div class="edit-description">
-                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Long-tail Keywords Guidelines:', 'jelly-catalog') . '</p>
-                <ol>
-                    <li>' . esc_html__('Enter basic keywords to generate related long-tail variations automatically.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Long-tail keywords typically have lower competition and higher conversion rates.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Use generated keywords in product titles, descriptions, and meta fields.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Focus on specific customer intents and use cases for better targeting.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Review and customize generated keywords to match your specific product niche.', 'jelly-catalog') . '</li>
-                </ol>
-            </div>',
+            'content' => __('Enter basic keywords to generate long-tail variations automatically, focus on specific customer intents and customize as needed', 'jelly-catalog'),
         ]);
 
         // Video URL 帮助标签页
         $screen->add_help_tab([
             'id' => 'product_videourl_metabox_help',
             'title' => __('Product Video', 'jelly-catalog'),
-            'content' => '<div class="edit-description">
-                <p class="edit-title"><span class="dashicons dashicons-info-outline"></span>' . esc_html__('Video Integration Guidelines:', 'jelly-catalog') . '</p>
-                <ol>
-                    <li>' . esc_html__('Enter a full URL to your product video hosted on YouTube, Vimeo, or other platforms.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Videos can significantly improve customer engagement and conversion rates.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Ensure videos are optimized for fast loading and mobile viewing.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Keep videos short and focused on product features and benefits.', 'jelly-catalog') . '</li>
-                    <li>' . esc_html__('Use clear titles and descriptions that complement the product information.', 'jelly-catalog') . '</li>
-                </ol>
-            </div>',
+            'content' => __('Enter full video URL from YouTube or Vimeo, keep videos short and focused on product features, optimize for mobile viewing', 'jelly-catalog'),
         ]);
-    }
-
-    /**
-     * 在产品编辑页初始输出加载遮罩层。
-     *
-     * 通过后台钩子提前渲染，避免页面内容先闪现后再由 JS 插入遮罩。
-     *
-     * @return void
-     */
-    public function render_product_editor_loading_overlay()
-    {
-        if (!$this->is_product_editor_screen()) {
-            return;
-        }
-
-        echo '
-        <div id="jc-admin-loading-overlay" class="jc-admin-loading-overlay is-active" aria-hidden="true">
-            <span class="jc-admin-loading-overlay__spinner"></span>
-            <span class="jc-admin-loading-overlay__text">' . esc_html__('Loading editor...', 'jelly-catalog') . '</span>
-        </div>
-        <script>
-            (function () {
-                var overlay = document.getElementById("jc-admin-loading-overlay");
-
-                if (!overlay || !document.body) {
-                    return;
-                }
-
-                document.body.appendChild(overlay);
-            })();
-        </script>';
-    }
-
-    /**
-     * 判断当前后台页面是否为产品编辑页。
-     *
-     * @return bool
-     */
-    protected function is_product_editor_screen()
-    {
-        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
-
-        if (!$screen) {
-            return false;
-        }
-
-        return 'product' === ($screen->id ?? '')
-            && 'post' === ($screen->base ?? '')
-            && 'product' === ($screen->post_type ?? '');
     }
 
     /**

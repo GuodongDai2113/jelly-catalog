@@ -164,25 +164,6 @@ class Enqueue
     }
 
     /**
-     * 获取 jelly-core 资源版本。
-     *
-     * 使用文件修改时间作为版本号，确保替换核心库后能够立即刷新缓存。
-     *
-     * @param string $relative_path 相对于插件根目录的资源路径。
-     * @return string
-     */
-    private function get_jelly_core_asset_version($relative_path)
-    {
-        $absolute_path = JELLY_CATALOG_PLUGIN_PATH . ltrim($relative_path, '/');
-
-        if (file_exists($absolute_path)) {
-            return (string) filemtime($absolute_path);
-        }
-
-        return JELLY_CATALOG_VERSION;
-    }
-
-    /**
      * 加载 jelly-core 脚本与样式资源。
      *
      * @param bool $with_script 是否同时加载脚本。
@@ -196,7 +177,7 @@ class Enqueue
             'jelly-core',
             JELLY_CATALOG_PLUGIN_URL . $style_relative_path,
             [],
-            $this->get_jelly_core_asset_version($style_relative_path)
+            '1.3.0'
         );
 
         if (!$with_script) {
@@ -209,7 +190,7 @@ class Enqueue
             'jelly-core',
             JELLY_CATALOG_PLUGIN_URL . $script_relative_path,
             ['jquery'],
-            $this->get_jelly_core_asset_version($script_relative_path),
+            '1.3.0',
             true
         );
     }
@@ -256,7 +237,7 @@ class Enqueue
             wp_enqueue_script(
                 'jelly-catalog-admin-product',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-product.js',
-                ['jquery', 'jquery-ui-sortable'],
+                ['jquery', 'jquery-ui-sortable', 'jelly-catalog-admin-repeater'],
                 JELLY_CATALOG_VERSION,
                 true
             );
@@ -448,6 +429,7 @@ class Enqueue
             'no_content_error' => __('Please enter content.', 'jelly-catalog'),
             'no_valid_items_error' => __('No valid items found.', 'jelly-catalog'),
             'success_created_items' => __('Successfully created {count} items.', 'jelly-catalog'),
+            'editor_loading' => __('Loading editor...', 'jelly-catalog'),
             'delete_item_tooltip' => __('Delete item', 'jelly-catalog'),
             'add_new_item_btn' => __('Add New Item', 'jelly-catalog'),
             'bulk_create_tooltip' => __('Bulk Create Items from Text', 'jelly-catalog'),

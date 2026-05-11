@@ -16,7 +16,6 @@
     editorNavList: ".jc-product-editor__nav-list",
     editorNavButton: ".jc-product-editor__nav-button",
     editorNavSecondary: ".jc-product-editor__nav-secondary",
-    loadingOverlay: ".jc-admin-loading-overlay",
     editorContent: ".jc-product-editor__content",
     sidebarContainer: "#postbox-container-1",
     sidebarSortables:
@@ -45,6 +44,10 @@
   const TINY_MCE_LAYOUT_DELAY = 50;
   const EDITOR_READY_DELAY = 420;
   const POST_LAYOUT_LOADING_DELAY = 500;
+  const HELP_TAB_PANEL_PREFIX = "tab-panel-";
+  const HELP_TAB_ID_MAP = {
+    titlediv: "title_help",
+  };
   const PRODUCT_SECTION_IDS = {
     summary: "summary",
     details: "details",
@@ -139,6 +142,10 @@
       this.postboxLockHandler = null;
       this.postboxObserver = null;
       this.sectionObserver = null;
+      /** @type {JellyLoading|null} 编辑器初始化阶段使用的加载实例 */
+      this.editorLoading = null;
+      /** @type {JellyTooltip[]} 当前 metabox 已绑定的提示实例 */
+      this.metaboxTooltips = [];
 
       this.init();
     }
@@ -167,6 +174,8 @@
       const $titleDiv = $(SELECTORS.titleDiv);
 
       if (!$titleDiv.length) return;
+
+      this.destroyMetaboxTooltips();
 
       const $editorContainer = this.createEditorContainer();
       $titleDiv.after($editorContainer);
@@ -217,27 +226,41 @@
      * 标记编辑页进入布局加载状态
      */
     startLoadingState() {
-      const $body = $(SELECTORS.body);
+      const loadingText =
+        window.jc_product_i18n?.editor_loading || "Loading editor...";
 
-      $body.addClass("jc-product-editor-is-loading");
-      $body.addClass("is-jc-loading");
+      if (typeof window.jellyShowLoading === "function") {
+        this.editorLoading = window.jellyShowLoading({
+          text: loadingText,
+        });
+        return;
+      }
+
+      if (typeof window.JellyLoading === "function") {
+        if (!this.editorLoading) {
+          this.editorLoading = new window.JellyLoading({
+            text: loadingText,
+          });
+        }
+
+        this.editorLoading.setText(loadingText).open();
+      }
     }
 
     /**
      * 结束编辑页加载状态并展示最终布局
      */
     finishLoadingState() {
-      const $body = $(SELECTORS.body);
-      const $loadingOverlay = $(SELECTORS.loadingOverlay).first();
+      if (typeof window.jellyHideLoading === "function") {
+        window.jellyHideLoading(this.editorLoading);
+      } else if (
+        this.editorLoading &&
+        typeof this.editorLoading.close === "function"
+      ) {
+        this.editorLoading.close();
+      }
 
-      $body.removeClass("jc-product-editor-is-loading");
-      $body.removeClass("is-jc-loading");
-
-      $loadingOverlay.addClass("is-leaving");
-
-      window.setTimeout(() => {
-        $loadingOverlay.remove();
-      }, 220);
+      this.editorLoading = null;
     }
 
     /**
@@ -359,9 +382,16 @@
       const $titleDiv = $(SELECTORS.titleDiv);
       if (!$titleDiv.length) return $();
 
-      return $(
+      const $block = $(
         '<div class="jc-product-block jc-product-block-title"></div>'
       ).append($titleDiv);
+      const helpContent = this.getHelpTooltipContent(
+        this.getHelpTabIdByElementId("titlediv")
+      );
+
+      this.bindMetaboxTooltip($block, helpContent);
+
+      return $block;
     }
 
     /**
@@ -373,6 +403,8 @@
       if (!$metabox.length) return $();
 
       const $block = $('<div class="jc-product-block"></div>');
+      const helpTabId = this.getHelpTabIdByElementId(metaboxId);
+      const helpContent = this.getHelpTooltipContent(helpTabId);
 
       if (block.wrapper === "postbox") {
         const $wrapper = $(`
@@ -385,9 +417,11 @@
         `);
 
         $wrapper.find(".inside").append($metabox);
+        this.bindMetaboxTooltip($wrapper, helpContent);
         return $block.append($wrapper);
       }
 
+      this.bindMetaboxTooltip($metabox, helpContent);
       return $block.append($metabox);
     }
 
@@ -599,6 +633,148 @@
     }
 
     /**
+     * 根据布局块类型返回对应的 help tab ID。
+     *
+     * @param {Object} block 当前布局块配置。
+     * @returns {string}
+     */
+    getHelpTabIdByElementId(elementId) {
+      if (!elementId) {
+        return "";
+      }
+
+      if (HELP_TAB_ID_MAP[elementId]) {
+        return HELP_TAB_ID_MAP[elementId];
+      }
+
+      return `${elementId}_help`;
+    }
+
+    /**
+     * 获取指定 help tab 对应的面板节点。
+     *
+     * @param {string} helpTabId help tab 标识。
+     * @returns {HTMLElement|null}
+     */
+    getHelpTabPanel(helpTabId) {
+      if (!helpTabId) {
+        return null;
+      }
+
+      return (
+        document.getElementById(HELP_TAB_PANEL_PREFIX + helpTabId) ||
+        document.getElementById(helpTabId)
+      );
+    }
+
+    /**
+     * 规范化帮助文本中的空白字符，便于生成紧凑提示。
+     *
+     * @param {string} text 原始文本。
+     * @returns {string}
+     */
+    normalizeHelpText(text) {
+      return (text || "").replace(/\s+/g, " ").trim();
+    }
+
+    /**
+     * 转义 HTML 文本，避免 tooltip 内容拼接时插入无效标签。
+     *
+     * @param {string} text 原始文本。
+     * @returns {string}
+     */
+    escapeHtml(text) {
+      return String(text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    /**
+     * 从 help 面板中提取纯文本，作为 metabox tooltip 内容来源。
+     *
+     * @param {HTMLElement} helpPanel 帮助面板节点。
+     * @returns {string}
+     */
+    getHelpPanelText(helpPanel) {
+      if (!helpPanel) {
+        return "";
+      }
+
+      return this.normalizeHelpText(helpPanel.textContent || "");
+    }
+
+    /**
+     * 将单个 help 面板的纯文本内容转为 tooltip 内容。
+     *
+     * @param {string} helpTabId help tab 标识。
+     * @returns {string}
+     */
+    getHelpTooltipContent(helpTabId) {
+      const helpPanel = this.getHelpTabPanel(helpTabId);
+      const panelText = this.getHelpPanelText(helpPanel);
+
+      if (!panelText) {
+        return "";
+      }
+
+      return `
+        <div class="jc-product-editor__tooltip-group">
+          <p class="jc-product-editor__tooltip-line">${this.escapeHtml(
+            panelText
+          )}</p>
+        </div>
+      `;
+    }
+
+    /**
+     * 销毁已创建的 metabox tooltip，避免重复绑定。
+     *
+     * @returns {void}
+     */
+    destroyMetaboxTooltips() {
+      this.metaboxTooltips.forEach((tooltipInstance) => {
+        if (
+          tooltipInstance &&
+          typeof tooltipInstance.destroy === "function"
+        ) {
+          tooltipInstance.destroy();
+        }
+      });
+
+      this.metaboxTooltips = [];
+    }
+
+    /**
+     * 直接将 jelly-core tooltip 绑定到 metabox 容器本身。
+     *
+     * @param {jQuery} $metabox 当前 metabox 容器。
+     * @param {string} helpContent tooltip 内容。
+     * @returns {void}
+     */
+    bindMetaboxTooltip($metabox, helpContent) {
+      if (
+        !$metabox ||
+        !$metabox.length ||
+        !helpContent ||
+        typeof window.JellyTooltip !== "function"
+      ) {
+        return;
+      }
+
+      this.metaboxTooltips.push(
+        new window.JellyTooltip({
+          target: $metabox[0],
+          content: helpContent,
+          placement: "top",
+          offset: 12,
+        })
+      );
+    }
+
+    /**
      * 将指定 metabox 放回右侧原生侧栏
      */
     moveSidebarMetaboxes() {
@@ -624,19 +800,15 @@
               $submitBox.after($tagMetabox);
             }
           }
+        } else {
+          if ($categoryMetabox.length) {
+            $sidebarSortables.append($categoryMetabox);
+          }
 
-          return;
+          if ($tagMetabox.length) {
+            $sidebarSortables.append($tagMetabox);
+          }
         }
-
-        if ($categoryMetabox.length) {
-          $sidebarSortables.append($categoryMetabox);
-        }
-
-        if ($tagMetabox.length) {
-          $sidebarSortables.append($tagMetabox);
-        }
-
-        return;
       }
 
       if ($sidebarContainer.length) {
@@ -648,6 +820,19 @@
           $sidebarContainer.append($tagMetabox);
         }
       }
+
+      this.bindMetaboxTooltip(
+        $categoryMetabox,
+        this.getHelpTooltipContent(
+          this.getHelpTabIdByElementId("product_catdiv")
+        )
+      );
+      this.bindMetaboxTooltip(
+        $tagMetabox,
+        this.getHelpTooltipContent(
+          this.getHelpTabIdByElementId("tagsdiv-product_tag")
+        )
+      );
     }
 
     /**
@@ -1060,8 +1245,10 @@
         opacity: 0.65,
         placeholder: "ui-sortable-placeholder",
         start: (_, ui) => {
-          ui.placeholder.height(ui.item.height());
-          ui.placeholder.width(ui.item.width());
+          ui.placeholder.height(ui.item.outerHeight());
+          ui.placeholder.width(ui.item.outerWidth());
+          ui.helper.height(ui.item.outerHeight());
+          ui.helper.width(ui.item.outerWidth());
         },
         stop: () => {
           $container.find(SELECTORS.galleryItem).removeAttr("style");
