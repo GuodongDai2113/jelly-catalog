@@ -3,7 +3,6 @@
         var settings = window.jcPortImport || {};
         var $form = $('#jc-import-form');
         var $progress = $('#jc-import-progress');
-        var $bar = $('#jc-import-progress-bar');
         var $percent = $('#jc-import-progress-percent');
         var $message = $('#jc-import-progress-message');
         var $processed = $('#jc-import-progress-processed');
@@ -12,6 +11,8 @@
         var $errors = $('#jc-import-progress-errors');
         var $retry = $('#jc-import-retry');
         var $submit = $form.find('[type="submit"], #import');
+        var progressTrack = document.getElementById('jc-import-progress-track');
+        var currentPercent = 0;
         var jobId = settings.resumeJobId || '';
         var isRunning = false;
         var maxRetries = parseInt(settings.maxRetries, 10);
@@ -27,9 +28,27 @@
             $form.find('input, button, select, textarea').prop('disabled', disabled);
         }
 
+        function renderProgressBar(percent, status) {
+            if (!progressTrack) {
+                return;
+            }
+
+            currentPercent = percent;
+            progressTrack.replaceChildren(
+                jellyCore.Progress({
+                    percent: percent,
+                    value: percent + '%',
+                    status: status || 'default',
+                    active: isRunning,
+                    striped: isRunning
+                })
+            );
+        }
+
         function showProgress(message) {
             $progress.removeClass('hidden').show();
             $message.text(message || '');
+            renderProgressBar(currentPercent, $progress.hasClass('jc-port-progress--error') ? 'error' : 'default');
         }
 
         function updateResumeUrl(nextJobId) {
@@ -54,8 +73,7 @@
             var errors = parseInt(data.errors, 10) || 0;
             var percent = total > 0 ? Math.min(100, Math.round((processed / total) * 100)) : 0;
 
-            $bar.css('width', percent + '%');
-            $bar.attr('aria-valuenow', percent);
+            renderProgressBar(percent, errors > 0 ? 'warning' : 'default');
             $percent.text(percent + '%');
             $processed.text(processed);
             $total.text(total);
@@ -76,6 +94,8 @@
             $progress.addClass('jc-port-progress--error');
             $retry.toggleClass('hidden', !canResume).toggle(canResume);
             $message.text((message || settings.messages.failed) + (canResume ? ' ' + settings.messages.resumeReady : ''));
+            renderProgressBar(currentPercent, 'error');
+            jellyCore.showMessage(message || settings.messages.failed, 'error', 5000);
         }
 
         function getResponseMessage(response, fallback) {
@@ -153,6 +173,8 @@
                     $retry.addClass('hidden').hide();
                     updateResumeUrl('');
                     $message.text(settings.messages.complete);
+                    renderProgressBar(100, 'success');
+                    jellyCore.showMessage(settings.messages.complete, 'success');
                     return;
                 }
 
@@ -225,6 +247,8 @@
                     $retry.addClass('hidden').hide();
                     updateResumeUrl('');
                     $message.text(response.data.message || settings.messages.complete);
+                    renderProgressBar(100, 'success');
+                    jellyCore.showMessage(response.data.message || settings.messages.complete, 'success');
                     return;
                 }
 
@@ -258,7 +282,7 @@
             var hasCategoryFile = !!(categoryFile && categoryFile.files && categoryFile.files.length);
 
             if (!hasProductFile && !hasCategoryFile) {
-                window.alert(settings.messages.missingFiles || 'Please upload a product CSV or a category CSV.');
+                jellyCore.showMessage(settings.messages.missingFiles || 'Please upload a product CSV or a category CSV.', 'warning', 5000);
                 return;
             }
 

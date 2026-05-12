@@ -190,7 +190,7 @@ class Admin
             $level_class = 'level-' . max(1, min(3, $level + 1));
 
             $links[] = sprintf(
-                '<a href="%s" class="%s">%s</a>',
+                '<a href="%s" class="jelly-badge amber %s">%s</a>',
                 esc_url(add_query_arg(['post_type' => 'product', 'product_cat' => $term->slug], 'edit.php')),
                 esc_attr($level_class),
                 esc_html(sanitize_term_field('name', $term->name, $term->term_id, 'product_cat', 'display'))
@@ -217,7 +217,7 @@ class Admin
         $links = [];
         foreach ($terms as $term) {
             $links[] = sprintf(
-                '<a href="%s">%s</a>',
+                '<a href="%s" class="jelly-badge sky">%s</a>',
                 esc_url(add_query_arg(['post_type' => 'product', 'product_tag' => $term->slug], 'edit.php')),
                 esc_html(sanitize_term_field('name', $term->name, $term->term_id, 'product_tag', 'display'))
             );

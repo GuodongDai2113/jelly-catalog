@@ -75,19 +75,14 @@
     }
 
     /**
-     * 调用新版 jelly-core 通知接口，并在缺失时降级为浏览器提示。
+     * 调用 jelly-core 通知接口。
      *
      * @param {string} message 通知文案。
      * @param {string} type 通知类型。
      * @returns {void}
      */
     showNotice(message, type = "info") {
-      if (typeof window.jellyShowMessage === "function") {
-        window.jellyShowMessage(message, type);
-        return;
-      }
-
-      window.alert(message);
+      jellyCore.showMessage(message, type);
     }
 
     /**
@@ -102,11 +97,7 @@
      * 初始化批量创建FAQ模态框
      */
     initBulkCreateModal() {
-      if (typeof window.JellyModal !== "function") {
-        return;
-      }
-
-      this.bulkCreateModal = new window.JellyModal({
+      this.bulkCreateModal = new jellyCore.Modal({
         id: "bulk-create-modal",
         title: jc_product_i18n.bulk_create_title || "Bulk Create Items",
         bodyHtml: `
@@ -228,7 +219,7 @@
     /**
      * 获取批量创建输入框的 jQuery 包装对象。
      *
-     * 新版 jelly-core 的 `find()` 返回原生 DOM 节点，这里统一包装成 jQuery，
+     * jelly-core 的 `find()` 返回原生 DOM 节点，这里统一包装成 jQuery，
      * 避免后续 `.val()`、`.trigger()` 等调用失效。
      *
      * @returns {jQuery}
@@ -414,9 +405,13 @@
           if ($item.find(".remove-repeater").length) return;
 
           $item.append(`
-          <div type="button" class="remove-repeater" title="${
+          <div
+            type="button"
+            class="remove-repeater"
+            data-jelly-tooltip="${
             jc_product_i18n.delete_item_tooltip || "Delete item"
-          }">
+          }"
+          >
             <span class="dashicons dashicons-no-alt"></span>
           </div>
         `);
@@ -437,13 +432,17 @@
 
       repeaterWrapper.append(`
         <div class="repeater-add-wrapper">
-          <button type="button" class="button button-secondary repeater-add-new">
+          <button type="button" class="jelly-button repeater-add-new">
             <span class="dashicons dashicons-plus"></span>
             ${addButtonText}
           </button>
-          <button type="button" class="button button-secondary bulk-create" style="margin-left: 10px;" title="${
+          <button
+            type="button"
+            class="jelly-button bulk-create"
+            data-jelly-tooltip="${
             jc_product_i18n.bulk_create_tooltip || "Bulk Create Items from Text"
-          }">
+          }"
+          >
             <span class="dashicons dashicons-editor-ul"></span>
             ${jc_product_i18n.bulk_create_btn || "Bulk Create"}
           </button>
@@ -492,9 +491,13 @@
         <div class="repeater-item ${config.itemClass || ""}">
         <div class="repeater-item-header">
           <span class="item-title">${index}. ${itemLabel}</span>
-          <div type="button" class="remove-repeater" title="${
+          <div
+            type="button"
+            class="remove-repeater"
+            data-jelly-tooltip="${
             jc_product_i18n.delete_item_tooltip || "Delete item"
-          }">
+          }"
+          >
             <span class="dashicons dashicons-no-alt"></span>
           </div>
         </div>

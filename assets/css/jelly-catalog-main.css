@@ -1,10 +1,10 @@
 :root {
-  --jc-color-primary: #0572d1;
-  --jc-color-border: #e5e7eb;
-  --jc-color-bg: #ffffff;
-  --jc-color-bg-hover: #f9fafb;
-  --jc-color-title: #111827;
-  --jc-color-description: #6b7280;
+  --jc-color-primary: var(--jelly-color-primary);
+  --jc-color-border: var(--jelly-color-border);
+  --jc-color-bg: var(--jelly-color-white);
+  --jc-color-bg-hover: var(--jelly-color-bg-secondary);
+  --jc-color-title: var(--jelly-color-text);
+  --jc-color-description: var(--jelly-color-description);
 }
 
 .jc-faq {
@@ -138,9 +138,11 @@
 
 /* tab */
 .jc-cat-nav__tab {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--jc-color-border);
-  border-radius: 3px;
+  border-radius: var(--jelly-border-radius);
   padding: 8px 12px;
   line-height: 1;
   font-size: 14px;
@@ -212,10 +214,10 @@
 
 .jc-cat-list__count {
   font-size: 11px;
-  background-color: #f3f4f6;
-  color: #6b7280;
+  background-color: var(--jelly-color-bg-secondary);
+  color: var(--jc-color-description);
   padding: 2px 8px;
-  border-radius: 10px;
+  border-radius: 999px;
   margin-left: 8px;
   font-weight: normal;
 }
@@ -323,6 +325,7 @@
   justify-content: space-between;
   border: 1px solid var(--jc-color-border);
   background: var(--jc-color-bg);
+  border-radius: var(--jelly-border-radius);
   padding: 1rem;
   gap: 8px;
   width: 100%;
@@ -335,15 +338,15 @@
   width: 48px;
   align-items: center;
   justify-content: center;
-  background-color: #fef2f2;
-  border-radius: 8px;
+  background-color: var(--jelly-color-error-bg);
+  border-radius: var(--jelly-border-radius);
 }
 
 .jc-download-icon svg {
   height: 1.25rem;
   width: 1.25rem;
-  fill: #e7000b;
-  color: #e7000b;
+  fill: var(--jelly-color-error);
+  color: var(--jelly-color-error);
 }
 
 .jc-download-file {

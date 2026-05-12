@@ -28,6 +28,44 @@ class JellyCatalogSheetTabulator {
     this.perPage = 20;
     /** @type {Array} 原始数据备份 */
     this.originalData = [];
+    /** @type {Object|null} 当前加载遮罩实例 */
+    this.loadingInstance = null;
+  }
+
+  /**
+   * 显示页面提示。
+   *
+   * @param {string} message 提示文案
+   * @param {string} type 提示类型
+   * @param {number} duration 显示时长
+   * @returns {void}
+   */
+  showNotice(message, type = "info", duration = 4000) {
+    jellyCore.showMessage(message, type, duration);
+  }
+
+  /**
+   * 显示全局加载状态。
+   *
+   * @param {string} text 加载文案
+   * @returns {void}
+   */
+  showLoading(text) {
+    if (this.loadingInstance) {
+      jellyCore.hideLoading(this.loadingInstance);
+    }
+
+    this.loadingInstance = jellyCore.showLoading(text);
+  }
+
+  /**
+   * 关闭当前加载状态。
+   *
+   * @returns {void}
+   */
+  hideLoading() {
+    jellyCore.hideLoading(this.loadingInstance);
+    this.loadingInstance = null;
   }
 
   /**
@@ -137,12 +175,16 @@ class JellyCatalogSheetTabulator {
    * @param {number} page - 要加载的页码，默认为1
    */
   loadProducts(page = 1) {
+    this.showLoading("正在加载商品数据...");
+
     this.requestProducts(page)
       .done((res) => {
         this.handleProductResponse(res);
+        this.hideLoading();
       })
       .fail(() => {
-        alert("加载商品数据失败，请稍后重试");
+        this.hideLoading();
+        this.showNotice("加载商品数据失败，请稍后重试", "error", 5000);
       });
   }
 
@@ -152,7 +194,7 @@ class JellyCatalogSheetTabulator {
    */
   handleProductResponse(res) {
     if (!res || !Array.isArray(res.products)) {
-      alert("返回数据格式不正确");
+      this.showNotice("返回数据格式不正确", "error", 5000);
       return;
     }
     res.products.forEach((product) => {
@@ -246,7 +288,7 @@ class JellyCatalogSheetTabulator {
       if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
         this.loadProducts(page);
       } else {
-        alert("页码错误！");
+        this.showNotice("页码错误！", "warning");
       }
     });
 
@@ -271,7 +313,7 @@ class JellyCatalogSheetTabulator {
   ensureTableInstance(products) {
     const container = document.getElementById("hot");
     if (!container) {
-      alert("找不到表格容器");
+      this.showNotice("找不到表格容器", "error", 5000);
       return;
     }
 
@@ -579,7 +621,7 @@ class JellyCatalogSheetTabulator {
   saveChanges() {
     const changedData = this.collectChanges();
     if (changedData.length === 0) {
-      alert("没有更改需要保存");
+      this.showNotice("没有更改需要保存", "warning");
       return;
     }
 
@@ -689,6 +731,8 @@ class JellyCatalogSheetTabulator {
    * @param {Array} changedData - 更改的数据数组
    */
   submitChanges(changedData) {
+    this.showLoading("正在保存商品数据...");
+
     jQuery
       .post(jc_ajax.ajax_url, {
         action: "save_products_sheet",
@@ -696,18 +740,21 @@ class JellyCatalogSheetTabulator {
         data: changedData,
       })
       .done((res) => {
+        this.hideLoading();
+
         if (res.success) {
-          alert(res.data || "保存成功");
+          this.showNotice(res.data || "保存成功", "success");
           // 重新加载数据以反映更改
           this.loadProducts(this.currentPage);
           // 刷新备份数据，避免重复提交
           this.originalData = JSON.parse(JSON.stringify(this.table.getData()));
         } else {
-          alert("保存失败：" + (res.data || "未知错误"));
+          this.showNotice("保存失败：" + (res.data || "未知错误"), "error", 5000);
         }
       })
       .fail(() => {
-        alert("网络错误，保存失败");
+        this.hideLoading();
+        this.showNotice("网络错误，保存失败", "error", 5000);
       });
   }
 

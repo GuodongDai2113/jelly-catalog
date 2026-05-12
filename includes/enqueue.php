@@ -44,6 +44,7 @@ class Enqueue
         add_action('elementor/preview/enqueue_styles', [$this, 'enqueue_preview_style']);
         add_action('elementor/preview/enqueue_scripts', [$this, 'enqueue_preview_script']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
+        add_action('in_admin_header', [$this, 'render_admin_editor_loading_markup']);
     }
 
     /**
@@ -164,6 +165,25 @@ class Enqueue
     }
 
     /**
+     * 获取 jelly-core 资源版本。
+     *
+     * 使用文件修改时间作为版本号，确保替换核心库后能够立即刷新缓存。
+     *
+     * @param string $relative_path 相对于插件根目录的资源路径。
+     * @return string
+     */
+    private function get_jelly_core_asset_version($relative_path)
+    {
+        $absolute_path = JELLY_CATALOG_PLUGIN_PATH . ltrim($relative_path, '/');
+
+        if (file_exists($absolute_path)) {
+            return (string) filemtime($absolute_path);
+        }
+
+        return JELLY_CATALOG_VERSION;
+    }
+
+    /**
      * 加载 jelly-core 脚本与样式资源。
      *
      * @param bool $with_script 是否同时加载脚本。
@@ -177,7 +197,7 @@ class Enqueue
             'jelly-core',
             JELLY_CATALOG_PLUGIN_URL . $style_relative_path,
             [],
-            '1.3.0'
+            $this->get_jelly_core_asset_version($style_relative_path)
         );
 
         if (!$with_script) {
@@ -190,7 +210,7 @@ class Enqueue
             'jelly-core',
             JELLY_CATALOG_PLUGIN_URL . $script_relative_path,
             ['jquery'],
-            '1.3.0',
+            $this->get_jelly_core_asset_version($script_relative_path),
             true
         );
     }
@@ -205,6 +225,7 @@ class Enqueue
     {
         $is_product_editor = in_array($hook, ['post.php', 'post-new.php'], true);
         $is_product_taxonomy = in_array($hook, ['edit-tags.php', 'term.php'], true);
+        $is_taxonomy_editor = 'term.php' === $hook && $is_product_taxonomy;
 
         wp_enqueue_style(
             'jelly-catalog-admin',
@@ -215,8 +236,25 @@ class Enqueue
 
         $this->enqueue_jelly_core_assets();
 
+        if ($is_product_editor || $is_taxonomy_editor) {
+            wp_enqueue_style(
+                'jelly-catalog-editor',
+                JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-editor.css',
+                ['jelly-catalog-admin', 'jelly-core'],
+                JELLY_CATALOG_VERSION
+            );
+        }
+
         if ($is_product_editor || $is_product_taxonomy) {
             wp_enqueue_media();
+
+            wp_enqueue_script(
+                'jelly-catalog-admin-editor',
+                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-editor.js',
+                ['jquery', 'jelly-core'],
+                JELLY_CATALOG_VERSION,
+                true
+            );
 
             wp_enqueue_script(
                 'jelly-catalog-admin-repeater',
@@ -236,8 +274,8 @@ class Enqueue
         if ($is_product_editor) {
             wp_enqueue_script(
                 'jelly-catalog-admin-product',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-product.js',
-                ['jquery', 'jquery-ui-sortable', 'jelly-catalog-admin-repeater'],
+                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-product-editor.js',
+                ['jquery', 'jquery-ui-sortable', 'jelly-catalog-admin-editor'],
                 JELLY_CATALOG_VERSION,
                 true
             );
@@ -245,9 +283,9 @@ class Enqueue
 
         if ($is_product_taxonomy) {
             wp_enqueue_script(
-                'jelly-catalog-admin-category',
-                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-category.js',
-                ['jquery'],
+                'jelly-catalog-admin-category-editor',
+                JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-category-editor.js',
+                ['jquery', 'jelly-catalog-admin-editor', 'jelly-catalog-admin-repeater'],
                 JELLY_CATALOG_VERSION,
                 true
             );
@@ -261,6 +299,8 @@ class Enqueue
      */
     private function enqueue_sheet_editor_assets()
     {
+        $this->enqueue_jelly_core_assets();
+
         wp_enqueue_style('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css', [], '5.5.0');
         wp_enqueue_script('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js', ['jquery'], '5.5.0', true);
 
@@ -274,7 +314,7 @@ class Enqueue
         wp_enqueue_script(
             'jelly-catalog-admin-sheet-editor',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-sheet-editor.js',
-            ['jquery', 'tabulator'],
+            ['jquery', 'tabulator', 'jelly-core'],
             JELLY_CATALOG_VERSION,
             true
         );
@@ -287,12 +327,12 @@ class Enqueue
      */
     private function enqueue_port_import_assets()
     {
-        $this->enqueue_jelly_core_assets(false);
+        $this->enqueue_jelly_core_assets();
 
         wp_enqueue_script(
             'jelly-catalog-admin-port',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-port.js',
-            ['jquery'],
+            ['jquery', 'jelly-core'],
             JELLY_CATALOG_VERSION,
             true
         );
@@ -411,6 +451,51 @@ class Enqueue
     }
 
     /**
+     * 输出后台编辑器首屏加载层 DOM。
+     *
+     * 由 PHP 预渲染固定遮罩，JS 仅负责打开与关闭，避免首屏等待时出现空白闪动。
+     *
+     * @return void
+     */
+    public function render_admin_editor_loading_markup()
+    {
+        if (!$this->should_render_admin_editor_loading_markup()) {
+            return;
+        }
+
+        ?>
+        <div id="jc-admin-editor-loading" class="jelly-loading-mask is-open" aria-hidden="true" style="display:grid;">
+            <div class="jelly-loading-mask__content">
+                <div class="jelly-loading lg">
+                    <span class="jelly-loading__spinner" aria-hidden="true"></span>
+                    <span class="jelly-loading__text"><?php echo esc_html__('Loading editor...', 'jelly-catalog'); ?></span>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * 判断当前后台页面是否需要预渲染编辑器加载层。
+     *
+     * @return bool
+     */
+    private function should_render_admin_editor_loading_markup()
+    {
+        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+
+        if (!$screen) {
+            return false;
+        }
+
+        if ('post' === $screen->base && 'product' === $screen->post_type) {
+            return true;
+        }
+
+        return 'term' === $screen->base && 'product_cat' === $screen->taxonomy;
+    }
+
+    /**
      * 产品后台编辑器本地化文案。
      *
      * @return array
@@ -429,7 +514,6 @@ class Enqueue
             'no_content_error' => __('Please enter content.', 'jelly-catalog'),
             'no_valid_items_error' => __('No valid items found.', 'jelly-catalog'),
             'success_created_items' => __('Successfully created {count} items.', 'jelly-catalog'),
-            'editor_loading' => __('Loading editor...', 'jelly-catalog'),
             'delete_item_tooltip' => __('Delete item', 'jelly-catalog'),
             'add_new_item_btn' => __('Add New Item', 'jelly-catalog'),
             'bulk_create_tooltip' => __('Bulk Create Items from Text', 'jelly-catalog'),
@@ -441,6 +525,19 @@ class Enqueue
             'product_faqs' => __('Product FAQs', 'jelly-catalog'),
             'product_attributes' => __('Product Attributes', 'jelly-catalog'),
             'product_cat_faqs' => __('Category FAQs', 'jelly-catalog'),
+            'product_editor_loading' => __('Loading editor...', 'jelly-catalog'),
+            'category_editor_loading' => __('Organizing category editor...', 'jelly-catalog'),
+            'category_editor_menu' => __('Menu', 'jelly-catalog'),
+            'category_editor_overview' => __('Overview', 'jelly-catalog'),
+            'category_editor_basics' => __('Basics', 'jelly-catalog'),
+            'category_editor_media' => __('Media', 'jelly-catalog'),
+            'category_editor_content' => __('Content', 'jelly-catalog'),
+            'category_editor_page_content' => __('Page Content', 'jelly-catalog'),
+            'category_editor_faq' => __('FAQ', 'jelly-catalog'),
+            'category_editor_seo' => __('SEO', 'jelly-catalog'),
+            'category_editor_extensions' => __('Extensions', 'jelly-catalog'),
+            'category_editor_additional_fields' => __('Additional Fields', 'jelly-catalog'),
+            'category_editor_actions' => __('Actions', 'jelly-catalog'),
         ];
     }
 }

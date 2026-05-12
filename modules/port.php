@@ -188,15 +188,12 @@ class Port
                         <strong><?php esc_html_e('Import Progress', 'jelly-catalog'); ?></strong>
                         <span class="jc-port-progress__status">
                             <span id="jc-import-progress-percent">0%</span>
-                            <button type="button" id="jc-import-retry" class="button jc-port-progress__retry hidden">
+                            <button type="button" id="jc-import-retry" class="jelly-button warning jc-port-progress__retry hidden">
                                 <?php esc_html_e('Retry Import', 'jelly-catalog'); ?>
                             </button>
                         </span>
                     </div>
-                    <div class="jc-port-progress__track">
-                        <span id="jc-import-progress-bar" class="jc-port-progress__bar" role="progressbar"
-                            aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></span>
-                    </div>
+                    <div id="jc-import-progress-track" class="jc-port-progress__track"></div>
                     <div class="jc-port-progress__stats">
                         <span><?php esc_html_e('Processed', 'jelly-catalog'); ?>: <strong
                                 id="jc-import-progress-processed">0</strong>/<strong
