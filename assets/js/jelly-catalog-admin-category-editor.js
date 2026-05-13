@@ -24,6 +24,23 @@
     additional: "additional",
   };
 
+  /**
+   * 分类描述字段的兼容选择器，适配默认结构和 Rank Math 改写结构。
+   */
+  const TERM_DESCRIPTION_ROW_SELECTORS = [
+    ".term-description-wrap",
+    ".rank-math-term-description-wrap",
+    "#description",
+  ];
+
+  /**
+   * 分类编辑器中需要参与进度判断的富文本编辑器。
+   */
+  const CATEGORY_PROGRESS_EDITORS = {
+    whyChoose: "category_why_choose",
+    advantages: "category_advantages",
+  };
+
   class JellyCatalogCategoryManager {
     constructor() {
       this.$body = $(SELECTORS.body);
@@ -309,13 +326,13 @@
 
           if (container.length) {
             container.find(".thumbnail-preview").hide();
-            container.find("#thumbnail_id").val("");
+            container.find("#thumbnail_id").val("").trigger("change");
             container.find(".button.remove-thumbnail").hide();
             container.find(".button.select-thumbnail").show();
             return;
           }
 
-          $("#thumbnail_id").val("");
+          $("#thumbnail_id").val("").trigger("change");
           $(".thumbnail-preview").hide();
           $(".thumbnail-preview img").attr("src", "");
           $(".remove-thumbnail").hide();
@@ -352,13 +369,13 @@
 
           if (container.length) {
             container.find(".banner-preview").hide();
-            container.find("#banner_id").val("");
+            container.find("#banner_id").val("").trigger("change");
             container.find(".button.remove-banner").hide();
             container.find(".button.select-banner").show();
             return;
           }
 
-          $("#banner_id").val("");
+          $("#banner_id").val("").trigger("change");
           $(".banner-preview").hide();
           $(".banner-preview img").attr("src", "");
           $(".remove-banner").hide();
@@ -387,7 +404,7 @@
           const removeBtn = container.find(`.button.remove-${type}`);
           const selectBtn = container.find(`.button.select-${type}`);
 
-          inputField.val(attachment.id);
+          inputField.val(attachment.id).trigger("change");
           img.attr("src", attachment.url);
           preview.show();
           removeBtn.show();
@@ -401,7 +418,7 @@
         const removeClass =
           type === "thumbnail" ? ".remove-thumbnail" : ".remove-banner";
 
-        $(fieldId).val(attachment.id);
+        $(fieldId).val(attachment.id).trigger("change");
         $(previewClass).show();
         $(`${previewClass} img`).attr("src", attachment.url);
         $(removeClass).show();
@@ -524,12 +541,7 @@
           cards: [
             {
               title: this.getI18nValue("category_editor_basics", "Basics"),
-              rows: this.collectRows([
-                "#name",
-                "#slug",
-                "#parent",
-                "#description",
-              ]),
+              rows: this.collectBasicRows(),
             },
             {
               title: this.getI18nValue("category_editor_media", "Media"),
@@ -590,16 +602,16 @@
 
       this.initSectionNavigation(renderedSections);
       this.collectRemainingTableRows();
+      this.preserveDetachedFormTableInputs();
       this.$formTable.remove();
       this.collectDeferredFields();
       this.observePendingNodes();
+      this.registerSectionProgressTracking();
     }
 
     reorderTermDescriptionWrap() {
       const $parentWrap = this.$form.children(".term-parent-wrap").first();
-      const $descriptionWrap = this.$form
-        .children(".term-description-wrap")
-        .first();
+      const $descriptionWrap = this.getTermDescriptionWrap();
 
       if (
         !$parentWrap.length ||
@@ -610,6 +622,15 @@
       }
 
       $parentWrap.after($descriptionWrap);
+    }
+
+    /**
+     * 获取分类描述字段所在行，兼容 Rank Math 改写后的描述字段容器。
+     */
+    getTermDescriptionWrap() {
+      return this.$form
+        .children(".term-description-wrap, .rank-math-term-description-wrap")
+        .first();
     }
 
     buildSection(section) {
@@ -700,6 +721,31 @@
       return $(rows);
     }
 
+    /**
+     * 收集 Basics 区块字段，确保分类描述始终进入基础信息卡片。
+     */
+    collectBasicRows() {
+      const $baseRows = this.collectRows(["#name", "#slug", "#parent"]);
+      const rows = $baseRows.get();
+      const seenRows = new Set(rows);
+
+      TERM_DESCRIPTION_ROW_SELECTORS.forEach((fieldSelector) => {
+        this.$form.find(fieldSelector).each((_, field) => {
+          const row = $(field).closest("tr.form-field")[0] || $(field)[0];
+
+          if (!row || seenRows.has(row)) {
+            return;
+          }
+
+          seenRows.add(row);
+          $(row).attr("data-jc-category-bound", "true");
+          rows.push(row);
+        });
+      });
+
+      return $(rows);
+    }
+
     getOrCreateSection(sectionId, navLabel) {
       let $section = this.getSectionElement(sectionId);
 
@@ -723,7 +769,11 @@
           .find(SELECTORS.navButton)
           .map((_, button) => ({
             id: $(button).data("target"),
-            navLabel: $(button).text().trim(),
+            navLabel:
+              $(button)
+                .find(".jc-editor-layout__nav-label")
+                .text()
+                .trim() || $(button).text().trim(),
           }))
           .get(),
       );
@@ -849,6 +899,26 @@
       );
     }
 
+    /**
+     * 保留原始表格中未被卡片搬运的隐藏字段，避免删除 form-table 时丢失 nonce。
+     */
+    preserveDetachedFormTableInputs() {
+      const $hiddenInputs = this.$formTable
+        .find("input[type='hidden']")
+        .filter((_, input) => !$(input).closest("tr.form-field").length);
+
+      if (!$hiddenInputs.length) {
+        return;
+      }
+
+      const $stash = $('<div class="jc-term-editor__hidden-inputs" hidden></div>');
+      $hiddenInputs.each((_, input) => {
+        $stash.append(input);
+      });
+
+      this.$form.prepend($stash);
+    }
+
     moveSubmitActions() {
       const $actions = this.$form.children(SELECTORS.submitActions).first();
 
@@ -906,6 +976,83 @@
 
     fixEditorLayout() {
       this.refreshTinyMCE();
+    }
+
+    /**
+     * 注册分类编辑器每个 section 的完成度规则。
+     */
+    registerSectionProgressTracking() {
+      this.setSectionProgressDefinitions({
+        [SECTION_IDS.overview]: {
+          items: [
+            {
+              key: "description",
+              isComplete: () => this.hasFieldValue("#description"),
+            },
+            {
+              key: "thumbnail",
+              isComplete: () => this.hasFieldValue("#thumbnail_id"),
+            },
+          ],
+        },
+        [SECTION_IDS.content]: {
+          editorIds: [
+            CATEGORY_PROGRESS_EDITORS.whyChoose,
+            CATEGORY_PROGRESS_EDITORS.advantages,
+          ],
+          items: [
+            {
+              key: "h1Title",
+              isComplete: () => this.hasFieldValue("#category_h1_title"),
+            },
+            {
+              key: "whyChooseTitle",
+              isComplete: () =>
+                this.hasFieldValue("#category_why_choose_title"),
+            },
+            {
+              key: "whyChoose",
+              isComplete: () =>
+                this.hasEditorContent(
+                  CATEGORY_PROGRESS_EDITORS.whyChoose,
+                  "#category_why_choose",
+                ),
+            },
+            {
+              key: "advantages",
+              isComplete: () =>
+                this.hasEditorContent(
+                  CATEGORY_PROGRESS_EDITORS.advantages,
+                  "#category_advantages",
+                ),
+            },
+          ],
+        },
+        [SECTION_IDS.faq]: {
+          items: [
+            {
+              key: "faq",
+              isComplete: () =>
+                this.hasCompletedRepeaterItems(
+                  "#product_cat_faqs_container",
+                  ".repeater-item__key-input",
+                  ".repeater-item__value-input",
+                ),
+            },
+          ],
+        },
+        [SECTION_IDS.seo]: {
+          items: [
+            {
+              key: "seo",
+              isComplete: () =>
+                this.hasMeaningfulFieldValue(
+                  "#jc-term-editor-section-seo",
+                ),
+            },
+          ],
+        },
+      });
     }
   }
 

@@ -165,25 +165,6 @@ class Enqueue
     }
 
     /**
-     * 获取 jelly-core 资源版本。
-     *
-     * 使用文件修改时间作为版本号，确保替换核心库后能够立即刷新缓存。
-     *
-     * @param string $relative_path 相对于插件根目录的资源路径。
-     * @return string
-     */
-    private function get_jelly_core_asset_version($relative_path)
-    {
-        $absolute_path = JELLY_CATALOG_PLUGIN_PATH . ltrim($relative_path, '/');
-
-        if (file_exists($absolute_path)) {
-            return (string) filemtime($absolute_path);
-        }
-
-        return JELLY_CATALOG_VERSION;
-    }
-
-    /**
      * 加载 jelly-core 脚本与样式资源。
      *
      * @param bool $with_script 是否同时加载脚本。
@@ -197,7 +178,7 @@ class Enqueue
             'jelly-core',
             JELLY_CATALOG_PLUGIN_URL . $style_relative_path,
             [],
-            $this->get_jelly_core_asset_version($style_relative_path)
+            '1.4.0'
         );
 
         if (!$with_script) {
@@ -210,7 +191,7 @@ class Enqueue
             'jelly-core',
             JELLY_CATALOG_PLUGIN_URL . $script_relative_path,
             ['jquery'],
-            $this->get_jelly_core_asset_version($script_relative_path),
+            '1.4.0',
             true
         );
     }
@@ -464,15 +445,15 @@ class Enqueue
         }
 
         ?>
-        <div id="jc-admin-editor-loading" class="jelly-loading-mask is-open" aria-hidden="true" style="display:grid;">
-            <div class="jelly-loading-mask__content">
-                <div class="jelly-loading lg">
-                    <span class="jelly-loading__spinner" aria-hidden="true"></span>
-                    <span class="jelly-loading__text"><?php echo esc_html__('Loading editor...', 'jelly-catalog'); ?></span>
-                </div>
-            </div>
+<div id="jc-admin-editor-loading" class="jelly-loading-mask is-open" aria-hidden="true" style="display:grid;">
+    <div class="jelly-loading-mask__content">
+        <div class="jelly-loading lg">
+            <span class="jelly-loading__spinner" aria-hidden="true"></span>
+            <span class="jelly-loading__text"><?php echo esc_html__('Loading editor...', 'jelly-catalog'); ?></span>
         </div>
-        <?php
+    </div>
+</div>
+<?php
     }
 
     /**
@@ -526,6 +507,11 @@ class Enqueue
             'product_attributes' => __('Product Attributes', 'jelly-catalog'),
             'product_cat_faqs' => __('Category FAQs', 'jelly-catalog'),
             'product_editor_loading' => __('Loading editor...', 'jelly-catalog'),
+            'product_editor_menu' => __('Menu', 'jelly-catalog'),
+            'product_editor_summary' => __('Summary', 'jelly-catalog'),
+            'product_editor_details' => __('Details', 'jelly-catalog'),
+            'product_editor_seo' => __('SEO', 'jelly-catalog'),
+            'product_editor_nav_aria' => __('Product section navigation', 'jelly-catalog'),
             'category_editor_loading' => __('Organizing category editor...', 'jelly-catalog'),
             'category_editor_menu' => __('Menu', 'jelly-catalog'),
             'category_editor_overview' => __('Overview', 'jelly-catalog'),

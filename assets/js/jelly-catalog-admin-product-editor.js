@@ -40,9 +40,18 @@
     seo: "seo",
   };
 
+  /**
+   * 产品编辑器侧边栏进度定义。
+   */
+  const PRODUCT_PROGRESS_EDITORS = {
+    excerpt: "excerpt",
+    content: "content",
+  };
+
   const PRODUCT_EDITOR_LAYOUT = [
     {
       id: PRODUCT_SECTION_IDS.summary,
+      navLabelKey: "product_editor_summary",
       navLabel: "Summary",
       sectionClass: "jc-product-section-summary",
       columns: [
@@ -68,6 +77,7 @@
     },
     {
       id: PRODUCT_SECTION_IDS.details,
+      navLabelKey: "product_editor_details",
       navLabel: "Details",
       sectionClass: "jc-product-section-details",
       columns: [
@@ -98,6 +108,7 @@
     },
     {
       id: PRODUCT_SECTION_IDS.seo,
+      navLabelKey: "product_editor_seo",
       navLabel: "SEO",
       sectionClass: "jc-product-section-seo",
       columns: [
@@ -175,8 +186,11 @@
         contentClass: "jc-product-editor__content",
         navButtonClass:
           "jc-product-editor__nav-button jc-editor-layout__nav-button",
-        navAriaLabel: "Product section navigation",
-        menuTitle: "Menu",
+        navAriaLabel: this.getI18n(
+          "product_editor_nav_aria",
+          "Product section navigation",
+        ),
+        menuTitle: this.getI18n("product_editor_menu", "Menu"),
       });
 
       $titleDiv.after(shell.$shell);
@@ -190,6 +204,7 @@
       this.appendElementorControls();
       this.initSectionNavigation(renderedSections);
       this.moveNavigationMetabox();
+      this.registerSectionProgressTracking();
     }
 
     getSectionPane(sectionId) {
@@ -338,7 +353,9 @@
         $contentWrapper.append($section);
         renderedSections.push({
           id: section.id,
-          navLabel: section.navLabel || "",
+          navLabel: section.navLabelKey
+            ? this.getI18n(section.navLabelKey, section.navLabel || "")
+            : section.navLabel || "",
         });
       });
 
@@ -353,6 +370,90 @@
       }
 
       this.$navSecondary.append($navigationMetabox);
+    }
+
+    /**
+     * 注册产品编辑器每个 section 的完成度规则。
+     */
+    registerSectionProgressTracking() {
+      this.setSectionProgressDefinitions({
+        [PRODUCT_SECTION_IDS.summary]: {
+          editorIds: [PRODUCT_PROGRESS_EDITORS.excerpt],
+          items: [
+            {
+              key: "title",
+              isComplete: () => this.hasFieldValue("#title"),
+            },
+            {
+              key: "excerpt",
+              isComplete: () =>
+                this.hasEditorContent(
+                  PRODUCT_PROGRESS_EDITORS.excerpt,
+                  "#excerpt",
+                ),
+            },
+            {
+              key: "attributes",
+              isComplete: () =>
+                this.hasCompletedRepeaterItems(
+                  "#product_attributes_metabox",
+                  ".repeater-item__key-input",
+                  ".repeater-item__value-input",
+                ),
+            },
+            {
+              key: "categories",
+              isComplete: () =>
+                this.hasCheckedValue(
+                  "#product_catdiv input[type='checkbox']",
+                ),
+            },
+            {
+              key: "featuredImage",
+              isComplete: () => this.hasImagePreview("#postimagediv"),
+            },
+          ],
+        },
+        [PRODUCT_SECTION_IDS.details]: {
+          editorIds: [PRODUCT_PROGRESS_EDITORS.content],
+          items: [
+            {
+              key: "description",
+              isComplete: () =>
+                this.hasEditorContent(
+                  PRODUCT_PROGRESS_EDITORS.content,
+                  "#content",
+                ),
+            },
+            {
+              key: "faq",
+              isComplete: () =>
+                this.hasCompletedRepeaterItems(
+                  "#product_faq_metabox",
+                  ".repeater-item__key-input",
+                  ".repeater-item__value-input",
+                ),
+            },
+          ],
+        },
+        [PRODUCT_SECTION_IDS.extras]: {
+          items: [
+            {
+              key: "longtailKeywords",
+              isComplete: () => this.hasFieldValue("#jc_base_keyword"),
+            },
+          ],
+        },
+        [PRODUCT_SECTION_IDS.seo]: {
+          items: [
+            {
+              key: "seo",
+              isComplete: () =>
+                this.hasMeaningfulFieldValue("#rank_math_metabox"),
+            },
+          ],
+        },
+      });
     }
 
     moveSidebarMetaboxes() {

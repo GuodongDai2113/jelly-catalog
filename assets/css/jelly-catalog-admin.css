@@ -407,12 +407,6 @@ td.column-product_tag a.level-3 {
   margin-top: 8px;
 }
 
-.wp-core-ui .button.remove-thumbnail,
-.wp-core-ui .button.remove-banner {
-  border-color: var(--jelly-color-delete);
-  color: var(--jelly-color-delete);
-}
-
 .thumbnail-preview,
 .banner-preview {
   width: 100%;

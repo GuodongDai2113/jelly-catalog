@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Jelly Catalog plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Jelly Catalog 3.3.0\n"
+"Project-Id-Version: Jelly Catalog 3.3.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/jelly-catalog\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-09T06:51:20+00:00\n"
+"POT-Creation-Date: 2026-05-13T03:13:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: jelly-catalog\n"
@@ -182,7 +182,7 @@ msgid "Product Title"
 msgstr ""
 
 #: addons/elementor/widgets/product-attributes.php:32
-#: includes/enqueue.php:460
+#: includes/enqueue.php:507
 #: modules/metabox/product-attributes-metabox.php:29
 #: modules/metabox/product-attributes-metabox.php:42
 msgid "Product Attributes"
@@ -416,7 +416,7 @@ msgstr ""
 
 #: addons/elementor/widgets/product-cat-faq.php:116
 #: addons/elementor/widgets/product-faq.php:124
-#: includes/enqueue.php:455
+#: includes/enqueue.php:502
 msgid "Question"
 msgstr ""
 
@@ -439,7 +439,7 @@ msgstr ""
 
 #: addons/elementor/widgets/product-cat-faq.php:164
 #: addons/elementor/widgets/product-faq.php:172
-#: includes/enqueue.php:456
+#: includes/enqueue.php:503
 msgid "Answer"
 msgstr ""
 
@@ -478,6 +478,7 @@ msgstr ""
 #: addons/elementor/widgets/product-cat-nav.php:54
 #: addons/elementor/widgets/product-download.php:53
 #: includes/admin.php:252
+#: includes/enqueue.php:520
 msgid "Content"
 msgstr ""
 
@@ -668,6 +669,7 @@ msgstr ""
 
 #: addons/elementor/widgets/product-gallery.php:30
 #: modules/metabox/product-gallery-metabox.php:33
+#: modules/post-meta-box.php:84
 msgid "Product Gallery"
 msgstr ""
 
@@ -689,6 +691,7 @@ msgstr ""
 
 #: addons/elementor/widgets/product-gallery.php:118
 #: addons/elementor/widgets/product-gallery.php:519
+#: includes/enqueue.php:519
 msgid "Media"
 msgstr ""
 
@@ -800,15 +803,15 @@ msgid "Image"
 msgstr ""
 
 #: includes/admin.php:102
-#: modules/port.php:645
-#: modules/post-meta-box.php:100
+#: modules/port.php:642
+#: modules/post-meta-box.php:127
 #: modules/post-types.php:55
 msgid "Categories"
 msgstr ""
 
 #: includes/admin.php:103
-#: modules/port.php:655
-#: modules/post-meta-box.php:114
+#: modules/port.php:652
+#: modules/post-meta-box.php:141
 msgid "Tags"
 msgstr ""
 
@@ -818,14 +821,14 @@ msgstr ""
 
 #: includes/admin.php:250
 #: includes/settings.php:176
-#: modules/port.php:603
-#: modules/post-meta-box.php:65
+#: modules/port.php:600
+#: modules/post-meta-box.php:64
 msgid "Title"
 msgstr ""
 
 #: includes/admin.php:251
-#: modules/port.php:640
-#: modules/post-meta-box.php:86
+#: modules/port.php:637
+#: modules/post-meta-box.php:113
 msgid "Description"
 msgstr ""
 
@@ -883,53 +886,58 @@ msgstr ""
 msgid "Invalid taxonomy"
 msgstr ""
 
-#: includes/enqueue.php:327
+#: includes/enqueue.php:329
 msgid "Uploading files and preparing import..."
 msgstr ""
 
-#: includes/enqueue.php:328
+#: includes/enqueue.php:330
 msgid "Importing products..."
 msgstr ""
 
-#: includes/enqueue.php:329
+#: includes/enqueue.php:331
 msgid "Import completed."
 msgstr ""
 
-#: includes/enqueue.php:330
+#: includes/enqueue.php:332
 msgid "Import failed."
 msgstr ""
 
-#: includes/enqueue.php:331
+#: includes/enqueue.php:333
 #: modules/port-import.php:225
 #: modules/port-import.php:2457
 msgid "Please upload a product CSV or a category CSV."
 msgstr ""
 
-#: includes/enqueue.php:332
+#: includes/enqueue.php:334
 msgid "Network error. Please try again."
 msgstr ""
 
-#: includes/enqueue.php:333
+#: includes/enqueue.php:335
 msgid "Temporary error. Retrying..."
 msgstr ""
 
-#: includes/enqueue.php:334
+#: includes/enqueue.php:336
 msgid "Import paused. You can retry from the last saved position."
 msgstr ""
 
-#: includes/enqueue.php:335
+#: includes/enqueue.php:337
 msgid "Import is still locked by another request. Please retry from the last saved position."
 msgstr ""
 
-#: includes/enqueue.php:440
+#: includes/enqueue.php:452
+#: includes/enqueue.php:509
+msgid "Loading editor..."
+msgstr ""
+
+#: includes/enqueue.php:487
 msgid "Product Description"
 msgstr ""
 
-#: includes/enqueue.php:441
+#: includes/enqueue.php:488
 msgid "Bulk Create Items"
 msgstr ""
 
-#: includes/enqueue.php:442
+#: includes/enqueue.php:489
 msgid ""
 "Enter content here...\n"
 "For FAQ: First line is Question, second line is Answer\n"
@@ -946,68 +954,126 @@ msgid ""
 "Value 2..."
 msgstr ""
 
-#: includes/enqueue.php:443
+#: includes/enqueue.php:490
 msgid "Create Items"
 msgstr ""
 
-#: includes/enqueue.php:444
+#: includes/enqueue.php:491
 msgid "Cancel"
 msgstr ""
 
-#: includes/enqueue.php:445
+#: includes/enqueue.php:492
 msgid "Success"
 msgstr ""
 
-#: includes/enqueue.php:446
+#: includes/enqueue.php:493
 msgid "Error"
 msgstr ""
 
-#: includes/enqueue.php:447
+#: includes/enqueue.php:494
 msgid "OK"
 msgstr ""
 
-#: includes/enqueue.php:448
+#: includes/enqueue.php:495
 msgid "Please enter content."
 msgstr ""
 
-#: includes/enqueue.php:449
+#: includes/enqueue.php:496
 msgid "No valid items found."
 msgstr ""
 
-#: includes/enqueue.php:450
+#: includes/enqueue.php:497
 msgid "Successfully created {count} items."
 msgstr ""
 
-#: includes/enqueue.php:451
+#: includes/enqueue.php:498
 msgid "Delete item"
 msgstr ""
 
-#: includes/enqueue.php:452
+#: includes/enqueue.php:499
 msgid "Add New Item"
 msgstr ""
 
-#: includes/enqueue.php:453
+#: includes/enqueue.php:500
 msgid "Bulk Create Items from Text"
 msgstr ""
 
-#: includes/enqueue.php:454
+#: includes/enqueue.php:501
 msgid "Bulk Create"
 msgstr ""
 
-#: includes/enqueue.php:457
+#: includes/enqueue.php:504
 msgid "Name"
 msgstr ""
 
-#: includes/enqueue.php:458
+#: includes/enqueue.php:505
 msgid "Value"
 msgstr ""
 
-#: includes/enqueue.php:459
+#: includes/enqueue.php:506
 msgid "Product FAQs"
 msgstr ""
 
-#: includes/enqueue.php:461
+#: includes/enqueue.php:508
 msgid "Category FAQs"
+msgstr ""
+
+#: includes/enqueue.php:510
+#: includes/enqueue.php:516
+msgid "Menu"
+msgstr ""
+
+#: includes/enqueue.php:511
+msgid "Summary"
+msgstr ""
+
+#: includes/enqueue.php:512
+msgid "Details"
+msgstr ""
+
+#: includes/enqueue.php:513
+#: includes/enqueue.php:523
+msgid "SEO"
+msgstr ""
+
+#: includes/enqueue.php:514
+msgid "Product section navigation"
+msgstr ""
+
+#: includes/enqueue.php:515
+msgid "Organizing category editor..."
+msgstr ""
+
+#: includes/enqueue.php:517
+msgid "Overview"
+msgstr ""
+
+#: includes/enqueue.php:518
+msgid "Basics"
+msgstr ""
+
+#: includes/enqueue.php:521
+msgid "Page Content"
+msgstr ""
+
+#: includes/enqueue.php:522
+#: includes/utils.php:225
+#: modules/metabox/product-cat-faq-metabox.php:48
+#: modules/metabox/product-faq-metabox.php:43
+#: modules/post-meta-box.php:169
+msgid "FAQ"
+msgstr ""
+
+#: includes/enqueue.php:524
+msgid "Extensions"
+msgstr ""
+
+#: includes/enqueue.php:525
+msgid "Additional Fields"
+msgstr ""
+
+#: includes/enqueue.php:526
+msgid "Actions"
 msgstr ""
 
 #: includes/settings.php:42
@@ -1121,13 +1187,6 @@ msgstr ""
 
 #: includes/settings.php:293
 msgid "Choose whether category URLs use /product-category/ or the category hierarchy directly."
-msgstr ""
-
-#: includes/utils.php:225
-#: modules/metabox/product-cat-faq-metabox.php:48
-#: modules/metabox/product-faq-metabox.php:43
-#: modules/post-meta-box.php:142
-msgid "FAQ"
 msgstr ""
 
 #: includes/utils.php:235
@@ -1323,7 +1382,7 @@ msgid "Enter product model or SKU"
 msgstr ""
 
 #: modules/metabox/product-video-metabox.php:27
-#: modules/post-meta-box.php:203
+#: modules/post-meta-box.php:230
 msgid "Product Video"
 msgstr ""
 
@@ -1338,18 +1397,18 @@ msgstr ""
 #: modules/port-import.php:87
 #: modules/port-import.php:134
 #: modules/port-import.php:169
-#: modules/port.php:241
-#: modules/port.php:331
-#: modules/port.php:447
-#: modules/port.php:489
+#: modules/port.php:238
+#: modules/port.php:328
+#: modules/port.php:444
+#: modules/port.php:486
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
 #: modules/port-import.php:92
-#: modules/port.php:247
-#: modules/port.php:337
-#: modules/port.php:452
-#: modules/port.php:495
+#: modules/port.php:244
+#: modules/port.php:334
+#: modules/port.php:449
+#: modules/port.php:492
 msgid "Security check failed"
 msgstr ""
 
@@ -1554,368 +1613,408 @@ msgstr ""
 msgid "Retry Import"
 msgstr ""
 
-#: modules/port.php:201
+#: modules/port.php:198
 msgid "Processed"
 msgstr ""
 
-#: modules/port.php:204
+#: modules/port.php:201
 msgid "Imported"
 msgstr ""
 
-#: modules/port.php:206
+#: modules/port.php:203
 msgid "Errors"
 msgstr ""
 
-#: modules/port.php:216
+#: modules/port.php:213
 msgid "Import Log"
 msgstr ""
 
-#: modules/port.php:219
+#: modules/port.php:216
 msgid "Clear Log"
 msgstr ""
 
-#: modules/port.php:353
-#: modules/port.php:502
+#: modules/port.php:350
+#: modules/port.php:499
 msgid "No products found to export."
 msgstr ""
 
-#: modules/port.php:457
+#: modules/port.php:454
 msgid "No product categories found to export."
 msgstr ""
 
-#: modules/port.php:536
+#: modules/port.php:533
 msgid "JSON export failed."
 msgstr ""
 
-#: modules/port.php:597
+#: modules/port.php:594
 msgid "ID"
 msgstr ""
 
-#: modules/port.php:608
+#: modules/port.php:605
 msgid "Slug"
 msgstr ""
 
-#: modules/port.php:613
+#: modules/port.php:610
 msgid "SKU"
 msgstr ""
 
-#: modules/port.php:618
+#: modules/port.php:615
 msgid "Status"
 msgstr ""
 
-#: modules/port.php:623
+#: modules/port.php:620
 msgid "Featured Image"
 msgstr ""
 
-#: modules/port.php:629
+#: modules/port.php:626
 msgid "Gallery Images"
 msgstr ""
 
-#: modules/port.php:635
-#: modules/post-meta-box.php:71
+#: modules/port.php:632
+#: modules/post-meta-box.php:98
 msgid "Short Description"
 msgstr ""
 
-#: modules/port.php:650
+#: modules/port.php:647
 msgid "Category Slugs"
 msgstr ""
 
-#: modules/port.php:660
+#: modules/port.php:657
 msgid "FAQs"
 msgstr ""
 
-#: modules/port.php:665
-#: modules/post-meta-box.php:156
+#: modules/port.php:662
+#: modules/post-meta-box.php:183
 msgid "Attributes"
 msgstr ""
 
-#: modules/port.php:673
+#: modules/port.php:670
 msgid "Focus Keyword"
 msgstr ""
 
-#: modules/port.php:678
+#: modules/port.php:675
 msgid "SEO Title"
 msgstr ""
 
-#: modules/port.php:683
+#: modules/port.php:680
 msgid "Meta Description"
 msgstr ""
 
-#: modules/post-meta-box.php:66
+#: modules/post-meta-box.php:65
 msgid "Recommended format: <code>Model number + core product keywords + specifications/attributes</code>"
 msgstr ""
 
-#: modules/post-meta-box.php:73
-#: modules/post-meta-box.php:88
-msgid "Writing Guidelines:"
+#: modules/post-meta-box.php:70
+msgid "Product Image"
+msgstr ""
+
+#: modules/post-meta-box.php:72
+msgid "Featured Image Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:74
+msgid "Upload a clear primary product image with a clean background whenever possible."
 msgstr ""
 
 #: modules/post-meta-box.php:75
-msgid "The short description should naturally include high-frequency user search "
-msgstr ""
-
-#: modules/post-meta-box.php:75
-msgid "keywords"
-msgstr ""
-
-#: modules/post-meta-box.php:75
-msgid " or "
-msgstr ""
-
-#: modules/post-meta-box.php:75
-msgid "long-tail keywords"
+msgid "Use consistent aspect ratios across products to keep archive pages visually aligned."
 msgstr ""
 
 #: modules/post-meta-box.php:76
-msgid "Place important keywords at the beginning to improve keyword weighting"
+msgid "Prefer images that highlight the product structure, material, and main selling point at a glance."
 msgstr ""
 
 #: modules/post-meta-box.php:77
-msgid "Recommended length is between "
+msgid "Avoid watermarks, excessive text overlays, or overly compressed images."
 msgstr ""
 
-#: modules/post-meta-box.php:77
-msgid "100-160"
+#: modules/post-meta-box.php:86
+msgid "Gallery Usage Guidelines:"
 msgstr ""
 
-#: modules/post-meta-box.php:77
-msgid " characters, providing sufficient value without being overly lengthy"
+#: modules/post-meta-box.php:88
+msgid "Add multiple supporting images to show different angles, details, dimensions, or use cases."
 msgstr ""
 
-#: modules/post-meta-box.php:78
-msgid "Use clear and concise language, avoiding excessive technical terminology"
-msgstr ""
-
-#: modules/post-meta-box.php:79
-msgid "Highlight unique product advantages, such as materials, performance, price, usage scenarios, etc."
+#: modules/post-meta-box.php:89
+msgid "Keep gallery image quality and visual style consistent with the featured image."
 msgstr ""
 
 #: modules/post-meta-box.php:90
-msgid "It is recommended to use relevant keywords in the details, no less than 5 times, evenly distributed throughout the page."
+msgid "Sort images in a logical order, placing the most informative views first."
 msgstr ""
 
 #: modules/post-meta-box.php:91
-msgid "Replace all pronouns in the details with keywords - use specific names instead of words like \"it\" whenever possible."
+msgid "Remove duplicate or low-value images so the gallery stays focused and helpful."
 msgstr ""
 
-#: modules/post-meta-box.php:92
-msgid "Each paragraph in the details should not exceed "
-msgstr ""
-
-#: modules/post-meta-box.php:92
-msgid "500"
-msgstr ""
-
-#: modules/post-meta-box.php:92
-msgid " characters. If exceeded, split into paragraphs. The full text should have a minimum of "
-msgstr ""
-
-#: modules/post-meta-box.php:92
-msgid "1000"
-msgstr ""
-
-#: modules/post-meta-box.php:92
-msgid " characters."
-msgstr ""
-
-#: modules/post-meta-box.php:93
-msgid "Ensure original content in the details. Do not copy directly from the internet. Page similarity within the website should not exceed "
-msgstr ""
-
-#: modules/post-meta-box.php:93
-msgid "30%"
-msgstr ""
-
-#: modules/post-meta-box.php:93
-msgid "."
+#: modules/post-meta-box.php:100
+#: modules/post-meta-box.php:115
+msgid "Writing Guidelines:"
 msgstr ""
 
 #: modules/post-meta-box.php:102
-msgid "Category Selection Guidelines:"
+msgid "The short description should naturally include high-frequency user search "
+msgstr ""
+
+#: modules/post-meta-box.php:102
+msgid "keywords"
+msgstr ""
+
+#: modules/post-meta-box.php:102
+msgid " or "
+msgstr ""
+
+#: modules/post-meta-box.php:102
+msgid "long-tail keywords"
+msgstr ""
+
+#: modules/post-meta-box.php:103
+msgid "Place important keywords at the beginning to improve keyword weighting"
 msgstr ""
 
 #: modules/post-meta-box.php:104
-msgid "Select the most relevant categories for your product to improve discoverability."
+msgid "Recommended length is between "
+msgstr ""
+
+#: modules/post-meta-box.php:104
+msgid "100-160"
+msgstr ""
+
+#: modules/post-meta-box.php:104
+msgid " characters, providing sufficient value without being overly lengthy"
 msgstr ""
 
 #: modules/post-meta-box.php:105
-msgid "Use specific categories rather than generic ones when possible."
+msgid "Use clear and concise language, avoiding excessive technical terminology"
 msgstr ""
 
 #: modules/post-meta-box.php:106
-msgid "Avoid selecting too many categories - 2-4 relevant categories are recommended."
+msgid "Highlight unique product advantages, such as materials, performance, price, usage scenarios, etc."
 msgstr ""
 
-#: modules/post-meta-box.php:107
-msgid "Check existing categories before creating new ones to maintain consistency."
-msgstr ""
-
-#: modules/post-meta-box.php:116
-msgid "Tag Usage Guidelines:"
+#: modules/post-meta-box.php:117
+msgid "It is recommended to use relevant keywords in the details, no less than 5 times, evenly distributed throughout the page."
 msgstr ""
 
 #: modules/post-meta-box.php:118
-msgid "Use tags to highlight specific features, materials, or use cases of your product."
+msgid "Replace all pronouns in the details with keywords - use specific names instead of words like \"it\" whenever possible."
 msgstr ""
 
 #: modules/post-meta-box.php:119
-msgid "Tags should be single words or short phrases separated by commas."
+msgid "Each paragraph in the details should not exceed "
+msgstr ""
+
+#: modules/post-meta-box.php:119
+msgid "500"
+msgstr ""
+
+#: modules/post-meta-box.php:119
+msgid " characters. If exceeded, split into paragraphs. The full text should have a minimum of "
+msgstr ""
+
+#: modules/post-meta-box.php:119
+msgid "1000"
+msgstr ""
+
+#: modules/post-meta-box.php:119
+msgid " characters."
 msgstr ""
 
 #: modules/post-meta-box.php:120
-msgid "Focus on important keywords that customers might search for."
+msgid "Ensure original content in the details. Do not copy directly from the internet. Page similarity within the website should not exceed "
 msgstr ""
 
-#: modules/post-meta-box.php:121
-msgid "Avoid duplicate tags and excessive tagging - 5-10 relevant tags are sufficient."
+#: modules/post-meta-box.php:120
+msgid "30%"
 msgstr ""
 
-#: modules/post-meta-box.php:128
-msgid "Download"
+#: modules/post-meta-box.php:120
+msgid "."
 msgstr ""
 
-#: modules/post-meta-box.php:130
-msgid "Downloadable Content Guidelines:"
+#: modules/post-meta-box.php:129
+msgid "Category Selection Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:131
+msgid "Select the most relevant categories for your product to improve discoverability."
 msgstr ""
 
 #: modules/post-meta-box.php:132
-msgid "Upload high-quality files in supported formats (PDF, DOC, ZIP, etc.)."
+msgid "Use specific categories rather than generic ones when possible."
 msgstr ""
 
 #: modules/post-meta-box.php:133
-msgid "Ensure files are virus-free and safe for users to download."
+msgid "Avoid selecting too many categories - 2-4 relevant categories are recommended."
 msgstr ""
 
 #: modules/post-meta-box.php:134
-msgid "Provide clear file descriptions to help users understand content."
+msgid "Check existing categories before creating new ones to maintain consistency."
 msgstr ""
 
-#: modules/post-meta-box.php:135
-msgid "Compress large files to reduce download time and server load."
+#: modules/post-meta-box.php:143
+msgid "Tag Usage Guidelines:"
 msgstr ""
 
-#: modules/post-meta-box.php:144
-msgid "FAQ Creation Guidelines:"
+#: modules/post-meta-box.php:145
+msgid "Use tags to highlight specific features, materials, or use cases of your product."
 msgstr ""
 
 #: modules/post-meta-box.php:146
-msgid "Address common customer questions about product features, usage, and specifications."
+msgid "Tags should be single words or short phrases separated by commas."
 msgstr ""
 
 #: modules/post-meta-box.php:147
-msgid "Write clear, concise questions and detailed, helpful answers."
+msgid "Focus on important keywords that customers might search for."
 msgstr ""
 
 #: modules/post-meta-box.php:148
-msgid "Organize FAQs in order of importance or frequency of questions."
+msgid "Avoid duplicate tags and excessive tagging - 5-10 relevant tags are sufficient."
 msgstr ""
 
-#: modules/post-meta-box.php:149
-msgid "Regularly update FAQs based on customer feedback and new questions."
+#: modules/post-meta-box.php:155
+msgid "Download"
 msgstr ""
 
-#: modules/post-meta-box.php:158
-msgid "Product Attributes Guidelines:"
+#: modules/post-meta-box.php:157
+msgid "Downloadable Content Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:159
+msgid "Upload high-quality files in supported formats (PDF, DOC, ZIP, etc.)."
 msgstr ""
 
 #: modules/post-meta-box.php:160
-msgid "Include all relevant technical specifications and product details."
+msgid "Ensure files are virus-free and safe for users to download."
 msgstr ""
 
 #: modules/post-meta-box.php:161
-msgid "Use consistent naming conventions for attribute keys."
+msgid "Provide clear file descriptions to help users understand content."
 msgstr ""
 
 #: modules/post-meta-box.php:162
-msgid "Provide accurate measurements and specifications."
-msgstr ""
-
-#: modules/post-meta-box.php:163
-msgid "Avoid duplicate attributes and ensure all values are filled in."
+msgid "Compress large files to reduce download time and server load."
 msgstr ""
 
 #: modules/post-meta-box.php:171
-msgid "Product Model/SKU"
+msgid "FAQ Creation Guidelines:"
 msgstr ""
 
 #: modules/post-meta-box.php:173
-msgid "SKU Management Guidelines:"
+msgid "Address common customer questions about product features, usage, and specifications."
+msgstr ""
+
+#: modules/post-meta-box.php:174
+msgid "Write clear, concise questions and detailed, helpful answers."
 msgstr ""
 
 #: modules/post-meta-box.php:175
-msgid "Enter a unique product model number or SKU to identify your product."
+msgid "Organize FAQs in order of importance or frequency of questions."
 msgstr ""
 
 #: modules/post-meta-box.php:176
-msgid "Use alphanumeric characters, hyphens, and underscores for best compatibility."
+msgid "Regularly update FAQs based on customer feedback and new questions."
 msgstr ""
 
-#: modules/post-meta-box.php:177
-msgid "Avoid using spaces and special characters in SKUs."
-msgstr ""
-
-#: modules/post-meta-box.php:178
-msgid "Keep SKUs consistent in format across similar products for easier management."
-msgstr ""
-
-#: modules/post-meta-box.php:179
-msgid "SKUs help with inventory tracking and e-commerce integration."
+#: modules/post-meta-box.php:185
+msgid "Product Attributes Guidelines:"
 msgstr ""
 
 #: modules/post-meta-box.php:187
-msgid "Long-tail Keywords"
+msgid "Include all relevant technical specifications and product details."
+msgstr ""
+
+#: modules/post-meta-box.php:188
+msgid "Use consistent naming conventions for attribute keys."
 msgstr ""
 
 #: modules/post-meta-box.php:189
-msgid "Long-tail Keywords Guidelines:"
+msgid "Provide accurate measurements and specifications."
 msgstr ""
 
-#: modules/post-meta-box.php:191
-msgid "Enter basic keywords to generate related long-tail variations automatically."
+#: modules/post-meta-box.php:190
+msgid "Avoid duplicate attributes and ensure all values are filled in."
 msgstr ""
 
-#: modules/post-meta-box.php:192
-msgid "Long-tail keywords typically have lower competition and higher conversion rates."
+#: modules/post-meta-box.php:198
+msgid "Product Model/SKU"
 msgstr ""
 
-#: modules/post-meta-box.php:193
-msgid "Use generated keywords in product titles, descriptions, and meta fields."
+#: modules/post-meta-box.php:200
+msgid "SKU Management Guidelines:"
 msgstr ""
 
-#: modules/post-meta-box.php:194
-msgid "Focus on specific customer intents and use cases for better targeting."
+#: modules/post-meta-box.php:202
+msgid "Enter a unique product model number or SKU to identify your product."
 msgstr ""
 
-#: modules/post-meta-box.php:195
-msgid "Review and customize generated keywords to match your specific product niche."
+#: modules/post-meta-box.php:203
+msgid "Use alphanumeric characters, hyphens, and underscores for best compatibility."
+msgstr ""
+
+#: modules/post-meta-box.php:204
+msgid "Avoid using spaces and special characters in SKUs."
 msgstr ""
 
 #: modules/post-meta-box.php:205
+msgid "Keep SKUs consistent in format across similar products for easier management."
+msgstr ""
+
+#: modules/post-meta-box.php:206
+msgid "SKUs help with inventory tracking and e-commerce integration."
+msgstr ""
+
+#: modules/post-meta-box.php:214
+msgid "Long-tail Keywords"
+msgstr ""
+
+#: modules/post-meta-box.php:216
+msgid "Long-tail Keywords Guidelines:"
+msgstr ""
+
+#: modules/post-meta-box.php:218
+msgid "Enter basic keywords to generate related long-tail variations automatically."
+msgstr ""
+
+#: modules/post-meta-box.php:219
+msgid "Long-tail keywords typically have lower competition and higher conversion rates."
+msgstr ""
+
+#: modules/post-meta-box.php:220
+msgid "Use generated keywords in product titles, descriptions, and meta fields."
+msgstr ""
+
+#: modules/post-meta-box.php:221
+msgid "Focus on specific customer intents and use cases for better targeting."
+msgstr ""
+
+#: modules/post-meta-box.php:222
+msgid "Review and customize generated keywords to match your specific product niche."
+msgstr ""
+
+#: modules/post-meta-box.php:232
 msgid "Video Integration Guidelines:"
 msgstr ""
 
-#: modules/post-meta-box.php:207
+#: modules/post-meta-box.php:234
 msgid "Enter a full URL to your product video hosted on YouTube, Vimeo, or other platforms."
 msgstr ""
 
-#: modules/post-meta-box.php:208
+#: modules/post-meta-box.php:235
 msgid "Videos can significantly improve customer engagement and conversion rates."
 msgstr ""
 
-#: modules/post-meta-box.php:209
+#: modules/post-meta-box.php:236
 msgid "Ensure videos are optimized for fast loading and mobile viewing."
 msgstr ""
 
-#: modules/post-meta-box.php:210
+#: modules/post-meta-box.php:237
 msgid "Keep videos short and focused on product features and benefits."
 msgstr ""
 
-#: modules/post-meta-box.php:211
+#: modules/post-meta-box.php:238
 msgid "Use clear titles and descriptions that complement the product information."
-msgstr ""
-
-#: modules/post-meta-box.php:233
-msgid "Loading editor..."
 msgstr ""
 
 #: modules/post-types.php:57

@@ -113,10 +113,8 @@
       background: var(--jelly-color-bg-secondary);
       color: var(--jelly-color-description);
       text-decoration: none;
-      transition:
-        border-color 0.2s ease-in-out,
-        background-color 0.2s ease-in-out,
-        color 0.2s ease-in-out;
+      transition: border-color 0.2s ease-in-out,
+        background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 
       .dashicons {
         width: 24px;
@@ -251,9 +249,7 @@
   background: var(--jelly-color-bg-secondary);
   color: var(--jelly-color-description);
   text-decoration: none;
-  transition:
-    border-color 0.2s ease-in-out,
-    background-color 0.2s ease-in-out,
+  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out,
     color 0.2s ease-in-out;
 
   img {
@@ -363,9 +359,7 @@ td.column-product_tag a.level-3 {
     border-radius: 999px;
     color: var(--jelly-color-description);
     cursor: pointer;
-    transition:
-      background-color 0.2s ease-in-out,
-      color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 
     &:hover {
       background: var(--jelly-color-error-bg);
@@ -503,12 +497,6 @@ td.column-product_tag a.level-3 {
     gap: 12px;
     margin-top: 8px;
   }
-}
-
-.wp-core-ui .button.remove-thumbnail,
-.wp-core-ui .button.remove-banner {
-  border-color: var(--jelly-color-delete);
-  color: var(--jelly-color-delete);
 }
 
 .thumbnail-preview,

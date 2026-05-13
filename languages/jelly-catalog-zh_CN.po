@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jelly Catalog 3.3.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/jelly-catalog\n"
-"POT-Creation-Date: 2026-05-09T06:51:20+00:00\n"
-"PO-Revision-Date: 2026-05-09 14:56+0800\n"
+"POT-Creation-Date: 2026-05-13T03:13:50+00:00\n"
+"PO-Revision-Date: 2026-05-13 11:13+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -188,7 +188,7 @@ msgstr "产品主要类别"
 msgid "Product Title"
 msgstr "产品标题"
 
-#: addons/elementor/widgets/product-attributes.php:32 includes/enqueue.php:460
+#: addons/elementor/widgets/product-attributes.php:32 includes/enqueue.php:507
 #: modules/metabox/product-attributes-metabox.php:29
 #: modules/metabox/product-attributes-metabox.php:42
 msgid "Product Attributes"
@@ -421,7 +421,7 @@ msgid "Border Radius"
 msgstr "边框圆角"
 
 #: addons/elementor/widgets/product-cat-faq.php:116
-#: addons/elementor/widgets/product-faq.php:124 includes/enqueue.php:455
+#: addons/elementor/widgets/product-faq.php:124 includes/enqueue.php:502
 msgid "Question"
 msgstr "问题"
 
@@ -443,7 +443,7 @@ msgid "Color"
 msgstr "颜色"
 
 #: addons/elementor/widgets/product-cat-faq.php:164
-#: addons/elementor/widgets/product-faq.php:172 includes/enqueue.php:456
+#: addons/elementor/widgets/product-faq.php:172 includes/enqueue.php:503
 msgid "Answer"
 msgstr "答案"
 
@@ -485,6 +485,7 @@ msgstr "产品类别列表"
 #: addons/elementor/widgets/product-cat-list.php:54
 #: addons/elementor/widgets/product-cat-nav.php:54
 #: addons/elementor/widgets/product-download.php:53 includes/admin.php:252
+#: includes/enqueue.php:520
 msgid "Content"
 msgstr "内容"
 
@@ -676,7 +677,7 @@ msgid ""
 msgstr "当当前产品没有 FAQ 数据时，此预览会显示 FAQ 的布局。"
 
 #: addons/elementor/widgets/product-gallery.php:30
-#: modules/metabox/product-gallery-metabox.php:33
+#: modules/metabox/product-gallery-metabox.php:33 modules/post-meta-box.php:84
 msgid "Product Gallery"
 msgstr "产品图库"
 
@@ -697,7 +698,7 @@ msgid "Thumbnail Gap"
 msgstr "缩略图间距"
 
 #: addons/elementor/widgets/product-gallery.php:118
-#: addons/elementor/widgets/product-gallery.php:519
+#: addons/elementor/widgets/product-gallery.php:519 includes/enqueue.php:519
 msgid "Media"
 msgstr "媒体"
 
@@ -807,12 +808,12 @@ msgstr "视频缩略图"
 msgid "Image"
 msgstr "图片"
 
-#: includes/admin.php:102 modules/port.php:645 modules/post-meta-box.php:100
+#: includes/admin.php:102 modules/port.php:642 modules/post-meta-box.php:127
 #: modules/post-types.php:55
 msgid "Categories"
 msgstr "分类"
 
-#: includes/admin.php:103 modules/port.php:655 modules/post-meta-box.php:114
+#: includes/admin.php:103 modules/port.php:652 modules/post-meta-box.php:141
 msgid "Tags"
 msgstr "标签"
 
@@ -820,12 +821,12 @@ msgstr "标签"
 msgid "Completeness"
 msgstr "完整性"
 
-#: includes/admin.php:250 includes/settings.php:176 modules/port.php:603
-#: modules/post-meta-box.php:65
+#: includes/admin.php:250 includes/settings.php:176 modules/port.php:600
+#: modules/post-meta-box.php:64
 msgid "Title"
 msgstr "标题"
 
-#: includes/admin.php:251 modules/port.php:640 modules/post-meta-box.php:86
+#: includes/admin.php:251 modules/port.php:637 modules/post-meta-box.php:113
 msgid "Description"
 msgstr "描述"
 
@@ -877,54 +878,58 @@ msgstr "已成功更新 %d 个产品"
 msgid "Invalid taxonomy"
 msgstr "错误分类法"
 
-#: includes/enqueue.php:327
+#: includes/enqueue.php:329
 msgid "Uploading files and preparing import..."
 msgstr "正在上传文件并准备导入..."
 
-#: includes/enqueue.php:328
+#: includes/enqueue.php:330
 msgid "Importing products..."
 msgstr "正在导入产品..."
 
-#: includes/enqueue.php:329
+#: includes/enqueue.php:331
 msgid "Import completed."
 msgstr "导入完成。"
 
-#: includes/enqueue.php:330
+#: includes/enqueue.php:332
 msgid "Import failed."
 msgstr "导入失败。"
 
-#: includes/enqueue.php:331 modules/port-import.php:225
+#: includes/enqueue.php:333 modules/port-import.php:225
 #: modules/port-import.php:2457
 msgid "Please upload a product CSV or a category CSV."
 msgstr "请上传产品 CSV 或分类 CSV。"
 
-#: includes/enqueue.php:332
+#: includes/enqueue.php:334
 msgid "Network error. Please try again."
 msgstr "网络错误。请重试。"
 
-#: includes/enqueue.php:333
+#: includes/enqueue.php:335
 msgid "Temporary error. Retrying..."
 msgstr "临时错误。正在重试..."
 
-#: includes/enqueue.php:334
+#: includes/enqueue.php:336
 msgid "Import paused. You can retry from the last saved position."
 msgstr "导入已暂停。您可以从上次保存的位置继续重试。"
 
-#: includes/enqueue.php:335
+#: includes/enqueue.php:337
 msgid ""
 "Import is still locked by another request. Please retry from the last saved "
 "position."
 msgstr "导入仍被其他请求锁定。请从上次保存的位置重试。"
 
-#: includes/enqueue.php:440
+#: includes/enqueue.php:452 includes/enqueue.php:509
+msgid "Loading editor..."
+msgstr "正在加载编辑器..."
+
+#: includes/enqueue.php:487
 msgid "Product Description"
 msgstr "产品描述"
 
-#: includes/enqueue.php:441
+#: includes/enqueue.php:488
 msgid "Bulk Create Items"
 msgstr "批量创建内容"
 
-#: includes/enqueue.php:442
+#: includes/enqueue.php:489
 msgid ""
 "Enter content here...\n"
 "For FAQ: First line is Question, second line is Answer\n"
@@ -964,69 +969,123 @@ msgstr ""
 "\n"
 "值 2……"
 
-#: includes/enqueue.php:443
+#: includes/enqueue.php:490
 msgid "Create Items"
 msgstr "创建内容"
 
-#: includes/enqueue.php:444
+#: includes/enqueue.php:491
 msgid "Cancel"
 msgstr "取消"
 
-#: includes/enqueue.php:445
+#: includes/enqueue.php:492
 msgid "Success"
 msgstr "成功"
 
-#: includes/enqueue.php:446
+#: includes/enqueue.php:493
 msgid "Error"
 msgstr "失败"
 
-#: includes/enqueue.php:447
+#: includes/enqueue.php:494
 msgid "OK"
 msgstr "确定"
 
-#: includes/enqueue.php:448
+#: includes/enqueue.php:495
 msgid "Please enter content."
 msgstr "请输入内容。"
 
-#: includes/enqueue.php:449
+#: includes/enqueue.php:496
 msgid "No valid items found."
 msgstr "未找到有效项目。"
 
-#: includes/enqueue.php:450
+#: includes/enqueue.php:497
 msgid "Successfully created {count} items."
 msgstr "已成功创建 {count} 个项目。"
 
-#: includes/enqueue.php:451
+#: includes/enqueue.php:498
 msgid "Delete item"
 msgstr "删除内容"
 
-#: includes/enqueue.php:452
+#: includes/enqueue.php:499
 msgid "Add New Item"
 msgstr "添加新的内容"
 
-#: includes/enqueue.php:453
+#: includes/enqueue.php:500
 msgid "Bulk Create Items from Text"
 msgstr "从文本批量创建内容"
 
-#: includes/enqueue.php:454
+#: includes/enqueue.php:501
 msgid "Bulk Create"
 msgstr "批量创建"
 
-#: includes/enqueue.php:457
+#: includes/enqueue.php:504
 msgid "Name"
 msgstr "名称"
 
-#: includes/enqueue.php:458
+#: includes/enqueue.php:505
 msgid "Value"
 msgstr "值"
 
-#: includes/enqueue.php:459
+#: includes/enqueue.php:506
 msgid "Product FAQs"
 msgstr "产品问答"
 
-#: includes/enqueue.php:461
+#: includes/enqueue.php:508
 msgid "Category FAQs"
 msgstr "分类问答"
+
+#: includes/enqueue.php:510 includes/enqueue.php:516
+msgid "Menu"
+msgstr "菜单"
+
+#: includes/enqueue.php:511
+msgid "Summary"
+msgstr "摘要"
+
+#: includes/enqueue.php:512
+msgid "Details"
+msgstr "详情"
+
+#: includes/enqueue.php:513 includes/enqueue.php:523
+msgid "SEO"
+msgstr "SEO"
+
+#: includes/enqueue.php:514
+msgid "Product section navigation"
+msgstr "产品分区导航"
+
+#: includes/enqueue.php:515
+msgid "Organizing category editor..."
+msgstr "正在整理分类编辑器..."
+
+#: includes/enqueue.php:517
+msgid "Overview"
+msgstr "概览"
+
+#: includes/enqueue.php:518
+msgid "Basics"
+msgstr "基础信息"
+
+#: includes/enqueue.php:521
+msgid "Page Content"
+msgstr "页面内容"
+
+#: includes/enqueue.php:522 includes/utils.php:225
+#: modules/metabox/product-cat-faq-metabox.php:48
+#: modules/metabox/product-faq-metabox.php:43 modules/post-meta-box.php:169
+msgid "FAQ"
+msgstr "FAQ"
+
+#: includes/enqueue.php:524
+msgid "Extensions"
+msgstr "扩展"
+
+#: includes/enqueue.php:525
+msgid "Additional Fields"
+msgstr "附加字段"
+
+#: includes/enqueue.php:526
+msgid "Actions"
+msgstr "操作"
 
 #: includes/settings.php:42
 msgid "Products Settings"
@@ -1144,11 +1203,6 @@ msgid ""
 "Choose whether category URLs use /product-category/ or the category "
 "hierarchy directly."
 msgstr "选择分类 URL 使用 /product-category/，还是直接使用分类层级。"
-
-#: includes/utils.php:225 modules/metabox/product-cat-faq-metabox.php:48
-#: modules/metabox/product-faq-metabox.php:43 modules/post-meta-box.php:142
-msgid "FAQ"
-msgstr "FAQ"
 
 #: includes/utils.php:235 modules/metabox/product-attributes-metabox.php:43
 msgid "Attribute"
@@ -1341,7 +1395,7 @@ msgstr "请输入产品型号或 SKU（库存单位）"
 msgid "Enter product model or SKU"
 msgstr "请输入产品型号或 SKU"
 
-#: modules/metabox/product-video-metabox.php:27 modules/post-meta-box.php:203
+#: modules/metabox/product-video-metabox.php:27 modules/post-meta-box.php:230
 msgid "Product Video"
 msgstr "产品视频"
 
@@ -1354,13 +1408,13 @@ msgid "Video URL"
 msgstr "视频网址"
 
 #: modules/port-import.php:87 modules/port-import.php:134
-#: modules/port-import.php:169 modules/port.php:241 modules/port.php:331
-#: modules/port.php:447 modules/port.php:489
+#: modules/port-import.php:169 modules/port.php:238 modules/port.php:328
+#: modules/port.php:444 modules/port.php:486
 msgid "You do not have sufficient permissions to access this page."
 msgstr "您没有足够的权限访问此页面。"
 
-#: modules/port-import.php:92 modules/port.php:247 modules/port.php:337
-#: modules/port.php:452 modules/port.php:495
+#: modules/port-import.php:92 modules/port.php:244 modules/port.php:334
+#: modules/port.php:449 modules/port.php:492
 msgid "Security check failed"
 msgstr "安全检查失败"
 
@@ -1574,402 +1628,455 @@ msgstr "导入进度"
 msgid "Retry Import"
 msgstr "重试导入"
 
-#: modules/port.php:201
+#: modules/port.php:198
 msgid "Processed"
 msgstr "已处理"
 
-#: modules/port.php:204
+#: modules/port.php:201
 msgid "Imported"
 msgstr "已导入"
 
-#: modules/port.php:206
+#: modules/port.php:203
 msgid "Errors"
 msgstr "错误"
 
-#: modules/port.php:216
+#: modules/port.php:213
 msgid "Import Log"
 msgstr "导入日志"
 
-#: modules/port.php:219
+#: modules/port.php:216
 msgid "Clear Log"
 msgstr "清理日志"
 
-#: modules/port.php:353 modules/port.php:502
+#: modules/port.php:350 modules/port.php:499
 msgid "No products found to export."
 msgstr "未找到可导出的产品。"
 
-#: modules/port.php:457
+#: modules/port.php:454
 msgid "No product categories found to export."
 msgstr "未找到可导出的产品分类。"
 
-#: modules/port.php:536
+#: modules/port.php:533
 msgid "JSON export failed."
 msgstr "JSON 导出失败。"
 
-#: modules/port.php:597
+#: modules/port.php:594
 msgid "ID"
 msgstr "ID"
 
-#: modules/port.php:608
+#: modules/port.php:605
 msgid "Slug"
 msgstr "别名"
 
-#: modules/port.php:613
+#: modules/port.php:610
 msgid "SKU"
 msgstr "SKU"
 
-#: modules/port.php:618
+#: modules/port.php:615
 msgid "Status"
 msgstr "状态"
 
-#: modules/port.php:623
+#: modules/port.php:620
 msgid "Featured Image"
 msgstr "特色图片"
 
-#: modules/port.php:629
+#: modules/port.php:626
 msgid "Gallery Images"
 msgstr "图库图片"
 
-#: modules/port.php:635 modules/post-meta-box.php:71
+#: modules/port.php:632 modules/post-meta-box.php:98
 msgid "Short Description"
 msgstr "短描述"
 
-#: modules/port.php:650
+#: modules/port.php:647
 msgid "Category Slugs"
 msgstr "分类别名"
 
-#: modules/port.php:660
+#: modules/port.php:657
 msgid "FAQs"
 msgstr "常见问题"
 
-#: modules/port.php:665 modules/post-meta-box.php:156
+#: modules/port.php:662 modules/post-meta-box.php:183
 msgid "Attributes"
 msgstr "属性"
 
-#: modules/port.php:673
+#: modules/port.php:670
 msgid "Focus Keyword"
 msgstr "焦点关键词"
 
-#: modules/port.php:678
+#: modules/port.php:675
 msgid "SEO Title"
 msgstr "SEO 标题"
 
-#: modules/port.php:683
+#: modules/port.php:680
 msgid "Meta Description"
 msgstr "元描述"
 
-#: modules/post-meta-box.php:66
+#: modules/post-meta-box.php:65
 msgid ""
 "Recommended format: <code>Model number + core product keywords + "
 "specifications/attributes</code>"
 msgstr "推荐格式: <code>型号 + 核心产品词 + 规格/属性</code>"
 
-#: modules/post-meta-box.php:73 modules/post-meta-box.php:88
+#: modules/post-meta-box.php:70
+msgid "Product Image"
+msgstr "产品图片"
+
+#: modules/post-meta-box.php:72
+msgid "Featured Image Guidelines:"
+msgstr "特色图片指南："
+
+#: modules/post-meta-box.php:74
+msgid ""
+"Upload a clear primary product image with a clean background whenever "
+"possible."
+msgstr "尽可能上传一张背景干净、主体清晰的产品主图。"
+
+#: modules/post-meta-box.php:75
+msgid ""
+"Use consistent aspect ratios across products to keep archive pages visually "
+"aligned."
+msgstr "在不同产品之间保持一致的图片宽高比，以便归档页面视觉更整齐。"
+
+#: modules/post-meta-box.php:76
+msgid ""
+"Prefer images that highlight the product structure, material, and main "
+"selling point at a glance."
+msgstr "优先使用能一眼突出产品结构、材质和主要卖点的图片。"
+
+#: modules/post-meta-box.php:77
+msgid "Avoid watermarks, excessive text overlays, or overly compressed images."
+msgstr "避免使用带水印、文字覆盖过多或压缩过度的图片。"
+
+#: modules/post-meta-box.php:86
+msgid "Gallery Usage Guidelines:"
+msgstr "图库使用指南："
+
+#: modules/post-meta-box.php:88
+msgid ""
+"Add multiple supporting images to show different angles, details, "
+"dimensions, or use cases."
+msgstr "添加多张辅助图片，展示不同角度、细节、尺寸或使用场景。"
+
+#: modules/post-meta-box.php:89
+msgid ""
+"Keep gallery image quality and visual style consistent with the featured "
+"image."
+msgstr "保持图库图片的画质和视觉风格与特色图片一致。"
+
+#: modules/post-meta-box.php:90
+msgid ""
+"Sort images in a logical order, placing the most informative views first."
+msgstr "按合理顺序排列图片，将信息量最高的视图放在前面。"
+
+#: modules/post-meta-box.php:91
+msgid ""
+"Remove duplicate or low-value images so the gallery stays focused and "
+"helpful."
+msgstr "移除重复或价值较低的图片，让图库保持聚焦且更有帮助。"
+
+#: modules/post-meta-box.php:100 modules/post-meta-box.php:115
 msgid "Writing Guidelines:"
 msgstr "写作指南："
 
-#: modules/post-meta-box.php:75
+#: modules/post-meta-box.php:102
 msgid ""
 "The short description should naturally include high-frequency user search "
 msgstr "简短描述应该自然地包含高频用户搜索"
 
-#: modules/post-meta-box.php:75
+#: modules/post-meta-box.php:102
 msgid "keywords"
 msgstr "关键词"
 
-#: modules/post-meta-box.php:75
+#: modules/post-meta-box.php:102
 msgid " or "
 msgstr " 或 "
 
-#: modules/post-meta-box.php:75
+#: modules/post-meta-box.php:102
 msgid "long-tail keywords"
 msgstr "长尾关键词"
 
-#: modules/post-meta-box.php:76
+#: modules/post-meta-box.php:103
 msgid "Place important keywords at the beginning to improve keyword weighting"
 msgstr "将重要关键词放在开头以提高关键词权重"
 
-#: modules/post-meta-box.php:77
+#: modules/post-meta-box.php:104
 msgid "Recommended length is between "
 msgstr "建议长度介于"
 
-#: modules/post-meta-box.php:77
+#: modules/post-meta-box.php:104
 msgid "100-160"
 msgstr "100-160"
 
-#: modules/post-meta-box.php:77
+#: modules/post-meta-box.php:104
 msgid " characters, providing sufficient value without being overly lengthy"
 msgstr "字符，提供足够的价值，但又不会太长"
 
-#: modules/post-meta-box.php:78
+#: modules/post-meta-box.php:105
 msgid ""
 "Use clear and concise language, avoiding excessive technical terminology"
 msgstr "使用清晰简洁的语言，避免过多的技术术语"
 
-#: modules/post-meta-box.php:79
+#: modules/post-meta-box.php:106
 msgid ""
 "Highlight unique product advantages, such as materials, performance, price, "
 "usage scenarios, etc."
 msgstr "突出产品独有的优势，比如材质、性能、价格、使用场景等。"
 
-#: modules/post-meta-box.php:90
+#: modules/post-meta-box.php:117
 msgid ""
 "It is recommended to use relevant keywords in the details, no less than 5 "
 "times, evenly distributed throughout the page."
 msgstr "建议在详情中使用相关关键词，不少于5次，均匀分布于整个页面。"
 
-#: modules/post-meta-box.php:91
+#: modules/post-meta-box.php:118
 msgid ""
 "Replace all pronouns in the details with keywords - use specific names "
 "instead of words like \"it\" whenever possible."
 msgstr ""
 "用关键词替换详细信息中的所有代词 - 尽可能使用具体名称而不是“它”之类的词。"
 
-#: modules/post-meta-box.php:92
+#: modules/post-meta-box.php:119
 msgid "Each paragraph in the details should not exceed "
 msgstr "详细信息中的每个段落不应超过"
 
-#: modules/post-meta-box.php:92
+#: modules/post-meta-box.php:119
 msgid "500"
 msgstr "500"
 
-#: modules/post-meta-box.php:92
+#: modules/post-meta-box.php:119
 msgid ""
 " characters. If exceeded, split into paragraphs. The full text should have a "
 "minimum of "
 msgstr "字符。如果超过，则拆分成段落。全文至少应包含"
 
-#: modules/post-meta-box.php:92
+#: modules/post-meta-box.php:119
 msgid "1000"
 msgstr "1000"
 
-#: modules/post-meta-box.php:92
+#: modules/post-meta-box.php:119
 msgid " characters."
 msgstr " 字符。"
 
-#: modules/post-meta-box.php:93
+#: modules/post-meta-box.php:120
 msgid ""
 "Ensure original content in the details. Do not copy directly from the "
 "internet. Page similarity within the website should not exceed "
 msgstr "确保内容细节原创。请勿直接从互联网复制。网站内页面相似度不得超过 "
 
-#: modules/post-meta-box.php:93
+#: modules/post-meta-box.php:120
 msgid "30%"
 msgstr "30%"
 
-#: modules/post-meta-box.php:93
+#: modules/post-meta-box.php:120
 msgid "."
 msgstr "。"
 
-#: modules/post-meta-box.php:102
+#: modules/post-meta-box.php:129
 msgid "Category Selection Guidelines:"
 msgstr "类别选择指南："
 
-#: modules/post-meta-box.php:104
+#: modules/post-meta-box.php:131
 msgid ""
 "Select the most relevant categories for your product to improve "
 "discoverability."
 msgstr "为您的产品选择最相关的类别以提高可发现性。"
 
-#: modules/post-meta-box.php:105
+#: modules/post-meta-box.php:132
 msgid "Use specific categories rather than generic ones when possible."
 msgstr "尽可能使用特定类别而不是通用类别。"
 
-#: modules/post-meta-box.php:106
+#: modules/post-meta-box.php:133
 msgid ""
 "Avoid selecting too many categories - 2-4 relevant categories are "
 "recommended."
 msgstr "避免选择太多类别 - 建议选择 2-4 个相关类别。"
 
-#: modules/post-meta-box.php:107
+#: modules/post-meta-box.php:134
 msgid ""
 "Check existing categories before creating new ones to maintain consistency."
 msgstr "在创建新类别之前，请检查现有类别以保持一致性。"
 
-#: modules/post-meta-box.php:116
+#: modules/post-meta-box.php:143
 msgid "Tag Usage Guidelines:"
 msgstr "标签使用指南："
 
-#: modules/post-meta-box.php:118
+#: modules/post-meta-box.php:145
 msgid ""
 "Use tags to highlight specific features, materials, or use cases of your "
 "product."
 msgstr "使用标签突出显示产品的特定功能、材料或用例。"
 
-#: modules/post-meta-box.php:119
+#: modules/post-meta-box.php:146
 msgid "Tags should be single words or short phrases separated by commas."
 msgstr "标签应该是用逗号分隔的单个单词或短语。"
 
-#: modules/post-meta-box.php:120
+#: modules/post-meta-box.php:147
 msgid "Focus on important keywords that customers might search for."
 msgstr "关注客户可能搜索的重要关键词。"
 
-#: modules/post-meta-box.php:121
+#: modules/post-meta-box.php:148
 msgid ""
 "Avoid duplicate tags and excessive tagging - 5-10 relevant tags are "
 "sufficient."
 msgstr "避免重复标签和过度标签 - 5-10 个相关标签就足够了。"
 
-#: modules/post-meta-box.php:128
+#: modules/post-meta-box.php:155
 msgid "Download"
 msgstr "下载"
 
-#: modules/post-meta-box.php:130
+#: modules/post-meta-box.php:157
 msgid "Downloadable Content Guidelines:"
 msgstr "可下载内容指南："
 
-#: modules/post-meta-box.php:132
+#: modules/post-meta-box.php:159
 msgid "Upload high-quality files in supported formats (PDF, DOC, ZIP, etc.)."
 msgstr "上传支持格式（PDF、DOC、ZIP 等）的高质量文件。"
 
-#: modules/post-meta-box.php:133
+#: modules/post-meta-box.php:160
 msgid "Ensure files are virus-free and safe for users to download."
 msgstr "确保文件无病毒且可供用户安全下载。"
 
-#: modules/post-meta-box.php:134
+#: modules/post-meta-box.php:161
 msgid "Provide clear file descriptions to help users understand content."
 msgstr "提供清晰的文件描述以帮助用户理解内容。"
 
-#: modules/post-meta-box.php:135
+#: modules/post-meta-box.php:162
 msgid "Compress large files to reduce download time and server load."
 msgstr "压缩大文件以减少下载时间和服务器负载。"
 
-#: modules/post-meta-box.php:144
+#: modules/post-meta-box.php:171
 msgid "FAQ Creation Guidelines:"
 msgstr "常见问题解答创建指南："
 
-#: modules/post-meta-box.php:146
+#: modules/post-meta-box.php:173
 msgid ""
 "Address common customer questions about product features, usage, and "
 "specifications."
 msgstr "解答客户关于产品功能、用途和规格的常见问题。"
 
-#: modules/post-meta-box.php:147
+#: modules/post-meta-box.php:174
 msgid "Write clear, concise questions and detailed, helpful answers."
 msgstr "写出清晰、简洁的问题和详细、有用的答案。"
 
-#: modules/post-meta-box.php:148
+#: modules/post-meta-box.php:175
 msgid "Organize FAQs in order of importance or frequency of questions."
 msgstr "写出清晰、简洁的问题和详细、有用的答案。"
 
-#: modules/post-meta-box.php:149
+#: modules/post-meta-box.php:176
 msgid "Regularly update FAQs based on customer feedback and new questions."
 msgstr "根据客户反馈和新问题定期更新常见问题解答。"
 
-#: modules/post-meta-box.php:158
+#: modules/post-meta-box.php:185
 msgid "Product Attributes Guidelines:"
 msgstr "产品属性指南："
 
-#: modules/post-meta-box.php:160
+#: modules/post-meta-box.php:187
 msgid "Include all relevant technical specifications and product details."
 msgstr "包括所有相关的技术规格和产品详细信息。"
 
-#: modules/post-meta-box.php:161
+#: modules/post-meta-box.php:188
 msgid "Use consistent naming conventions for attribute keys."
 msgstr "对属性键使用一致的命名约定。"
 
-#: modules/post-meta-box.php:162
+#: modules/post-meta-box.php:189
 msgid "Provide accurate measurements and specifications."
 msgstr "提供准确的测量和规格。"
 
-#: modules/post-meta-box.php:163
+#: modules/post-meta-box.php:190
 msgid "Avoid duplicate attributes and ensure all values are filled in."
 msgstr "避免重复的属性并确保填写所有值。"
 
-#: modules/post-meta-box.php:171
+#: modules/post-meta-box.php:198
 msgid "Product Model/SKU"
 msgstr "产品型号/SKU"
 
-#: modules/post-meta-box.php:173
+#: modules/post-meta-box.php:200
 msgid "SKU Management Guidelines:"
 msgstr "SKU管理指南："
 
-#: modules/post-meta-box.php:175
+#: modules/post-meta-box.php:202
 msgid "Enter a unique product model number or SKU to identify your product."
 msgstr "请输入唯一的商品型号或 SKU 以识别您的商品。"
 
-#: modules/post-meta-box.php:176
+#: modules/post-meta-box.php:203
 msgid ""
 "Use alphanumeric characters, hyphens, and underscores for best compatibility."
 msgstr "为了获得最佳兼容性，请使用字母数字字符、连字符和下划线。"
 
-#: modules/post-meta-box.php:177
+#: modules/post-meta-box.php:204
 msgid "Avoid using spaces and special characters in SKUs."
 msgstr "SKU中请避免使用空格和特殊字符。"
 
-#: modules/post-meta-box.php:178
+#: modules/post-meta-box.php:205
 msgid ""
 "Keep SKUs consistent in format across similar products for easier management."
 msgstr "为了便于管理，请保持类似产品的 SKU 格式一致。"
 
-#: modules/post-meta-box.php:179
+#: modules/post-meta-box.php:206
 msgid "SKUs help with inventory tracking and e-commerce integration."
 msgstr "SKU有助于库存跟踪和电子商务集成。"
 
-#: modules/post-meta-box.php:187
+#: modules/post-meta-box.php:214
 msgid "Long-tail Keywords"
 msgstr "长尾关键词"
 
-#: modules/post-meta-box.php:189
+#: modules/post-meta-box.php:216
 msgid "Long-tail Keywords Guidelines:"
 msgstr "长尾关键词指南："
 
-#: modules/post-meta-box.php:191
+#: modules/post-meta-box.php:218
 msgid ""
 "Enter basic keywords to generate related long-tail variations automatically."
 msgstr "输入基本关键词，即可自动生成相关的长尾关键词变体。"
 
-#: modules/post-meta-box.php:192
+#: modules/post-meta-box.php:219
 msgid ""
 "Long-tail keywords typically have lower competition and higher conversion "
 "rates."
 msgstr "长尾关键词通常竞争较小，转化率较高。"
 
-#: modules/post-meta-box.php:193
+#: modules/post-meta-box.php:220
 msgid ""
 "Use generated keywords in product titles, descriptions, and meta fields."
 msgstr "在产品标题、描述和元字段中使用生成的关键词。"
 
-#: modules/post-meta-box.php:194
+#: modules/post-meta-box.php:221
 msgid "Focus on specific customer intents and use cases for better targeting."
 msgstr "关注具体的客户意图和使用场景，以实现更精准的定位。"
 
-#: modules/post-meta-box.php:195
+#: modules/post-meta-box.php:222
 msgid ""
 "Review and customize generated keywords to match your specific product niche."
 msgstr "查看并自定义生成的关键词，使其与您的特定产品领域相匹配。"
 
-#: modules/post-meta-box.php:205
+#: modules/post-meta-box.php:232
 msgid "Video Integration Guidelines:"
 msgstr "视频集成指南："
 
-#: modules/post-meta-box.php:207
+#: modules/post-meta-box.php:234
 msgid ""
 "Enter a full URL to your product video hosted on YouTube, Vimeo, or other "
 "platforms."
 msgstr "请输入您产品视频在 YouTube、Vimeo 或其他平台上的完整 URL。"
 
-#: modules/post-meta-box.php:208
+#: modules/post-meta-box.php:235
 msgid ""
 "Videos can significantly improve customer engagement and conversion rates."
 msgstr "视频可以显著提高客户参与度和转化率。"
 
-#: modules/post-meta-box.php:209
+#: modules/post-meta-box.php:236
 msgid "Ensure videos are optimized for fast loading and mobile viewing."
 msgstr "确保视频针对移动设备进行了优化，以实现快速加载和流畅观看。"
 
-#: modules/post-meta-box.php:210
+#: modules/post-meta-box.php:237
 msgid "Keep videos short and focused on product features and benefits."
 msgstr "视频要简短，重点突出产品特性和优势。"
 
-#: modules/post-meta-box.php:211
+#: modules/post-meta-box.php:238
 msgid ""
 "Use clear titles and descriptions that complement the product information."
 msgstr "使用清晰明了的标题和描述，与产品信息相辅相成。"
-
-#: modules/post-meta-box.php:233
-msgid "Loading editor..."
-msgstr "正在加载编辑器..."
 
 #: modules/post-types.php:57
 msgid "Product categories"
