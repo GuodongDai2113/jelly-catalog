@@ -108,7 +108,10 @@
         `,
         confirmText: jc_product_i18n.create_items_btn || "Create Items",
         cancelText: jc_product_i18n.cancel_btn || "Cancel",
-        onOpen: () => this.focusBulkCreateTextArea(),
+        onOpen: () => {
+          this.syncBulkCreateModal();
+          this.focusBulkCreateTextArea();
+        },
         onConfirm: () => this.processBulkCreate(),
         onClose: () => this.resetBulkCreateState(),
       });
@@ -167,8 +170,20 @@
       // 添加到repeater
       const $wrapper = this.currentWrapper;
       const key = $wrapper.data("key");
+      const $reusableItem = this.getReusableBulkCreateItem($wrapper);
+      let startIndex = 0;
 
-      items.forEach((item) => {
+      if ($reusableItem.length) {
+        /**
+         * 默认首项为空时，优先复用这个已有条目，
+         * 避免批量导入后页面额外保留一个空白框。
+         */
+        $reusableItem.find(SELECTORS.keyInput).val(items[0].name);
+        $reusableItem.find(SELECTORS.valueInput).val(items[0].value);
+        startIndex = 1;
+      }
+
+      items.slice(startIndex).forEach((item) => {
         const itemCount = $wrapper.find(SELECTORS.repeaterItem).length;
         const $newItem = this.buildRepeaterItem($wrapper, key, itemCount + 1);
 
@@ -196,6 +211,29 @@
       return true;
     }
 
+    /**
+     * 获取可复用的首个空白 repeater 条目。
+     *
+     * 默认初始化时界面会预留一个空框，这里仅在第一项的键和值都为空时复用，
+     * 避免覆盖用户已经填写的内容。
+     *
+     * @param {jQuery} repeaterWrapper 当前容器。
+     * @returns {jQuery}
+     */
+    getReusableBulkCreateItem(repeaterWrapper) {
+      const $firstItem = repeaterWrapper.find(SELECTORS.repeaterItem).first();
+      if (!$firstItem.length) {
+        return $();
+      }
+
+      const keyValue = ($firstItem.find(SELECTORS.keyInput).val() || "").trim();
+      const fieldValue = (
+        $firstItem.find(SELECTORS.valueInput).val() || ""
+      ).trim();
+
+      return !keyValue && !fieldValue ? $firstItem : $();
+    }
+
     resetBulkCreateState() {
       const $textArea = this.getBulkCreateTextArea();
       if ($textArea.length) {
@@ -219,7 +257,7 @@
     /**
      * 获取批量创建输入框的 jQuery 包装对象。
      *
-     * jelly-core 的 `find()` 返回原生 DOM 节点，这里统一包装成 jQuery，
+     * jelly-core 的 Modal 实例持有原生 `$dialog` 节点，这里统一包装成 jQuery，
      * 避免后续 `.val()`、`.trigger()` 等调用失效。
      *
      * @returns {jQuery}
@@ -229,9 +267,14 @@
         return $(SELECTORS.bulkCreateText);
       }
 
-      const textAreaElement = this.bulkCreateModal.find(
-        SELECTORS.bulkCreateText
-      );
+      /**
+       * jelly-core 的 Modal 实例暴露的是原生 `$dialog` 节点，不提供 `find()`。
+       * 这里直接从弹窗根节点查询输入框，并统一包装成 jQuery 对象。
+       */
+      const modalRoot = this.bulkCreateModal.$dialog;
+      const textAreaElement = modalRoot
+        ? modalRoot.querySelector(SELECTORS.bulkCreateText)
+        : null;
 
       return $(textAreaElement || []);
     }
