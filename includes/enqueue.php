@@ -165,38 +165,6 @@ class Enqueue
     }
 
     /**
-     * 加载 jelly-core 脚本与样式资源。
-     *
-     * @param bool $with_script 是否同时加载脚本。
-     * @return void
-     */
-    private function enqueue_jelly_core_assets($with_script = true)
-    {
-        $style_relative_path = 'assets/css/jelly-core.min.css';
-
-        wp_enqueue_style(
-            'jelly-core',
-            JELLY_CATALOG_PLUGIN_URL . $style_relative_path,
-            [],
-            '1.4.1'
-        );
-
-        if (!$with_script) {
-            return;
-        }
-
-        $script_relative_path = 'assets/js/jelly-core.min.js';
-
-        wp_enqueue_script(
-            'jelly-core',
-            JELLY_CATALOG_PLUGIN_URL . $script_relative_path,
-            ['jquery'],
-            '1.4.1',
-            true
-        );
-    }
-
-    /**
      * 加载产品编辑、列表、分类相关后台资源。
      *
      * @param string $hook 当前后台页面 hook。
@@ -215,13 +183,11 @@ class Enqueue
             JELLY_CATALOG_VERSION
         );
 
-        $this->enqueue_jelly_core_assets();
-
         if ($is_product_editor || $is_taxonomy_editor) {
             wp_enqueue_style(
                 'jelly-catalog-editor',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-editor.css',
-                ['jelly-catalog-admin', 'jelly-core'],
+                ['jelly-catalog-admin'],
                 JELLY_CATALOG_VERSION
             );
         }
@@ -232,7 +198,7 @@ class Enqueue
             wp_enqueue_script(
                 'jelly-catalog-admin-editor',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-editor.js',
-                ['jquery', 'jelly-core'],
+                ['jquery'],
                 JELLY_CATALOG_VERSION,
                 true
             );
@@ -240,7 +206,7 @@ class Enqueue
             wp_enqueue_script(
                 'jelly-catalog-admin-repeater',
                 JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-repeater.js',
-                ['jquery', 'jelly-core'],
+                ['jquery'],
                 JELLY_CATALOG_VERSION,
                 true
             );
@@ -280,8 +246,6 @@ class Enqueue
      */
     private function enqueue_sheet_editor_assets()
     {
-        $this->enqueue_jelly_core_assets();
-
         wp_enqueue_style('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css', [], '5.5.0');
         wp_enqueue_script('tabulator', 'https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js', ['jquery'], '5.5.0', true);
 
@@ -295,7 +259,7 @@ class Enqueue
         wp_enqueue_script(
             'jelly-catalog-admin-sheet-editor',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-sheet-editor.js',
-            ['jquery', 'tabulator', 'jelly-core'],
+            ['jquery', 'tabulator'],
             JELLY_CATALOG_VERSION,
             true
         );
@@ -308,12 +272,10 @@ class Enqueue
      */
     private function enqueue_port_import_assets()
     {
-        $this->enqueue_jelly_core_assets();
-
         wp_enqueue_script(
             'jelly-catalog-admin-port',
             JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-admin-port.js',
-            ['jquery', 'jelly-core'],
+            ['jquery'],
             JELLY_CATALOG_VERSION,
             true
         );
