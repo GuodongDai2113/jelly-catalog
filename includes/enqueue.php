@@ -178,7 +178,7 @@ class Enqueue
             'jelly-core',
             JELLY_CATALOG_PLUGIN_URL . $style_relative_path,
             [],
-            '1.4.0'
+            '1.4.1'
         );
 
         if (!$with_script) {
@@ -191,7 +191,7 @@ class Enqueue
             'jelly-core',
             JELLY_CATALOG_PLUGIN_URL . $script_relative_path,
             ['jquery'],
-            '1.4.0',
+            '1.4.1',
             true
         );
     }

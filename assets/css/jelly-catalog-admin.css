@@ -420,8 +420,8 @@ td.column-product_tag a.level-3 {
 }
 .thumbnail-preview img,
 .banner-preview img {
-  width: 100%;
   height: auto;
+  max-height: 200px;
 }
 
 .thumbnail-preview img {

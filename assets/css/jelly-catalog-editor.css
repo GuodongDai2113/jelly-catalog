@@ -442,6 +442,13 @@ a.jc-product-navigation__link:hover {
   grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
   padding-top: 10px;
   transition: opacity 0.2s ease-in-out;
+  width: 1320px;
+}
+
+@media (max-width: 1520px) {
+  .jc-term-editor {
+    width: 100%;
+  }
 }
 
 .jc-term-editor__aside,
