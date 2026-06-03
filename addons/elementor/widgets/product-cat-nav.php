@@ -38,12 +38,22 @@ class Product_Cat_Nav extends Widget_Base
 
     public function get_categories()
     {
-        return ['jc-elements-archive'];
+        return ['jc-elements-archive', 'jc-elements-single'];
     }
 
     public function get_keywords()
     {
         return ['product', 'category', 'nav', 'tabs'];
+    }
+
+    /**
+     * 返回分类导航组件依赖的样式句柄。
+     *
+     * @return array
+     */
+    public function get_style_depends()
+    {
+        return ['jelly-catalog-product-cat-nav'];
     }
 
     protected function register_controls()
@@ -373,15 +383,15 @@ class Product_Cat_Nav extends Widget_Base
             ],
         ];
         ?>
-<# var terms = <?php echo wp_json_encode($preview_terms); ?>; #>
-<div class="jc-cat-nav">
-    <# _.each(terms, function(term, index) { #>
-    <a class="jc-cat-nav__tab <# if (index === 0) { #>is-active<# } #>" href="#"
-        role="tab" aria-selected="<# if (index === 0) { #>true<# } else { #>false<# } #>" onclick="return false;">
-        {{ term.name }}
-    </a>
-    <# }); #>
-</div>
-<?php
+<# var terms=<?php echo wp_json_encode($preview_terms); ?>; #>
+    <div class="jc-cat-nav">
+        <# _.each(terms, function(term, index) { #>
+            <a class="jc-cat-nav__tab <# if (index === 0) { #>is-active<# } #>" href="#" role="tab"
+                aria-selected="<# if (index === 0) { #>true<# } else { #>false<# } #>" onclick="return false;">
+                {{ term.name }}
+            </a>
+            <# }); #>
+    </div>
+    <?php
     }
 }

@@ -1,0 +1,109 @@
+.jc-products {
+  width: 100%;
+}
+
+.jc-products__empty {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--jelly-color-border, #e5e7eb);
+  border-radius: 0.375rem;
+  background: #fff;
+  color: var(--jelly-color-description, #737373);
+}
+
+.jc-products__grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.jc-products__grid--cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.jc-products__grid--cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.jc-products__grid--cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.jc-products__grid--cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.jc-products__grid--cols-6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.jc-products__pagination {
+  margin-top: 2rem;
+}
+
+.jc-products__pagination .page-numbers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jc-products__pagination .page-numbers li {
+  margin: 0;
+}
+
+.jc-products__pagination .page-numbers a,
+.jc-products__pagination .page-numbers span {
+  display: inline-flex;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--jelly-color-border, #e5e7eb);
+  border-radius: 0.375rem;
+  background: #fff;
+  color: var(--jelly-color-description, #737373);
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.jc-products__pagination .page-numbers a:hover {
+  border-color: var(--jelly-color-primary, #0572d1);
+  background-color: var(--jelly-color-primary, #0572d1);
+  color: #fff;
+}
+
+.jc-products__pagination .page-numbers .current {
+  border-color: var(--jelly-color-primary, #0572d1);
+  background-color: var(--jelly-color-primary, #0572d1);
+  color: #fff;
+}
+
+@media screen and (max-width: 1024px) {
+  .jc-products__grid--cols-5,
+  .jc-products__grid--cols-6 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .jc-products__grid--cols-3,
+  .jc-products__grid--cols-4,
+  .jc-products__grid--cols-5,
+  .jc-products__grid--cols-6 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .jc-products__grid--cols-2,
+  .jc-products__grid--cols-3,
+  .jc-products__grid--cols-4,
+  .jc-products__grid--cols-5,
+  .jc-products__grid--cols-6 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

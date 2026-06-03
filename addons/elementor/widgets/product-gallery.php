@@ -47,12 +47,12 @@ class Product_Gallery extends Widget_Base
 
     public function get_style_depends(): array
     {
-        return $this->should_use_fallback_assets() ? ['jelly-catalog-gallery'] : [];
+        return ['jelly-catalog-product-gallery'];
     }
 
     public function get_script_depends(): array
     {
-        return $this->should_use_fallback_assets() ? ['jelly-catalog-gallery'] : [];
+        return ['jelly-catalog-product-gallery'];
     }
 
     protected function register_controls(): void
@@ -76,6 +76,21 @@ class Product_Gallery extends Widget_Base
             ]
         );
 
+        $this->add_control(
+            'thumb_position_desktop',
+            [
+                'label' => esc_html__('Thumbnail Position (Desktop)', 'jelly-catalog'),
+                'type' => Controls_Manager::SELECT,
+                'default' => 'left',
+                'options' => [
+                    'left' => esc_html__('Left', 'jelly-catalog'),
+                    'bottom' => esc_html__('Bottom', 'jelly-catalog'),
+                    'right' => esc_html__('Right', 'jelly-catalog'),
+                ],
+                'description' => esc_html__('This setting only affects desktop layouts.', 'jelly-catalog'),
+            ]
+        );
+
         $this->end_controls_section();
 
         $this->start_controls_section(
@@ -93,7 +108,7 @@ class Product_Gallery extends Widget_Base
                 'type' => Controls_Manager::SLIDER,
                 'size_units' => ['px', 'rem', 'em'],
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery' => '--product-gallery-column-gap: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-gallery' => '--jc-product-gallery-column-gap: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -105,7 +120,7 @@ class Product_Gallery extends Widget_Base
                 'type' => Controls_Manager::SLIDER,
                 'size_units' => ['px', 'rem', 'em'],
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery' => '--product-gallery-thumb-gap: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-gallery' => '--jc-product-gallery-thumb-gap: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -126,7 +141,7 @@ class Product_Gallery extends Widget_Base
                 'label' => esc_html__('Background Color', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__media, {{WRAPPER}} .product-gallery__viewport, {{WRAPPER}} .product-gallery__slide' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-gallery__media, {{WRAPPER}} .jc-product-gallery__viewport, {{WRAPPER}} .jc-product-gallery__slide' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -135,7 +150,7 @@ class Product_Gallery extends Widget_Base
             Group_Control_Border::get_type(),
             [
                 'name' => 'media_border',
-                'selector' => '{{WRAPPER}} .product-gallery__media img, {{WRAPPER}} .product-gallery__slide img, {{WRAPPER}} .product-gallery__viewport',
+                'selector' => '{{WRAPPER}} .jc-product-gallery__media img, {{WRAPPER}} .jc-product-gallery__slide img, {{WRAPPER}} .jc-product-gallery__viewport',
             ]
         );
 
@@ -146,7 +161,7 @@ class Product_Gallery extends Widget_Base
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'rem', 'em', '%'],
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__media, {{WRAPPER}} .product-gallery__viewport, {{WRAPPER}} .product-gallery__slide, {{WRAPPER}} .product-gallery__media img, {{WRAPPER}} .product-gallery__slide img, {{WRAPPER}} .product-gallery__media iframe, {{WRAPPER}} .product-gallery__slide iframe' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-gallery__media, {{WRAPPER}} .jc-product-gallery__viewport, {{WRAPPER}} .jc-product-gallery__slide, {{WRAPPER}} .jc-product-gallery__media img, {{WRAPPER}} .jc-product-gallery__slide img, {{WRAPPER}} .jc-product-gallery__media iframe, {{WRAPPER}} .jc-product-gallery__slide iframe' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -163,7 +178,7 @@ class Product_Gallery extends Widget_Base
                     'contain' => esc_html__('Contain', 'jelly-catalog'),
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__media img, {{WRAPPER}} .product-gallery__slide img' => 'object-fit: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-gallery__media img, {{WRAPPER}} .jc-product-gallery__slide img' => 'object-fit: {{VALUE}};',
                 ],
             ]
         );
@@ -187,7 +202,7 @@ class Product_Gallery extends Widget_Base
                 'max' => 1,
                 'step' => 0.05,
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__thumb' => 'opacity: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-gallery__thumb' => 'opacity: {{VALUE}};',
                 ],
             ]
         );
@@ -201,7 +216,7 @@ class Product_Gallery extends Widget_Base
                 'max' => 1,
                 'step' => 0.05,
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__thumb.is-active' => 'opacity: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-gallery__thumb.is-active' => 'opacity: {{VALUE}};',
                 ],
             ]
         );
@@ -210,7 +225,7 @@ class Product_Gallery extends Widget_Base
             Group_Control_Border::get_type(),
             [
                 'name' => 'thumb_border',
-                'selector' => '{{WRAPPER}} .product-gallery__thumb',
+                'selector' => '{{WRAPPER}} .jc-product-gallery__thumb',
             ]
         );
 
@@ -221,7 +236,7 @@ class Product_Gallery extends Widget_Base
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'rem', 'em', '%'],
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__thumb, {{WRAPPER}} .product-gallery__thumb img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-gallery__thumb, {{WRAPPER}} .jc-product-gallery__thumb img' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -243,7 +258,7 @@ class Product_Gallery extends Widget_Base
                 'type' => Controls_Manager::SLIDER,
                 'size_units' => ['px', 'rem', 'em'],
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__nav' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-gallery__nav' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -255,7 +270,7 @@ class Product_Gallery extends Widget_Base
                 'type' => Controls_Manager::SLIDER,
                 'size_units' => ['px', 'rem', 'em'],
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__nav' => 'font-size: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-gallery__nav' => 'font-size: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -266,7 +281,7 @@ class Product_Gallery extends Widget_Base
                 'label' => esc_html__('Color', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__nav' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-gallery__nav' => 'color: {{VALUE}};',
                 ],
             ]
         );
@@ -277,7 +292,7 @@ class Product_Gallery extends Widget_Base
                 'label' => esc_html__('Background Color', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__nav' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-gallery__nav' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -299,7 +314,7 @@ class Product_Gallery extends Widget_Base
                 'type' => Controls_Manager::SLIDER,
                 'size_units' => ['px', 'rem', 'em'],
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__dot' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-gallery__dot' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -311,7 +326,7 @@ class Product_Gallery extends Widget_Base
                 'type' => Controls_Manager::SLIDER,
                 'size_units' => ['px', 'rem', 'em'],
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__dots' => 'gap: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-gallery__dots' => 'gap: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -322,7 +337,7 @@ class Product_Gallery extends Widget_Base
                 'label' => esc_html__('Color', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__dot' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-gallery__dot' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -333,7 +348,7 @@ class Product_Gallery extends Widget_Base
                 'label' => esc_html__('Active Color', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .product-gallery__dot.is-active' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-gallery__dot.is-active' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -353,21 +368,22 @@ class Product_Gallery extends Widget_Base
         $gallery_items = $this->get_gallery_items($post_id);
         $gallery_count = count($gallery_items);
         $visible_thumbs = min(8, max(1, absint($settings['visible_thumbs'] ?? 4)));
+        $thumb_position = $this->get_thumb_position($settings);
         $main_image_sizes = '(max-width: 768px) 100vw, 50vw';
         $thumb_image_sizes = '100px';
         ?>
 
 <?php if ($gallery_count <= 0): ?>
-<div class="product-gallery product-gallery--empty" data-widget="product-gallery">
-    <div class="product-gallery__media product-image">
+<div class="jc-product-gallery jc-product-gallery--empty" data-widget="jc-product-gallery">
+    <div class="jc-product-gallery__media product-image">
         <i class="ri-image-line"></i>
     </div>
 </div>
 <?php elseif ($gallery_count === 1): ?>
 <?php $item = $gallery_items[0]; ?>
-<div class="product-gallery product-gallery--single" data-widget="product-gallery">
+<div class="jc-product-gallery jc-product-gallery--single" data-widget="jc-product-gallery">
     <div
-        class="product-gallery__media product-image <?php echo $item['type'] === 'video' ? 'product-gallery__media--video product-image--video' : ''; ?>">
+        class="jc-product-gallery__media product-image <?php echo $item['type'] === 'video' ? 'jc-product-gallery__media--video product-image--video' : ''; ?>">
         <?php if ($item['type'] === 'video'): ?>
         <?php $this->render_gallery_video($item['embed_url']); ?>
         <?php else: ?>
@@ -376,21 +392,23 @@ class Product_Gallery extends Widget_Base
     </div>
 </div>
 <?php else: ?>
-<div class="product-gallery product-gallery--interactive" data-product-gallery data-widget="product-gallery"
-    data-visible-thumbs="<?php echo esc_attr($visible_thumbs); ?>">
-    <div class="product-gallery__thumbs" role="tablist"
+<div class="jc-product-gallery jc-product-gallery--interactive jc-product-gallery--thumbs-<?php echo esc_attr($thumb_position); ?>"
+    data-jc-product-gallery data-widget="jc-product-gallery"
+    data-visible-thumbs="<?php echo esc_attr($visible_thumbs); ?>"
+    data-thumb-position="<?php echo esc_attr($thumb_position); ?>">
+    <div class="jc-product-gallery__thumbs" role="tablist"
         aria-label="<?php echo esc_attr__('Product media thumbnails', 'jelly-catalog'); ?>">
-        <div class="product-gallery__thumbs-viewport" data-gallery-thumbs-viewport>
-            <div class="product-gallery__thumbs-track" data-gallery-thumbs-track>
+        <div class="jc-product-gallery__thumbs-viewport" data-gallery-thumbs-viewport>
+            <div class="jc-product-gallery__thumbs-track" data-gallery-thumbs-track>
                 <?php foreach ($gallery_items as $index => $item): ?>
-                <div class="product-gallery__thumb <?php echo $index === 0 ? 'is-active' : ''; ?>" type="button"
+                <div class="jc-product-gallery__thumb <?php echo $index === 0 ? 'is-active' : ''; ?>" type="button"
                     data-gallery-thumb="<?php echo esc_attr($index); ?>"
                     aria-label="<?php echo esc_attr(sprintf(__('Show media %d', 'jelly-catalog'), $index + 1)); ?>"
                     aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>">
                     <?php if ($item['type'] === 'video'): ?>
-                    <span class="product-gallery__thumb-media">
+                    <span class="jc-product-gallery__thumb-media">
                         <?php $this->render_gallery_image($item['thumb_url'], $item['thumb_alt'], '', '', $index === 0 ? 'eager' : 'lazy'); ?>
-                        <span class="product-gallery__thumb-badge" aria-hidden="true">
+                        <span class="jc-product-gallery__thumb-badge" aria-hidden="true">
                             <i class="ri-play-fill"></i>
                         </span>
                     </span>
@@ -403,16 +421,16 @@ class Product_Gallery extends Widget_Base
         </div>
     </div>
 
-    <div class="product-gallery__main">
-        <div class="product-gallery__viewport" data-gallery-viewport tabindex="0"
+    <div class="jc-product-gallery__main">
+        <div class="jc-product-gallery__viewport" data-gallery-viewport tabindex="0"
             aria-label="<?php echo esc_attr__('Product media gallery', 'jelly-catalog'); ?>">
-            <div class="product-gallery__track" data-gallery-track>
+            <div class="jc-product-gallery__track" data-gallery-track>
                 <?php foreach ($gallery_items as $index => $item): ?>
-                <div class="product-gallery__slide <?php echo $index === 0 ? 'is-active' : ''; ?>"
+                <div class="jc-product-gallery__slide <?php echo $index === 0 ? 'is-active' : ''; ?>"
                     data-gallery-slide="<?php echo esc_attr($index); ?>"
                     aria-hidden="<?php echo $index === 0 ? 'false' : 'true'; ?>">
                     <?php if ($item['type'] === 'video'): ?>
-                    <div class="product-gallery__video">
+                    <div class="jc-product-gallery__video">
                         <?php $this->render_gallery_video($item['embed_url']); ?>
                     </div>
                     <?php else: ?>
@@ -423,19 +441,19 @@ class Product_Gallery extends Widget_Base
             </div>
         </div>
 
-        <div class="product-gallery__nav product-gallery__nav--prev" type="button" data-gallery-prev
+        <div class="jc-product-gallery__nav jc-product-gallery__nav--prev" type="button" data-gallery-prev
             aria-label="<?php echo esc_attr__('Previous media', 'jelly-catalog'); ?>" disabled>
             <i class="ri-arrow-left-s-line"></i>
         </div>
-        <div class="product-gallery__nav product-gallery__nav--next" type="button" data-gallery-next
+        <div class="jc-product-gallery__nav jc-product-gallery__nav--next" type="button" data-gallery-next
             aria-label="<?php echo esc_attr__('Next media', 'jelly-catalog'); ?>">
             <i class="ri-arrow-right-s-line"></i>
         </div>
 
-        <div class="product-gallery__dots" role="tablist"
+        <div class="jc-product-gallery__dots" role="tablist"
             aria-label="<?php echo esc_attr__('Product media pagination', 'jelly-catalog'); ?>">
             <?php foreach ($gallery_items as $index => $item): ?>
-            <div class="product-gallery__dot <?php echo $index === 0 ? 'is-active' : ''; ?>" type="button"
+            <div class="jc-product-gallery__dot <?php echo $index === 0 ? 'is-active' : ''; ?>" type="button"
                 data-gallery-dot="<?php echo esc_attr($index); ?>"
                 aria-label="<?php echo esc_attr(sprintf(__('Go to media %d', 'jelly-catalog'), $index + 1)); ?>"
                 aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>">
@@ -465,15 +483,15 @@ class Product_Gallery extends Widget_Base
         }
         ?>
 <# var galleryItems=<?php echo wp_json_encode($preview_items); ?>; var visibleThumbs=Math.max(1, Math.min(8,
-    parseInt(settings.visible_thumbs, 10) || 4)); #>
-    <div class="product-gallery product-gallery--interactive" data-product-gallery data-widget="product-gallery"
-        data-visible-thumbs="{{ visibleThumbs }}">
-        <div class="product-gallery__thumbs" role="tablist"
+    parseInt(settings.visible_thumbs, 10) || 4)); var thumbPosition = settings.thumb_position_desktop || 'left'; #>
+    <div class="jc-product-gallery jc-product-gallery--interactive jc-product-gallery--thumbs-{{ thumbPosition }}" data-jc-product-gallery data-widget="jc-product-gallery"
+        data-visible-thumbs="{{ visibleThumbs }}" data-thumb-position="{{ thumbPosition }}">
+        <div class="jc-product-gallery__thumbs" role="tablist"
             aria-label="<?php echo esc_attr__('Product media thumbnails', 'jelly-catalog'); ?>">
-            <div class="product-gallery__thumbs-viewport" data-gallery-thumbs-viewport>
-                <div class="product-gallery__thumbs-track" data-gallery-thumbs-track>
+            <div class="jc-product-gallery__thumbs-viewport" data-gallery-thumbs-viewport>
+                <div class="jc-product-gallery__thumbs-track" data-gallery-thumbs-track>
                     <# _.each(galleryItems, function(item, index) { #>
-                        <div class="product-gallery__thumb <# if (index === 0) { #>is-active<# } #>" type="button"
+                        <div class="jc-product-gallery__thumb <# if (index === 0) { #>is-active<# } #>" type="button"
                             data-gallery-thumb="{{ index }}"
                             aria-label="<?php echo esc_attr__('Show media', 'jelly-catalog'); ?> {{ index + 1 }}"
                             aria-pressed="<# if (index === 0) { #>true<# } else { #>false<# } #>">
@@ -485,12 +503,12 @@ class Product_Gallery extends Widget_Base
             </div>
         </div>
 
-        <div class="product-gallery__main">
-            <div class="product-gallery__viewport" data-gallery-viewport tabindex="0"
+        <div class="jc-product-gallery__main">
+            <div class="jc-product-gallery__viewport" data-gallery-viewport tabindex="0"
                 aria-label="<?php echo esc_attr__('Product media gallery', 'jelly-catalog'); ?>">
-                <div class="product-gallery__track" data-gallery-track>
+                <div class="jc-product-gallery__track" data-gallery-track>
                     <# _.each(galleryItems, function(item, index) { #>
-                        <div class="product-gallery__slide <# if (index === 0) { #>is-active<# } #>"
+                        <div class="jc-product-gallery__slide <# if (index === 0) { #>is-active<# } #>"
                             data-gallery-slide="{{ index }}"
                             aria-hidden="<# if (index === 0) { #>false<# } else { #>true<# } #>">
                             <img src="{{ item.image_url }}" alt="{{ item.image_alt }}"
@@ -500,19 +518,19 @@ class Product_Gallery extends Widget_Base
                 </div>
             </div>
 
-            <div class="product-gallery__nav product-gallery__nav--prev" type="button" data-gallery-prev
+            <div class="jc-product-gallery__nav jc-product-gallery__nav--prev" type="button" data-gallery-prev
                 aria-label="<?php echo esc_attr__('Previous media', 'jelly-catalog'); ?>" disabled>
                 <i class="ri-arrow-left-s-line"></i>
             </div>
-            <div class="product-gallery__nav product-gallery__nav--next" type="button" data-gallery-next
+            <div class="jc-product-gallery__nav jc-product-gallery__nav--next" type="button" data-gallery-next
                 aria-label="<?php echo esc_attr__('Next media', 'jelly-catalog'); ?>">
                 <i class="ri-arrow-right-s-line"></i>
             </div>
 
-            <div class="product-gallery__dots" role="tablist"
+            <div class="jc-product-gallery__dots" role="tablist"
                 aria-label="<?php echo esc_attr__('Product media pagination', 'jelly-catalog'); ?>">
                 <# _.each(galleryItems, function(item, index) { #>
-                    <div class="product-gallery__dot <# if (index === 0) { #>is-active<# } #>" type="button"
+                    <div class="jc-product-gallery__dot <# if (index === 0) { #>is-active<# } #>" type="button"
                         data-gallery-dot="{{ index }}"
                         aria-label="<?php echo esc_attr__('Go to media', 'jelly-catalog'); ?> {{ index + 1 }}"
                         aria-pressed="<# if (index === 0) { #>true<# } else { #>false<# } #>">
@@ -524,11 +542,6 @@ class Product_Gallery extends Widget_Base
         </div>
     </div>
     <?php
-    }
-
-    private function should_use_fallback_assets(): bool
-    {
-        return !(get_template() === 'jelly-frame');
     }
 
     private function get_gallery_items(int $post_id): array
@@ -573,6 +586,20 @@ class Product_Gallery extends Widget_Base
         }
 
         return $gallery_items;
+    }
+
+    /**
+     * 返回桌面端缩略图布局位置。
+     *
+     * @param array $settings 组件设置。
+     * @return string
+     */
+    private function get_thumb_position(array $settings): string
+    {
+        $thumb_position = $settings['thumb_position_desktop'] ?? 'left';
+        $allowed_positions = ['left', 'bottom', 'right'];
+
+        return in_array($thumb_position, $allowed_positions, true) ? $thumb_position : 'left';
     }
 
     private function get_gallery_ids(int $post_id): array

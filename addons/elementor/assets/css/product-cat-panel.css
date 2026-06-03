@@ -1,0 +1,264 @@
+.jc-product-category-panel {
+  --jc-product-category-primary: var(--jelly-color-primary, #0572d1);
+  --jc-product-category-primary-hover: var(--jelly-color-primary-hover, #0055ab);
+  --jc-product-category-title: var(--jelly-color-title, #171717);
+  --jc-product-category-text: var(--jelly-color-text, #404040);
+  --jc-product-category-description: var(--jelly-color-description, #737373);
+  --jc-product-category-border: var(--jelly-color-border, #e5e5e5);
+  --jc-product-category-radius: var(--jelly-global-radius, 6px);
+}
+
+.jc-product-category-panel__title {
+  margin: 0;
+  border: 1px solid var(--jc-product-category-border);
+  border-bottom: 0;
+  border-radius: var(--jc-product-category-radius) var(--jc-product-category-radius) 0 0;
+  padding: 1rem 0.75rem;
+  background-color: var(--jc-product-category-primary);
+  color: #fff;
+}
+
+.jc-product-category-tree,
+.jc-product-category-children {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jc-product-category-tree {
+  overflow: hidden;
+  border: 1px solid var(--jc-product-category-border);
+  border-radius: 0 0 var(--jc-product-category-radius) var(--jc-product-category-radius);
+  background-color: #fff;
+}
+
+.jc-product-category-node {
+  margin: 0;
+}
+
+.jc-product-category-tree > .jc-product-category-node + .jc-product-category-node,
+.jc-product-category-children > .jc-product-category-node + .jc-product-category-node {
+  border-top: 1px solid var(--jc-product-category-border);
+}
+
+.jc-product-category-node__row {
+  position: relative;
+  display: grid;
+  min-height: 3rem;
+  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
+  background-color: #fff;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.jc-product-category-node--has-children > .jc-product-category-node__row {
+  grid-template-columns: minmax(0, 1fr) 2.5rem;
+}
+
+.jc-product-category-node__link {
+  display: flex;
+  min-height: 3rem;
+  align-items: stretch;
+  color: var(--jc-product-category-title);
+  font-size: 0.875rem;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.jc-product-category-node__row:hover {
+  background-color: #fafafa;
+}
+
+.jc-product-category-node__link:hover,
+.jc-product-category-node__row:hover .jc-product-category-node__link {
+  color: var(--jc-product-category-primary);
+  text-decoration: none;
+}
+
+.jc-product-category-node__row:hover .jc-product-category-node__toggle {
+  color: var(--jc-product-category-primary);
+}
+
+.jc-product-category-node__label {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+}
+
+.jc-product-category-node__toggle {
+  display: flex;
+  width: 2.5rem;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--jc-product-category-description);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.jc-product-category-children {
+  display: none;
+  border-top: 1px solid var(--jc-product-category-border);
+  background: transparent;
+}
+
+.jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  > .jc-product-category-node__row {
+  background-color: #171717;
+}
+
+.jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  > .jc-product-category-node__row
+  .jc-product-category-node__link,
+.jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  > .jc-product-category-node__row
+  .jc-product-category-node__label,
+.jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  > .jc-product-category-node__row
+  .jc-product-category-node__toggle {
+  color: #fff;
+}
+
+.jc-product-category-tree
+  > .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  > .jc-product-category-node__row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0.25rem;
+  background-color: var(--jc-product-category-primary);
+}
+
+.jc-product-category-node.current-cat > .jc-product-category-node__row .jc-product-category-node__link,
+.jc-product-category-node.current-cat > .jc-product-category-node__row .jc-product-category-node__label {
+  font-weight: 600;
+}
+
+.jc-product-category-node.is-expanded > .jc-product-category-children {
+  display: block;
+}
+
+.jc-product-category-node.is-expanded > .jc-product-category-node__row .jc-product-category-node__toggle {
+  transform: rotate(180deg);
+}
+
+.jc-product-category-tree
+  > .jc-product-category-node.is-expanded:not(:is(.current-cat, .current-cat-parent, .current-cat-ancestor))
+  > .jc-product-category-node__row {
+  background-color: rgba(5, 114, 209, 0.1);
+}
+
+.jc-product-category-tree
+  > .jc-product-category-node.is-expanded:not(:is(.current-cat, .current-cat-parent, .current-cat-ancestor))
+  > .jc-product-category-node__row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0.25rem;
+  background-color: var(--jc-product-category-primary);
+}
+
+.jc-product-category-tree
+  > .jc-product-category-node.is-expanded:not(:is(.current-cat, .current-cat-parent, .current-cat-ancestor))
+  > .jc-product-category-node__row
+  .jc-product-category-node__link,
+.jc-product-category-tree
+  > .jc-product-category-node.is-expanded:not(:is(.current-cat, .current-cat-parent, .current-cat-ancestor))
+  > .jc-product-category-node__row
+  .jc-product-category-node__label,
+.jc-product-category-tree
+  > .jc-product-category-node.is-expanded:not(:is(.current-cat, .current-cat-parent, .current-cat-ancestor))
+  > .jc-product-category-node__row
+  .jc-product-category-node__toggle {
+  color: #000;
+}
+
+.jc-product-category-children .jc-product-category-node__row {
+  min-height: 2.5rem;
+  background-color: transparent;
+}
+
+.jc-product-category-children .jc-product-category-node__link {
+  min-height: 2.5rem;
+  color: var(--jc-product-category-text);
+}
+
+.jc-product-category-children .jc-product-category-node__row:hover {
+  background-color: #fff;
+}
+
+.jc-product-category-children .jc-product-category-node__link:hover,
+.jc-product-category-children .jc-product-category-node__row:hover .jc-product-category-node__link {
+  color: var(--jc-product-category-primary);
+}
+
+.jc-product-category-children .jc-product-category-node__row::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0.75rem;
+  width: 0.5rem;
+  height: 1px;
+  transform: translateY(-50%);
+  background-color: var(--jc-product-category-border);
+}
+
+.jc-product-category-children .jc-product-category-node__label {
+  padding: 0.5rem 0.75rem 0.5rem 2rem;
+  font-size: 0.875rem;
+}
+
+.jc-product-category-children .jc-product-category-node__toggle {
+  width: 2.5rem;
+  min-height: 2.5rem;
+  font-size: 0.875rem;
+}
+
+.jc-product-category-children .jc-product-category-children .jc-product-category-node__label {
+  padding-left: 2.75rem;
+}
+
+.jc-product-category-children
+  .jc-product-category-children
+  .jc-product-category-children
+  .jc-product-category-node__label {
+  padding-left: 3.5rem;
+}
+
+.jc-product-category-children
+  .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  > .jc-product-category-node__row {
+  background-color: #fff;
+}
+
+.jc-product-category-children
+  .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  > .jc-product-category-node__row
+  .jc-product-category-node__link,
+.jc-product-category-children
+  .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  > .jc-product-category-node__row
+  .jc-product-category-node__label,
+.jc-product-category-children
+  .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  > .jc-product-category-node__row
+  .jc-product-category-node__toggle {
+  color: var(--jc-product-category-primary);
+}
+
+.jc-product-category-children
+  .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  > .jc-product-category-node__row::before {
+  background-color: var(--jc-product-category-primary);
+}

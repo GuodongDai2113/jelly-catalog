@@ -1,12 +1,19 @@
 (function ($) {
   "use strict";
 
-  const initProductGallery = () => {
-    console.log("initProductGallery");
-
-    const $galleries = $(
-      '[data-widget="product-gallery"].product-gallery--interactive'
-    );
+  /**
+   * 初始化产品图库交互。
+   *
+   * @param {jQuery|string|Element} scope 当前初始化范围。
+   * @return {void}
+   */
+  const initProductGallery = (scope) => {
+    const $scope = scope ? $(scope) : $(document);
+    const $galleries = $scope
+      .find('[data-widget="jc-product-gallery"].jc-product-gallery--interactive')
+      .addBack(
+        '[data-widget="jc-product-gallery"].jc-product-gallery--interactive'
+      );
 
     if (!$galleries.length) {
       return;
@@ -45,7 +52,7 @@
       const visibleThumbs = parseInt($gallery.data("visible-thumbs"), 10) || 4;
       const galleryElement = $gallery[0];
       const thumbsViewportElement = $thumbsViewport[0];
-      const dragNamespace = `.productGallery${galleryIndex}`;
+      const dragNamespace = `.jcProductGallery${galleryIndex}`;
       const mobileMedia = window.matchMedia("(max-width: 767px)");
       let currentIndex = 0;
       let startX = 0;
@@ -66,6 +73,9 @@
       }
 
       const isMobile = () => mobileMedia.matches;
+      const getThumbPosition = () => $gallery.data("thumb-position") || "left";
+      const hasHorizontalThumbs = () =>
+        isMobile() || getThumbPosition() === "bottom";
 
       const getCssLengthInPixels = (
         styles,
@@ -108,24 +118,16 @@
       };
 
       const syncMetrics = () => {
-        if (isMobile()) {
-          galleryElement.style.removeProperty("--product-gallery-thumb-size");
-          galleryElement.style.removeProperty(
-            "--product-gallery-thumbs-height"
-          );
-          return;
-        }
-
         const styles = window.getComputedStyle(galleryElement);
         const galleryWidth = $gallery.innerWidth() || 0;
         const columnGap = getCssLengthInPixels(
           styles,
-          "--product-gallery-column-gap",
+          "--jc-product-gallery-column-gap",
           16
         );
         const thumbGap = getCssLengthInPixels(
           styles,
-          "--product-gallery-thumb-gap",
+          "--jc-product-gallery-thumb-gap",
           12
         );
         const visibleCount = Math.max(1, visibleThumbs);
@@ -134,19 +136,21 @@
           return;
         }
 
-        const thumbSize =
-          (galleryWidth - columnGap - thumbGap * (visibleCount - 1)) /
-          (visibleCount + 1);
+        const thumbSize = hasHorizontalThumbs()
+          ? (galleryWidth - thumbGap * (visibleCount - 1)) / visibleCount
+          : (galleryWidth - columnGap - thumbGap * (visibleCount - 1)) /
+            (visibleCount + 1);
         const safeThumbSize = Math.max(0, thumbSize);
-        const thumbsHeight =
-          safeThumbSize * visibleCount + thumbGap * (visibleCount - 1);
+        const thumbsHeight = hasHorizontalThumbs()
+          ? safeThumbSize
+          : safeThumbSize * visibleCount + thumbGap * (visibleCount - 1);
 
         galleryElement.style.setProperty(
-          "--product-gallery-thumb-size",
+          "--jc-product-gallery-thumb-size",
           `${safeThumbSize}px`
         );
         galleryElement.style.setProperty(
-          "--product-gallery-thumbs-height",
+          "--jc-product-gallery-thumbs-height",
           `${thumbsHeight}px`
         );
       };
@@ -157,17 +161,17 @@
           return;
         }
 
-        const mobile = isMobile();
-        const viewportSize = mobile
+        const horizontalThumbs = hasHorizontalThumbs();
+        const viewportSize = horizontalThumbs
           ? thumbsViewportElement.clientWidth
           : thumbsViewportElement.clientHeight;
-        const trackSize = mobile
+        const trackSize = horizontalThumbs
           ? thumbsViewportElement.scrollWidth
           : thumbsViewportElement.scrollHeight;
-        const thumbOffset = mobile
+        const thumbOffset = horizontalThumbs
           ? thumbElement.offsetLeft
           : thumbElement.offsetTop;
-        const thumbSize = mobile
+        const thumbSize = horizontalThumbs
           ? thumbElement.offsetWidth
           : thumbElement.offsetHeight;
         const maxScroll = Math.max(0, trackSize - viewportSize);
@@ -180,12 +184,12 @@
 
         try {
           thumbsViewportElement.scrollTo(
-            mobile
+            horizontalThumbs
               ? { left: targetScroll, behavior }
               : { top: targetScroll, behavior }
           );
         } catch (error) {
-          if (mobile) {
+          if (horizontalThumbs) {
             thumbsViewportElement.scrollLeft = targetScroll;
           } else {
             thumbsViewportElement.scrollTop = targetScroll;
@@ -411,7 +415,9 @@
     });
   };
 
-  $(initProductGallery);
+  $(function () {
+    initProductGallery(document);
+  });
 
   $(window).on("elementor/frontend/init", function () {
     if (!window.elementorFrontend || !window.elementorFrontend.hooks) {

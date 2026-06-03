@@ -1,0 +1,69 @@
+.jc-product-attributes {
+  --jc-color-primary: var(--jelly-color-primary, #2563eb);
+  --jc-color-title: var(--jelly-color-text, #111827);
+  --jc-color-description: var(--jelly-color-description, #6b7280);
+  --jc-product-attributes-icon-size: 10px;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.jc-product-attributes--cols-2,
+.jc-product-attributes--cols-3,
+.jc-product-attributes--cols-4 {
+  display: grid;
+}
+
+.jc-product-attributes--cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.jc-product-attributes--cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.jc-product-attributes--cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.jc-product-attributes-item {
+  display: flex;
+  align-items: center;
+}
+
+.jc-product-attributes__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+  color: var(--jc-color-primary);
+  font-size: var(--jc-product-attributes-icon-size);
+  line-height: 1;
+}
+
+.jc-product-attributes__icon svg {
+  width: var(--jc-product-attributes-icon-size);
+  height: var(--jc-product-attributes-icon-size);
+  fill: currentColor;
+}
+
+.jc-product-attributes__name {
+  margin-right: 0.75rem;
+  color: var(--jc-color-description);
+}
+
+.jc-product-attributes__value {
+  color: var(--jc-color-title);
+  font-weight: 700;
+}
+
+@media screen and (max-width: 768px) {
+  .jc-product-attributes--cols-3,
+  .jc-product-attributes--cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

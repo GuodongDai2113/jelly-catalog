@@ -10,7 +10,7 @@
 
 if (!defined('ABSPATH')) {
     exit;
-} // 禁止直接访问
+} // 绂佹鐩存帴璁块棶
 
 /**
  * Get the placeholder image URL either from media, or use the fallback image.
@@ -20,28 +20,31 @@ if (!defined('ABSPATH')) {
 function jc_placeholder_img_src()
 {
     $src = JELLY_CATALOG_PLUGIN_URL . 'assets/images/placeholder.webp';
-    return  $src;
+    return $src;
 }
 
 /**
- * 获取产品下载文件信息。
+ * 鑾峰彇浜у搧涓嬭浇鏂囦欢淇℃伅銆?
  *
- * @param int $product_id 产品 ID。
+ * @param int $product_id 浜у搧 ID銆?
  * @return array
  */
 function jc_get_product_download_file($product_id)
 {
     $product_id = absint($product_id);
+
     if (!$product_id) {
         return [];
     }
 
     $file_id = absint(get_post_meta($product_id, 'product_file', true));
+
     if (!$file_id) {
         return [];
     }
 
     $file_url = wp_get_attachment_url($file_id);
+
     if (!$file_url) {
         return [];
     }
@@ -70,9 +73,48 @@ function jc_get_product_download_file($product_id)
 }
 
 /**
- * 判断当前页面是否为产品详情页
+ * 获取产品 FAQ 列表，并过滤空问题与空答案。
  *
- * @return bool 如果是产品详情页返回 true，否则返回 false
+ * @param int $product_id 产品 ID。
+ * @return array
+ */
+function jc_get_product_faq_items($product_id)
+{
+    $product_id = absint($product_id);
+
+    if (!$product_id) {
+        return [];
+    }
+
+    $faq_items = get_post_meta($product_id, '_product_faqs', true);
+
+    if (empty($faq_items) || !is_array($faq_items)) {
+        return [];
+    }
+
+    $normalized_items = [];
+
+    foreach ($faq_items as $faq_item) {
+        $question = trim((string) ($faq_item['name'] ?? ''));
+        $answer = (string) ($faq_item['value'] ?? '');
+
+        if ($question === '' || $answer === '') {
+            continue;
+        }
+
+        $normalized_items[] = [
+            'name' => $question,
+            'value' => $answer,
+        ];
+    }
+
+    return $normalized_items;
+}
+
+/**
+ * 鍒ゆ柇褰撳墠椤甸潰鏄惁涓轰骇鍝佽鎯呴〉
+ *
+ * @return bool 濡傛灉鏄骇鍝佽鎯呴〉杩斿洖 true锛屽惁鍒欒繑鍥?false
  */
 function is_jc_product_single()
 {
@@ -80,9 +122,9 @@ function is_jc_product_single()
 }
 
 /**
- * 判断当前页面是否为产品分类或标签归档页
+ * 鍒ゆ柇褰撳墠椤甸潰鏄惁涓轰骇鍝佸垎绫绘垨鏍囩褰掓。椤?
  *
- * @return bool 如果是产品分类或标签页返回 true，否则返回 false
+ * @return bool 濡傛灉鏄骇鍝佸垎绫绘垨鏍囩椤佃繑鍥?true锛屽惁鍒欒繑鍥?false
  */
 function is_jc_product_category()
 {
@@ -90,9 +132,9 @@ function is_jc_product_category()
 }
 
 /**
- * 判断当前页面是否为产品归档页（包括分类、标签）
+ * 鍒ゆ柇褰撳墠椤甸潰鏄惁涓轰骇鍝佸綊妗ｉ〉锛堝寘鎷垎绫汇€佹爣绛撅級
  *
- * @return bool 如果是产品归档页返回 true，否则返回 false
+ * @return bool 濡傛灉鏄骇鍝佸綊妗ｉ〉杩斿洖 true锛屽惁鍒欒繑鍥?false
  */
 function is_jc_product_archive()
 {
@@ -100,9 +142,9 @@ function is_jc_product_archive()
 }
 
 /**
- * 判断当前页面是否为产品搜索结果页
+ * 鍒ゆ柇褰撳墠椤甸潰鏄惁涓轰骇鍝佹悳绱㈢粨鏋滈〉
  *
- * @return bool 如果是产品搜索页返回 true，否则返回 false
+ * @return bool 濡傛灉鏄骇鍝佹悳绱㈤〉杩斿洖 true锛屽惁鍒欒繑鍥?false
  */
 function is_jc_product_search()
 {
@@ -110,9 +152,9 @@ function is_jc_product_search()
 }
 
 /**
- * 判断当前页面是否为产品列表页或产品归档页
+ * 鍒ゆ柇褰撳墠椤甸潰鏄惁涓轰骇鍝佸垪琛ㄩ〉鎴栦骇鍝佸綊妗ｉ〉
  *
- * @return bool 如果是产品列表页返回 true，否则返回 false
+ * @return bool 濡傛灉鏄骇鍝佸垪琛ㄩ〉杩斿洖 true锛屽惁鍒欒繑鍥?false
  */
 function is_jc_products()
 {
@@ -120,15 +162,16 @@ function is_jc_products()
 }
 
 /**
- * 获取指定页面的 ID
+ * 鑾峰彇鎸囧畾椤甸潰鐨?ID
  *
- * @param string $page 页面类型，目前支持 'products'
- * @return int 页面 ID，如果未找到则返回 -1
+ * @param string $page 椤甸潰绫诲瀷锛岀洰鍓嶆敮鎸?'products'
+ * @return int 椤甸潰 ID锛屽鏋滄湭鎵惧埌鍒欒繑鍥?-1
  */
 function jc_get_page_id($page)
 {
     if ($page === 'products') {
         $page = get_option('page_for_products');
     }
+
     return $page ? absint($page) : -1;
 }

@@ -20,29 +20,13 @@ if (!defined('ABSPATH')) {
 class Enqueue
 {
     /**
-     * 判断是否需要加载前端基础资源。
-     *
-     * @return bool
-     */
-    public static function should_enqueue_frontend_assets()
-    {
-        return is_jc_product_single()
-            || is_jc_product_archive()
-            || is_jc_product_search()
-            || is_jc_products();
-    }
-
-    /**
      * 构造函数。
      */
     public function __construct()
     {
         add_action('wp_enqueue_scripts', [$this, 'register_frontend_assets'], 5);
-        add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
         add_action('elementor/frontend/before_register_styles', [$this, 'register_frontend_assets']);
         add_action('elementor/frontend/before_register_scripts', [$this, 'register_frontend_assets']);
-        add_action('elementor/preview/enqueue_styles', [$this, 'enqueue_preview_style']);
-        add_action('elementor/preview/enqueue_scripts', [$this, 'enqueue_preview_script']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
         add_action('in_admin_header', [$this, 'render_admin_editor_loading_markup']);
     }
@@ -54,91 +38,62 @@ class Enqueue
      */
     public function register_frontend_assets()
     {
-        wp_register_style(
-            'jelly-catalog-gallery',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-gallery.css',
-            [],
-            JELLY_CATALOG_VERSION
-        );
-
-        wp_register_script(
-            'jelly-catalog-gallery',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-gallery.js',
-            ['jquery'],
-            JELLY_CATALOG_VERSION,
-            true
-        );
-    }
-
-    /**
-     * 加载前端基础资源。
-     *
-     * @return void
-     */
-    public function enqueue_frontend_assets()
-    {
-        if (!self::should_enqueue_frontend_assets()) {
-            return;
+        foreach ($this->get_elementor_style_assets() as $handle => $relative_path) {
+            wp_register_style(
+                $handle,
+                JELLY_CATALOG_PLUGIN_URL . $relative_path,
+                [],
+                JELLY_CATALOG_VERSION
+            );
         }
 
-        wp_enqueue_style(
-            'jelly-catalog-main',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-main.css',
-            [],
-            JELLY_CATALOG_VERSION
-        );
-
-        wp_enqueue_script(
-            'jelly-catalog-main',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-main.js',
-            [],
-            JELLY_CATALOG_VERSION,
-            true
-        );
+        foreach ($this->get_elementor_script_assets() as $handle => $relative_path) {
+            wp_register_script(
+                $handle,
+                JELLY_CATALOG_PLUGIN_URL . $relative_path,
+                ['jquery'],
+                JELLY_CATALOG_VERSION,
+                true
+            );
+        }
     }
 
     /**
-     * 加载前台预览资源。
+     * 返回 Elementor 前台样式资源映射。
      *
-     * @return void
+     * @return array<string, string>
      */
-    public function enqueue_preview_style()
+    private function get_elementor_style_assets()
     {
-        wp_enqueue_style(
-            'jelly-catalog-main-preview',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-main.css',
-            [],
-            JELLY_CATALOG_VERSION
-        );
-        wp_enqueue_style(
-            'jelly-catalog-gallery-preview',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/css/jelly-catalog-gallery.css',
-            [],
-            JELLY_CATALOG_VERSION
-        );
+        return [
+            'jelly-catalog-product-cat-panel' => 'addons/elementor/assets/css/product-cat-panel.css',
+            'jelly-catalog-product-cat-faq' => 'addons/elementor/assets/css/product-cat-faq.css',
+            'jelly-catalog-product-cat-nav' => 'addons/elementor/assets/css/product-cat-nav.css',
+            'jelly-catalog-product-cat-list' => 'addons/elementor/assets/css/product-cat-list.css',
+            'jelly-catalog-products' => 'addons/elementor/assets/css/products.css',
+            'jelly-catalog-product-download' => 'addons/elementor/assets/css/product-download.css',
+            'jelly-catalog-product-attributes' => 'addons/elementor/assets/css/product-attributes.css',
+            'jelly-catalog-product-faq' => 'addons/elementor/assets/css/product-faq.css',
+            'jelly-catalog-product-share' => 'addons/elementor/assets/css/product-share.css',
+            'jelly-catalog-product-loop' => 'addons/elementor/assets/css/product-loop.css',
+            'jelly-catalog-product-content' => 'addons/elementor/assets/css/product-content.css',
+            'jelly-catalog-product-gallery' => 'addons/elementor/assets/css/product-gallery.css',
+        ];
     }
 
     /**
-     * 加载预览脚本。
+     * 返回 Elementor 前台脚本资源映射。
      *
-     * @return void
+     * @return array<string, string>
      */
-    public function enqueue_preview_script()
+    private function get_elementor_script_assets()
     {
-        wp_enqueue_script(
-            'jelly-catalog-main-preview',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-main.js',
-            [],
-            JELLY_CATALOG_VERSION,
-            true
-        );
-        wp_enqueue_script(
-            'jelly-catalog-gallery-preview',
-            JELLY_CATALOG_PLUGIN_URL . 'assets/js/jelly-catalog-gallery.js',
-            [],
-            JELLY_CATALOG_VERSION,
-            true
-        );
+        return [
+            'jelly-catalog-product-cat-panel' => 'addons/elementor/assets/js/product-cat-panel.js',
+            'jelly-catalog-product-cat-list' => 'addons/elementor/assets/js/product-cat-list.js',
+            'jelly-catalog-product-content' => 'addons/elementor/assets/js/product-content.js',
+            'jelly-catalog-product-gallery' => 'addons/elementor/assets/js/product-gallery.js',
+        ];
     }
 
     /**

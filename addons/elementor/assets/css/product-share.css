@@ -1,0 +1,68 @@
+.jc-product-share {
+  --jc-color-description: var(--jelly-color-description, #6b7280);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+}
+
+.jc-product-share__title {
+  color: var(--jc-color-description);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.jc-product-share__list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+}
+
+.jc-product-share__link {
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 2px;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 2.25rem;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.jc-product-share__link:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.jc-product-share__link i {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.jc-product-share__link.is-facebook {
+  background: #2563eb;
+}
+
+.jc-product-share__link.is-twitter {
+  background: #000;
+}
+
+.jc-product-share__link.is-linkedin {
+  background: #0369a1;
+}
+
+.jc-product-share__link.is-whatsapp {
+  background: #16a34a;
+}
+
+@media screen and (max-width: 768px) {
+  .jc-product-share {
+    flex-wrap: wrap;
+  }
+}

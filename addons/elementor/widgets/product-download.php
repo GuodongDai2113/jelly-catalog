@@ -42,7 +42,7 @@ class Product_Download extends Widget_Base
 
     public function get_style_depends()
     {
-        return [];
+        return ['jelly-catalog-product-download'];
     }
 
     protected function register_controls()
@@ -319,8 +319,7 @@ class Product_Download extends Widget_Base
         ?>
 <?php if ($product_file): ?>
 <div class="jc-download">
-    <a href="<?php echo esc_url($file_url); ?>" class="jc-download-item"
-        download="<?php echo esc_attr($file_name); ?>">
+    <a href="<?php echo esc_url($file_url); ?>" class="jc-download-item" download="<?php echo esc_attr($file_name); ?>">
         <span class="jc-download-icon">
             <?php Icons_Manager::render_icon($settings['file_icon'], ['aria-hidden' => 'true']); ?>
         </span>
@@ -352,28 +351,28 @@ class Product_Download extends Widget_Base
         $file_name = esc_html__('Product Catalog.pdf', 'jelly-catalog');
         $file_size = esc_html__('2.4 MB', 'jelly-catalog');
         ?>
-<#
-var fileIconHTML = elementor.helpers.renderIcon(view, settings.file_icon, { 'aria-hidden': true }, 'i', 'object');
-var downloadIconHTML = elementor.helpers.renderIcon(view, settings.download_icon, { 'aria-hidden': true }, 'i', 'object');
-#>
-<div class="jc-download">
-    <a href="#" class="jc-download-item" download="<?php echo esc_attr($file_name); ?>" aria-disabled="true" onclick="return false;">
-        <span class="jc-download-icon">
-            <# if (fileIconHTML && fileIconHTML.value) { #>
-            {{{ fileIconHTML.value }}}
-            <# } #>
-        </span>
-        <div class="jc-download-file">
-            <span class="jc-download-name"><?php echo esc_html($file_name); ?></span>
-            <span class="jc-download-size"><?php echo esc_html($file_size); ?></span>
-        </div>
-        <span class="jc-download-button">
-            <# if (downloadIconHTML && downloadIconHTML.value) { #>
-            {{{ downloadIconHTML.value }}}
-            <# } #>
-        </span>
-    </a>
-</div>
-<?php
+<# var fileIconHTML=elementor.helpers.renderIcon(view, settings.file_icon, { 'aria-hidden' : true }, 'i' , 'object' );
+    var downloadIconHTML=elementor.helpers.renderIcon(view, settings.download_icon, { 'aria-hidden' : true }, 'i'
+    , 'object' ); #>
+    <div class="jc-download">
+        <a href="#" class="jc-download-item" download="<?php echo esc_attr($file_name); ?>" aria-disabled="true"
+            onclick="return false;">
+            <span class="jc-download-icon">
+                <# if (fileIconHTML && fileIconHTML.value) { #>
+                    {{{ fileIconHTML.value }}}
+                    <# } #>
+            </span>
+            <div class="jc-download-file">
+                <span class="jc-download-name"><?php echo esc_html($file_name); ?></span>
+                <span class="jc-download-size"><?php echo esc_html($file_size); ?></span>
+            </div>
+            <span class="jc-download-button">
+                <# if (downloadIconHTML && downloadIconHTML.value) { #>
+                    {{{ downloadIconHTML.value }}}
+                    <# } #>
+            </span>
+        </a>
+    </div>
+    <?php
     }
 }

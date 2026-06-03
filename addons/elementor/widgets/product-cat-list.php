@@ -46,6 +46,26 @@ class Product_Cat_List extends Widget_Base
         return ['product', 'category', 'list', 'sub-categories'];
     }
 
+    /**
+     * 返回分类列表组件依赖的样式句柄。
+     *
+     * @return array
+     */
+    public function get_style_depends()
+    {
+        return ['jelly-catalog-product-cat-list'];
+    }
+
+    /**
+     * 返回分类列表组件依赖的脚本句柄。
+     *
+     * @return array
+     */
+    public function get_script_depends()
+    {
+        return ['jelly-catalog-product-cat-list'];
+    }
+
     protected function register_controls()
     {
         $this->start_controls_section(

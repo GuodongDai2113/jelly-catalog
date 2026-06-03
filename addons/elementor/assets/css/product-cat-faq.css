@@ -1,0 +1,80 @@
+.jc-faq {
+  --jc-color-primary: var(--jelly-color-primary, #2563eb);
+  --jc-color-border: var(--jelly-color-border, #e5e7eb);
+  --jc-color-bg: var(--jelly-color-white, #fff);
+  --jc-color-bg-hover: var(--jelly-color-bg-secondary, #f5f5f5);
+  --jc-color-title: var(--jelly-color-text, #111827);
+  --jc-color-description: var(--jelly-color-description, #6b7280);
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.jc-faq-item {
+  border-bottom: 1px solid var(--jc-color-border);
+}
+
+.jc-faq-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin: 0;
+  padding: 1rem 1.5rem;
+  background-color: var(--jc-color-bg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.jc-faq-header h3 {
+  font-size: 16px;
+}
+
+.jc-faq-header::after {
+  content: "+";
+  font-size: 1.5rem;
+  transition: transform 0.2s ease-in-out;
+}
+
+.jc-faq-item[open] > .jc-faq-header::after {
+  transform: rotate(45deg);
+}
+
+.jc-faq-header:hover {
+  background-color: var(--jc-color-bg-hover);
+}
+
+.jc-faq-content {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 1.5rem;
+  background-color: var(--jc-color-bg);
+  transition: max-height 0.3s ease-in-out;
+}
+
+.jc-faq-item[open] .jc-faq-content {
+  max-height: 1000px;
+  padding: 1.5rem;
+}
+
+.jc-faq-content p {
+  margin: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .jc-faq-header {
+    padding: 0.8rem 1.2rem;
+  }
+
+  .jc-faq-content,
+  .jc-faq-item[open] .jc-faq-content {
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+  }
+
+  .jc-faq-header::after {
+    font-size: 1.2rem;
+  }
+}

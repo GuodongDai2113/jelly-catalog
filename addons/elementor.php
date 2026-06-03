@@ -239,9 +239,13 @@ class Elementor
 
     public function register_widgets($widgets_manager)
     {
+        $widgets_manager->register(new Elementor\Widgets\Product_Cat_Panel());
+        $widgets_manager->register(new Elementor\Widgets\Products());
         $widgets_manager->register(new Elementor\Widgets\Product_FAQ());
         $widgets_manager->register(new Elementor\Widgets\Product_Cat_FAQ());
         $widgets_manager->register(new Elementor\Widgets\Product_Attributes());
+        $widgets_manager->register(new Elementor\Widgets\Product_Share());
+        $widgets_manager->register(new Elementor\Widgets\Product_Loop());
         $widgets_manager->register(new Elementor\Widgets\Product_Cat_Nav());
         $widgets_manager->register(new Elementor\Widgets\Product_Cat_List());
         $widgets_manager->register(new Elementor\Widgets\Product_Download());

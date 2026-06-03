@@ -1,0 +1,78 @@
+.jc-download {
+  --jc-color-border: var(--jelly-color-border, #e5e7eb);
+  --jc-color-bg: var(--jelly-color-white, #fff);
+  --jc-color-title: var(--jelly-color-text, #111827);
+  --jc-color-description: var(--jelly-color-description, #6b7280);
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 10px;
+}
+
+.jc-download-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--jc-color-border);
+  border-radius: var(--jelly-border-radius, 0);
+  padding: 1rem;
+  background: var(--jc-color-bg);
+}
+
+.jc-download-icon {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--jelly-border-radius, 0);
+  background-color: var(--jelly-color-error-bg, #fee2e2);
+  line-height: 1;
+}
+
+.jc-download-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--jelly-color-error, #dc2626);
+  fill: var(--jelly-color-error, #dc2626);
+}
+
+.jc-download-file {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.jc-download-name {
+  margin-bottom: 2px;
+  color: var(--jc-color-title);
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.3s ease-in-out;
+}
+
+.jc-download-size {
+  color: var(--jc-color-description);
+  font-size: 12px;
+}
+
+.jc-download-button {
+  flex: 1;
+  justify-items: flex-end;
+}
+
+.jc-download-button svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--jc-color-description);
+  fill: var(--jc-color-description);
+  transition: fill 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.jc-download-no-file {
+  margin: 12px 8px;
+  color: var(--jc-color-description);
+  font-style: italic;
+  text-align: center;
+}

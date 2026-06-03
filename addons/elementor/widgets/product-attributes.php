@@ -10,61 +10,88 @@
 
 namespace Jelly_Catalog\Addons\Elementor\Widgets;
 
-use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
-use Elementor\Icons_Manager;
 use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Typography;
+use Elementor\Icons_Manager;
+use Elementor\Widget_Base;
 
 if (!defined('ABSPATH')) {
     exit;
-} // 禁止直接访问
+} // 绂佹鐩存帴璁块棶
 
+/**
+ * 产品属性组件。
+ */
 class Product_Attributes extends Widget_Base
 {
+    /**
+     * 获取组件唯一名称。
+     *
+     * @return string
+     */
     public function get_name(): string
     {
         return 'jc-product-attributes';
     }
 
+    /**
+     * 获取组件标题。
+     *
+     * @return string
+     */
     public function get_title(): string
     {
         return esc_html__('Product Attributes', 'jelly-catalog');
     }
 
+    /**
+     * 获取组件图标。
+     *
+     * @return string
+     */
     public function get_icon(): string
     {
         return 'eicon-editor-list-ul jelly-engine-icon';
     }
 
+    /**
+     * 获取组件分类。
+     *
+     * @return array
+     */
     public function get_categories(): array
     {
         return ['jc-elements-single'];
     }
 
+    /**
+     * 获取组件关键词。
+     *
+     * @return array
+     */
     public function get_keywords(): array
     {
         return ['product', 'attributes', 'specs', 'properties'];
     }
 
     /**
-     * Get style dependencies.
+     * 返回产品属性组件依赖的样式句柄。
      *
-     * Retrieve the list of style dependencies the widget requires.
-     *
-     * @since 3.24.0
-     * @access public
-     *
-     * @return array Widget style dependencies.
+     * @return array
      */
     public function get_style_depends(): array
     {
-        return ['widget-icon-list'];
+        return ['jelly-catalog-product-attributes'];
     }
 
+    /**
+     * 注册组件控制项。
+     *
+     * @return void
+     */
     protected function register_controls(): void
     {
-        // 内容控制面板
         $this->start_controls_section(
             'section_content',
             [
@@ -101,7 +128,6 @@ class Product_Attributes extends Widget_Base
 
         $this->end_controls_section();
 
-        // 图标设置
         $this->start_controls_section(
             'section_icon',
             [
@@ -117,7 +143,7 @@ class Product_Attributes extends Widget_Base
                 'label_on' => esc_html__('Yes', 'jelly-catalog'),
                 'label_off' => esc_html__('No', 'jelly-catalog'),
                 'return_value' => 'yes',
-                'default' => '',
+                'default' => 'yes',
             ]
         );
 
@@ -127,10 +153,7 @@ class Product_Attributes extends Widget_Base
                 'label' => esc_html__('Choose Icon', 'jelly-catalog'),
                 'type' => Controls_Manager::ICONS,
                 'fa4compatibility' => 'icon',
-                'default' => [
-                    'value' => 'fas fa-check',
-                    'library' => 'fa-solid',
-                ],
+                'default' => [],
                 'condition' => [
                     'enable_icon' => 'yes',
                 ],
@@ -139,7 +162,6 @@ class Product_Attributes extends Widget_Base
 
         $this->end_controls_section();
 
-        // 样式设置
         $this->start_controls_section(
             'section_style',
             [
@@ -161,7 +183,7 @@ class Product_Attributes extends Widget_Base
                     ],
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} .jc-attributes-wrapper' => 'gap: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-attributes' => 'gap: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -173,7 +195,7 @@ class Product_Attributes extends Widget_Base
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'rem', 'em', '%'],
                 'selectors' => [
-                    '{{WRAPPER}} .jc-attribute' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-attributes-item' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -184,7 +206,7 @@ class Product_Attributes extends Widget_Base
                 'label' => esc_html__('Item Background', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .jc-attribute' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-attributes-item' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -193,7 +215,7 @@ class Product_Attributes extends Widget_Base
             Group_Control_Border::get_type(),
             [
                 'name' => 'item_border',
-                'selector' => '{{WRAPPER}} .jc-attribute',
+                'selector' => '{{WRAPPER}} .jc-product-attributes-item',
             ]
         );
 
@@ -204,54 +226,23 @@ class Product_Attributes extends Widget_Base
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'rem', 'em', '%'],
                 'selectors' => [
-                    '{{WRAPPER}} .jc-attribute' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-attributes-item' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
 
-        $this->add_control(
+        $this->add_responsive_control(
             'font_size',
             [
                 'label' => esc_html__('Font Size', 'jelly-catalog'),
                 'type' => Controls_Manager::SLIDER,
                 'size_units' => ['px', '%', 'em', 'rem'],
                 'default' => [
-                    'size' => 14,
+                    'size' => 16,
                     'unit' => 'px',
                 ],
-                'range' => [
-                    'px' => [
-                        'min' => 10,
-                        'max' => 100,
-                    ],
-                ],
                 'selectors' => [
-                    '{{WRAPPER}} .jc-attribute' => 'font-size: {{SIZE}}{{UNIT}};',
-                ],
-            ]
-        );
-
-        $this->add_responsive_control(
-            'item_alignment',
-            [
-                'label' => esc_html__('Item Alignment', 'jelly-catalog'),
-                'type' => Controls_Manager::CHOOSE,
-                'options' => [
-                    'flex-start' => [
-                        'title' => esc_html__('Left', 'jelly-catalog'),
-                        'icon' => 'eicon-text-align-left',
-                    ],
-                    'center' => [
-                        'title' => esc_html__('Center', 'jelly-catalog'),
-                        'icon' => 'eicon-text-align-center',
-                    ],
-                    'flex-end' => [
-                        'title' => esc_html__('Right', 'jelly-catalog'),
-                        'icon' => 'eicon-text-align-right',
-                    ],
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} .jc-attribute' => 'justify-content: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-attributes-item' => 'font-size: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -276,7 +267,7 @@ class Product_Attributes extends Widget_Base
                     ],
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} .jc-attributes-wrapper' => 'text-align: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-attributes' => 'text-align: {{VALUE}};',
                 ],
             ]
         );
@@ -296,7 +287,7 @@ class Product_Attributes extends Widget_Base
             [
                 'name' => 'name_typography',
                 'label' => esc_html__('Name Typography', 'jelly-catalog'),
-                'selector' => '{{WRAPPER}} .jc-attribute-name',
+                'selector' => '{{WRAPPER}} .jc-product-attributes__name',
             ]
         );
 
@@ -306,7 +297,7 @@ class Product_Attributes extends Widget_Base
                 'label' => esc_html__('Name Color', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .jc-attribute-name' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-attributes__name' => 'color: {{VALUE}};',
                 ],
             ]
         );
@@ -316,7 +307,7 @@ class Product_Attributes extends Widget_Base
             [
                 'name' => 'value_typography',
                 'label' => esc_html__('Value Typography', 'jelly-catalog'),
-                'selector' => '{{WRAPPER}} .jc-attribute-value',
+                'selector' => '{{WRAPPER}} .jc-product-attributes__value',
             ]
         );
 
@@ -326,7 +317,7 @@ class Product_Attributes extends Widget_Base
                 'label' => esc_html__('Value Color', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .jc-attribute-value' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-attributes__value' => 'color: {{VALUE}};',
                 ],
             ]
         );
@@ -349,9 +340,9 @@ class Product_Attributes extends Widget_Base
             [
                 'label' => esc_html__('Icon Color', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
-                'default' => '',
                 'selectors' => [
-                    '{{WRAPPER}} .jc-attribute-icon' => 'fill: {{VALUE}}; color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-attributes__icon' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-attributes__icon svg' => 'fill: {{VALUE}};',
                 ],
             ]
         );
@@ -361,23 +352,13 @@ class Product_Attributes extends Widget_Base
             [
                 'label' => esc_html__('Size', 'jelly-catalog'),
                 'type' => Controls_Manager::SLIDER,
-                'size_units' => ['px', '%', 'em', 'rem', 'vw', 'custom'],
+                'size_units' => ['px', 'em', 'rem'],
                 'default' => [
-                    'size' => 14,
-                ],
-                'range' => [
-                    'px' => [
-                        'min' => 6,
-                    ],
-                    '%' => [
-                        'min' => 6,
-                    ],
-                    'vw' => [
-                        'min' => 6,
-                    ],
+                    'size' => 10,
+                    'unit' => 'px',
                 ],
                 'selectors' => [
-                    '{{WRAPPER}}' => '--jc-attribute-icon-size: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}}' => '--jc-product-attributes-icon-size: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -395,7 +376,7 @@ class Product_Attributes extends Widget_Base
                     ],
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} .jc-attribute-icon' => 'margin-right: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-attributes__icon' => 'margin-right: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -403,42 +384,47 @@ class Product_Attributes extends Widget_Base
         $this->end_controls_section();
     }
 
+    /**
+     * 输出前台内容。
+     *
+     * @return void
+     */
     protected function render(): void
     {
         $settings = $this->get_settings_for_display();
-
         $attributes = get_post_meta(get_the_ID(), '_product_attributes', true);
 
         if (empty($attributes) || !is_array($attributes)) {
             return;
         }
 
-        // 限制显示的属性数量
         $max_items = absint($settings['max_items'] ?? 0);
+
         if ($max_items > 0 && count($attributes) > $max_items) {
             $attributes = array_slice($attributes, 0, $max_items, true);
         }
 
-        $grid_columns = 'cols-' . absint($settings['columns'] ?? 1);
+        $columns = max(1, min(4, absint($settings['columns'] ?? 1)));
         ?>
-<div class="jc-attributes-wrapper <?php echo esc_attr($grid_columns); ?>">
-    <?php foreach ($attributes as $item): ?>
-    <div class="jc-attribute">
-        <?php if ($settings['enable_icon'] === 'yes'): ?>
-        <span class="jc-attribute-icon">
-            <?php Icons_Manager::render_icon($settings['selected_icon'], ['aria-hidden' => 'true']); ?>
-        </span>
-        <?php endif; ?>
-        <div class="jc-attribute-item">
-            <span class="jc-attribute-name"><?php echo esc_html($item['name'] ?? ''); ?></span>:&nbsp;
-            <span class="jc-attribute-value"><?php echo esc_html($item['value'] ?? ''); ?></span>
-        </div>
-    </div>
+<ul class="jc-product-attributes jc-product-attributes--cols-<?php echo esc_attr($columns); ?>">
+    <?php foreach ($attributes as $attribute): ?>
+    <?php if (isset($attribute['name'], $attribute['value'])): ?>
+    <li class="jc-product-attributes-item">
+        <?php $this->render_attribute_icon($settings); ?>
+        <span class="jc-product-attributes__name"><?php echo esc_html($attribute['name']); ?>:</span>
+        <span class="jc-product-attributes__value"><strong><?php echo esc_html($attribute['value']); ?></strong></span>
+    </li>
+    <?php endif; ?>
     <?php endforeach; ?>
-</div>
+</ul>
 <?php
     }
 
+    /**
+     * 输出编辑器预览模板。
+     *
+     * @return void
+     */
     protected function content_template(): void
     {
         $preview_attributes = [
@@ -464,30 +450,52 @@ class Product_Attributes extends Widget_Base
 var attributes = <?php echo wp_json_encode($preview_attributes); ?>;
 var columns = settings.columns || '1';
 var maxItems = parseInt(settings.max_items, 10);
+var iconHTML = elementor.helpers.renderIcon(view, settings.selected_icon, { 'aria-hidden': true }, 'i', 'object');
 
 if (maxItems > 0) {
     attributes = attributes.slice(0, maxItems);
 }
 #>
-<div class="jc-attributes-wrapper cols-{{ columns }}">
+<ul class="jc-product-attributes jc-product-attributes--cols-{{ columns }}">
     <# _.each(attributes, function(item) { #>
-    <div class="jc-attribute">
-        <# if ('yes' === settings.enable_icon) {
-            var iconHTML = elementor.helpers.renderIcon(view, settings.selected_icon, { 'aria-hidden': true }, 'i', 'object');
-        #>
-        <span class="jc-attribute-icon">
+    <li class="jc-product-attributes-item">
+        <# if ('yes' === settings.enable_icon) { #>
+        <span class="jc-product-attributes__icon" aria-hidden="true">
             <# if (iconHTML && iconHTML.value) { #>
             {{{ iconHTML.value }}}
+            <# } else { #>
+            <i class="ri-circle-fill ri"></i>
             <# } #>
         </span>
         <# } #>
-        <div class="jc-attribute-item">
-            <span class="jc-attribute-name">{{ item.name }}</span>:&nbsp;
-            <span class="jc-attribute-value">{{ item.value }}</span>
-        </div>
-    </div>
+        <span class="jc-product-attributes__name">{{ item.name }}:</span>
+        <span class="jc-product-attributes__value"><strong>{{ item.value }}</strong></span>
+    </li>
     <# }); #>
-</div>
+</ul>
 <?php
+    }
+
+    /**
+     * 输出属性项图标。
+     *
+     * @param array $settings 组件设置。
+     * @return void
+     */
+    private function render_attribute_icon(array $settings): void
+    {
+        if (($settings['enable_icon'] ?? 'yes') !== 'yes') {
+            return;
+        }
+
+        echo '<span class="jc-product-attributes__icon" aria-hidden="true">';
+
+        if (!empty($settings['selected_icon']['value'])) {
+            Icons_Manager::render_icon($settings['selected_icon'], ['aria-hidden' => 'true']);
+        } else {
+            echo '<i class="ri-circle-fill ri"></i>';
+        }
+
+        echo '</span>';
     }
 }

@@ -16,35 +16,78 @@ use Elementor\Group_Control_Typography;
 
 if (!defined('ABSPATH')) {
     exit;
-} // 禁止直接访问
+} // 绂佹鐩存帴璁块棶
 
+/**
+ * 产品 FAQ 组件。
+ */
 class Product_FAQ extends \Elementor\Widget_Base
 {
+    /**
+     * 获取组件唯一名称。
+     *
+     * @return string
+     */
     public function get_name(): string
     {
         return 'jc-product-faq';
     }
 
+    /**
+     * 获取组件标题。
+     *
+     * @return string
+     */
     public function get_title(): string
     {
         return esc_html__('Product FAQ', 'jelly-catalog');
     }
 
+    /**
+     * 获取组件图标。
+     *
+     * @return string
+     */
     public function get_icon(): string
     {
         return 'eicon-checkbox jelly-engine-icon';
     }
 
+    /**
+     * 获取组件分类。
+     *
+     * @return array
+     */
     public function get_categories(): array
     {
         return ['jc-elements-single'];
     }
 
+    /**
+     * 获取组件关键词。
+     *
+     * @return array
+     */
     public function get_keywords(): array
     {
         return ['product', 'faq', 'question', 'answer'];
     }
 
+    /**
+     * 返回产品 FAQ 组件依赖的样式句柄。
+     *
+     * @return array
+     */
+    public function get_style_depends(): array
+    {
+        return ['jelly-catalog-product-faq'];
+    }
+
+    /**
+     * 注册样式控制项。
+     *
+     * @return void
+     */
     protected function register_controls(): void
     {
         $this->start_controls_section(
@@ -68,7 +111,7 @@ class Product_FAQ extends \Elementor\Widget_Base
                     ],
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} .jc-faq' => 'display: flex; flex-direction: column; gap: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-faq' => 'gap: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -80,7 +123,7 @@ class Product_FAQ extends \Elementor\Widget_Base
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'rem', 'em', '%'],
                 'selectors' => [
-                    '{{WRAPPER}} .jc-faq-item' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-faq-item' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -91,7 +134,7 @@ class Product_FAQ extends \Elementor\Widget_Base
                 'label' => esc_html__('Background Color', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .jc-faq-item' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-faq-item' => 'background-color: {{VALUE}};',
                 ],
             ]
         );
@@ -100,7 +143,7 @@ class Product_FAQ extends \Elementor\Widget_Base
             Group_Control_Border::get_type(),
             [
                 'name' => 'item_border',
-                'selector' => '{{WRAPPER}} .jc-faq-item',
+                'selector' => '{{WRAPPER}} .jc-product-faq-item',
             ]
         );
 
@@ -111,7 +154,7 @@ class Product_FAQ extends \Elementor\Widget_Base
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'rem', 'em', '%'],
                 'selectors' => [
-                    '{{WRAPPER}} .jc-faq-item' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-faq-item' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -130,7 +173,7 @@ class Product_FAQ extends \Elementor\Widget_Base
             Group_Control_Typography::get_type(),
             [
                 'name' => 'question_typography',
-                'selector' => '{{WRAPPER}} .jc-faq-header h3',
+                'selector' => '{{WRAPPER}} .jc-product-faq-question',
             ]
         );
 
@@ -140,8 +183,7 @@ class Product_FAQ extends \Elementor\Widget_Base
                 'label' => esc_html__('Color', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .jc-faq-header h3' => 'color: {{VALUE}};',
-                    '{{WRAPPER}} .jc-faq-header' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-faq-question' => 'color: {{VALUE}};',
                 ],
             ]
         );
@@ -159,7 +201,7 @@ class Product_FAQ extends \Elementor\Widget_Base
                     ],
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} .jc-faq-header' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-faq-question' => 'margin-bottom: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -178,7 +220,7 @@ class Product_FAQ extends \Elementor\Widget_Base
             Group_Control_Typography::get_type(),
             [
                 'name' => 'answer_typography',
-                'selector' => '{{WRAPPER}} .jc-faq-content, {{WRAPPER}} .jc-faq-content p',
+                'selector' => '{{WRAPPER}} .jc-product-faq-answer',
             ]
         );
 
@@ -188,7 +230,7 @@ class Product_FAQ extends \Elementor\Widget_Base
                 'label' => esc_html__('Color', 'jelly-catalog'),
                 'type' => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .jc-faq-content, {{WRAPPER}} .jc-faq-content p' => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .jc-product-faq-answer' => 'color: {{VALUE}};',
                 ],
             ]
         );
@@ -200,7 +242,7 @@ class Product_FAQ extends \Elementor\Widget_Base
                 'type' => Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', 'rem', 'em', '%'],
                 'selectors' => [
-                    '{{WRAPPER}} .jc-faq-content' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                    '{{WRAPPER}} .jc-product-faq-answer' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -208,26 +250,38 @@ class Product_FAQ extends \Elementor\Widget_Base
         $this->end_controls_section();
     }
 
+    /**
+     * 输出前台内容。
+     *
+     * @return void
+     */
     protected function render(): void
     {
-        $faqs = get_post_meta(get_the_ID(), '_product_faqs', true);
+        $faq_items = jc_get_product_faq_items(get_the_ID());
 
-        if (empty($faqs) || !is_array($faqs)) {
+        if (empty($faq_items)) {
             return;
         }
 
-        echo "<div class='jc-faq'>";
-        foreach ($faqs as $item) {
-            $name = esc_html($item['name'] ?? '');
-            $value = wp_kses_post($item['value'] ?? '');
-            echo "<details class='jc-faq-item'>";
-            echo "<summary class='jc-faq-header'><h3>{$name}</h3></summary>";
-            echo "<div class='jc-faq-content'><p>{$value}</p></div>";
-            echo '</details>';
-        }
-        echo '</div>';
+        ?>
+<div class="jc-product-faq">
+    <?php foreach ($faq_items as $faq_item): ?>
+    <article class="jc-product-faq-item">
+        <h3 class="jc-product-faq-question"><?php echo esc_html($faq_item['name']); ?></h3>
+        <div class="jc-product-faq-answer">
+            <?php echo wp_kses_post($faq_item['value']); ?>
+        </div>
+    </article>
+    <?php endforeach; ?>
+</div>
+<?php
     }
 
+    /**
+     * 输出编辑器预览模板。
+     *
+     * @return void
+     */
     protected function content_template(): void
     {
         $preview_faqs = [
@@ -242,12 +296,12 @@ class Product_FAQ extends \Elementor\Widget_Base
         ];
         ?>
 <# var faqs = <?php echo wp_json_encode($preview_faqs); ?>; #>
-<div class="jc-faq">
+<div class="jc-product-faq">
     <# _.each(faqs, function(item) { #>
-    <details class="jc-faq-item" open>
-        <summary class="jc-faq-header"><h3>{{ item.name }}</h3></summary>
-        <div class="jc-faq-content"><p>{{ item.value }}</p></div>
-    </details>
+    <article class="jc-product-faq-item">
+        <h3 class="jc-product-faq-question">{{ item.name }}</h3>
+        <div class="jc-product-faq-answer">{{{ item.value }}}</div>
+    </article>
     <# }); #>
 </div>
 <?php

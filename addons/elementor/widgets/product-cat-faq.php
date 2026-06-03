@@ -37,6 +37,16 @@ class Product_Cat_Faq extends \Elementor\Widget_Base
         return ['faq', 'category', 'questions', 'answers'];
     }
 
+    /**
+     * 返回分类 FAQ 组件依赖的样式句柄。
+     *
+     * @return array
+     */
+    public function get_style_depends()
+    {
+        return ['jelly-catalog-product-cat-faq'];
+    }
+
     protected function register_controls()
     {
         $this->start_controls_section(
