@@ -833,6 +833,7 @@ trait Port_Import {
 
 		$this->maybe_import_featured_image( $post_id, $data, $images_path, $image_index );
 		$this->maybe_import_gallery_images( $post_id, $data, $images_path, $image_index );
+		$this->maybe_process_description_images( $post_id, $data, $images_path, $image_index );
 		$this->maybe_update_import_product_categories( $post_id, $data );
 		$this->maybe_update_import_terms( $post_id, $data, 'Tags', 'product_tag' );
 		$this->maybe_update_import_collection_meta( $post_id, '_product_faqs', $this->parse_import_faqs( $data, $faq_count ), 'FAQ数据' );
@@ -1052,6 +1053,65 @@ trait Port_Import {
 			update_post_meta( $post_id, '_product_image_gallery', implode( ',', array_values( array_unique( $gallery_ids ) ) ) );
 			$this->log( '画廊图像元数据已保存，IDs: ' . implode( ',', $gallery_ids ) );
 		}
+	}
+
+	/**
+	 * 处理 Description 中的图片占位符 [filename.ext]。
+	 *
+	 * 从图片目录中查找对应的图片文件并导入为附件，
+	 * 将占位符替换为真实的 <img> HTML 标签。
+	 * 图片不存在时保留原文占位符不变。
+	 *
+	 * @param int $post_id 产品 ID
+	 * @param array $data CSV 行数据
+	 * @param string $images_path 图片目录路径
+	 * @param array $image_index 图片文件名索引
+	 * @return void
+	 */
+	private function maybe_process_description_images( $post_id, $data, $images_path, $image_index ) {
+		if ( ! array_key_exists( 'Description', $data ) ) {
+			return;
+		}
+
+		$content = (string) $data['Description'];
+
+		preg_match_all( '/\[([^\]]+\.(?:jpg|jpeg|png|gif|webp))\]/i', $content, $matches );
+		if ( empty( $matches[1] ) ) {
+			return;
+		}
+
+		$replacements = array();
+
+		foreach ( $matches[0] as $index => $placeholder ) {
+			$filename = $matches[1][ $index ];
+
+			if ( isset( $replacements[ $placeholder ] ) ) {
+				continue;
+			}
+
+			$attachment_id = $this->import_image_reference( $filename, $post_id, $images_path, $image_index );
+			if ( $attachment_id ) {
+				$image_url = wp_get_attachment_url( $attachment_id );
+				$alt_text  = sanitize_text_field( pathinfo( $filename, PATHINFO_FILENAME ) );
+				$replacements[ $placeholder ] = sprintf( '<img src="%s" alt="%s">', esc_url( $image_url ), esc_attr( $alt_text ) );
+				$this->log( 'Description 图片替换: ' . $placeholder . ' → ' . $image_url );
+			} else {
+				$this->log( 'Description 图片未找到，保留占位符: ' . $placeholder, 'warning' );
+			}
+		}
+
+		if ( empty( $replacements ) ) {
+			return;
+		}
+
+		$new_content = str_replace( array_keys( $replacements ), array_values( $replacements ), $content );
+
+		wp_update_post( array(
+			'ID'           => $post_id,
+			'post_content' => wp_kses_post( $new_content ),
+		) );
+
+		$this->log( 'Description 图片处理完成，共替换 ' . count( $replacements ) . ' 处' );
 	}
 
 	/**
