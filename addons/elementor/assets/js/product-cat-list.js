@@ -54,7 +54,7 @@
 
     window.elementorFrontend.hooks.addAction(
       "frontend/element_ready/product_cat_list.default",
-      initCategoryList
+      initCategoryList,
     );
   });
 })(jQuery);

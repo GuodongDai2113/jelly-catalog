@@ -188,7 +188,7 @@
           "jc-product-editor__nav-button jc-editor-layout__nav-button",
         navAriaLabel: this.getI18n(
           "product_editor_nav_aria",
-          "Product section navigation"
+          "Product section navigation",
         ),
         menuTitle: this.getI18n("product_editor_menu", "Menu"),
       });
@@ -197,7 +197,7 @@
 
       const renderedSections = this.generateSections(
         PRODUCT_EDITOR_LAYOUT,
-        shell.$shell
+        shell.$shell,
       );
 
       this.moveSidebarMetaboxes();
@@ -232,8 +232,8 @@
 
       const $section = $(`
         <section class="jc-product-section ${sectionClass}" id="${this.getSectionDomId(
-        sectionId
-      )}">
+          sectionId,
+        )}">
           <div class="jc-product-pane__full"></div>
         </section>
       `);
@@ -264,7 +264,7 @@
       $titleDiv.attr("data-jc-help-id", "title");
 
       return $(
-        '<div class="jc-product-block jc-product-block-title"></div>'
+        '<div class="jc-product-block jc-product-block-title"></div>',
       ).append($titleDiv);
     }
 
@@ -280,7 +280,7 @@
       if (block.wrapper === "postbox") {
         const $wrapper = this.buildPostbox(
           this.getBlockTitle(block),
-          block.wrapperClass || ""
+          block.wrapperClass || "",
         );
 
         $wrapper.attr("data-jc-help-id", block.id);
@@ -343,7 +343,7 @@
 
         const hasVisibleBlock = this.buildSectionColumns(
           section.columns,
-          $section
+          $section,
         );
 
         if (!hasVisibleBlock) {
@@ -389,7 +389,7 @@
               isComplete: () =>
                 this.hasEditorContent(
                   PRODUCT_PROGRESS_EDITORS.excerpt,
-                  "#excerpt"
+                  "#excerpt",
                 ),
             },
             {
@@ -398,7 +398,7 @@
                 this.hasCompletedRepeaterItems(
                   "#product_attributes_metabox",
                   ".repeater-item__key-input",
-                  ".repeater-item__value-input"
+                  ".repeater-item__value-input",
                 ),
             },
             {
@@ -420,7 +420,7 @@
               isComplete: () =>
                 this.hasEditorContent(
                   PRODUCT_PROGRESS_EDITORS.content,
-                  "#content"
+                  "#content",
                 ),
             },
             {
@@ -429,7 +429,7 @@
                 this.hasCompletedRepeaterItems(
                   "#product_faq_metabox",
                   ".repeater-item__key-input",
-                  ".repeater-item__value-input"
+                  ".repeater-item__value-input",
                 ),
             },
           ],
@@ -514,7 +514,7 @@
       const $extrasPane = this.ensureSectionPane(
         PRODUCT_SECTION_IDS.extras,
         "jc-product-section-extras",
-        PRODUCT_SECTION_IDS.seo
+        PRODUCT_SECTION_IDS.seo,
       );
       const $detailsPane = this.getSectionPane(PRODUCT_SECTION_IDS.details);
       const $editorMetabox = $("#postdivrich");
@@ -851,7 +851,7 @@
               <img src="${data.sizes.thumbnail.url}" alt="" />
               <a href="#" class="actions delete" title="${deleteText}"></a>
             </li>
-          `
+          `,
           );
         });
 

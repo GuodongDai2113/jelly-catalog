@@ -31,7 +31,7 @@
       const maxScroll = Math.max($(document).height() - $window.height(), 0);
       const safeTargetTop = Math.min(Math.max(targetTop, 0), maxScroll);
       const prefersReducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
+        "(prefers-reduced-motion: reduce)",
       ).matches;
       const complete = function () {
         helpers.scrollCompleteTimer = 0;
@@ -62,7 +62,10 @@
       });
 
       if (typeof onComplete === "function") {
-        helpers.scrollCompleteTimer = window.setTimeout(complete, duration + 80);
+        helpers.scrollCompleteTimer = window.setTimeout(
+          complete,
+          duration + 80,
+        );
       }
     };
 
@@ -117,7 +120,9 @@
 
       const $section = $nav.closest(".jc-product-detail, .product-detail");
       const $sections = $section
-        .find("[data-jc-product-detail-sections], [data-product-detail-sections]")
+        .find(
+          "[data-jc-product-detail-sections], [data-product-detail-sections]",
+        )
         .first();
       const namespace = `.jcProductDetailNav${Date.now()}${index}`;
       let rafId = 0;
@@ -200,7 +205,7 @@
           (navElement.clientWidth - linkElement.offsetWidth) / 2;
         const maxScroll = Math.max(
           navElement.scrollWidth - navElement.clientWidth,
-          0
+          0,
         );
         const safeTargetLeft = Math.min(Math.max(targetLeft, 0), maxScroll);
 
@@ -241,11 +246,11 @@
 
         sectionElement.style.setProperty(
           "--jc-product-detail-sticky-offset",
-          `${headerOffset}px`
+          `${headerOffset}px`,
         );
         sectionElement.style.setProperty(
           "--jc-product-detail-scroll-offset",
-          `${headerOffset + navHeight + 24}px`
+          `${headerOffset + navHeight + 24}px`,
         );
       };
 
@@ -317,7 +322,7 @@
 
       $window.on(
         `scroll${namespace} resize${namespace} load${namespace}`,
-        requestRender
+        requestRender,
       );
       scrollNavIntoView(linkMap[0].$link, true);
       requestRender();
@@ -377,7 +382,7 @@
 
       activateTab(
         $buttons.filter(".is-active").data("tab-target") ||
-          $buttons.first().data("tab-target")
+          $buttons.first().data("tab-target"),
       );
 
       $buttons.on("click", function () {
@@ -393,7 +398,8 @@
 
         const currentIndex = $buttons.index(this);
         const direction = event.key === "ArrowRight" ? 1 : -1;
-        const nextIndex = (currentIndex + direction + $buttons.length) % $buttons.length;
+        const nextIndex =
+          (currentIndex + direction + $buttons.length) % $buttons.length;
         const $nextButton = $buttons.eq(nextIndex);
 
         activateTab($nextButton.data("tab-target"));
@@ -424,7 +430,7 @@
 
     window.elementorFrontend.hooks.addAction(
       "frontend/element_ready/jc-product-content.default",
-      initProductContent
+      initProductContent,
     );
   });
 })(jQuery);

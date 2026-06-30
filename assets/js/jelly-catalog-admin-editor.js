@@ -123,7 +123,11 @@
     hasEditorContent(editorId, fallbackSelector = "") {
       const editor = window.tinymce?.get?.(editorId);
 
-      if (editor && typeof editor.getContent === "function" && !editor.isHidden()) {
+      if (
+        editor &&
+        typeof editor.getContent === "function" &&
+        !editor.isHidden()
+      ) {
         return this.getPlainTextFromHtml(editor.getContent()).length > 0;
       }
 
@@ -159,7 +163,9 @@
         .each((_, item) => {
           const $item = $(item);
           const key = this.normalizeTextValue($item.find(keySelector).val());
-          const value = this.normalizeTextValue($item.find(valueSelector).val());
+          const value = this.normalizeTextValue(
+            $item.find(valueSelector).val(),
+          );
 
           if (key && value) {
             hasCompletedItem = true;
@@ -315,8 +321,7 @@
     }
 
     getScrollOffset() {
-      const adminBarHeight =
-        $(this.config.adminBarSelector).outerHeight() || 0;
+      const adminBarHeight = $(this.config.adminBarSelector).outerHeight() || 0;
 
       return adminBarHeight + 24;
     }
@@ -389,11 +394,15 @@
 
       this.$shell = $shell;
       this.$nav = $shell.find("aside").first();
-      this.$navList = $shell.find("." + navListClass.split(" ").join(".")).first();
+      this.$navList = $shell
+        .find("." + navListClass.split(" ").join("."))
+        .first();
       this.$navSecondary = $shell
         .find("." + navSecondaryClass.split(" ").join("."))
         .first();
-      this.$content = $shell.find("." + contentClass.split(" ").join(".")).first();
+      this.$content = $shell
+        .find("." + contentClass.split(" ").join("."))
+        .first();
       this.config.navButtonClass = navButtonClass;
 
       return {
@@ -464,7 +473,9 @@
     }
 
     initSectionNavigation(sections) {
-      const navSections = (sections || []).filter((section) => section.navLabel);
+      const navSections = (sections || []).filter(
+        (section) => section.navLabel,
+      );
 
       if (!this.$nav.length || !this.$navList.length || !navSections.length) {
         this.$nav.hide();
@@ -595,7 +606,9 @@
      * 计算当前最适合作为激活态的 section。
      */
     getBestVisibleSectionId() {
-      const visibilityEntries = Array.from(this.sectionVisibilityState.entries())
+      const visibilityEntries = Array.from(
+        this.sectionVisibilityState.entries(),
+      )
         .filter(([, state]) => state.isIntersecting)
         .sort(([, firstState], [, secondState]) => {
           const firstDistance = Math.abs(
@@ -660,7 +673,11 @@
 
       const $sections =
         Array.isArray(sectionIds) && sectionIds.length
-          ? $(sectionIds.map((sectionId) => "#" + this.getSectionDomId(sectionId)).join(","))
+          ? $(
+              sectionIds
+                .map((sectionId) => "#" + this.getSectionDomId(sectionId))
+                .join(","),
+            )
           : this.$content.find(this.config.sectionSelector);
 
       $sections.each((_, section) => {
@@ -674,7 +691,10 @@
     setSectionProgressDefinitions(definitions = {}) {
       this.navProgressDefinitions = definitions || {};
 
-      if (!Object.keys(this.navProgressDefinitions).length || !this.$shell.length) {
+      if (
+        !Object.keys(this.navProgressDefinitions).length ||
+        !this.$shell.length
+      ) {
         return;
       }
 
@@ -954,7 +974,8 @@
         options,
       );
 
-      const $scope = settings.scope instanceof $ ? settings.scope : $(settings.scope);
+      const $scope =
+        settings.scope instanceof $ ? settings.scope : $(settings.scope);
 
       if (!$scope.length) {
         return;
@@ -985,12 +1006,7 @@
 
       $(document).off(this.instanceNamespace + ".lock");
       $(document).on(
-        [
-          "click",
-          "mousedown",
-          "dblclick",
-          "keydown",
-        ]
+        ["click", "mousedown", "dblclick", "keydown"]
           .map((eventName) => eventName + this.instanceNamespace + ".lock")
           .join(" "),
         settings.postboxHandleSelector,

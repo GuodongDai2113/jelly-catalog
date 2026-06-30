@@ -9,346 +9,431 @@
  */
 
 namespace Jelly_Catalog;
-
 use Jelly_Catalog\Modules\Permalinks;
-
-if (!defined('ABSPATH')) {
-    exit; // 禁止直接访问
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // 禁止直接访问
 }
 
 /**
  * 设置管理类
  */
-class Settings
-{
-    /**
-     * 初始化设置
-     */
-    public function __construct()
-    {
-        add_action('admin_init', [$this, 'register_settings']);
-        add_action('admin_init', [$this, 'register_permalink_settings']);
-        add_action('admin_init', [$this, 'save_permalink_settings'], 10);
-    }
+class Settings {
 
-    /**
-     * 注册所有设置
-     */
-    public function register_settings()
-    {
-        // 注册设置段
-        add_settings_section(
-            'jelly_catalog_products_section',
-            __('Products Settings', 'jelly-catalog'),
-            [$this, 'render_products_section'],
-            'reading'
-        );
+	/**
+	 * 初始化设置
+	 */
+	public function __construct() {
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'admin_init', array( $this, 'register_permalink_settings' ) );
+		add_action( 'admin_init', array( $this, 'save_permalink_settings' ), 10 );
+	}
 
-        // 添加产品页面设置字段
-        add_settings_field(
-            'page_for_products',
-            __('Products Page', 'jelly-catalog'),
-            [$this, 'render_page_for_products_select'],
-            'reading',
-            'jelly_catalog_products_section',
-            ['label_for' => 'page_for_products']
-        );
+	/**
+	 * 注册所有设置
+	 */
+	public function register_settings() {
+		// 注册设置段
+		add_settings_section(
+			'jelly_catalog_products_section',
+			__( 'Products Settings', 'jelly-catalog' ),
+			array( $this, 'render_products_section' ),
+			'reading'
+		);
 
-        // 添加每页产品数量设置字段
-        add_settings_field(
-            'products_per_page',
-            __('Products Per Page', 'jelly-catalog'),
-            [$this, 'render_products_per_page_input'],
-            'reading',
-            'jelly_catalog_products_section',
-            ['label_for' => 'products_per_page']
-        );
+		// 添加产品页面设置字段
+		add_settings_field(
+			'page_for_products',
+			__( 'Products Page', 'jelly-catalog' ),
+			array( $this, 'render_page_for_products_select' ),
+			'reading',
+			'jelly_catalog_products_section',
+			array( 'label_for' => 'page_for_products' )
+		);
 
-        // 添加产品排序依据设置字段
-        add_settings_field(
-            'products_orderby',
-            __('Products Order By', 'jelly-catalog'),
-            [$this, 'render_products_orderby_select'],
-            'reading',
-            'jelly_catalog_products_section',
-            ['label_for' => 'products_orderby']
-        );
+		// 添加每页产品数量设置字段
+		add_settings_field(
+			'products_per_page',
+			__( 'Products Per Page', 'jelly-catalog' ),
+			array( $this, 'render_products_per_page_input' ),
+			'reading',
+			'jelly_catalog_products_section',
+			array( 'label_for' => 'products_per_page' )
+		);
 
-        // 添加产品排序方向设置字段
-        add_settings_field(
-            'products_order',
-            __('Products Order', 'jelly-catalog'),
-            [$this, 'render_products_order_select'],
-            'reading',
-            'jelly_catalog_products_section',
-            ['label_for' => 'products_order']
-        );
+		// 添加产品排序依据设置字段
+		add_settings_field(
+			'products_orderby',
+			__( 'Products Order By', 'jelly-catalog' ),
+			array( $this, 'render_products_orderby_select' ),
+			'reading',
+			'jelly_catalog_products_section',
+			array( 'label_for' => 'products_orderby' )
+		);
 
-        // 注册设置选项
-        register_setting('reading', 'page_for_products');
-        register_setting('reading', 'products_per_page', [
-            'type' => 'integer',
-            'sanitize_callback' => 'absint',
-            'default' => 10
-        ]);
-        register_setting('reading', 'products_orderby', [
-            'type' => 'string',
-            'sanitize_callback' => [$this, 'sanitize_products_orderby'],
-            'default' => 'date'
-        ]);
-        register_setting('reading', 'products_order', [
-            'type' => 'string',
-            'sanitize_callback' => [$this, 'sanitize_products_order'],
-            'default' => 'DESC'
-        ]);
-    }
+		// 添加产品排序方向设置字段
+		add_settings_field(
+			'products_order',
+			__( 'Products Order', 'jelly-catalog' ),
+			array( $this, 'render_products_order_select' ),
+			'reading',
+			'jelly_catalog_products_section',
+			array( 'label_for' => 'products_order' )
+		);
 
-    /**
-     * 清理产品排序字段。
-     *
-     * @param string $value 设置值。
-     * @return string
-     */
-    public function sanitize_products_orderby($value)
-    {
-        $value = sanitize_key($value);
-        $allowed = ['date', 'title', 'menu_order', 'rand', 'modified'];
+		// 添加分类排序依据设置字段
+		add_settings_field(
+			'products_cat_orderby',
+			__( 'Category Order By', 'jelly-catalog' ),
+			array( $this, 'render_products_cat_orderby_select' ),
+			'reading',
+			'jelly_catalog_products_section',
+			array( 'label_for' => 'products_cat_orderby' )
+		);
 
-        return in_array($value, $allowed, true) ? $value : 'date';
-    }
+		// 添加分类排序方向设置字段
+		add_settings_field(
+			'products_cat_order',
+			__( 'Category Order', 'jelly-catalog' ),
+			array( $this, 'render_products_cat_order_select' ),
+			'reading',
+			'jelly_catalog_products_section',
+			array( 'label_for' => 'products_cat_order' )
+		);
 
-    /**
-     * 清理产品排序方向。
-     *
-     * @param string $value 设置值。
-     * @return string
-     */
-    public function sanitize_products_order($value)
-    {
-        $value = strtoupper(sanitize_text_field($value));
+		// 注册设置选项
+		register_setting( 'reading', 'page_for_products' );
+		register_setting(
+			'reading',
+			'products_per_page',
+			array(
+				'type'              => 'integer',
+				'sanitize_callback' => 'absint',
+				'default'           => 10,
+			)
+		);
+		register_setting(
+			'reading',
+			'products_orderby',
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_products_orderby' ),
+				'default'           => 'date',
+			)
+		);
+		register_setting(
+			'reading',
+			'products_order',
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_products_order' ),
+				'default'           => 'DESC',
+			)
+		);
+		register_setting(
+			'reading',
+			'products_cat_orderby',
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_products_cat_orderby' ),
+				'default'           => 'term_order',
+			)
+		);
+		register_setting(
+			'reading',
+			'products_cat_order',
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_products_cat_order' ),
+				'default'           => 'ASC',
+			)
+		);
+	}
 
-        return in_array($value, ['ASC', 'DESC'], true) ? $value : 'DESC';
-    }
+	/**
+	 * 清理产品排序字段。
+	 *
+	 * @param string $value 设置值。
+	 * @return string
+	 */
+	public function sanitize_products_orderby( $value ) {
+		$value   = sanitize_key( $value );
+		$allowed = array( 'date', 'title', 'menu_order', 'rand', 'modified' );
 
-    /**
-     * 渲染产品设置段描述
-     */
-    public function render_products_section()
-    {
-        echo '<p>' . __('Configure how your products are displayed on your site.', 'jelly-catalog') . '</p>';
-    }
+		return in_array( $value, $allowed, true ) ? $value : 'date';
+	}
 
-    /**
-     * 渲染产品页面选择下拉框
-     */
-    public function render_page_for_products_select()
-    {
-        $selected_page = get_option('page_for_products', 0);
+	/**
+	 * 清理产品排序方向。
+	 *
+	 * @param string $value 设置值。
+	 * @return string
+	 */
+	public function sanitize_products_order( $value ) {
+		$value = strtoupper( sanitize_text_field( $value ) );
 
-        wp_dropdown_pages([
-            'name' => 'page_for_products',
-            'selected' => $selected_page,
-            'show_option_none' => __('— Select a page —', 'jelly-catalog'),
-            'option_none_value' => '0',
-        ]);
+		return in_array( $value, array( 'ASC', 'DESC' ), true ) ? $value : 'DESC';
+	}
 
-        echo '<p class="description">' . __('Select the page where your products will be displayed.', 'jelly-catalog') . '</p>';
-    }
+	/**
+	 * 清理分类排序依据。
+	 *
+	 * @param string $value 设置值。
+	 * @return string
+	 */
+	public function sanitize_products_cat_orderby( $value ) {
+		$value   = sanitize_key( $value );
+		$allowed = array( 'term_order', 'name', 'count', 'slug' );
+		return in_array( $value, $allowed, true ) ? $value : 'term_order';
+	}
 
-    /**
-     * 渲染每页产品数量输入框
-     */
-    public function render_products_per_page_input()
-    {
-        $products_per_page = get_option('products_per_page', 16);
+	/**
+	 * 清理分类排序方向。
+	 *
+	 * @param string $value 设置值。
+	 * @return string
+	 */
+	public function sanitize_products_cat_order( $value ) {
+		$value = strtoupper( sanitize_text_field( $value ) );
+		return in_array( $value, array( 'ASC', 'DESC' ), true ) ? $value : 'ASC';
+	}
 
-        echo '<input name="products_per_page" type="number" step="1" min="1" id="products_per_page" value="' . esc_attr($products_per_page) . '" class="small-text" />';
-        echo '<p class="description">' . __('Set the number of products to display per page.', 'jelly-catalog') . '</p>';
-    }
+	/**
+	 * 渲染产品设置段描述
+	 */
+	public function render_products_section() {
+		echo '<p>' . __( 'Configure how your products are displayed on your site.', 'jelly-catalog' ) . '</p>';
+	}
 
-    /**
-     * 渲染产品排序依据下拉选择框
-     */
-    public function render_products_orderby_select()
-    {
-        $orderby_options = [
-            'date' => __('Date', 'jelly-catalog'),
-            'title' => __('Title', 'jelly-catalog'),
-            'menu_order' => __('Menu Order', 'jelly-catalog'),
-            'rand' => __('Random', 'jelly-catalog'),
-            'modified' => __('Last Modified', 'jelly-catalog')
-        ];
+	/**
+	 * 渲染产品页面选择下拉框
+	 */
+	public function render_page_for_products_select() {
+		$selected_page = get_option( 'page_for_products', 0 );
 
-        $selected_orderby = get_option('products_orderby', 'date');
+		wp_dropdown_pages(
+			array(
+				'name'              => 'page_for_products',
+				'selected'          => $selected_page,
+				'show_option_none'  => __( '— Select a page —', 'jelly-catalog' ),
+				'option_none_value' => '0',
+			)
+		);
 
-        echo '<select name="products_orderby" id="products_orderby">';
-        foreach ($orderby_options as $value => $label) {
-            echo '<option value="' . esc_attr($value) . '"' . selected($selected_orderby, $value, false) . '>' . esc_html($label) . '</option>';
-        }
-        echo '</select>';
-        echo '<p class="description">' . __('Select how products should be ordered.', 'jelly-catalog') . '</p>';
-    }
+		echo '<p class="description">' . __( 'Select the page where your products will be displayed.', 'jelly-catalog' ) . '</p>';
+	}
 
-    /**
-     * 渲染产品排序方向选择框
-     */
-    public function render_products_order_select()
-    {
-        $order_options = [
-            'ASC' => __('Ascending', 'jelly-catalog'),
-            'DESC' => __('Descending', 'jelly-catalog')
-        ];
+	/**
+	 * 渲染每页产品数量输入框
+	 */
+	public function render_products_per_page_input() {
+		$products_per_page = get_option( 'products_per_page', 16 );
 
-        $selected_order = get_option('products_order', 'DESC');
+		echo '<input name="products_per_page" type="number" step="1" min="1" id="products_per_page" value="' . esc_attr( $products_per_page ) . '" class="small-text" />';
+		echo '<p class="description">' . __( 'Set the number of products to display per page.', 'jelly-catalog' ) . '</p>';
+	}
 
-        echo '<select name="products_order" id="products_order">';
-        foreach ($order_options as $value => $label) {
-            echo '<option value="' . esc_attr($value) . '"' . selected($selected_order, $value, false) . '>' . esc_html($label) . '</option>';
-        }
-        echo '</select>';
-        echo '<p class="description">' . __('Select the direction of product ordering.', 'jelly-catalog') . '</p>';
-    }
+	/**
+	 * 渲染产品排序依据下拉选择框
+	 */
+	public function render_products_orderby_select() {
+		$orderby_options = array(
+			'date'       => __( 'Date', 'jelly-catalog' ),
+			'title'      => __( 'Title', 'jelly-catalog' ),
+			'menu_order' => __( 'Menu Order', 'jelly-catalog' ),
+			'rand'       => __( 'Random', 'jelly-catalog' ),
+			'modified'   => __( 'Last Modified', 'jelly-catalog' ),
+		);
 
-    /**
-     * 注册固定链接设置
-     */
-    public function register_permalink_settings()
-    {
-        add_settings_section(
-            'jelly_catalog_permalink_section',
-            __('Product Permalinks', 'jelly-catalog'),
-            [$this, 'render_permalink_section'],
-            'permalink'
-        );
+		$selected_orderby = get_option( 'products_orderby', 'date' );
 
-        add_settings_field(
-            'jelly_catalog_product_base',
-            __('Product Base', 'jelly-catalog'),
-            [$this, 'render_product_base_input'],
-            'permalink',
-            'jelly_catalog_permalink_section'
-        );
+		echo '<select name="products_orderby" id="products_orderby">';
+		foreach ( $orderby_options as $value => $label ) {
+			echo '<option value="' . esc_attr( $value ) . '"' . selected( $selected_orderby, $value, false ) . '>' . esc_html( $label ) . '</option>';
+		}
+		echo '</select>';
+		echo '<p class="description">' . __( 'Select how products should be ordered.', 'jelly-catalog' ) . '</p>';
+	}
 
-        add_settings_field(
-            'jelly_catalog_category_base',
-            __('Category Base', 'jelly-catalog'),
-            [$this, 'render_category_base_input'],
-            'permalink',
-            'jelly_catalog_permalink_section'
-        );
-    }
+	/**
+	 * 渲染产品排序方向选择框
+	 */
+	public function render_products_order_select() {
+		$order_options = array(
+			'ASC'  => __( 'Ascending', 'jelly-catalog' ),
+			'DESC' => __( 'Descending', 'jelly-catalog' ),
+		);
 
-    /**
-     * 渲染固定链接设置段
-     */
-    public function render_permalink_section()
-    {
-        echo '<p>' . __('Configure the permalink structure for your product catalog.', 'jelly-catalog') . '</p>';
-    }
+		$selected_order = get_option( 'products_order', 'DESC' );
 
-    /**
-     * 渲染产品基础URL输入框
-     */
-    public function render_product_base_input()
-    {
-        $permalinks = Permalinks::get_permalink_structure();
-        $product_base = $permalinks['product_base'];
+		echo '<select name="products_order" id="products_order">';
+		foreach ( $order_options as $value => $label ) {
+			echo '<option value="' . esc_attr( $value ) . '"' . selected( $selected_order, $value, false ) . '>' . esc_html( $label ) . '</option>';
+		}
+		echo '</select>';
+		echo '<p class="description">' . __( 'Select the direction of product ordering.', 'jelly-catalog' ) . '</p>';
+	}
 
-        $options = [
-            Permalinks::PRODUCT_BASE_PRODUCTS => __('products', 'jelly-catalog'),
-            Permalinks::PRODUCT_BASE_PRODUCT => __('product', 'jelly-catalog'),
-            Permalinks::PRODUCT_BASE_CATEGORY => __('Selected category slug', 'jelly-catalog'),
-        ];
+	/**
+	 * 渲染分类排序依据下拉选择框
+	 */
+	public function render_products_cat_orderby_select() {
+		$orderby_options = array(
+			'term_order' => __( 'Custom Order', 'jelly-catalog' ),
+			'name'       => __( 'Name', 'jelly-catalog' ),
+			'count'      => __( 'Count', 'jelly-catalog' ),
+			'slug'       => __( 'Slug', 'jelly-catalog' ),
+		);
 
-        foreach ($options as $value => $label) {
-            echo '<label style="display:block;margin-bottom:8px;">';
-            echo '<input name="jelly_catalog_product_base" type="radio" value="' . esc_attr($value) . '"' . checked($product_base, $value, false) . ' />';
-            echo ' <code>' . esc_html($label) . '</code>';
-            echo '</label>';
-        }
+		$selected_orderby = get_option( 'products_cat_orderby', 'term_order' );
 
-        echo '<p class="description">' . __('Choose whether product URLs use /products/, /product/, or the deepest assigned category slug.', 'jelly-catalog') . '</p>';
-    }
+		echo '<select name="products_cat_orderby" id="products_cat_orderby">';
+		foreach ( $orderby_options as $value => $label ) {
+			echo '<option value="' . esc_attr( $value ) . '"' . selected( $selected_orderby, $value, false ) . '>' . esc_html( $label ) . '</option>';
+		}
+		echo '</select>';
+		echo '<p class="description">' . __( 'Select how product categories should be ordered on the frontend.', 'jelly-catalog' ) . '</p>';
+	}
 
-    /**
-     * 渲染产品分类基础URL输入框
-     */
-    public function render_category_base_input()
-    {
-        $permalinks = Permalinks::get_permalink_structure();
-        $category_base = $permalinks['category_base'];
+	/**
+	 * 渲染分类排序方向选择框
+	 */
+	public function render_products_cat_order_select() {
+		$order_options = array(
+			'ASC'  => __( 'Ascending', 'jelly-catalog' ),
+			'DESC' => __( 'Descending', 'jelly-catalog' ),
+		);
 
-        $options = [
-            Permalinks::CATEGORY_BASE_DEFAULT => __('product-category', 'jelly-catalog'),
-            Permalinks::CATEGORY_BASE_NONE => __('Category slug', 'jelly-catalog'),
-        ];
+		$selected_order = get_option( 'products_cat_order', 'ASC' );
 
-        foreach ($options as $value => $label) {
-            echo '<label style="display:block;margin-bottom:8px;">';
-            echo '<input name="jelly_catalog_category_base" type="radio" value="' . esc_attr($value) . '"' . checked($category_base, $value, false) . ' />';
-            echo ' <code>' . esc_html($label) . '</code>';
-            echo '</label>';
-        }
+		echo '<select name="products_cat_order" id="products_cat_order">';
+		foreach ( $order_options as $value => $label ) {
+			echo '<option value="' . esc_attr( $value ) . '"' . selected( $selected_order, $value, false ) . '>' . esc_html( $label ) . '</option>';
+		}
+		echo '</select>';
+		echo '<p class="description">' . __( 'Select the direction of category ordering.', 'jelly-catalog' ) . '</p>';
+	}
 
-        echo '<p class="description">' . __('Choose whether category URLs use /product-category/ or the category hierarchy directly.', 'jelly-catalog') . '</p>';
-    }
+	/**
+	 * 注册固定链接设置
+	 */
+	public function register_permalink_settings() {
+		add_settings_section(
+			'jelly_catalog_permalink_section',
+			__( 'Product Permalinks', 'jelly-catalog' ),
+			array( $this, 'render_permalink_section' ),
+			'permalink'
+		);
 
-    /**
-     * 保存固定链接设置
-     */
-    public function save_permalink_settings()
-    {
-        if (!is_admin()) {
-            return;
-        }
+		add_settings_field(
+			'jelly_catalog_product_base',
+			__( 'Product Base', 'jelly-catalog' ),
+			array( $this, 'render_product_base_input' ),
+			'permalink',
+			'jelly_catalog_permalink_section'
+		);
 
-        if (!isset($_POST['jelly_catalog_product_base']) && !isset($_POST['jelly_catalog_category_base'])) {
-            return;
-        }
+		add_settings_field(
+			'jelly_catalog_category_base',
+			__( 'Category Base', 'jelly-catalog' ),
+			array( $this, 'render_category_base_input' ),
+			'permalink',
+			'jelly_catalog_permalink_section'
+		);
+	}
 
-        if (!current_user_can('manage_options')) {
-            return;
-        }
+	/**
+	 * 渲染固定链接设置段
+	 */
+	public function render_permalink_section() {
+		echo '<p>' . __( 'Configure the permalink structure for your product catalog.', 'jelly-catalog' ) . '</p>';
+	}
 
-        if (isset($_POST['_wpnonce'])) {
-            check_admin_referer('update-permalink');
-        }
+	/**
+	 * 渲染产品基础URL输入框
+	 */
+	public function render_product_base_input() {
 
-        $permalinks = Permalinks::get_permalink_structure();
-        $updated_permalinks = $permalinks;
+		$permalinks   = Permalinks::get_permalink_structure();
+		$product_base = $permalinks['product_base'];
+		$options      = array(
+			Permalinks::PRODUCT_BASE_PRODUCTS => __( 'products', 'jelly-catalog' ),
+			Permalinks::PRODUCT_BASE_PRODUCT  => __( 'product', 'jelly-catalog' ),
+			Permalinks::PRODUCT_BASE_CATEGORY => __( 'Selected category slug', 'jelly-catalog' ),
+		);
+		foreach ( $options as $value => $label ) {
+			echo '<label style="display:block;margin-bottom:8px;">';
+			echo '<input name="jelly_catalog_product_base" type="radio" value="' . esc_attr( $value ) . '"' . checked( $product_base, $value, false ) . ' />';
+			echo ' <code>' . esc_html( $label ) . '</code>';
+			echo '</label>';
+		}
 
-        if (isset($_POST['jelly_catalog_product_base'])) {
-            $product_base = sanitize_text_field(wp_unslash($_POST['jelly_catalog_product_base']));
-            $allowed_product_bases = [
-                Permalinks::PRODUCT_BASE_PRODUCTS,
-                Permalinks::PRODUCT_BASE_PRODUCT,
-                Permalinks::PRODUCT_BASE_CATEGORY,
-            ];
+		echo '<p class="description">' . __( 'Choose whether product URLs use /products/, /product/, or the deepest assigned category slug.', 'jelly-catalog' ) . '</p>';
+	}
 
-            $updated_permalinks['product_base'] = in_array($product_base, $allowed_product_bases, true)
-                ? $product_base
-                : Permalinks::PRODUCT_BASE_PRODUCTS;
-        }
+	/**
+	 * 渲染产品分类基础URL输入框
+	 */
+	public function render_category_base_input() {
 
-        if (isset($_POST['jelly_catalog_category_base'])) {
-            $category_base = sanitize_text_field(wp_unslash($_POST['jelly_catalog_category_base']));
-            $allowed_category_bases = [
-                Permalinks::CATEGORY_BASE_DEFAULT,
-                Permalinks::CATEGORY_BASE_NONE,
-            ];
+		$permalinks    = Permalinks::get_permalink_structure();
+		$category_base = $permalinks['category_base'];
+		$options       = array(
+			Permalinks::CATEGORY_BASE_DEFAULT => __( 'product-category', 'jelly-catalog' ),
+			Permalinks::CATEGORY_BASE_NONE    => __( 'Category slug', 'jelly-catalog' ),
+		);
+		foreach ( $options as $value => $label ) {
+			echo '<label style="display:block;margin-bottom:8px;">';
+			echo '<input name="jelly_catalog_category_base" type="radio" value="' . esc_attr( $value ) . '"' . checked( $category_base, $value, false ) . ' />';
+			echo ' <code>' . esc_html( $label ) . '</code>';
+			echo '</label>';
+		}
 
-            $updated_permalinks['category_base'] = in_array($category_base, $allowed_category_bases, true)
-                ? $category_base
-                : Permalinks::CATEGORY_BASE_DEFAULT;
-        }
+		echo '<p class="description">' . __( 'Choose whether category URLs use /product-category/ or the category hierarchy directly.', 'jelly-catalog' ) . '</p>';
+	}
 
-        if ($updated_permalinks !== $permalinks) {
-            update_option('jelly_catalog_permalinks', [
-                'product_base' => $updated_permalinks['product_base'],
-                'category_base' => $updated_permalinks['category_base'],
-            ]);
-        }
+	/**
+	 * 保存固定链接设置
+	 */
+	public function save_permalink_settings() {
+		if ( ! is_admin() ) {
+			return;
+		}
 
-        flush_rewrite_rules(false);
-    }
+		if ( ! isset( $_POST['jelly_catalog_product_base'] ) && ! isset( $_POST['jelly_catalog_category_base'] ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( isset( $_POST['_wpnonce'] ) ) {
+			check_admin_referer( 'update-permalink' );
+		}
+
+		$permalinks         = Permalinks::get_permalink_structure();
+		$updated_permalinks = $permalinks;
+		if ( isset( $_POST['jelly_catalog_product_base'] ) ) {
+			$product_base                       = sanitize_text_field( wp_unslash( $_POST['jelly_catalog_product_base'] ) );
+			$allowed_product_bases              = array( Permalinks::PRODUCT_BASE_PRODUCTS, Permalinks::PRODUCT_BASE_PRODUCT, Permalinks::PRODUCT_BASE_CATEGORY );
+			$updated_permalinks['product_base'] = in_array( $product_base, $allowed_product_bases, true ) ? $product_base : Permalinks::PRODUCT_BASE_PRODUCTS;
+		}
+
+		if ( isset( $_POST['jelly_catalog_category_base'] ) ) {
+			$category_base                       = sanitize_text_field( wp_unslash( $_POST['jelly_catalog_category_base'] ) );
+			$allowed_category_bases              = array( Permalinks::CATEGORY_BASE_DEFAULT, Permalinks::CATEGORY_BASE_NONE );
+			$updated_permalinks['category_base'] = in_array( $category_base, $allowed_category_bases, true ) ? $category_base : Permalinks::CATEGORY_BASE_DEFAULT;
+		}
+		if ( $updated_permalinks !== $permalinks ) {
+			update_option(
+				'jelly_catalog_permalinks',
+				array(
+					'product_base'  => $updated_permalinks['product_base'],
+					'category_base' => $updated_permalinks['category_base'],
+				)
+			);
+		}
+
+		flush_rewrite_rules( false );
+	}
 }

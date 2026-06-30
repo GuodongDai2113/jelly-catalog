@@ -1,6 +1,9 @@
 .jc-product-category-panel {
   --jc-product-category-primary: var(--jelly-color-primary, #0572d1);
-  --jc-product-category-primary-hover: var(--jelly-color-primary-hover, #0055ab);
+  --jc-product-category-primary-hover: var(
+    --jelly-color-primary-hover,
+    #0055ab
+  );
   --jc-product-category-title: var(--jelly-color-title, #171717);
   --jc-product-category-text: var(--jelly-color-text, #404040);
   --jc-product-category-description: var(--jelly-color-description, #737373);
@@ -12,7 +15,8 @@
   margin: 0;
   border: 1px solid var(--jc-product-category-border);
   border-bottom: 0;
-  border-radius: var(--jc-product-category-radius) var(--jc-product-category-radius) 0 0;
+  border-radius: var(--jc-product-category-radius)
+    var(--jc-product-category-radius) 0 0;
   padding: 1rem 0.75rem;
   background-color: var(--jc-product-category-primary);
   color: #fff;
@@ -28,7 +32,8 @@
 .jc-product-category-tree {
   overflow: hidden;
   border: 1px solid var(--jc-product-category-border);
-  border-radius: 0 0 var(--jc-product-category-radius) var(--jc-product-category-radius);
+  border-radius: 0 0 var(--jc-product-category-radius)
+    var(--jc-product-category-radius);
   background-color: #fff;
 }
 
@@ -36,8 +41,12 @@
   margin: 0;
 }
 
-.jc-product-category-tree > .jc-product-category-node + .jc-product-category-node,
-.jc-product-category-children > .jc-product-category-node + .jc-product-category-node {
+.jc-product-category-tree
+  > .jc-product-category-node
+  + .jc-product-category-node,
+.jc-product-category-children
+  > .jc-product-category-node
+  + .jc-product-category-node {
   border-top: 1px solid var(--jc-product-category-border);
 }
 
@@ -48,7 +57,9 @@
   align-items: stretch;
   grid-template-columns: minmax(0, 1fr);
   background-color: #fff;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .jc-product-category-node--has-children > .jc-product-category-node__row {
@@ -61,7 +72,9 @@
   align-items: stretch;
   color: var(--jc-product-category-title);
   font-size: 0.875rem;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .jc-product-category-node__row:hover {
@@ -100,7 +113,9 @@
   color: var(--jc-product-category-description);
   font-size: 1rem;
   cursor: pointer;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
 }
 
 .jc-product-category-children {
@@ -109,25 +124,45 @@
   background: transparent;
 }
 
-.jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+.jc-product-category-node:is(
+    .current-cat,
+    .current-cat-parent,
+    .current-cat-ancestor
+  )
   > .jc-product-category-node__row {
   background-color: #171717;
 }
 
-.jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+.jc-product-category-node:is(
+    .current-cat,
+    .current-cat-parent,
+    .current-cat-ancestor
+  )
   > .jc-product-category-node__row
   .jc-product-category-node__link,
-.jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+.jc-product-category-node:is(
+    .current-cat,
+    .current-cat-parent,
+    .current-cat-ancestor
+  )
   > .jc-product-category-node__row
   .jc-product-category-node__label,
-.jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+.jc-product-category-node:is(
+    .current-cat,
+    .current-cat-parent,
+    .current-cat-ancestor
+  )
   > .jc-product-category-node__row
   .jc-product-category-node__toggle {
   color: #fff;
 }
 
 .jc-product-category-tree
-  > .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  > .jc-product-category-node:is(
+    .current-cat,
+    .current-cat-parent,
+    .current-cat-ancestor
+  )
   > .jc-product-category-node__row::before {
   content: "";
   position: absolute;
@@ -138,8 +173,12 @@
   background-color: var(--jc-product-category-primary);
 }
 
-.jc-product-category-node.current-cat > .jc-product-category-node__row .jc-product-category-node__link,
-.jc-product-category-node.current-cat > .jc-product-category-node__row .jc-product-category-node__label {
+.jc-product-category-node.current-cat
+  > .jc-product-category-node__row
+  .jc-product-category-node__link,
+.jc-product-category-node.current-cat
+  > .jc-product-category-node__row
+  .jc-product-category-node__label {
   font-weight: 600;
 }
 
@@ -147,18 +186,24 @@
   display: block;
 }
 
-.jc-product-category-node.is-expanded > .jc-product-category-node__row .jc-product-category-node__toggle {
+.jc-product-category-node.is-expanded
+  > .jc-product-category-node__row
+  .jc-product-category-node__toggle {
   transform: rotate(180deg);
 }
 
 .jc-product-category-tree
-  > .jc-product-category-node.is-expanded:not(:is(.current-cat, .current-cat-parent, .current-cat-ancestor))
+  > .jc-product-category-node.is-expanded:not(
+    :is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  )
   > .jc-product-category-node__row {
   background-color: rgba(5, 114, 209, 0.1);
 }
 
 .jc-product-category-tree
-  > .jc-product-category-node.is-expanded:not(:is(.current-cat, .current-cat-parent, .current-cat-ancestor))
+  > .jc-product-category-node.is-expanded:not(
+    :is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  )
   > .jc-product-category-node__row::before {
   content: "";
   position: absolute;
@@ -170,15 +215,21 @@
 }
 
 .jc-product-category-tree
-  > .jc-product-category-node.is-expanded:not(:is(.current-cat, .current-cat-parent, .current-cat-ancestor))
+  > .jc-product-category-node.is-expanded:not(
+    :is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  )
   > .jc-product-category-node__row
   .jc-product-category-node__link,
 .jc-product-category-tree
-  > .jc-product-category-node.is-expanded:not(:is(.current-cat, .current-cat-parent, .current-cat-ancestor))
+  > .jc-product-category-node.is-expanded:not(
+    :is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  )
   > .jc-product-category-node__row
   .jc-product-category-node__label,
 .jc-product-category-tree
-  > .jc-product-category-node.is-expanded:not(:is(.current-cat, .current-cat-parent, .current-cat-ancestor))
+  > .jc-product-category-node.is-expanded:not(
+    :is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  )
   > .jc-product-category-node__row
   .jc-product-category-node__toggle {
   color: #000;
@@ -199,7 +250,9 @@
 }
 
 .jc-product-category-children .jc-product-category-node__link:hover,
-.jc-product-category-children .jc-product-category-node__row:hover .jc-product-category-node__link {
+.jc-product-category-children
+  .jc-product-category-node__row:hover
+  .jc-product-category-node__link {
   color: var(--jc-product-category-primary);
 }
 
@@ -225,7 +278,9 @@
   font-size: 0.875rem;
 }
 
-.jc-product-category-children .jc-product-category-children .jc-product-category-node__label {
+.jc-product-category-children
+  .jc-product-category-children
+  .jc-product-category-node__label {
   padding-left: 2.75rem;
 }
 
@@ -237,28 +292,48 @@
 }
 
 .jc-product-category-children
-  .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  .jc-product-category-node:is(
+    .current-cat,
+    .current-cat-parent,
+    .current-cat-ancestor
+  )
   > .jc-product-category-node__row {
   background-color: #fff;
 }
 
 .jc-product-category-children
-  .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  .jc-product-category-node:is(
+    .current-cat,
+    .current-cat-parent,
+    .current-cat-ancestor
+  )
   > .jc-product-category-node__row
   .jc-product-category-node__link,
 .jc-product-category-children
-  .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  .jc-product-category-node:is(
+    .current-cat,
+    .current-cat-parent,
+    .current-cat-ancestor
+  )
   > .jc-product-category-node__row
   .jc-product-category-node__label,
 .jc-product-category-children
-  .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  .jc-product-category-node:is(
+    .current-cat,
+    .current-cat-parent,
+    .current-cat-ancestor
+  )
   > .jc-product-category-node__row
   .jc-product-category-node__toggle {
   color: var(--jc-product-category-primary);
 }
 
 .jc-product-category-children
-  .jc-product-category-node:is(.current-cat, .current-cat-parent, .current-cat-ancestor)
+  .jc-product-category-node:is(
+    .current-cat,
+    .current-cat-parent,
+    .current-cat-ancestor
+  )
   > .jc-product-category-node__row::before {
   background-color: var(--jc-product-category-primary);
 }

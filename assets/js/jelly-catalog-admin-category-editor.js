@@ -167,7 +167,7 @@
         loader.close();
         this.showNotice(
           "Unable to determine the selected category image.",
-          "error"
+          "error",
         );
         return;
       }
@@ -187,7 +187,7 @@
           if (!response?.success) {
             this.showNotice(
               response?.data || "Failed to update category image.",
-              "error"
+              "error",
             );
             return;
           }
@@ -195,7 +195,7 @@
           this.updateCategoryListImagePreview(cell, attachment);
           this.showNotice(
             response?.data || "Category image updated successfully.",
-            "success"
+            "success",
           );
         },
         error: () => {
@@ -228,16 +228,16 @@
 
         const editor = $('<div class="jc-description-editor"></div>');
         const textarea = $(
-          '<textarea class="description-textarea" rows="4" cols="40"></textarea>'
+          '<textarea class="description-textarea" rows="4" cols="40"></textarea>',
         );
         const actions = $('<div class="description-actions"></div>');
         const saveBtn = $(
           ".inline-edit-save .save",
-          $(".inline-edit-row")
+          $(".inline-edit-row"),
         ).clone();
         const cancelBtn = $(
           ".inline-edit-save .cancel",
-          $(".inline-edit-row")
+          $(".inline-edit-row"),
         ).clone();
 
         saveBtn.on("click", (clickEvent) => {
@@ -246,7 +246,7 @@
           const updatedDescription = textarea.val();
           const loader = this.showBlockLoading(
             editor[0],
-            "Saving category description..."
+            "Saving category description...",
           );
 
           $.ajax({
@@ -265,14 +265,14 @@
                 cell.html("<p>" + updatedDescription + "</p>");
                 this.showNotice(
                   response.data || "Description updated successfully.",
-                  "success"
+                  "success",
                 );
                 return;
               }
 
               this.showNotice(
                 response?.data || "Failed to update description.",
-                "error"
+                "error",
               );
             },
             error: () => {
@@ -312,10 +312,10 @@
         (event) => {
           event.preventDefault();
           const container = $(event.currentTarget).closest(
-            "#thumbnail_id_container"
+            "#thumbnail_id_container",
           );
           this.openMediaUploader("thumbnail", container);
-        }
+        },
       );
 
       $(document).on(
@@ -324,7 +324,7 @@
         (event) => {
           event.preventDefault();
           const container = $(event.currentTarget).closest(
-            "#thumbnail_id_container"
+            "#thumbnail_id_container",
           );
 
           if (container.length) {
@@ -339,7 +339,7 @@
           $(".thumbnail-preview").hide();
           $(".thumbnail-preview img").attr("src", "");
           $(".remove-thumbnail").hide();
-        }
+        },
       );
     }
 
@@ -359,10 +359,10 @@
         (event) => {
           event.preventDefault();
           const container = $(event.currentTarget).closest(
-            "#banner_id_container"
+            "#banner_id_container",
           );
           this.openMediaUploader("banner", container);
-        }
+        },
       );
 
       $(document).on(
@@ -371,7 +371,7 @@
         (event) => {
           event.preventDefault();
           const container = $(event.currentTarget).closest(
-            "#banner_id_container"
+            "#banner_id_container",
           );
 
           if (container.length) {
@@ -386,7 +386,7 @@
           $(".banner-preview").hide();
           $(".banner-preview img").attr("src", "");
           $(".remove-banner").hide();
-        }
+        },
       );
     }
 
@@ -567,7 +567,7 @@
             {
               title: this.getI18nValue(
                 "category_editor_page_content",
-                "Page Content"
+                "Page Content",
               ),
               rows: this.collectRows([
                 "#category_h1_title",
@@ -779,7 +779,7 @@
               $(button).find(".jc-editor-layout__nav-label").text().trim() ||
               $(button).text().trim(),
           }))
-          .get()
+          .get(),
       );
 
       return $section;
@@ -847,13 +847,13 @@
         const $seoCard = this.buildExternalCard(
           this.getI18nValue("category_editor_seo", "SEO"),
           seoNodes,
-          "jc-term-editor__card--external"
+          "jc-term-editor__card--external",
         );
 
         this.appendSectionCard(
           SECTION_IDS.seo,
           this.getI18nValue("category_editor_seo", "SEO"),
-          $seoCard
+          $seoCard,
         );
       }
 
@@ -861,10 +861,10 @@
         const $externalCard = this.buildExternalCard(
           this.getI18nValue(
             "category_editor_additional_fields",
-            "Additional Fields"
+            "Additional Fields",
           ),
           externalNodes,
-          "jc-term-editor__card--external"
+          "jc-term-editor__card--external",
         );
 
         this.appendSectionCard(SECTION_IDS.additional, "", $externalCard);
@@ -887,9 +887,9 @@
       const $miscCard = this.buildTableCard(
         this.getI18nValue(
           "category_editor_additional_fields",
-          "Additional Fields"
+          "Additional Fields",
         ),
-        $remainingRows
+        $remainingRows,
       );
 
       this.appendSectionCard(SECTION_IDS.additional, "", $miscCard);
@@ -908,7 +908,7 @@
       }
 
       const $stash = $(
-        '<div class="jc-term-editor__hidden-inputs" hidden></div>'
+        '<div class="jc-term-editor__hidden-inputs" hidden></div>',
       );
       $hiddenInputs.each((_, input) => {
         $stash.append(input);
@@ -928,7 +928,7 @@
 
       const $actionsCard = this.buildPostbox(
         this.getI18nValue("category_editor_actions", "Actions"),
-        "jc-term-editor__actions-card"
+        "jc-term-editor__actions-card",
       );
 
       $actionsCard.find(".inside").append($actions);
@@ -999,7 +999,7 @@
               isComplete: () =>
                 this.hasEditorContent(
                   CATEGORY_PROGRESS_EDITORS.whyChoose,
-                  "#category_why_choose"
+                  "#category_why_choose",
                 ),
             },
             {
@@ -1007,7 +1007,7 @@
               isComplete: () =>
                 this.hasEditorContent(
                   CATEGORY_PROGRESS_EDITORS.advantages,
-                  "#category_advantages"
+                  "#category_advantages",
                 ),
             },
           ],
@@ -1020,7 +1020,7 @@
                 this.hasCompletedRepeaterItems(
                   "#product_cat_faqs_container",
                   ".repeater-item__key-input",
-                  ".repeater-item__value-input"
+                  ".repeater-item__value-input",
                 ),
             },
           ],

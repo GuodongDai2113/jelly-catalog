@@ -338,7 +338,7 @@ class Product_Cat_Nav extends Widget_Base
             'taxonomy' => 'product_cat',
             'parent' => 0,
             'hide_empty' => $hide_empty,
-            'orderby' => 'menu_order',
+            'orderby' => 'term_order',
             'order' => 'ASC',
         ]);
 

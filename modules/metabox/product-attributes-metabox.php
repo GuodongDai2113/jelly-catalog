@@ -12,94 +12,96 @@ namespace Jelly_Catalog\Modules\Metabox;
 
 use Jelly_Catalog\Utils;
 
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 } // 禁止直接访问
 
-class Product_Attributes_Metabox
-{
-    public function __construct()
-    {
-        add_action('add_meta_boxes', [$this, 'add_meta_boxes'], 30);
-        add_action('save_post_product', [$this, 'save_metabox']);
-    }
+class Product_Attributes_Metabox {
 
-    public function add_meta_boxes()
-    {
-        add_meta_box('product_attributes_metabox', __('Product Attributes', 'jelly-catalog'), [$this, 'render_metabox'], 'product', 'normal', 'default');
-    }
+	public function __construct() {
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 30 );
+		add_action( 'save_post_product', array( $this, 'save_metabox' ) );
+	}
 
-    public function render_metabox($post)
-    {
-        $attributes = get_post_meta($post->ID, '_product_attributes', true);
-        $attributes = is_array($attributes) ? $attributes : [];
-        wp_nonce_field('jc_save_product_attributes', 'jc_attributes');
-        echo '<p class="description">' . __('Add key specifications and values to describe the product clearly', 'jelly-catalog') . '</p>';
+	public function add_meta_boxes() {
+		add_meta_box( 'product_attributes_metabox', __( 'Product Attributes', 'jelly-catalog' ), array( $this, 'render_metabox' ), 'product', 'normal', 'default' );
+	}
 
-        Utils::render_repeater_field([
-            'id' => 'product_attributes',
-            'name' => 'product_attributes',
-            'title' => __('Product Attributes', 'jelly-catalog'),
-            'item_label' => __('Attribute', 'jelly-catalog'),
-            'variant' => 'attributes',
-            'items' => $attributes,
-            'fields' => [
-                [
-                    'type' => 'text',
-                    'name' => 'name',
-                    'label' => __('Name:', 'jelly-catalog'),
-                    'class' => 'repeater-item__key-input'
-                ],
-                [
-                    'type' => 'text',
-                    'name' => 'value',
-                    'label' => __('Value:', 'jelly-catalog'),
-                    'class' => 'repeater-item__value-input'
-                ]
-            ]
-        ]);
-    }
+	public function render_metabox( $post ) {
 
-    public function save_metabox($post_id)
-    {
-        // 检查是否为自动保存
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-            return;
-        }
+		$attributes = get_post_meta( $post->ID, '_product_attributes', true );
+		$attributes = is_array( $attributes ) ? $attributes : array();
+		wp_nonce_field( 'jc_save_product_attributes', 'jc_attributes' );
+		echo '<p class="description">' . __( 'Add key specifications and values to describe the product clearly', 'jelly-catalog' ) . '</p>';
 
-        // 检查权限
-        if (!current_user_can('edit_post', $post_id)) {
-            return;
-        }
+		Utils::render_repeater_field(
+			array(
+				'id'         => 'product_attributes',
+				'name'       => 'product_attributes',
+				'title'      => __( 'Product Attributes', 'jelly-catalog' ),
+				'item_label' => __( 'Attribute', 'jelly-catalog' ),
+				'variant'    => 'attributes',
+				'items'      => $attributes,
+				'fields'     => array(
+					array(
+						'type'  => 'text',
+						'name'  => 'name',
+						'label' => __( 'Name:', 'jelly-catalog' ),
+						'class' => 'repeater-item__key-input',
+					),
+					array(
+						'type'  => 'text',
+						'name'  => 'value',
+						'label' => __( 'Value:', 'jelly-catalog' ),
+						'class' => 'repeater-item__value-input',
+					),
+				),
+			)
+		);
+	}
 
-        // 验证 nonce
-        if (
-            !isset($_POST['jc_attributes']) ||
-            !wp_verify_nonce($_POST['jc_attributes'], 'jc_save_product_attributes')
-        ) {
-            return;
-        }
+	public function save_metabox( $post_id ) {
+		// 检查是否为自动保存
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
 
-        // 保存数据
-        if (isset($_POST['product_attributes'])) {
-            $raw = $_POST['product_attributes'] ?? [];
-            $clean = [];
-            foreach ($raw as $item) {
-                $name = sanitize_text_field($item['name'] ?? '');
-                $value = sanitize_text_field($item['value'] ?? '');
-                if ($name && $value) {
-                    $clean[] = ['name' => $name, 'value' => $value];
-                }
-            }
+		// 检查权限
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
 
-            if (!empty($clean)) {
-                update_post_meta($post_id, '_product_attributes', $clean);
-                return;
-            }
+		// 验证 nonce
+		if (
+			! isset( $_POST['jc_attributes'] ) ||
+			! wp_verify_nonce( $_POST['jc_attributes'], 'jc_save_product_attributes' )
+		) {
+			return;
+		}
 
-            delete_post_meta($post_id, '_product_attributes');
-        } else {
-            delete_post_meta($post_id, '_product_attributes');
-        }
-    }
+		// 保存数据
+		if ( isset( $_POST['product_attributes'] ) ) {
+			$raw   = $_POST['product_attributes'] ?? array();
+			$clean = array();
+			foreach ( $raw as $item ) {
+				$name  = sanitize_text_field( $item['name'] ?? '' );
+				$value = sanitize_text_field( $item['value'] ?? '' );
+				if ( $name && $value ) {
+					$clean[] = array(
+						'name'  => $name,
+						'value' => $value,
+					);
+				}
+			}
+
+			if ( ! empty( $clean ) ) {
+				update_post_meta( $post_id, '_product_attributes', $clean );
+				return;
+			}
+
+			delete_post_meta( $post_id, '_product_attributes' );
+		} else {
+			delete_post_meta( $post_id, '_product_attributes' );
+		}
+	}
 }

@@ -93,7 +93,7 @@ class JellyCatalogSheetTabulator {
         .then((categories) => {
           this.categories = categories; // 保存树形结构
           this.categoriesMap = Object.fromEntries(
-            categories.map((item) => [item.id, item])
+            categories.map((item) => [item.id, item]),
           );
           categoriesLoaded = true;
           if (categoriesLoaded && tagsLoaded) {
@@ -113,7 +113,7 @@ class JellyCatalogSheetTabulator {
         .then((tags) => {
           this.tags = tags;
           this.tagsMap = Object.fromEntries(
-            tags.map((item) => [item.id, item])
+            tags.map((item) => [item.id, item]),
           );
           tagsLoaded = true;
           if (categoriesLoaded && tagsLoaded) {
@@ -250,7 +250,7 @@ class JellyCatalogSheetTabulator {
     jQuery("#first-page, #prev-page").prop("disabled", this.currentPage <= 1);
     jQuery("#next-page, #last-page").prop(
       "disabled",
-      this.currentPage >= this.totalPages
+      this.currentPage >= this.totalPages,
     );
     jQuery("#goto-page, #goto-page-btn").prop("disabled", this.totalPages == 1);
   }
@@ -641,7 +641,7 @@ class JellyCatalogSheetTabulator {
 
     tableData.forEach((rowData) => {
       const originalRow = this.originalData.find(
-        (item) => item.ID == rowData.ID
+        (item) => item.ID == rowData.ID,
       );
 
       if (!originalRow) return;
@@ -749,7 +749,11 @@ class JellyCatalogSheetTabulator {
           // 刷新备份数据，避免重复提交
           this.originalData = JSON.parse(JSON.stringify(this.table.getData()));
         } else {
-          this.showNotice("保存失败：" + (res.data || "未知错误"), "error", 5000);
+          this.showNotice(
+            "保存失败：" + (res.data || "未知错误"),
+            "error",
+            5000,
+          );
         }
       })
       .fail(() => {

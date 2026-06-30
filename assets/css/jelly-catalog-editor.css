@@ -81,7 +81,9 @@ body.is-jc-loading {
   font-weight: 600;
   line-height: 1.4;
   letter-spacing: 0.01em;
-  transition: background-color 0.24s ease-in-out, color 0.24s ease-in-out,
+  transition:
+    background-color 0.24s ease-in-out,
+    color 0.24s ease-in-out,
     transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -94,7 +96,8 @@ body.is-jc-loading {
   background: var(--jelly-color-bg-secondary);
   opacity: 0;
   transform: scale(0.98);
-  transition: opacity 0.24s ease-in-out,
+  transition:
+    opacity 0.24s ease-in-out,
     transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
 }
@@ -152,8 +155,10 @@ body.is-jc-loading {
     var(--jc-nav-segment-4, var(--jelly-color-border)) 270deg 354deg,
     transparent 354deg 360deg
   );
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.24s ease-in-out, opacity 0.24s ease-in-out;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.24s ease-in-out,
+    opacity 0.24s ease-in-out;
 }
 
 .jc-editor-layout__nav-progress-ring::after {
@@ -178,13 +183,16 @@ body.is-jc-loading {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  transition: background-color 0.24s ease-in-out, color 0.24s ease-in-out,
+  transition:
+    background-color 0.24s ease-in-out,
+    color 0.24s ease-in-out,
     transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .jc-editor-layout__nav-label {
   min-width: 0;
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
     color 0.24s ease-in-out;
 }
 
@@ -303,7 +311,9 @@ body.is-jc-loading {
   text-decoration: none;
   box-sizing: border-box;
   overflow: visible;
-  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out,
+  transition:
+    border-color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out,
     color 0.2s ease-in-out;
 }
 
@@ -387,7 +397,9 @@ body.is-jc-loading {
   gap: 10px;
   color: var(--jelly-color-text);
   text-decoration: none;
-  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out,
+  transition:
+    border-color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out,
     color 0.2s ease-in-out;
 }
 

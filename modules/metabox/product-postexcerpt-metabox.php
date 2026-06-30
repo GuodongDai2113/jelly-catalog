@@ -10,35 +10,32 @@
 
 namespace Jelly_Catalog\Modules\Metabox;
 
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 } // 禁止直接访问
 
-class Product_Postexcerpt_Metabox
-{
-    public function __construct()
-    {
-        add_action('add_meta_boxes', [$this, 'add_meta_boxes'], 30);
-    }
+class Product_Postexcerpt_Metabox {
 
-    public function add_meta_boxes()
-    {
-        add_meta_box('postexcerpt', __('Product Short Description', 'jelly-catalog'), [$this, 'render_metabox'], 'product', 'normal');
-    }
+	public function __construct() {
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 30 );
+	}
 
-    public function render_metabox($post)
-    {
-        $settings = [
-            'textarea_name' => 'excerpt',
-            'media_buttons' => false,
-            'quicktags' => ['buttons' => 'em,strong,link'],
-            'tinymce' => [
-                'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
-                'theme_advanced_buttons2' => '',
-            ],
-        ];
+	public function add_meta_boxes() {
+		add_meta_box( 'postexcerpt', __( 'Product Short Description', 'jelly-catalog' ), array( $this, 'render_metabox' ), 'product', 'normal' );
+	}
 
-        echo '<p class="description">' . __('Enter a concise product summary.', 'jelly-catalog') . '</p>';
-        wp_editor(htmlspecialchars_decode($post->post_excerpt, ENT_QUOTES), 'excerpt', $settings);
-    }
+	public function render_metabox( $post ) {
+		$settings = array(
+			'textarea_name' => 'excerpt',
+			'media_buttons' => false,
+			'quicktags'     => array( 'buttons' => 'em,strong,link' ),
+			'tinymce'       => array(
+				'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
+				'theme_advanced_buttons2' => '',
+			),
+		);
+
+		echo '<p class="description">' . __( 'Enter a concise product summary.', 'jelly-catalog' ) . '</p>';
+		wp_editor( htmlspecialchars_decode( $post->post_excerpt, ENT_QUOTES ), 'excerpt', $settings );
+	}
 }

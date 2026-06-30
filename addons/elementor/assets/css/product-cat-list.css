@@ -87,7 +87,9 @@
   content: "";
   position: absolute;
   background-color: currentColor;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .jc-cat-list__toggle::before {
@@ -117,7 +119,9 @@
   margin: 0;
   padding-left: 15px;
   opacity: 0;
-  transition: max-height 0.3s ease-in-out, opacity 0.3s ease;
+  transition:
+    max-height 0.3s ease-in-out,
+    opacity 0.3s ease;
 }
 
 .jc-cat-list__item.is-expanded > .jc-cat-list__ul {

@@ -83,7 +83,7 @@
         }
 
         setExpandedState($item, !$item.hasClass("is-expanded"), true);
-      }
+      },
     );
   }
 
@@ -98,7 +98,7 @@
 
     window.elementorFrontend.hooks.addAction(
       "frontend/element_ready/jc-product-cat-panel.default",
-      initProductCategoryPanel
+      initProductCategoryPanel,
     );
   });
 })(jQuery);

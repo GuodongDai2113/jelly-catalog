@@ -67,7 +67,9 @@
   height: 1rem;
   color: var(--jc-color-description);
   fill: var(--jc-color-description);
-  transition: fill 0.3s ease-in-out, color 0.3s ease-in-out;
+  transition:
+    fill 0.3s ease-in-out,
+    color 0.3s ease-in-out;
 }
 
 .jc-download-no-file {

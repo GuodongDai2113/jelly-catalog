@@ -1,0 +1,16 @@
+node_modules
+vendor
+
+dist
+build
+
+*.min.js
+*.min.css
+
+wp-admin
+wp-includes
+
+languages
+
+assets/vendor
+.phpcs-cache

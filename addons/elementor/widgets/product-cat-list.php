@@ -471,7 +471,7 @@ class Product_Cat_List extends Widget_Base
         $terms = get_terms([
             'taxonomy' => 'product_cat',
             'hide_empty' => $hide_empty,
-            'orderby' => 'menu_order',
+            'orderby' => 'term_order',
             'order' => 'ASC',
         ]);
 

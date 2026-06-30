@@ -10,9 +10,11 @@
   const initProductGallery = (scope) => {
     const $scope = scope ? $(scope) : $(document);
     const $galleries = $scope
-      .find('[data-widget="jc-product-gallery"].jc-product-gallery--interactive')
+      .find(
+        '[data-widget="jc-product-gallery"].jc-product-gallery--interactive',
+      )
       .addBack(
-        '[data-widget="jc-product-gallery"].jc-product-gallery--interactive'
+        '[data-widget="jc-product-gallery"].jc-product-gallery--interactive',
       );
 
     if (!$galleries.length) {
@@ -80,7 +82,7 @@
       const getCssLengthInPixels = (
         styles,
         propertyName,
-        fallbackValue = 0
+        fallbackValue = 0,
       ) => {
         const rawValue = styles.getPropertyValue(propertyName);
         const trimmedValue = rawValue.trim();
@@ -97,7 +99,7 @@
 
         if (trimmedValue.endsWith("rem")) {
           const rootFontSize = parseFloat(
-            window.getComputedStyle(document.documentElement).fontSize
+            window.getComputedStyle(document.documentElement).fontSize,
           );
           return (
             parsedValue * (Number.isFinite(rootFontSize) ? rootFontSize : 16)
@@ -106,7 +108,7 @@
 
         if (trimmedValue.endsWith("em")) {
           const elementFontSize = parseFloat(
-            window.getComputedStyle($gallery[0]).fontSize
+            window.getComputedStyle($gallery[0]).fontSize,
           );
           return (
             parsedValue *
@@ -123,12 +125,12 @@
         const columnGap = getCssLengthInPixels(
           styles,
           "--jc-product-gallery-column-gap",
-          16
+          16,
         );
         const thumbGap = getCssLengthInPixels(
           styles,
           "--jc-product-gallery-thumb-gap",
-          12
+          12,
         );
         const visibleCount = Math.max(1, visibleThumbs);
 
@@ -147,11 +149,11 @@
 
         galleryElement.style.setProperty(
           "--jc-product-gallery-thumb-size",
-          `${safeThumbSize}px`
+          `${safeThumbSize}px`,
         );
         galleryElement.style.setProperty(
           "--jc-product-gallery-thumbs-height",
-          `${thumbsHeight}px`
+          `${thumbsHeight}px`,
         );
       };
 
@@ -178,7 +180,7 @@
         const targetScroll = clampValue(
           thumbOffset - (viewportSize - thumbSize) / 2,
           0,
-          maxScroll
+          maxScroll,
         );
         const behavior = animate ? "smooth" : "auto";
 
@@ -186,7 +188,7 @@
           thumbsViewportElement.scrollTo(
             horizontalThumbs
               ? { left: targetScroll, behavior }
-              : { top: targetScroll, behavior }
+              : { top: targetScroll, behavior },
           );
         } catch (error) {
           if (horizontalThumbs) {
@@ -237,7 +239,7 @@
       const render = (
         animate = true,
         shouldSyncMetrics = true,
-        shouldScrollThumbs = true
+        shouldScrollThumbs = true,
       ) => {
         if (shouldSyncMetrics) {
           syncMetrics();
@@ -380,11 +382,11 @@
               if ((moveEvent.originalEvent || moveEvent).cancelable !== false) {
                 moveEvent.preventDefault();
               }
-            }
+            },
           )
           .on(
             `mouseup${dragNamespace} touchend${dragNamespace} touchcancel${dragNamespace}`,
-            stopDragging
+            stopDragging,
           );
       });
 
@@ -426,7 +428,7 @@
 
     window.elementorFrontend.hooks.addAction(
       "frontend/element_ready/product_gallery.default",
-      initProductGallery
+      initProductGallery,
     );
   });
 })(jQuery);

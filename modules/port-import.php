@@ -17,8 +17,8 @@ use WP_Error;
 use Throwable;
 use ZipArchive;
 
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
 /**
@@ -32,2441 +32,2426 @@ if (!defined('ABSPATH')) {
  * - 错误处理和重试机制
  * - AJAX 接口支持
  */
-trait Port_Import
-{
-    /**
-     * 日志文件路径
-     *
-     * @var string
-     */
-    private $log_file;
-
-    /**
-     * 写入日志到日志文件
-     *
-     * 根据日志级别过滤和记录导入过程中的事件
-     * 日志文件可用于调试和监控导入进度
-     *
-     * @since 1.0.0
-     * @param string $message 日志消息内容
-     * @param string $level 日志级别 (debug, notice, warning, error)
-     * @return void
-     */
-    private function log($message, $level = 'debug')
-    {
-        $levels = [
-            'debug' => 0,
-            'notice' => 1,
-            'warning' => 2,
-            'error' => 3,
-        ];
-        $level = isset($levels[$level]) ? $level : 'debug';
-        $min_level = apply_filters('jc_import_log_min_level', 'notice');
-        $min_level = isset($levels[$min_level]) ? $min_level : 'notice';
-
-        if ($levels[$level] < $levels[$min_level]) {
-            return;
-        }
-
-        $timestamp = date('Y-m-d H:i:s');
-        file_put_contents($this->log_file, "[{$timestamp}] [" . strtoupper($level) . "] {$message}\n", FILE_APPEND | LOCK_EX);
-    }
-
-    /**
-     * 导入产品入口方法（表单提交方式）
-     *
-     * 处理传统的表单提交导入请求
-     * 验证权限和 nonce 后创建导入任务
-     *
-     * @since 1.0.0
-     * @return void 重定向到导入页面或错误页面
-     */
-    public function import_products()
-    {
-        if (!current_user_can('manage_options')) {
-            wp_die(__('You do not have sufficient permissions to access this page.', 'jelly-catalog'));
-        }
-
-        $nonce = isset($_POST['jc_import_nonce']) ? sanitize_text_field(wp_unslash($_POST['jc_import_nonce'])) : '';
-        if (!$nonce || !wp_verify_nonce($nonce, 'jc_import_products')) {
-            wp_die(__('Security check failed', 'jelly-catalog'));
-        }
-
-        $job = $this->create_import_job();
-        if (is_wp_error($job)) {
-            wp_safe_redirect(add_query_arg(
-                ['import_error' => $this->get_import_error_code($job)],
-                admin_url('edit.php?post_type=product&page=products-port')
-            ));
-            exit;
-        }
-
-        if (!empty($job['status']) && 'complete' === $job['status'] && empty($job['id'])) {
-            wp_safe_redirect(add_query_arg(
-                ['import_success' => 1],
-                admin_url('edit.php?post_type=product&page=products-port')
-            ));
-            exit;
-        }
-
-        wp_safe_redirect(add_query_arg(
-            ['jc_import_job' => $job['id']],
-            admin_url('edit.php?post_type=product&page=products-port')
-        ));
-        exit;
-    }
-
-    /**
-     * AJAX 初始化导入任务
-     *
-     * 通过 AJAX 请求创建新的导入任务
-     * 返回任务 ID 供后续分批处理使用
-     *
-     * @since 1.0.0
-     * @return void 输出 JSON 响应
-     */
-    public function ajax_start_import_products()
-    {
-        check_ajax_referer('jc_import_products', 'nonce');
-
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error([
-                'message' => __('You do not have sufficient permissions to access this page.', 'jelly-catalog'),
-            ], 403);
-        }
-
-        $job = $this->create_import_job();
-        if (is_wp_error($job)) {
-            wp_send_json_error([
-                'code' => $this->get_import_error_code($job),
-                'message' => $job->get_error_message(),
-                'retryable' => $this->is_import_error_retryable($job),
-            ], 400);
-        }
-
-        $response_message = (!empty($job['status']) && 'complete' === $job['status'])
-            ? ''
-            : __('Import job prepared. Starting batch import...', 'jelly-catalog');
-
-        wp_send_json_success($this->format_import_job_response($job, $response_message));
-    }
-
-    /**
-     * AJAX 分批处理导入任务
-     *
-     * 通过 AJAX 请求分批处理导入任务
-     * 支持断点续传，每次处理一批产品
-     *
-     * @since 1.0.0
-     * @return void 输出 JSON 响应，包含导入进度和状态
-     */
-    public function ajax_process_import_products()
-    {
-        check_ajax_referer('jc_import_products', 'nonce');
-
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error([
-                'message' => __('You do not have sufficient permissions to access this page.', 'jelly-catalog'),
-            ], 403);
-        }
-
-        $job_id = isset($_POST['job_id']) ? sanitize_key(wp_unslash($_POST['job_id'])) : '';
-        $job = $this->get_import_job($job_id);
-        if (is_wp_error($job)) {
-            wp_send_json_error([
-                'code' => $job->get_error_code(),
-                'message' => $job->get_error_message(),
-            ], 404);
-        }
-
-        $job = $this->process_import_batch($job);
-        if (is_wp_error($job)) {
-            $status_code = $this->is_import_error_retryable($job) ? 500 : 400;
-
-            wp_send_json_error([
-                'code' => $this->get_import_error_code($job),
-                'message' => $job->get_error_message(),
-                'retryable' => $this->is_import_error_retryable($job),
-            ], $status_code);
-        }
-
-        wp_send_json_success($this->format_import_job_response($job));
-    }
-
-    /**
-     * 创建导入任务，保存上传文件与导入状态
-     *
-     * 处理上传的 CSV 文件，创建临时目录
-     * 解析 CSV 文件信息，准备图片资源
-     * 创建导入任务并保存到选项表中
-     *
-     * @since 1.0.0
-     * @return array|WP_Error 成功返回任务数组，失败返回 WP_Error
-     */
-    private function create_import_job()
-    {
-        if (function_exists('set_time_limit')) {
-            @set_time_limit(absint(apply_filters('jc_import_prepare_time_limit', 120)));
-        }
-
-        $this->cleanup_stale_import_temp_dirs();
-
-        if (file_exists($this->log_file)) {
-            unlink($this->log_file);
-        }
-
-        $this->log('开始导入产品', 'notice');
-
-        $has_product_csv = $this->has_import_upload('csv_file');
-        $has_category_csv = $this->has_import_upload('category_csv');
-
-        if (!$has_product_csv && !$has_category_csv) {
-            $this->log('未上传产品CSV或分类CSV', 'error');
-            return new WP_Error('missing_import_file', __('Please upload a product CSV or a category CSV.', 'jelly-catalog'));
-        }
-
-        $upload_dir = wp_upload_dir();
-        $job_id = sanitize_key(str_replace('-', '', wp_generate_uuid4()));
-        $temp_dir = trailingslashit($upload_dir['basedir']) . 'jc_import_' . $job_id;
-
-        if (!wp_mkdir_p($temp_dir)) {
-            $this->log('无法创建临时目录: ' . $temp_dir, 'error');
-            return new WP_Error('cannot_read_file', __('Cannot read uploaded file.', 'jelly-catalog'));
-        }
-
-        $this->log('创建临时目录: ' . $temp_dir);
-
-        $category_result = [
-            'total' => 0,
-            'imported' => 0,
-            'errors' => 0,
-        ];
-
-        if ($has_category_csv) {
-            $category_csv_file = trailingslashit($temp_dir) . 'product-categories.csv';
-            $category_upload = $this->get_import_upload('category_csv');
-            $category_save = $this->save_uploaded_import_csv($category_upload, $category_csv_file, '分类CSV');
-
-            if (is_wp_error($category_save)) {
-                $this->rrmdir($temp_dir);
-                return $category_save;
-            }
-
-            $category_result = $this->import_product_categories_from_csv($category_csv_file);
-            if (is_wp_error($category_result)) {
-                $this->rrmdir($temp_dir);
-                return $category_result;
-            }
-        }
-
-        if (!$has_product_csv) {
-            if (is_dir($temp_dir)) {
-                $this->rrmdir($temp_dir);
-            }
-
-            set_transient('jc_import_result', [
-                'imported' => 0,
-                'errors' => 0,
-                'categories_imported' => absint($category_result['imported']),
-                'category_errors' => absint($category_result['errors']),
-                'categories_only' => true,
-            ], 60);
-
-            return [
-                'id' => '',
-                'status' => 'complete',
-                'total' => absint($category_result['total']),
-                'processed' => absint($category_result['total']),
-                'imported' => absint($category_result['imported']),
-                'errors' => absint($category_result['errors']),
-                'message' => sprintf(
-                    /* translators: 1: imported count, 2: error count */
-                    __('Category import completed. Imported: %1$d, Errors: %2$d.', 'jelly-catalog'),
-                    absint($category_result['imported']),
-                    absint($category_result['errors'])
-                ),
-            ];
-        }
-
-        $product_csv_file = trailingslashit($temp_dir) . 'products.csv';
-        $product_upload = $this->get_import_upload('csv_file');
-        $product_save = $this->save_uploaded_import_csv($product_upload, $product_csv_file, '产品CSV');
-
-        if (is_wp_error($product_save)) {
-            $this->rrmdir($temp_dir);
-            return $product_save;
-        }
-
-        $images_path = $this->prepare_import_images($temp_dir);
-        $csv_info = $this->inspect_import_csv($product_csv_file);
-
-        if (is_wp_error($csv_info)) {
-            $this->rrmdir($temp_dir);
-            return $csv_info;
-        }
-
-        $image_index_file = trailingslashit($temp_dir) . 'image-index.json';
-        $image_index = $this->build_image_index($images_path);
-        file_put_contents($image_index_file, wp_json_encode($image_index));
-
-        $job = [
-            'id' => $job_id,
-            'user_id' => get_current_user_id(),
-            'status' => 'pending',
-            'csv_file' => $product_csv_file,
-            'temp_dir' => $temp_dir,
-            'images_path' => $images_path,
-            'image_index_file' => $image_index_file,
-            'headers' => $csv_info['headers'],
-            'faq_count' => $csv_info['faq_count'],
-            'attribute_count' => $csv_info['attribute_count'],
-            'offset' => $csv_info['data_offset'],
-            'total' => $csv_info['total'],
-            'processed' => 0,
-            'imported' => 0,
-            'errors' => 0,
-            'categories_imported' => absint($category_result['imported']),
-            'category_errors' => absint($category_result['errors']),
-            'max_retries' => max(0, absint(apply_filters('jc_import_row_max_retries', 2))),
-            'message' => __('Import job prepared. Starting batch import...', 'jelly-catalog'),
-            'created_at' => time(),
-            'updated_at' => time(),
-        ];
-
-        $this->save_import_job($job);
-        $this->log('导入任务已创建，产品总数: ' . $job['total'], 'notice');
-
-        return $job;
-    }
-
-    /**
-     * 判断导入文件是否已上传。
-     *
-     * @param string $field_name 文件字段名
-     * @return bool
-     */
-    private function has_import_upload($field_name)
-    {
-        return isset($_FILES[$field_name]) && (int) ($_FILES[$field_name]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK;
-    }
-
-    /**
-     * 获取导入上传文件信息。
-     *
-     * @param string $field_name 文件字段名
-     * @return array
-     */
-    private function get_import_upload($field_name)
-    {
-        return isset($_FILES[$field_name]) && is_array($_FILES[$field_name]) ? $_FILES[$field_name] : [];
-    }
-
-    /**
-     * 保存上传的 CSV 文件到临时目录。
-     *
-     * @param array $upload 文件上传数组
-     * @param string $target_file 目标文件路径
-     * @param string $label 日志标签
-     * @return true|\WP_Error
-     */
-    private function save_uploaded_import_csv($upload, $target_file, $label)
-    {
-        $csv_name = sanitize_file_name($upload['name'] ?? '');
-        if ('csv' !== strtolower(pathinfo($csv_name, PATHINFO_EXTENSION))) {
-            $this->log($label . '扩展名无效: ' . $csv_name, 'error');
-            return new WP_Error('invalid_csv_file', __('Invalid CSV file.', 'jelly-catalog'));
-        }
-
-        $this->log($label . '上传成功: ' . $csv_name);
-
-        if (!$this->move_uploaded_file_to_path($upload['tmp_name'] ?? '', $target_file)) {
-            $this->log('无法保存' . $label . '到临时目录', 'error');
-            return new WP_Error('cannot_read_file', __('Cannot read uploaded file.', 'jelly-catalog'));
-        }
-
-        return true;
-    }
-
-    /**
-     * 分批处理导入任务
-     *
-     * 从 CSV 文件中读取一批产品数据进行导入
-     * 支持断点续传，通过文件指针位置记录进度
-     * 使用锁机制防止并发导入冲突
-     *
-     * @since 1.0.0
-     * @param array $job 导入任务数据
-     * @return array|WP_Error 更新后的任务数组或错误对象
-     */
-    private function process_import_batch($job)
-    {
-        if (!empty($job['status']) && 'complete' === $job['status']) {
-            return $job;
-        }
-
-        if (function_exists('set_time_limit')) {
-            @set_time_limit(30);
-        }
-
-        $lock_ttl = max(120, absint(apply_filters('jc_import_batch_lock_ttl', 300)));
-        $locked_at = !empty($job['locked_at']) ? (int) $job['locked_at'] : 0;
-        if ($locked_at && time() - $locked_at < $lock_ttl) {
-            $job['status'] = 'waiting';
-            $job['message'] = __('Another import request is still running. Checking again...', 'jelly-catalog');
-            $job['next_delay'] = max(500, absint(apply_filters('jc_import_lock_wait_delay', 2000)));
-            return $job;
-        }
-
-        if ($locked_at) {
-            $job = $this->handle_expired_import_lock($job);
-            if (!empty($job['status']) && 'waiting' === $job['status']) {
-                return $job;
-            }
-        }
-
-        $lock_token = wp_generate_uuid4();
-        $job['locked_at'] = time();
-        $job['lock_token'] = $lock_token;
-        $job['status'] = 'running';
-        $this->save_import_job($job);
-
-        $handle = null;
-
-        try {
-            $csv_file = $job['csv_file'] ?? '';
-            if (!$csv_file || !file_exists($csv_file)) {
-                $this->log('导入任务CSV文件不存在', 'error');
-                unset($job['locked_at'], $job['lock_token']);
-                $job['status'] = 'error';
-                $job['message'] = __('Cannot read uploaded file.', 'jelly-catalog');
-                $this->save_import_job($job);
-                return new WP_Error('cannot_read_file', __('Cannot read uploaded file.', 'jelly-catalog'), ['retryable' => false]);
-            }
-
-            $handle = fopen($csv_file, 'r');
-            if (!$handle) {
-                $this->log('无法打开导入任务CSV文件', 'error');
-                unset($job['locked_at'], $job['lock_token']);
-                $job['status'] = 'error';
-                $job['message'] = __('Cannot read uploaded file.', 'jelly-catalog');
-                $this->save_import_job($job);
-                return new WP_Error('cannot_read_file', __('Cannot read uploaded file.', 'jelly-catalog'), ['retryable' => false]);
-            }
-
-            if (0 !== fseek($handle, (int) ($job['offset'] ?? 0))) {
-                $this->log('无法定位CSV断点位置: ' . (int) ($job['offset'] ?? 0), 'error');
-                fclose($handle);
-                $handle = null;
-                unset($job['locked_at'], $job['lock_token']);
-                $job['status'] = 'error';
-                $job['message'] = __('Cannot read uploaded file.', 'jelly-catalog');
-                $this->save_import_job($job);
-                return new WP_Error('cannot_read_file', __('Cannot read uploaded file.', 'jelly-catalog'), ['retryable' => false]);
-            }
-
-            $batch_size = max(1, absint(apply_filters('jc_import_batch_size', 5)));
-            $time_limit = max(5, absint(apply_filters('jc_import_batch_time_limit', 20)));
-            $started_at = microtime(true);
-            $processed_in_batch = 0;
-            $image_index = $this->load_image_index($job['image_index_file'] ?? '');
-
-            while ($processed_in_batch < $batch_size && (microtime(true) - $started_at) < $time_limit) {
-                $job['locked_at'] = time();
-                $job['lock_token'] = $lock_token;
-                $row_start_offset = ftell($handle);
-                $row = fgetcsv($handle);
-                if (false === $row) {
-                    break;
-                }
-
-                $row_end_offset = ftell($handle);
-                $row_number = absint($job['processed']) + 1;
-                $job['current_row'] = $this->prepare_import_current_row(
-                    $job,
-                    $row,
-                    $row_number,
-                    false !== $row_start_offset ? $row_start_offset : (int) ($job['offset'] ?? 0),
-                    false !== $row_end_offset ? $row_end_offset : 0
-                );
-                $this->save_import_job($job);
-
-                $result = $this->process_import_row_with_retries(
-                    $row,
-                    $job['headers'],
-                    absint($job['faq_count']),
-                    absint($job['attribute_count']),
-                    $job['images_path'] ?? '',
-                    $image_index,
-                    $job,
-                    $row_number
-                );
-
-                if (false !== $row_end_offset) {
-                    $job['offset'] = $row_end_offset;
-                }
-
-                $job['processed'] = absint($job['processed']) + 1;
-                if ($result) {
-                    $job['imported'] = absint($job['imported']) + 1;
-                } else {
-                    $job['errors'] = absint($job['errors']) + 1;
-                    $this->log_import_current_row_failure(
-                        $job['current_row'],
-                        __('Product import failed after retries. Skipping this row.', 'jelly-catalog')
-                    );
-                }
-
-                unset($job['current_row']);
-                $processed_in_batch++;
-                $job['locked_at'] = time();
-                $job['lock_token'] = $lock_token;
-                $job['updated_at'] = time();
-                $job['message'] = sprintf(
-                    /* translators: 1: processed count, 2: total count */
-                    __('Processed %1$d of %2$d products...', 'jelly-catalog'),
-                    absint($job['processed']),
-                    absint($job['total'])
-                );
-                $this->save_import_job($job);
-            }
-
-            fclose($handle);
-            $handle = null;
-        } catch (Throwable $error) {
-            if (is_resource($handle)) {
-                fclose($handle);
-            }
-
-            unset($job['locked_at'], $job['lock_token']);
-            $job['status'] = 'error';
-            $job['message'] = __('Temporary import error. Retrying from the last saved position...', 'jelly-catalog');
-            $job['last_error'] = $error->getMessage();
-            $job['updated_at'] = time();
-            $this->save_import_job($job);
-            $this->log('导入批次发生异常: ' . $error->getMessage(), 'warning');
-
-            return new WP_Error(
-                'import_batch_failed',
-                __('Temporary import error. The import can be retried from the last saved position.', 'jelly-catalog'),
-                ['retryable' => true]
-            );
-        }
-
-        if (absint($job['processed']) >= absint($job['total'])) {
-            $job['status'] = 'complete';
-            $job['message'] = sprintf(
-                /* translators: 1: imported count, 2: error count */
-                __('Import completed. Imported: %1$d, Errors: %2$d.', 'jelly-catalog'),
-                absint($job['imported']),
-                absint($job['errors'])
-            );
-
-            set_transient('jc_import_result', [
-                'imported' => absint($job['imported']),
-                'errors' => absint($job['errors']),
-                'categories_imported' => absint($job['categories_imported'] ?? 0),
-                'category_errors' => absint($job['category_errors'] ?? 0),
-            ], 60);
-
-            $this->log('导入过程结束，清理临时文件');
-            if (!empty($job['temp_dir']) && is_dir($job['temp_dir'])) {
-                $this->rrmdir($job['temp_dir']);
-            }
-            $this->log("导入完成 - 成功: {$job['imported']}, 失败: {$job['errors']}", 'notice');
-        } else {
-            $job['status'] = 'running';
-            $job['message'] = sprintf(
-                /* translators: 1: processed count, 2: total count */
-                __('Processed %1$d of %2$d products...', 'jelly-catalog'),
-                absint($job['processed']),
-                absint($job['total'])
-            );
-        }
-
-        unset($job['locked_at'], $job['lock_token']);
-        $job['updated_at'] = time();
-        $this->save_import_job($job);
-
-        return $job;
-    }
-
-    /**
-     * 处理过期导入锁，必要时跳过导致请求中断的当前行。
-     */
-    private function handle_expired_import_lock($job)
-    {
-        unset($job['locked_at'], $job['lock_token']);
-        $this->log('导入锁已过期，接管任务继续处理', 'warning');
-
-        if (empty($job['current_row']) || !is_array($job['current_row'])) {
-            return $job;
-        }
-
-        $current_row = $job['current_row'];
-        $started_at = absint($current_row['started_at'] ?? 0);
-        $grace_period = max(300, absint(apply_filters('jc_import_fatal_row_grace_period', 900)));
-        if ($started_at && time() - $started_at < $grace_period) {
-            $job['status'] = 'waiting';
-            $job['message'] = __('The current row is still within the safe wait window. Checking again...', 'jelly-catalog');
-            $job['next_delay'] = max(1000, absint(apply_filters('jc_import_lock_wait_delay', 2000)));
-            $this->save_import_job($job);
-
-            return $job;
-        }
-
-        $max_fatal_retries = max(0, absint(apply_filters('jc_import_fatal_row_max_retries', 0)));
-        $fatal_attempts = absint($current_row['fatal_attempts'] ?? 0) + 1;
-        $current_row['fatal_attempts'] = $fatal_attempts;
-        $job['current_row'] = $current_row;
-
-        if ($fatal_attempts <= $max_fatal_retries) {
-            $this->log_import_current_row_failure(
-                $current_row,
-                sprintf(
-                    /* translators: 1: attempt count, 2: max retry count */
-                    __('The previous request stopped while importing this row. Retrying it (%1$d/%2$d).', 'jelly-catalog'),
-                    $fatal_attempts,
-                    $max_fatal_retries
-                )
-            );
-            $this->save_import_job($job);
-
-            return $job;
-        }
-
-        $end_offset = absint($current_row['end_offset'] ?? 0);
-        if ($end_offset <= 0) {
-            $this->log_import_current_row_failure(
-                $current_row,
-                __('The previous request stopped on this row, but no safe CSV offset was saved. Retrying from the last stable position.', 'jelly-catalog')
-            );
-            unset($job['current_row']);
-            $this->save_import_job($job);
-
-            return $job;
-        }
-
-        $job['offset'] = $end_offset;
-        $job['processed'] = absint($job['processed']) + 1;
-        $job['errors'] = absint($job['errors']) + 1;
-        $job['updated_at'] = time();
-        $job['status'] = 'running';
-        $job['message'] = sprintf(
-            /* translators: 1: processed count, 2: total count */
-            __('Processed %1$d of %2$d products...', 'jelly-catalog'),
-            absint($job['processed']),
-            absint($job['total'])
-        );
-        unset($job['current_row']);
-
-        $this->log_import_current_row_failure(
-            $current_row,
-            __('The previous request stopped while importing this row. Skipping this product and continuing.', 'jelly-catalog')
-        );
-        $this->save_import_job($job);
-
-        return $job;
-    }
-
-    /**
-     * 保存当前正在处理的 CSV 行信息，便于请求中断后定位问题行。
-     */
-    private function prepare_import_current_row($job, $row, $row_number, $row_start_offset, $row_end_offset)
-    {
-        $row_key = $this->get_import_row_key($job, $row, $row_number);
-        $summary = $this->get_import_row_summary($row, $job['headers'] ?? []);
-        $fatal_attempts = 0;
-
-        if (!empty($job['current_row']['key']) && hash_equals((string) $job['current_row']['key'], $row_key)) {
-            $fatal_attempts = absint($job['current_row']['fatal_attempts'] ?? 0);
-        }
-
-        return [
-            'key' => $row_key,
-            'row_number' => absint($row_number),
-            'start_offset' => absint($row_start_offset),
-            'end_offset' => absint($row_end_offset),
-            'source_id' => $summary['source_id'],
-            'title' => $summary['title'],
-            'fatal_attempts' => $fatal_attempts,
-            'started_at' => time(),
-        ];
-    }
-
-    /**
-     * 获取行摘要。
-     */
-    private function get_import_row_summary($row, $headers)
-    {
-        $data = [];
-        if (is_array($headers) && count($headers) === count($row)) {
-            $combined = array_combine($headers, $row);
-            $data = is_array($combined) ? $combined : [];
-        }
-
-        return [
-            'source_id' => isset($data['ID']) ? sanitize_text_field((string) $data['ID']) : '',
-            'title' => isset($data['Title']) ? sanitize_text_field((string) $data['Title']) : '',
-        ];
-    }
-
-    /**
-     * 记录具体失败产品。
-     */
-    private function log_import_current_row_failure($current_row, $reason)
-    {
-        if (!is_array($current_row)) {
-            $this->log($reason, 'warning');
-            return;
-        }
-
-        $parts = [];
-        if (!empty($current_row['row_number'])) {
-            $parts[] = 'CSV行: ' . absint($current_row['row_number']);
-        }
-
-        if (!empty($current_row['source_id'])) {
-            $parts[] = '原ID: ' . $current_row['source_id'];
-        }
-
-        if (!empty($current_row['title'])) {
-            $parts[] = '标题: ' . $current_row['title'];
-        }
-
-        if (!empty($current_row['start_offset']) || !empty($current_row['end_offset'])) {
-            $parts[] = 'offset: ' . absint($current_row['start_offset'] ?? 0) . '-' . absint($current_row['end_offset'] ?? 0);
-        }
-
-        $message = $parts ? implode('，', $parts) . '，原因: ' . $reason : $reason;
-        $this->log($message, 'warning');
-    }
-
-    /**
-     * 带重试处理单行产品数据。
-     */
-    private function process_import_row_with_retries($row, $headers, $faq_count, $attribute_count, $images_path, $image_index, $job, $row_number)
-    {
-        $max_retries = isset($job['max_retries']) ? max(0, absint($job['max_retries'])) : max(0, absint(apply_filters('jc_import_row_max_retries', 2)));
-        $retry_delay = max(0, absint(apply_filters('jc_import_row_retry_delay', 250)));
-        $row_key = $this->get_import_row_key($job, $row, $row_number);
-        $attempt = 0;
-        $last_error = '';
-
-        while ($attempt <= $max_retries) {
-            $attempt++;
-
-            try {
-                $result = $this->process_import_row(
-                    $row,
-                    $headers,
-                    $faq_count,
-                    $attribute_count,
-                    $images_path,
-                    $image_index,
-                    $row_key
-                );
-
-                if ($result) {
-                    return true;
-                }
-
-                $last_error = 'row returned false';
-                $this->log('第 ' . $row_number . ' 行导入失败，尝试次数: ' . $attempt . '/' . ($max_retries + 1));
-            } catch (Throwable $error) {
-                $last_error = $error->getMessage();
-                $this->log('第 ' . $row_number . ' 行导入异常: ' . $last_error . '，尝试次数: ' . $attempt . '/' . ($max_retries + 1));
-            }
-
-            if ($attempt <= $max_retries && $retry_delay > 0) {
-                usleep($retry_delay * 1000 * min($attempt, 5));
-            }
-        }
-
-        if ($last_error) {
-            $this->log('第 ' . $row_number . ' 行重试结束，仍然失败: ' . $last_error, 'warning');
-        }
-
-        return false;
-    }
-
-    /**
-     * 获取导入行的幂等标记。
-     */
-    private function get_import_row_key($job, $row, $row_number)
-    {
-        return md5(($job['id'] ?? '') . '|' . absint($row_number) . '|' . wp_json_encode($row));
-    }
-
-    /**
-     * 处理单行产品数据。
-     */
-    private function process_import_row($row, $headers, $faq_count, $attribute_count, $images_path, $image_index, $row_key = '')
-    {
-        $data = array_combine($headers, $row);
-        if (false === $data) {
-            $this->log('CSV列数不匹配，跳过该行。Headers: ' . count($headers) . ' Row: ' . count($row), 'warning');
-            return false;
-        }
-
-        $row_key = $row_key ? sanitize_key($row_key) : '';
-        $post_id = $this->save_import_post($data, $row_key);
-        if (!$post_id) {
-            return false;
-        }
-
-        if ($row_key) {
-            update_post_meta($post_id, '_jc_import_row_key', $row_key);
-        }
-
-        $this->maybe_import_featured_image($post_id, $data, $images_path, $image_index);
-        $this->maybe_import_gallery_images($post_id, $data, $images_path, $image_index);
-        $this->maybe_update_import_product_categories($post_id, $data);
-        $this->maybe_update_import_terms($post_id, $data, 'Tags', 'product_tag');
-        $this->maybe_update_import_collection_meta($post_id, '_product_faqs', $this->parse_import_faqs($data, $faq_count), 'FAQ数据');
-        $this->maybe_update_import_collection_meta($post_id, '_product_attributes', $this->parse_import_attributes($data, $attribute_count), '属性数据');
-        $this->maybe_update_import_product_meta($post_id, $data);
-        $this->maybe_update_import_rank_math_meta($post_id, $data);
-
-        $title = array_key_exists('Title', $data) ? (string) $data['Title'] : '';
-        $this->log('产品处理完成: ' . $title . "\n---");
-
-        return true;
-    }
-
-    /**
-     * 创建或更新产品基础字段。缺列时跳过对应字段。
-     */
-    private function save_import_post($data, $row_key)
-    {
-        $title = array_key_exists('Title', $data) ? (string) $data['Title'] : '';
-        $this->log('处理产品: ' . ($title !== '' ? $title : '(未提供标题字段)') . ' (ID: ' . ($data['ID'] ?? 'new') . ')');
-
-        $existing_post_id = $this->find_existing_import_post_id($data, $row_key);
-        $is_update = $existing_post_id > 0;
-        $post_data = ['post_type' => 'product'];
-
-        if ($is_update) {
-            $post_data['ID'] = $existing_post_id;
-        }
-
-        $field_map = [
-            'Title' => ['post_title', 'sanitize_text_field'],
-            'Short Description' => ['post_excerpt', 'wp_kses_post'],
-            'Description' => ['post_content', 'wp_kses_post'],
-        ];
-
-        foreach ($field_map as $csv_key => $field_config) {
-            if (array_key_exists($csv_key, $data)) {
-                $post_data[$field_config[0]] = call_user_func($field_config[1], $data[$csv_key] ?? '');
-            }
-        }
-
-        if (array_key_exists('Slug', $data)) {
-            $post_slug = $this->sanitize_import_post_slug($data['Slug'] ?? '');
-            if ('' !== $post_slug) {
-                $post_data['post_name'] = $post_slug;
-            }
-        }
-
-        $post_status = $this->get_import_post_status($data, $is_update ? '' : 'publish');
-        if ('' !== $post_status) {
-            $post_data['post_status'] = $post_status;
-        }
-
-        $post_field_updates = array_diff(array_keys($post_data), ['ID', 'post_type']);
-        if ($is_update && empty($post_field_updates)) {
-            $this->log('CSV未提供基础字段，跳过产品基础字段更新，ID: ' . $existing_post_id);
-            return $existing_post_id;
-        }
-
-        $post_id = $is_update ? wp_update_post($post_data, true) : wp_insert_post($post_data, true);
-        if (is_wp_error($post_id)) {
-            $this->log('创建/更新产品失败: ' . $post_id->get_error_message(), 'warning');
-            return 0;
-        }
-
-        if (!$post_id) {
-            $this->log('创建/更新产品失败: 未返回有效产品ID', 'warning');
-            return 0;
-        }
-
-        $this->log('产品保存成功，ID: ' . $post_id);
-
-        return absint($post_id);
-    }
-
-    /**
-     * 获取导入产品状态。
-     *
-     * 当 CSV 存在 Status 列时，允许新建和更新都使用该状态
-     *
-     * @param array $data CSV 行数据
-     * @param string $default_status 默认状态
-     * @return string
-     */
-    private function get_import_post_status($data, $default_status = '')
-    {
-        if (!array_key_exists('Status', $data)) {
-            return (string) $default_status;
-        }
-
-        $post_status = sanitize_key((string) $data['Status']);
-        if (in_array($post_status, ['publish', 'draft', 'pending', 'private'], true)) {
-            return $post_status;
-        }
-
-        return (string) $default_status;
-    }
-
-    /**
-     * 查找 CSV 指定的现有产品，或当前导入任务已创建过的产品。
-     */
-    private function find_existing_import_post_id($data, $row_key)
-    {
-        if (!empty($data['ID'])) {
-            $existing_post_id = absint($data['ID']);
-            $existing_post = get_post($existing_post_id);
-            if ($existing_post && $existing_post->post_type === 'product') {
-                $this->log('更新现有产品 ID: ' . $existing_post_id);
-                return $existing_post_id;
-            }
-
-            $this->log('指定的产品ID不存在，将创建新产品: ' . $data['ID']);
-        }
-
-        if ($row_key) {
-            $imported_post_id = $this->find_imported_post_by_row_key($row_key);
-            if ($imported_post_id) {
-                $this->log('从断点记录恢复已创建产品 ID: ' . $imported_post_id);
-                return $imported_post_id;
-            }
-        }
-
-        $existing_post_id = $this->find_existing_import_post_id_by_slug($data);
-        if ($existing_post_id) {
-            $this->log('根据 Slug 匹配到现有产品 ID: ' . $existing_post_id);
-            return $existing_post_id;
-        }
-
-        return 0;
-    }
-
-    /**
-     * 根据 CSV 中的 Slug 查找现有产品。
-     *
-     * @param array $data CSV 行数据
-     * @return int
-     */
-    private function find_existing_import_post_id_by_slug($data)
-    {
-        if (!array_key_exists('Slug', $data)) {
-            return 0;
-        }
-
-        $post_slug = $this->sanitize_import_post_slug($data['Slug'] ?? '');
-        if ('' === $post_slug) {
-            return 0;
-        }
-
-        $existing_post = get_page_by_path($post_slug, OBJECT, 'product');
-        if (!$existing_post instanceof \WP_Post) {
-            return 0;
-        }
-
-        return absint($existing_post->ID);
-    }
-
-    /**
-     * 规范化导入的产品 Slug。
-     *
-     * @param string $post_slug 产品 slug
-     * @return string
-     */
-    private function sanitize_import_post_slug($post_slug)
-    {
-        return sanitize_title((string) $post_slug);
-    }
-
-    /**
-     * 按 CSV 特色图列导入或清空特色图。缺列时跳过。
-     */
-    private function maybe_import_featured_image($post_id, $data, $images_path, $image_index)
-    {
-        if (!array_key_exists('Featured Image', $data)) {
-            return;
-        }
-
-        $image_reference = trim((string) $data['Featured Image']);
-        if ('' === $image_reference) {
-            delete_post_thumbnail($post_id);
-            $this->log('特色图像已清空');
-            return;
-        }
-
-        $attachment_id = $this->import_image_reference($image_reference, $post_id, $images_path, $image_index);
-        if ($attachment_id) {
-            set_post_thumbnail($post_id, $attachment_id);
-            $this->log('特色图像设置成功，附件ID: ' . $attachment_id);
-        } else {
-            $this->log('特色图像导入失败: ' . $image_reference, 'warning');
-        }
-    }
-
-    /**
-     * 按 CSV 画廊列导入或清空画廊图。缺列时跳过。
-     */
-    private function maybe_import_gallery_images($post_id, $data, $images_path, $image_index)
-    {
-        if (!array_key_exists('Gallery Images', $data)) {
-            return;
-        }
-
-        $gallery_value = trim((string) $data['Gallery Images']);
-        if ('' === $gallery_value) {
-            delete_post_meta($post_id, '_product_image_gallery');
-            $this->log('画廊图像已清空');
-            return;
-        }
-
-        $gallery_ids = [];
-        $gallery_images = array_filter(array_map('trim', explode(',', $gallery_value)), 'strlen');
-        $this->log('处理画廊图像，共 ' . count($gallery_images) . ' 张图片');
-
-        foreach ($gallery_images as $image_reference) {
-            $attachment_id = $this->import_image_reference($image_reference, $post_id, $images_path, $image_index);
-            if ($attachment_id) {
-                $gallery_ids[] = $attachment_id;
-                $this->log('画廊图像导入成功，附件ID: ' . $attachment_id);
-            } else {
-                $this->log('画廊图像导入失败: ' . $image_reference, 'warning');
-            }
-        }
-
-        if (!empty($gallery_ids)) {
-            update_post_meta($post_id, '_product_image_gallery', implode(',', array_values(array_unique($gallery_ids))));
-            $this->log('画廊图像元数据已保存，IDs: ' . implode(',', $gallery_ids));
-        }
-    }
-
-    /**
-     * 导入图片引用，并返回附件 ID。
-     */
-    private function import_image_reference($image_reference, $post_id, $images_path, $image_index)
-    {
-        $image_reference = $this->sanitize_import_image_reference($image_reference);
-        if (!$image_reference) {
-            return 0;
-        }
-
-        $image_path = $this->resolve_import_image_path($images_path, $image_reference, $image_index);
-        $this->log('处理导入图像: ' . $image_reference);
-        $this->log('图像路径: ' . ($image_path ?: ''));
-
-        if (!$image_path) {
-            $this->log('图像文件不存在: ' . $image_reference, 'warning');
-            return 0;
-        }
-
-        return absint($this->import_image_as_attachment($image_path, $post_id, basename($image_reference), $image_reference));
-    }
-
-    /**
-     * 更新分类或标签。缺列时跳过，列存在但为空时清空。
-     */
-    private function maybe_update_import_terms($post_id, $data, $column, $taxonomy)
-    {
-        if (!array_key_exists($column, $data)) {
-            return;
-        }
-
-        $term_names = array_filter(array_map('trim', explode('|', (string) $data[$column])), 'strlen');
-        $term_ids = [];
-
-        foreach ($term_names as $term_name) {
-            $term_name = sanitize_text_field($term_name);
-            if ('' === $term_name) {
-                continue;
-            }
-
-            $term = get_term_by('name', $term_name, $taxonomy);
-            if (!$term) {
-                $new_term = wp_insert_term($term_name, $taxonomy);
-                if (is_wp_error($new_term)) {
-                    $this->log('创建术语失败: ' . $term_name . ' (' . $new_term->get_error_message() . ')', 'warning');
-                    continue;
-                }
-
-                $term_ids[] = absint($new_term['term_id']);
-                $this->log('创建新术语: ' . $term_name . ' (ID: ' . $new_term['term_id'] . ')');
-                continue;
-            }
-
-            $term_ids[] = absint($term->term_id);
-            $this->log('使用现有术语: ' . $term_name . ' (ID: ' . $term->term_id . ')');
-        }
-
-        $result = wp_set_post_terms($post_id, array_values(array_unique($term_ids)), $taxonomy);
-        if (is_wp_error($result)) {
-            $this->log('设置术语失败: ' . $result->get_error_message(), 'warning');
-            return;
-        }
-
-        $this->log('产品术语已设置，taxonomy: ' . $taxonomy . '，IDs: ' . implode(',', $term_ids));
-    }
-
-    /**
-     * 更新产品分类。
-     *
-     * 支持名称路径与 slug 路径，优先使用 slug 路径创建和匹配层级分类
-     *
-     * @param int $post_id 产品 ID
-     * @param array $data CSV 行数据
-     * @return void
-     */
-    private function maybe_update_import_product_categories($post_id, $data)
-    {
-        $has_name_column = array_key_exists('Categories', $data);
-        $has_slug_column = array_key_exists('Category Slugs', $data);
-
-        if (!$has_name_column && !$has_slug_column) {
-            return;
-        }
-
-        $name_paths = $has_name_column ? $this->parse_import_multi_value_list($data['Categories'] ?? '') : [];
-        $slug_paths = $has_slug_column ? $this->parse_import_multi_value_list($data['Category Slugs'] ?? '') : [];
-
-        if (empty($name_paths) && empty($slug_paths)) {
-            wp_set_post_terms($post_id, [], 'product_cat');
-            $this->log('产品分类已清空');
-            return;
-        }
-
-        $term_ids = [];
-        $max_items = max(count($name_paths), count($slug_paths));
-
-        for ($index = 0; $index < $max_items; $index++) {
-            $name_path = $name_paths[$index] ?? '';
-            $slug_path = $slug_paths[$index] ?? '';
-            $term_id = $this->resolve_import_product_category_term($slug_path, $name_path);
-
-            if ($term_id) {
-                $term_ids[] = $term_id;
-            }
-        }
-
-        $result = wp_set_post_terms($post_id, array_values(array_unique($term_ids)), 'product_cat');
-        if (is_wp_error($result)) {
-            $this->log('设置产品分类失败: ' . $result->get_error_message(), 'warning');
-            return;
-        }
-
-        $this->log('产品分类已设置，IDs: ' . implode(',', array_values(array_unique($term_ids))));
-    }
-
-    /**
-     * 解析多值列表。
-     *
-     * @param string $value 原始值
-     * @return array
-     */
-    private function parse_import_multi_value_list($value)
-    {
-        return array_values(array_filter(array_map('trim', explode('|', (string) $value)), 'strlen'));
-    }
-
-    /**
-     * 解析分类名称路径。
-     *
-     * @param string $path 分类路径
-     * @return array
-     */
-    private function parse_import_category_name_path($path)
-    {
-        return array_values(array_filter(array_map('sanitize_text_field', preg_split('/\s*>\s*/', (string) $path)), 'strlen'));
-    }
-
-    /**
-     * 解析分类 slug 路径。
-     *
-     * @param string $path 分类 slug 路径
-     * @return array
-     */
-    private function parse_import_category_slug_path($path)
-    {
-        return array_values(array_filter(array_map('sanitize_title', explode('/', trim((string) $path, '/'))), 'strlen'));
-    }
-
-    /**
-     * 解析或创建产品分类层级。
-     *
-     * @param string $slug_path 分类 slug 路径
-     * @param string $name_path 分类名称路径
-     * @return int
-     */
-    private function resolve_import_product_category_term($slug_path, $name_path)
-    {
-        $slug_segments = $this->parse_import_category_slug_path($slug_path);
-        $name_segments = $this->parse_import_category_name_path($name_path);
-        $depth = max(count($slug_segments), count($name_segments));
-        $parent_id = 0;
-
-        if ($depth < 1) {
-            return 0;
-        }
-
-        for ($index = 0; $index < $depth; $index++) {
-            $slug = $slug_segments[$index] ?? sanitize_title($name_segments[$index] ?? '');
-            $name = $name_segments[$index] ?? $this->format_import_category_name_from_slug($slug);
-
-            if ('' === $slug) {
-                continue;
-            }
-
-            $term = get_term_by('slug', $slug, 'product_cat');
-            if ($term && !is_wp_error($term)) {
-                $term_id = absint($term->term_id);
-
-                if ($parent_id && (int) $term->parent !== $parent_id) {
-                    wp_update_term($term_id, 'product_cat', ['parent' => $parent_id]);
-                }
-
-                $parent_id = $term_id;
-                continue;
-            }
-
-            $result = wp_insert_term($name, 'product_cat', [
-                'slug' => $slug,
-                'parent' => $parent_id,
-            ]);
-
-            if (is_wp_error($result)) {
-                if ('term_exists' === $result->get_error_code()) {
-                    $parent_id = absint($result->get_error_data());
-                    continue;
-                }
-
-                $this->log('创建层级分类失败: ' . $slug . ' (' . $result->get_error_message() . ')', 'warning');
-                return 0;
-            }
-
-            $parent_id = absint($result['term_id']);
-            $this->log('创建层级分类成功: ' . $name . ' (ID: ' . $parent_id . ')');
-        }
-
-        return $parent_id;
-    }
-
-    /**
-     * 根据 slug 生成兜底分类名称。
-     *
-     * @param string $slug 分类 slug
-     * @return string
-     */
-    private function format_import_category_name_from_slug($slug)
-    {
-        $slug = (string) $slug;
-        if ('' === $slug) {
-            return '';
-        }
-
-        return ucwords(str_replace(['-', '_'], ' ', $slug));
-    }
-
-    /**
-     * 从分类 CSV 导入产品分类。
-     *
-     * @param string $csv_file 分类 CSV 文件路径
-     * @return array|\WP_Error
-     */
-    private function import_product_categories_from_csv($csv_file)
-    {
-        $handle = fopen($csv_file, 'r');
-        if (!$handle) {
-            $this->log('无法打开分类CSV文件', 'error');
-            return new WP_Error('cannot_read_file', __('Cannot read uploaded file.', 'jelly-catalog'));
-        }
-
-        $this->skip_csv_bom($handle);
-        $headers = fgetcsv($handle);
-        if (empty($headers) || !is_array($headers)) {
-            fclose($handle);
-            $this->log('分类CSV表头为空或格式无效', 'error');
-            return new WP_Error('invalid_csv_file', __('Invalid CSV file.', 'jelly-catalog'));
-        }
-
-        $headers = array_map(function ($header) {
-            return trim((string) $header);
-        }, $headers);
-
-        if (isset($headers[0])) {
-            $headers[0] = preg_replace('/^\xEF\xBB\xBF/', '', $headers[0]);
-        }
-
-        $rows = [];
-        while (false !== ($row = fgetcsv($handle))) {
-            $data = array_combine($headers, $row);
-            if (false === $data) {
-                continue;
-            }
-
-            $rows[] = $data;
-        }
-
-        fclose($handle);
-
-        $result = [
-            'total' => count($rows),
-            'imported' => 0,
-            'errors' => 0,
-        ];
-
-        if (empty($rows)) {
-            return $result;
-        }
-
-        $pending_rows = array_values($rows);
-        $max_passes = max(1, count($pending_rows));
-
-        for ($pass = 0; $pass < $max_passes && !empty($pending_rows); $pass++) {
-            $next_pending_rows = [];
-            $progress_made = false;
-
-            foreach ($pending_rows as $row_data) {
-                $row_result = $this->import_product_category_row($row_data);
-
-                if ('defer' === $row_result) {
-                    $next_pending_rows[] = $row_data;
-                    continue;
-                }
-
-                $progress_made = true;
-
-                if ($row_result) {
-                    $result['imported']++;
-                } else {
-                    $result['errors']++;
-                }
-            }
-
-            if (!$progress_made) {
-                break;
-            }
-
-            $pending_rows = $next_pending_rows;
-        }
-
-        if (!empty($pending_rows)) {
-            foreach ($pending_rows as $row_data) {
-                $title = sanitize_text_field((string) ($row_data['Title'] ?? ''));
-                $slug = sanitize_title((string) ($row_data['Slug'] ?? ''));
-                $this->log('分类导入失败，未能解析父级关系: ' . ($title ?: $slug), 'warning');
-                $result['errors']++;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * 导入单个分类 CSV 行。
-     *
-     * @param array $data CSV 行数据
-     * @return int|string
-     */
-    private function import_product_category_row($data)
-    {
-        $title = sanitize_text_field((string) ($data['Title'] ?? ''));
-        $slug = sanitize_title((string) ($data['Slug'] ?? ''));
-        $description = wp_kses_post((string) ($data['Description'] ?? ''));
-        $parent_slug = sanitize_title((string) ($data['Parent Slug'] ?? ''));
-        $parent_id = 0;
-
-        if ('' === $slug) {
-            $slug = sanitize_title($title);
-        }
-
-        if ('' === $title) {
-            $title = $this->format_import_category_name_from_slug($slug);
-        }
-
-        if ('' === $slug || '' === $title) {
-            $this->log('分类CSV缺少有效标题或 slug，已跳过', 'warning');
-            return 0;
-        }
-
-        if ('' !== $parent_slug) {
-            $parent_term = get_term_by('slug', $parent_slug, 'product_cat');
-            if (!$parent_term || is_wp_error($parent_term)) {
-                return 'defer';
-            }
-
-            $parent_id = absint($parent_term->term_id);
-        }
-
-        $term = get_term_by('slug', $slug, 'product_cat');
-        if ($term && !is_wp_error($term)) {
-            $term_id = absint($term->term_id);
-            $update_result = wp_update_term($term_id, 'product_cat', [
-                'name' => $title,
-                'description' => $description,
-                'parent' => $parent_id,
-                'slug' => $slug,
-            ]);
-
-            if (is_wp_error($update_result)) {
-                $this->log('更新分类失败: ' . $slug . ' (' . $update_result->get_error_message() . ')', 'warning');
-                return 0;
-            }
-        } else {
-            $insert_result = wp_insert_term($title, 'product_cat', [
-                'slug' => $slug,
-                'description' => $description,
-                'parent' => $parent_id,
-            ]);
-
-            if (is_wp_error($insert_result)) {
-                $this->log('创建分类失败: ' . $slug . ' (' . $insert_result->get_error_message() . ')', 'warning');
-                return 0;
-            }
-
-            $term_id = absint($insert_result['term_id']);
-        }
-
-        $this->maybe_update_import_product_category_meta($term_id, $data);
-        $this->log('分类已导入: ' . $title . ' (ID: ' . $term_id . ')');
-
-        return $term_id;
-    }
-
-    /**
-     * 更新分类 Rank Math 元数据。
-     *
-     * @param int $term_id 分类 ID
-     * @param array $data CSV 行数据
-     * @return void
-     */
-    private function maybe_update_import_product_category_meta($term_id, $data)
-    {
-        $meta_map = [
-            'rank_math_focus_keyword' => [
-                'Focus Keyword',
-                'rank_math_focus_keyword',
-            ],
-            'rank_math_title' => [
-                'SEO Title',
-                'rank_math_title',
-            ],
-            'rank_math_description' => [
-                'Meta Description',
-                'rank_math_description',
-            ],
-        ];
-
-        foreach ($meta_map as $meta_key => $column_names) {
-            $matched_column = '';
-
-            foreach ($column_names as $column_name) {
-                if (array_key_exists($column_name, $data)) {
-                    $matched_column = $column_name;
-                    break;
-                }
-            }
-
-            if ('' === $matched_column) {
-                continue;
-            }
-
-            $meta_value = sanitize_text_field((string) ($data[$matched_column] ?? ''));
-
-            if ('' === $meta_value) {
-                delete_term_meta($term_id, $meta_key);
-                continue;
-            }
-
-            update_term_meta($term_id, $meta_key, $meta_value);
-        }
-    }
-
-    /**
-     * 解析 FAQ 数据。返回 null 表示缺列跳过。
-     */
-    private function parse_import_faqs($data, $faq_count)
-    {
-        $faqs = [];
-        $has_columns = false;
-
-        for ($i = 1; $i <= $faq_count; $i++) {
-            $question_key = 'FAQ_Q_' . $i;
-            $answer_key = 'FAQ_A_' . $i;
-            if (!array_key_exists($question_key, $data) && !array_key_exists($answer_key, $data)) {
-                continue;
-            }
-
-            $has_columns = true;
-            if (!empty($data[$question_key]) || !empty($data[$answer_key])) {
-                $faqs[] = [
-                    'name' => sanitize_text_field($data[$question_key] ?? ''),
-                    'value' => sanitize_textarea_field($data[$answer_key] ?? ''),
-                ];
-            }
-        }
-
-        if ($has_columns) {
-            return $faqs;
-        }
-
-        if (!array_key_exists('FAQs', $data)) {
-            return null;
-        }
-
-        return $this->decode_import_collection($data['FAQs']);
-    }
-
-    /**
-     * 解析属性数据。返回 null 表示缺列跳过。
-     */
-    private function parse_import_attributes($data, $attribute_count)
-    {
-        $attributes = [];
-        $has_columns = false;
-
-        for ($i = 1; $i <= $attribute_count; $i++) {
-            $name_key = 'Attribute_Name_' . $i;
-            $value_key = 'Attribute_Value_' . $i;
-            if (!array_key_exists($name_key, $data) && !array_key_exists($value_key, $data)) {
-                continue;
-            }
-
-            $has_columns = true;
-            if (!empty($data[$name_key]) || !empty($data[$value_key])) {
-                $attributes[] = [
-                    'name' => sanitize_text_field($data[$name_key] ?? ''),
-                    'value' => sanitize_text_field($data[$value_key] ?? ''),
-                ];
-            }
-        }
-
-        if ($has_columns) {
-            return $attributes;
-        }
-
-        if (!array_key_exists('Attributes', $data)) {
-            return null;
-        }
-
-        return $this->decode_import_collection($data['Attributes']);
-    }
-
-    /**
-     * 解析 base64 JSON 集合字段。
-     */
-    private function decode_import_collection($value)
-    {
-        $value = trim((string) $value);
-        if ('' === $value) {
-            return [];
-        }
-
-        $decoded = base64_decode($value, true);
-        $parsed = $decoded ? json_decode($decoded, true) : null;
-
-        return is_array($parsed) ? $parsed : [];
-    }
-
-    /**
-     * 更新集合型元数据。null 表示缺列跳过，空数组表示清空。
-     */
-    private function maybe_update_import_collection_meta($post_id, $meta_key, $items, $label)
-    {
-        if (null === $items) {
-            return;
-        }
-
-        if (empty($items)) {
-            delete_post_meta($post_id, $meta_key);
-            $this->log($label . '已清空');
-            return;
-        }
-
-        update_post_meta($post_id, $meta_key, $items);
-        $this->log($label . '已保存，共 ' . count($items) . ' 条');
-    }
-
-    /**
-     * 更新产品基础元数据。
-     *
-     * 当前用于导入 SKU，兼容字段名 product_sku 与 SKU
-     *
-     * @param int $post_id 产品 ID
-     * @param array $data CSV 行数据
-     * @return void
-     */
-    private function maybe_update_import_product_meta($post_id, $data)
-    {
-        $meta_map = [
-            'product_sku' => [
-                'product_sku',
-                'SKU',
-            ],
-        ];
-
-        foreach ($meta_map as $meta_key => $column_names) {
-            $matched_column = '';
-
-            foreach ($column_names as $column_name) {
-                if (array_key_exists($column_name, $data)) {
-                    $matched_column = $column_name;
-                    break;
-                }
-            }
-
-            if ('' === $matched_column) {
-                continue;
-            }
-
-            $meta_value = sanitize_text_field((string) ($data[$matched_column] ?? ''));
-
-            if ('' === $meta_value) {
-                delete_post_meta($post_id, $meta_key);
-                $this->log('产品字段已清空: ' . $meta_key);
-                continue;
-            }
-
-            update_post_meta($post_id, $meta_key, $meta_value);
-            $this->log('产品字段已保存: ' . $meta_key);
-        }
-    }
-
-    /**
-     * 更新 Rank Math SEO 元数据。
-     *
-     * 支持导入导出页面生成的英文列名，也兼容直接使用原始 meta key
-     *
-     * @param int $post_id 产品 ID
-     * @param array $data CSV 行数据
-     * @return void
-     */
-    private function maybe_update_import_rank_math_meta($post_id, $data)
-    {
-        $meta_map = $this->get_import_rank_math_meta_map();
-
-        foreach ($meta_map as $meta_key => $column_names) {
-            $matched_column = '';
-
-            foreach ($column_names as $column_name) {
-                if (array_key_exists($column_name, $data)) {
-                    $matched_column = $column_name;
-                    break;
-                }
-            }
-
-            if ('' === $matched_column) {
-                continue;
-            }
-
-            $meta_value = sanitize_text_field((string) ($data[$matched_column] ?? ''));
-
-            if ('' === $meta_value) {
-                delete_post_meta($post_id, $meta_key);
-                $this->log('SEO 字段已清空: ' . $meta_key);
-                continue;
-            }
-
-            update_post_meta($post_id, $meta_key, $meta_value);
-            $this->log('SEO 字段已保存: ' . $meta_key);
-        }
-    }
-
-    /**
-     * 获取 Rank Math 导入字段映射。
-     *
-     * @return array
-     */
-    private function get_import_rank_math_meta_map()
-    {
-        return [
-            'rank_math_focus_keyword' => [
-                'Focus Keyword',
-                'rank_math_focus_keyword',
-            ],
-            'rank_math_title' => [
-                'SEO Title',
-                'rank_math_title',
-            ],
-            'rank_math_description' => [
-                'Meta Description',
-                'rank_math_description',
-            ],
-        ];
-    }
-
-    /**
-     * 查找当前导入任务已经创建过的产品。
-     */
-    private function find_imported_post_by_row_key($row_key)
-    {
-        if (!$row_key) {
-            return 0;
-        }
-
-        $posts = get_posts([
-            'post_type' => 'product',
-            'post_status' => 'any',
-            'numberposts' => 1,
-            'fields' => 'ids',
-            'meta_key' => '_jc_import_row_key',
-            'meta_value' => $row_key,
-            'suppress_filters' => true,
-        ]);
-
-        return !empty($posts) ? absint($posts[0]) : 0;
-    }
-
-    /**
-     * 将上传文件保存到指定路径。
-     */
-    private function move_uploaded_file_to_path($source, $destination)
-    {
-        if (!$source || !$destination) {
-            return false;
-        }
-
-        if (@move_uploaded_file($source, $destination)) {
-            return true;
-        }
-
-        return $this->copy_file_with_retries($source, $destination, '上传文件复制');
-    }
-
-    /**
-     * 解压并定位导入图片目录。
-     */
-    private function prepare_import_images($temp_dir)
-    {
-        $images_path = '';
-
-        if (isset($_FILES['images_zip']) && $_FILES['images_zip']['error'] === UPLOAD_ERR_OK) {
-            $zip_name = sanitize_file_name($_FILES['images_zip']['name']);
-            $this->log('开始解压图片ZIP文件: ' . $zip_name);
-
-            if ('zip' !== strtolower(pathinfo($zip_name, PATHINFO_EXTENSION)) || !class_exists('ZipArchive')) {
-                $this->log('图片ZIP文件无效或当前环境不支持ZipArchive', 'warning');
-                return $images_path;
-            }
-
-            $zip = new ZipArchive();
-            if ($zip->open($_FILES['images_zip']['tmp_name']) !== true) {
-                $this->log('无法打开图片ZIP文件', 'warning');
-                return $images_path;
-            }
-
-            $extract_dir = trailingslashit($temp_dir) . 'images/';
-            wp_mkdir_p($extract_dir);
-
-            if (!$this->zip_has_safe_paths($zip)) {
-                $this->log('图片ZIP文件包含不安全路径，已跳过解压', 'warning');
-                $zip->close();
-                return $images_path;
-            }
-
-            if ($zip->extractTo($extract_dir)) {
-                $zip->close();
-                $images_path = $extract_dir;
-                $this->log('图片ZIP文件解压成功到: ' . $images_path);
-
-                if (false === $this->find_images_directory($images_path)) {
-                    $this->log('警告：未找到有效的图片目录', 'warning');
-                }
-            } else {
-                $this->log('图片ZIP文件解压失败', 'warning');
-                $zip->close();
-            }
-        } else {
-            $this->log('未提供图片ZIP文件或上传失败，错误代码: ' . ($_FILES['images_zip']['error'] ?? '无文件'));
-        }
-
-        return $images_path;
-    }
-
-    /**
-     * 读取CSV表头并统计总行数。
-     */
-    private function inspect_import_csv($csv_file)
-    {
-        $handle = fopen($csv_file, 'r');
-
-        if (!$handle) {
-            $this->log('无法打开CSV文件进行读取', 'error');
-            return new WP_Error('cannot_read_file', __('Cannot read uploaded file.', 'jelly-catalog'));
-        }
-
-        $this->log('开始读取CSV文件');
-        $this->skip_csv_bom($handle);
-
-        $headers = fgetcsv($handle);
-        if (empty($headers) || !is_array($headers)) {
-            $this->log('CSV表头为空或格式无效', 'error');
-            fclose($handle);
-            return new WP_Error('cannot_read_file', __('Cannot read uploaded file.', 'jelly-catalog'));
-        }
-
-        $headers = array_map(function ($header) {
-            return trim((string) $header);
-        }, $headers);
-        if (isset($headers[0])) {
-            $headers[0] = preg_replace('/^\xEF\xBB\xBF/', '', $headers[0]);
-        }
-
-        $data_offset = ftell($handle);
-        $total = 0;
-        while (false !== fgetcsv($handle)) {
-            $total++;
-        }
-
-        fclose($handle);
-
-        $counts = $this->get_import_dynamic_column_counts($headers);
-
-        $this->log('读取到表头: ' . implode(', ', $headers));
-        $this->log('检测到FAQ数量: ' . $counts['faq_count']);
-        $this->log('检测到属性数量: ' . $counts['attribute_count']);
-        $this->log('检测到产品行数: ' . $total);
-
-        return [
-            'headers' => $headers,
-            'faq_count' => $counts['faq_count'],
-            'attribute_count' => $counts['attribute_count'],
-            'data_offset' => $data_offset,
-            'total' => $total,
-        ];
-    }
-
-    /**
-     * 跳过CSV UTF-8 BOM。
-     */
-    private function skip_csv_bom($handle)
-    {
-        $bom = fread($handle, 3);
-        if ($bom !== chr(0xEF) . chr(0xBB) . chr(0xBF)) {
-            rewind($handle);
-        }
-    }
-
-    /**
-     * 统计动态FAQ和属性列数量。
-     */
-    private function get_import_dynamic_column_counts($headers)
-    {
-        $faq_count = 0;
-        $attribute_count = 0;
-
-        foreach ($headers as $header) {
-            if (strpos($header, 'FAQ_Q_') === 0 || strpos($header, 'FAQ_A_') === 0) {
-                $faq_num = (int) substr($header, 6);
-                if ($faq_num > $faq_count) {
-                    $faq_count = $faq_num;
-                }
-            } elseif (strpos($header, 'Attribute_Name_') === 0 || strpos($header, 'Attribute_Value_') === 0) {
-                $attr_num = (int) preg_replace('/^\D+/', '', $header);
-                if ($attr_num > $attribute_count) {
-                    $attribute_count = $attr_num;
-                }
-            }
-        }
-
-        return [
-            'faq_count' => $faq_count,
-            'attribute_count' => $attribute_count,
-        ];
-    }
-
-    /**
-     * 为图片文件创建文件名索引，避免每个产品重复递归扫描。
-     */
-    private function build_image_index($images_path)
-    {
-        $index = [];
-
-        if (!$images_path || !is_dir($images_path)) {
-            return $index;
-        }
-
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($images_path, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::LEAVES_ONLY
-        );
-
-        $root_path = rtrim(str_replace('\\', '/', $images_path), '/') . '/';
-
-        foreach ($iterator as $file) {
-            if (!$file->isFile()) {
-                continue;
-            }
-
-            $filename = $file->getFilename();
-            $path = $file->getPathname();
-            $normalized_path = str_replace('\\', '/', $path);
-            $relative_path = 0 === strpos($normalized_path, $root_path)
-                ? substr($normalized_path, strlen($root_path))
-                : $filename;
-            $lower_filename = strtolower($filename);
-            $lower_relative_path = strtolower($relative_path);
-
-            if ($relative_path && !isset($index[$relative_path])) {
-                $index[$relative_path] = $path;
-            }
-
-            if ($lower_relative_path && !isset($index[$lower_relative_path])) {
-                $index[$lower_relative_path] = $path;
-            }
-
-            if (!isset($index[$filename])) {
-                $index[$filename] = $path;
-            }
-
-            if (!isset($index[$lower_filename])) {
-                $index[$lower_filename] = $path;
-            }
-        }
-
-        $this->log('图片索引创建完成，文件名数量: ' . count($index));
-
-        return $index;
-    }
-
-    /**
-     * 读取图片索引。
-     */
-    private function load_image_index($image_index_file)
-    {
-        if (!$image_index_file || !file_exists($image_index_file)) {
-            return [];
-        }
-
-        $contents = file_get_contents($image_index_file);
-        $index = json_decode($contents, true);
-
-        return is_array($index) ? $index : [];
-    }
-
-    /**
-     * 根据文件名查找待导入图片路径。
-     */
-    private function resolve_import_image_path($images_path, $image_reference, $image_index)
-    {
-        $image_reference = $this->sanitize_import_image_reference($image_reference);
-        if (!$images_path || !is_dir($images_path) || !$image_reference) {
-            $this->log('未提供可用的图片目录，跳过图像: ' . $image_reference);
-            return false;
-        }
-
-        $direct_path = trailingslashit($images_path) . $image_reference;
-        if (file_exists($direct_path)) {
-            return $direct_path;
-        }
-
-        if (isset($image_index[$image_reference]) && file_exists($image_index[$image_reference])) {
-            return $image_index[$image_reference];
-        }
-
-        $lower_reference = strtolower($image_reference);
-        if (isset($image_index[$lower_reference]) && file_exists($image_index[$lower_reference])) {
-            return $image_index[$lower_reference];
-        }
-
-        $filename = basename($image_reference);
-        if (isset($image_index[$filename]) && file_exists($image_index[$filename])) {
-            return $image_index[$filename];
-        }
-
-        $lower_name = strtolower($filename);
-        if (isset($image_index[$lower_name]) && file_exists($image_index[$lower_name])) {
-            return $image_index[$lower_name];
-        }
-
-        return $this->find_file_in_subdirectories($images_path, $filename);
-    }
-
-    /**
-     * 规范化 CSV 中的图片引用，允许相对路径，拒绝绝对路径和目录穿越。
-     */
-    private function sanitize_import_image_reference($image_reference)
-    {
-        $image_reference = str_replace('\\', '/', trim((string) $image_reference));
-        $image_reference = ltrim($image_reference, '/');
-
-        if (
-            '' === $image_reference ||
-            preg_match('/^[a-zA-Z]:/', $image_reference) ||
-            preg_match('#(^|/)\.\.(/|$)#', $image_reference)
-        ) {
-            return sanitize_file_name(basename($image_reference));
-        }
-
-        $parts = array_filter(explode('/', $image_reference), 'strlen');
-        $parts = array_map('sanitize_file_name', $parts);
-
-        return implode('/', $parts);
-    }
-
-    /**
-     * 保存导入任务状态。
-     */
-    private function save_import_job($job)
-    {
-        set_transient($this->get_import_job_transient_key($job['id']), $job, DAY_IN_SECONDS);
-    }
-
-    /**
-     * 获取导入任务状态。
-     */
-    private function get_import_job($job_id)
-    {
-        if (!$job_id) {
-            return new WP_Error('missing_job', __('Import job not found.', 'jelly-catalog'));
-        }
-
-        $job = get_transient($this->get_import_job_transient_key($job_id));
-        if (!$job || !is_array($job)) {
-            return new WP_Error('missing_job', __('Import job not found.', 'jelly-catalog'));
-        }
-
-        if (!empty($job['user_id']) && (int) $job['user_id'] !== get_current_user_id()) {
-            return new WP_Error('missing_job', __('Import job not found.', 'jelly-catalog'));
-        }
-
-        return $job;
-    }
-
-    /**
-     * 导入任务 transient key。
-     */
-    private function get_import_job_transient_key($job_id)
-    {
-        return 'jc_import_job_' . sanitize_key($job_id);
-    }
-
-    /**
-     * 格式化导入任务响应。
-     */
-    private function format_import_job_response($job, $message = '')
-    {
-        $response = [
-            'job_id' => $job['id'] ?? '',
-            'status' => $job['status'] ?? 'pending',
-            'total' => absint($job['total'] ?? 0),
-            'processed' => absint($job['processed'] ?? 0),
-            'imported' => absint($job['imported'] ?? 0),
-            'errors' => absint($job['errors'] ?? 0),
-            'message' => $message ?: ($job['message'] ?? ''),
-        ];
-
-        if (isset($job['next_delay'])) {
-            $response['next_delay'] = absint($job['next_delay']);
-        }
-
-        return $response;
-    }
-
-    /**
-     * 获取前端可识别的导入错误代码。
-     */
-    private function get_import_error_code($error)
-    {
-        $code = $error instanceof WP_Error ? $error->get_error_code() : '';
-        $allowed_codes = [
-            'file_upload_failed',
-            'missing_import_file',
-            'invalid_csv_file',
-            'cannot_read_file',
-            'import_batch_failed',
-        ];
-
-        return in_array($code, $allowed_codes, true) ? $code : 'unknown';
-    }
-
-    /**
-     * 判断导入错误是否适合自动重试。
-     */
-    private function is_import_error_retryable($error)
-    {
-        if (!$error instanceof WP_Error) {
-            return false;
-        }
-
-        $data = $error->get_error_data();
-
-        return is_array($data) && !empty($data['retryable']);
-    }
-
-    /**
-     * 在目录及其子目录中查找图片文件
-     */
-    private function find_file_in_subdirectories($root_path, $filename)
-    {
-        $this->log("在目录 {$root_path} 及其子目录中搜索文件: {$filename}");
-
-        if (!$root_path || !is_dir($root_path) || !$filename) {
-            $this->log('图片目录或文件名无效');
-            return false;
-        }
-
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($root_path, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
-        );
-
-        foreach ($iterator as $file) {
-            if ($file->isFile() && $file->getFilename() === $filename) {
-                $this->log('找到文件: ' . $file->getPathname());
-                return $file->getPathname();
-            }
-        }
-
-        $this->log("未找到文件: {$filename}");
-        return false;
-    }
-
-    /**
-     * 校验 ZIP 内路径，避免解压到目标目录外。
-     *
-     * @param ZipArchive $zip ZIP 对象。
-     * @return bool
-     */
-    private function zip_has_safe_paths($zip)
-    {
-        for ($i = 0; $i < $zip->numFiles; $i++) {
-            $name = $zip->getNameIndex($i);
-            $normalized = str_replace('\\', '/', (string) $name);
-
-            if (
-                '' === $normalized ||
-                '/' === $normalized[0] ||
-                preg_match('/^[a-zA-Z]:/', $normalized) ||
-                preg_match('#(^|/)\.\.(/|$)#', $normalized)
-            ) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * 查找图片目录
-     */
-    private function find_images_directory($path)
-    {
-        $this->log('查找图片目录: ' . $path);
-
-        if (!$path || !is_dir($path)) {
-            $this->log('图片目录不存在');
-            return false;
-        }
-
-        // 检查当前目录是否包含图片文件
-        $files = glob($path . '*.{jpg,jpeg,png,gif,webp,JPG,JPEG,PNG,GIF,WEBP}', GLOB_BRACE);
-        if (!empty($files)) {
-            $this->log('在当前目录找到图片文件');
-            return $path;
-        }
-
-        // 搜索子目录
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
-        );
-
-        foreach ($iterator as $file) {
-            if ($file->isDir()) {
-                $sub_path = $file->getPathname() . DIRECTORY_SEPARATOR;
-                $files = glob($sub_path . '*.{jpg,jpeg,png,gif,webp,JPG,JPEG,PNG,GIF,WEBP}', GLOB_BRACE);
-                if (!empty($files)) {
-                    $this->log('在子目录找到图片文件: ' . $sub_path);
-                    return $sub_path;
-                }
-            }
-        }
-
-        $this->log('未在目录及其子目录中找到图片文件');
-        return false;
-    }
-
-    /**
-     * 带重试复制文件。
-     */
-    private function copy_file_with_retries($source, $destination, $context = '文件复制')
-    {
-        $max_retries = max(0, absint(apply_filters('jc_import_file_copy_retries', 2)));
-        $retry_delay = max(0, absint(apply_filters('jc_import_file_copy_retry_delay', 250)));
-
-        for ($attempt = 1; $attempt <= $max_retries + 1; $attempt++) {
-            if (@copy($source, $destination)) {
-                return true;
-            }
-
-            $this->log($context . '失败，尝试次数: ' . $attempt . '/' . ($max_retries + 1));
-
-            if ($attempt <= $max_retries && $retry_delay > 0) {
-                usleep($retry_delay * 1000 * min($attempt, 5));
-            }
-        }
-
-        $this->log($context . '失败，已重试 ' . $max_retries . ' 次', 'warning');
-
-        return false;
-    }
-
-    /**
-     * 清理过期的导入临时目录，避免中断任务长期占用上传目录。
-     */
-    private function cleanup_stale_import_temp_dirs()
-    {
-        $upload_dir = wp_upload_dir();
-        $base_dir = $upload_dir['basedir'] ?? '';
-        if (!$base_dir || !is_dir($base_dir)) {
-            return;
-        }
-
-        $ttl = max(DAY_IN_SECONDS, absint(apply_filters('jc_import_temp_dir_ttl', 2 * DAY_IN_SECONDS)));
-        $base_real = realpath($base_dir);
-        if (!$base_real) {
-            return;
-        }
-
-        $dirs = glob(trailingslashit($base_dir) . 'jc_import_*', GLOB_ONLYDIR);
-        if (empty($dirs)) {
-            return;
-        }
-
-        foreach ($dirs as $dir) {
-            $dir_real = realpath($dir);
-            if (!$dir_real || 0 !== strpos($dir_real, $base_real) || time() - filemtime($dir) < $ttl) {
-                continue;
-            }
-
-            $this->rrmdir($dir_real);
-        }
-    }
-
-    /**
-     * 将图片导入为附件
-     */
-    private function import_image_as_attachment($image_path, $post_id, $filename, $source_reference = '')
-    {
-        $filename = sanitize_file_name(basename($filename));
-        $this->log('开始导入图像为附件: ' . $filename);
-
-        if (!$filename || !file_exists($image_path)) {
-            $this->log('图像文件不存在: ' . $image_path, 'warning');
-            return false;
-        }
-
-        $file_hash = @md5_file($image_path);
-        if ($file_hash) {
-            $existing_attachment_id = $this->find_imported_attachment_by_hash($file_hash);
-            if ($existing_attachment_id) {
-                $this->log('复用已导入附件，ID: ' . $existing_attachment_id);
-                return $existing_attachment_id;
-            }
-        }
-
-        $allowed_mimes = [
-            'jpg|jpeg|jpe' => 'image/jpeg',
-            'gif' => 'image/gif',
-            'png' => 'image/png',
-            'webp' => 'image/webp',
-        ];
-        $wp_filetype = wp_check_filetype($filename, $allowed_mimes);
-        $image_size = @getimagesize($image_path);
-
-        if (empty($wp_filetype['type']) || false === $image_size || empty($image_size['mime']) || 0 !== strpos($image_size['mime'], 'image/')) {
-            $this->log('图像文件类型无效: ' . $filename, 'warning');
-            return false;
-        }
-
-        $upload_dir = wp_upload_dir();
-
-        // 创建唯一的文件名
-        $unique_filename = wp_unique_filename($upload_dir['path'], $filename);
-        $new_filepath = $upload_dir['path'] . '/' . $unique_filename;
-
-        $this->log('目标文件路径: ' . $new_filepath);
-
-        // 复制文件到上传目录
-        if ($this->copy_file_with_retries($image_path, $new_filepath, '图像文件复制')) {
-            $this->log('文件复制成功');
-
-            $this->log('文件类型: ' . $wp_filetype['type']);
-
-            // 创建附件元数据
-            $attachment = [
-                'post_mime_type' => $wp_filetype['type'],
-                'post_title' => sanitize_file_name(pathinfo($filename, PATHINFO_FILENAME)),
-                'post_content' => '',
-                'post_status' => 'inherit'
-            ];
-
-            // 插入附件
-            $attach_id = wp_insert_attachment($attachment, $new_filepath, $post_id);
-
-            if (is_wp_error($attach_id)) {
-                $this->log('附件插入失败: ' . $attach_id->get_error_message(), 'warning');
-                unlink($new_filepath);
-                return false;
-            }
-
-            $this->log('附件插入成功，ID: ' . $attach_id);
-
-            if ($file_hash) {
-                update_post_meta($attach_id, '_jc_import_file_hash', $file_hash);
-            }
-
-            if ($source_reference) {
-                update_post_meta($attach_id, '_jc_import_source_reference', $source_reference);
-            }
-
-            // 生成并更新附件元数据
-            require_once ABSPATH . 'wp-admin/includes/image.php';
-            $attach_data = wp_generate_attachment_metadata($attach_id, $new_filepath);
-            wp_update_attachment_metadata($attach_id, $attach_data);
-
-            $this->log('附件元数据更新完成');
-
-            return $attach_id;
-        } else {
-            $this->log('文件复制失败', 'warning');
-        }
-
-        return false;
-    }
-
-    /**
-     * 根据文件 hash 查找已导入附件，减少重复媒体文件。
-     */
-    private function find_imported_attachment_by_hash($file_hash)
-    {
-        static $cache = [];
-
-        if (!$file_hash) {
-            return 0;
-        }
-
-        if (isset($cache[$file_hash])) {
-            return $cache[$file_hash];
-        }
-
-        $attachments = get_posts([
-            'post_type' => 'attachment',
-            'post_status' => 'inherit',
-            'numberposts' => 1,
-            'fields' => 'ids',
-            'meta_key' => '_jc_import_file_hash',
-            'meta_value' => $file_hash,
-            'suppress_filters' => true,
-        ]);
-
-        if (empty($attachments)) {
-            return 0;
-        }
-
-        $cache[$file_hash] = absint($attachments[0]);
-
-        return $cache[$file_hash];
-    }
-
-    /**
-     * 递归删除目录
-     */
-    private function rrmdir($dir)
-    {
-        if (is_dir($dir)) {
-            $objects = scandir($dir);
-            foreach ($objects as $object) {
-                if ($object != '.' && $object != '..') {
-                    if (is_dir($dir . '/' . $object)) {
-                        $this->rrmdir($dir . '/' . $object);
-                    } else {
-                        unlink($dir . '/' . $object);
-                    }
-                }
-            }
-            rmdir($dir);
-        }
-    }
-
-    /**
-     * 显示导入结果通知
-     */
-    public function import_notices()
-    {
-        if (isset($_GET['import_success'])) {
-            $result = get_transient('jc_import_result');
-            if ($result) {
-                $messages = [];
-
-                if (!empty($result['categories_only'])) {
-                    $messages[] = sprintf(
-                        '%s %d %s',
-                        esc_html__('Successfully imported', 'jelly-catalog'),
-                        absint($result['categories_imported'] ?? 0),
-                        esc_html__('categories', 'jelly-catalog')
-                    );
-                } else {
-                    $messages[] = sprintf(
-                        '%s %d %s',
-                        esc_html__('Successfully imported', 'jelly-catalog'),
-                        absint($result['imported'] ?? 0),
-                        esc_html__('products', 'jelly-catalog')
-                    );
-                }
-
-                if (!empty($result['categories_imported']) || !empty($result['category_errors'])) {
-                    $messages[] = sprintf(
-                        '%d %s, %d %s',
-                        absint($result['categories_imported'] ?? 0),
-                        esc_html__('categories imported', 'jelly-catalog'),
-                        absint($result['category_errors'] ?? 0),
-                        esc_html__('category errors', 'jelly-catalog')
-                    );
-                }
-
-                $messages[] = sprintf(
-                    '%d %s',
-                    absint($result['errors'] ?? 0),
-                    esc_html__('errors', 'jelly-catalog')
-                );
-
-                printf(
-                    '<div class="notice notice-success is-dismissible"><p>%s. <a href="%s">%s</a></p></div>',
-                    esc_html(implode(', ', $messages)),
-                    esc_url(admin_url('edit.php?post_type=product&page=products-port')),
-                    esc_html__('View detailed log', 'jelly-catalog')
-                );
-                delete_transient('jc_import_result');
-            }
-        }
-
-        if (isset($_GET['import_error'])) {
-            $error_msg = '';
-            switch (sanitize_key(wp_unslash($_GET['import_error']))) {
-                case 'file_upload_failed':
-                    $error_msg = __('File upload failed.', 'jelly-catalog');
-                    break;
-                case 'missing_import_file':
-                    $error_msg = __('Please upload a product CSV or a category CSV.', 'jelly-catalog');
-                    break;
-                case 'invalid_csv_file':
-                    $error_msg = __('Invalid CSV file.', 'jelly-catalog');
-                    break;
-                case 'cannot_read_file':
-                    $error_msg = __('Cannot read uploaded file.', 'jelly-catalog');
-                    break;
-                default:
-                    $error_msg = __('An unknown error occurred during import.', 'jelly-catalog');
-            }
-
-            printf('<div class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html($error_msg));
-        }
-    }
+trait Port_Import {
+
+	/**
+	 * 日志文件路径
+	 *
+	 * @var string
+	 */
+	private $log_file;
+
+	/**
+	 * 写入日志到日志文件
+	 *
+	 * 根据日志级别过滤和记录导入过程中的事件
+	 * 日志文件可用于调试和监控导入进度
+	 *
+	 * @since 1.0.0
+	 * @param string $message 日志消息内容
+	 * @param string $level 日志级别 (debug, notice, warning, error)
+	 * @return void
+	 */
+	private function log( $message, $level = 'debug' ) {
+		$levels    = array(
+			'debug'   => 0,
+			'notice'  => 1,
+			'warning' => 2,
+			'error'   => 3,
+		);
+		$level     = isset( $levels[ $level ] ) ? $level : 'debug';
+		$min_level = apply_filters( 'jc_import_log_min_level', 'notice' );
+		$min_level = isset( $levels[ $min_level ] ) ? $min_level : 'notice';
+
+		if ( $levels[ $level ] < $levels[ $min_level ] ) {
+			return;
+		}
+
+		$timestamp = date( 'Y-m-d H:i:s' );
+		file_put_contents( $this->log_file, "[{$timestamp}] [" . strtoupper( $level ) . "] {$message}\n", FILE_APPEND | LOCK_EX );
+	}
+
+	/**
+	 * 导入产品入口方法（表单提交方式）
+	 *
+	 * 处理传统的表单提交导入请求
+	 * 验证权限和 nonce 后创建导入任务
+	 *
+	 * @since 1.0.0
+	 * @return void 重定向到导入页面或错误页面
+	 */
+	public function import_products() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( __( 'You do not have sufficient permissions to access this page.', 'jelly-catalog' ) );
+		}
+
+		$nonce = isset( $_POST['jc_import_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['jc_import_nonce'] ) ) : '';
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'jc_import_products' ) ) {
+			wp_die( __( 'Security check failed', 'jelly-catalog' ) );
+		}
+
+		$job = $this->create_import_job();
+		if ( is_wp_error( $job ) ) {
+			wp_safe_redirect(
+				add_query_arg(
+					array( 'import_error' => $this->get_import_error_code( $job ) ),
+					admin_url( 'edit.php?post_type=product&page=products-port' )
+				)
+			);
+			exit;
+		}
+
+		if ( ! empty( $job['status'] ) && 'complete' === $job['status'] && empty( $job['id'] ) ) {
+			wp_safe_redirect(
+				add_query_arg(
+					array( 'import_success' => 1 ),
+					admin_url( 'edit.php?post_type=product&page=products-port' )
+				)
+			);
+			exit;
+		}
+
+		wp_safe_redirect(
+			add_query_arg(
+				array( 'jc_import_job' => $job['id'] ),
+				admin_url( 'edit.php?post_type=product&page=products-port' )
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * AJAX 初始化导入任务
+	 *
+	 * 通过 AJAX 请求创建新的导入任务
+	 * 返回任务 ID 供后续分批处理使用
+	 *
+	 * @since 1.0.0
+	 * @return void 输出 JSON 响应
+	 */
+	public function ajax_start_import_products() {
+		check_ajax_referer( 'jc_import_products', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'You do not have sufficient permissions to access this page.', 'jelly-catalog' ),
+				),
+				403
+			);
+		}
+
+		$job = $this->create_import_job();
+		if ( is_wp_error( $job ) ) {
+			wp_send_json_error(
+				array(
+					'code'      => $this->get_import_error_code( $job ),
+					'message'   => $job->get_error_message(),
+					'retryable' => $this->is_import_error_retryable( $job ),
+				),
+				400
+			);
+		}
+
+		$response_message = ( ! empty( $job['status'] ) && 'complete' === $job['status'] )
+			? ''
+			: __( 'Import job prepared. Starting batch import...', 'jelly-catalog' );
+
+		wp_send_json_success( $this->format_import_job_response( $job, $response_message ) );
+	}
+
+	/**
+	 * AJAX 分批处理导入任务
+	 *
+	 * 通过 AJAX 请求分批处理导入任务
+	 * 支持断点续传，每次处理一批产品
+	 *
+	 * @since 1.0.0
+	 * @return void 输出 JSON 响应，包含导入进度和状态
+	 */
+	public function ajax_process_import_products() {
+		check_ajax_referer( 'jc_import_products', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'You do not have sufficient permissions to access this page.', 'jelly-catalog' ),
+				),
+				403
+			);
+		}
+
+		$job_id = isset( $_POST['job_id'] ) ? sanitize_key( wp_unslash( $_POST['job_id'] ) ) : '';
+		$job    = $this->get_import_job( $job_id );
+		if ( is_wp_error( $job ) ) {
+			wp_send_json_error(
+				array(
+					'code'    => $job->get_error_code(),
+					'message' => $job->get_error_message(),
+				),
+				404
+			);
+		}
+
+		$job = $this->process_import_batch( $job );
+		if ( is_wp_error( $job ) ) {
+			$status_code = $this->is_import_error_retryable( $job ) ? 500 : 400;
+
+			wp_send_json_error(
+				array(
+					'code'      => $this->get_import_error_code( $job ),
+					'message'   => $job->get_error_message(),
+					'retryable' => $this->is_import_error_retryable( $job ),
+				),
+				$status_code
+			);
+		}
+
+		wp_send_json_success( $this->format_import_job_response( $job ) );
+	}
+
+	/**
+	 * 创建导入任务，保存上传文件与导入状态
+	 *
+	 * 处理上传的 CSV 文件，创建临时目录
+	 * 解析 CSV 文件信息，准备图片资源
+	 * 创建导入任务并保存到选项表中
+	 *
+	 * @since 1.0.0
+	 * @return array|WP_Error 成功返回任务数组，失败返回 WP_Error
+	 */
+	private function create_import_job() {
+		if ( function_exists( 'set_time_limit' ) ) {
+			@set_time_limit( absint( apply_filters( 'jc_import_prepare_time_limit', 120 ) ) );
+		}
+
+		$this->cleanup_stale_import_temp_dirs();
+
+		if ( file_exists( $this->log_file ) ) {
+			unlink( $this->log_file );
+		}
+
+		$this->log( '开始导入产品', 'notice' );
+
+		$has_product_csv  = $this->has_import_upload( 'csv_file' );
+		$has_category_csv = $this->has_import_upload( 'category_csv' );
+
+		if ( ! $has_product_csv && ! $has_category_csv ) {
+			$this->log( '未上传产品CSV或分类CSV', 'error' );
+			return new WP_Error( 'missing_import_file', __( 'Please upload a product CSV or a category CSV.', 'jelly-catalog' ) );
+		}
+
+		$upload_dir = wp_upload_dir();
+		$job_id     = sanitize_key( str_replace( '-', '', wp_generate_uuid4() ) );
+		$temp_dir   = trailingslashit( $upload_dir['basedir'] ) . 'jc_import_' . $job_id;
+
+		if ( ! wp_mkdir_p( $temp_dir ) ) {
+			$this->log( '无法创建临时目录: ' . $temp_dir, 'error' );
+			return new WP_Error( 'cannot_read_file', __( 'Cannot read uploaded file.', 'jelly-catalog' ) );
+		}
+
+		$this->log( '创建临时目录: ' . $temp_dir );
+
+		$category_result = array(
+			'total'    => 0,
+			'imported' => 0,
+			'errors'   => 0,
+		);
+
+		if ( $has_category_csv ) {
+			$category_csv_file = trailingslashit( $temp_dir ) . 'product-categories.csv';
+			$category_upload   = $this->get_import_upload( 'category_csv' );
+			$category_save     = $this->save_uploaded_import_csv( $category_upload, $category_csv_file, '分类CSV' );
+
+			if ( is_wp_error( $category_save ) ) {
+				$this->rrmdir( $temp_dir );
+				return $category_save;
+			}
+
+			$category_result = $this->import_product_categories_from_csv( $category_csv_file );
+			if ( is_wp_error( $category_result ) ) {
+				$this->rrmdir( $temp_dir );
+				return $category_result;
+			}
+		}
+
+		if ( ! $has_product_csv ) {
+			if ( is_dir( $temp_dir ) ) {
+				$this->rrmdir( $temp_dir );
+			}
+
+			set_transient(
+				'jc_import_result',
+				array(
+					'imported'            => 0,
+					'errors'              => 0,
+					'categories_imported' => absint( $category_result['imported'] ),
+					'category_errors'     => absint( $category_result['errors'] ),
+					'categories_only'     => true,
+				),
+				60
+			);
+
+			return array(
+				'id'        => '',
+				'status'    => 'complete',
+				'total'     => absint( $category_result['total'] ),
+				'processed' => absint( $category_result['total'] ),
+				'imported'  => absint( $category_result['imported'] ),
+				'errors'    => absint( $category_result['errors'] ),
+				'message'   => sprintf(
+					/* translators: 1: imported count, 2: error count */
+					__( 'Category import completed. Imported: %1$d, Errors: %2$d.', 'jelly-catalog' ),
+					absint( $category_result['imported'] ),
+					absint( $category_result['errors'] )
+				),
+			);
+		}
+
+		$product_csv_file = trailingslashit( $temp_dir ) . 'products.csv';
+		$product_upload   = $this->get_import_upload( 'csv_file' );
+		$product_save     = $this->save_uploaded_import_csv( $product_upload, $product_csv_file, '产品CSV' );
+
+		if ( is_wp_error( $product_save ) ) {
+			$this->rrmdir( $temp_dir );
+			return $product_save;
+		}
+
+		$images_path = $this->prepare_import_images( $temp_dir );
+		$csv_info    = $this->inspect_import_csv( $product_csv_file );
+
+		if ( is_wp_error( $csv_info ) ) {
+			$this->rrmdir( $temp_dir );
+			return $csv_info;
+		}
+
+		$image_index_file = trailingslashit( $temp_dir ) . 'image-index.json';
+		$image_index      = $this->build_image_index( $images_path );
+		file_put_contents( $image_index_file, wp_json_encode( $image_index ) );
+
+		$job = array(
+			'id'                  => $job_id,
+			'user_id'             => get_current_user_id(),
+			'status'              => 'pending',
+			'csv_file'            => $product_csv_file,
+			'temp_dir'            => $temp_dir,
+			'images_path'         => $images_path,
+			'image_index_file'    => $image_index_file,
+			'headers'             => $csv_info['headers'],
+			'faq_count'           => $csv_info['faq_count'],
+			'attribute_count'     => $csv_info['attribute_count'],
+			'offset'              => $csv_info['data_offset'],
+			'total'               => $csv_info['total'],
+			'processed'           => 0,
+			'imported'            => 0,
+			'errors'              => 0,
+			'categories_imported' => absint( $category_result['imported'] ),
+			'category_errors'     => absint( $category_result['errors'] ),
+			'max_retries'         => max( 0, absint( apply_filters( 'jc_import_row_max_retries', 2 ) ) ),
+			'message'             => __( 'Import job prepared. Starting batch import...', 'jelly-catalog' ),
+			'created_at'          => time(),
+			'updated_at'          => time(),
+		);
+
+		$this->save_import_job( $job );
+		$this->log( '导入任务已创建，产品总数: ' . $job['total'], 'notice' );
+
+		return $job;
+	}
+
+	/**
+	 * 判断导入文件是否已上传。
+	 *
+	 * @param string $field_name 文件字段名
+	 * @return bool
+	 */
+	private function has_import_upload( $field_name ) {
+		return isset( $_FILES[ $field_name ] ) && (int) ( $_FILES[ $field_name ]['error'] ?? UPLOAD_ERR_NO_FILE ) === UPLOAD_ERR_OK;
+	}
+
+	/**
+	 * 获取导入上传文件信息。
+	 *
+	 * @param string $field_name 文件字段名
+	 * @return array
+	 */
+	private function get_import_upload( $field_name ) {
+		return isset( $_FILES[ $field_name ] ) && is_array( $_FILES[ $field_name ] ) ? $_FILES[ $field_name ] : array();
+	}
+
+	/**
+	 * 保存上传的 CSV 文件到临时目录。
+	 *
+	 * @param array $upload 文件上传数组
+	 * @param string $target_file 目标文件路径
+	 * @param string $label 日志标签
+	 * @return true|\WP_Error
+	 */
+	private function save_uploaded_import_csv( $upload, $target_file, $label ) {
+		$csv_name = sanitize_file_name( $upload['name'] ?? '' );
+		if ( 'csv' !== strtolower( pathinfo( $csv_name, PATHINFO_EXTENSION ) ) ) {
+			$this->log( $label . '扩展名无效: ' . $csv_name, 'error' );
+			return new WP_Error( 'invalid_csv_file', __( 'Invalid CSV file.', 'jelly-catalog' ) );
+		}
+
+		$this->log( $label . '上传成功: ' . $csv_name );
+
+		if ( ! $this->move_uploaded_file_to_path( $upload['tmp_name'] ?? '', $target_file ) ) {
+			$this->log( '无法保存' . $label . '到临时目录', 'error' );
+			return new WP_Error( 'cannot_read_file', __( 'Cannot read uploaded file.', 'jelly-catalog' ) );
+		}
+
+		return true;
+	}
+
+	/**
+	 * 分批处理导入任务
+	 *
+	 * 从 CSV 文件中读取一批产品数据进行导入
+	 * 支持断点续传，通过文件指针位置记录进度
+	 * 使用锁机制防止并发导入冲突
+	 *
+	 * @since 1.0.0
+	 * @param array $job 导入任务数据
+	 * @return array|WP_Error 更新后的任务数组或错误对象
+	 */
+	private function process_import_batch( $job ) {
+		if ( ! empty( $job['status'] ) && 'complete' === $job['status'] ) {
+			return $job;
+		}
+
+		if ( function_exists( 'set_time_limit' ) ) {
+			@set_time_limit( 30 );
+		}
+
+		$lock_ttl  = max( 120, absint( apply_filters( 'jc_import_batch_lock_ttl', 300 ) ) );
+		$locked_at = ! empty( $job['locked_at'] ) ? (int) $job['locked_at'] : 0;
+		if ( $locked_at && time() - $locked_at < $lock_ttl ) {
+			$job['status']     = 'waiting';
+			$job['message']    = __( 'Another import request is still running. Checking again...', 'jelly-catalog' );
+			$job['next_delay'] = max( 500, absint( apply_filters( 'jc_import_lock_wait_delay', 2000 ) ) );
+			return $job;
+		}
+
+		if ( $locked_at ) {
+			$job = $this->handle_expired_import_lock( $job );
+			if ( ! empty( $job['status'] ) && 'waiting' === $job['status'] ) {
+				return $job;
+			}
+		}
+
+		$lock_token        = wp_generate_uuid4();
+		$job['locked_at']  = time();
+		$job['lock_token'] = $lock_token;
+		$job['status']     = 'running';
+		$this->save_import_job( $job );
+
+		$handle = null;
+
+		try {
+			$csv_file = $job['csv_file'] ?? '';
+			if ( ! $csv_file || ! file_exists( $csv_file ) ) {
+				$this->log( '导入任务CSV文件不存在', 'error' );
+				unset( $job['locked_at'], $job['lock_token'] );
+				$job['status']  = 'error';
+				$job['message'] = __( 'Cannot read uploaded file.', 'jelly-catalog' );
+				$this->save_import_job( $job );
+				return new WP_Error( 'cannot_read_file', __( 'Cannot read uploaded file.', 'jelly-catalog' ), array( 'retryable' => false ) );
+			}
+
+			$handle = fopen( $csv_file, 'r' );
+			if ( ! $handle ) {
+				$this->log( '无法打开导入任务CSV文件', 'error' );
+				unset( $job['locked_at'], $job['lock_token'] );
+				$job['status']  = 'error';
+				$job['message'] = __( 'Cannot read uploaded file.', 'jelly-catalog' );
+				$this->save_import_job( $job );
+				return new WP_Error( 'cannot_read_file', __( 'Cannot read uploaded file.', 'jelly-catalog' ), array( 'retryable' => false ) );
+			}
+
+			if ( 0 !== fseek( $handle, (int) ( $job['offset'] ?? 0 ) ) ) {
+				$this->log( '无法定位CSV断点位置: ' . (int) ( $job['offset'] ?? 0 ), 'error' );
+				fclose( $handle );
+				$handle = null;
+				unset( $job['locked_at'], $job['lock_token'] );
+				$job['status']  = 'error';
+				$job['message'] = __( 'Cannot read uploaded file.', 'jelly-catalog' );
+				$this->save_import_job( $job );
+				return new WP_Error( 'cannot_read_file', __( 'Cannot read uploaded file.', 'jelly-catalog' ), array( 'retryable' => false ) );
+			}
+
+			$batch_size         = max( 1, absint( apply_filters( 'jc_import_batch_size', 5 ) ) );
+			$time_limit         = max( 5, absint( apply_filters( 'jc_import_batch_time_limit', 20 ) ) );
+			$started_at         = microtime( true );
+			$processed_in_batch = 0;
+			$image_index        = $this->load_image_index( $job['image_index_file'] ?? '' );
+
+			while ( $processed_in_batch < $batch_size && ( microtime( true ) - $started_at ) < $time_limit ) {
+				$job['locked_at']  = time();
+				$job['lock_token'] = $lock_token;
+				$row_start_offset  = ftell( $handle );
+				$row               = fgetcsv( $handle );
+				if ( false === $row ) {
+					break;
+				}
+
+				$row_end_offset     = ftell( $handle );
+				$row_number         = absint( $job['processed'] ) + 1;
+				$job['current_row'] = $this->prepare_import_current_row(
+					$job,
+					$row,
+					$row_number,
+					false !== $row_start_offset ? $row_start_offset : (int) ( $job['offset'] ?? 0 ),
+					false !== $row_end_offset ? $row_end_offset : 0
+				);
+				$this->save_import_job( $job );
+
+				$result = $this->process_import_row_with_retries(
+					$row,
+					$job['headers'],
+					absint( $job['faq_count'] ),
+					absint( $job['attribute_count'] ),
+					$job['images_path'] ?? '',
+					$image_index,
+					$job,
+					$row_number
+				);
+
+				if ( false !== $row_end_offset ) {
+					$job['offset'] = $row_end_offset;
+				}
+
+				$job['processed'] = absint( $job['processed'] ) + 1;
+				if ( $result ) {
+					$job['imported'] = absint( $job['imported'] ) + 1;
+				} else {
+					$job['errors'] = absint( $job['errors'] ) + 1;
+					$this->log_import_current_row_failure(
+						$job['current_row'],
+						__( 'Product import failed after retries. Skipping this row.', 'jelly-catalog' )
+					);
+				}
+
+				unset( $job['current_row'] );
+				++$processed_in_batch;
+				$job['locked_at']  = time();
+				$job['lock_token'] = $lock_token;
+				$job['updated_at'] = time();
+				$job['message']    = sprintf(
+					/* translators: 1: processed count, 2: total count */
+					__( 'Processed %1$d of %2$d products...', 'jelly-catalog' ),
+					absint( $job['processed'] ),
+					absint( $job['total'] )
+				);
+				$this->save_import_job( $job );
+			}
+
+			fclose( $handle );
+			$handle = null;
+		} catch ( Throwable $error ) {
+			if ( is_resource( $handle ) ) {
+				fclose( $handle );
+			}
+
+			unset( $job['locked_at'], $job['lock_token'] );
+			$job['status']     = 'error';
+			$job['message']    = __( 'Temporary import error. Retrying from the last saved position...', 'jelly-catalog' );
+			$job['last_error'] = $error->getMessage();
+			$job['updated_at'] = time();
+			$this->save_import_job( $job );
+			$this->log( '导入批次发生异常: ' . $error->getMessage(), 'warning' );
+
+			return new WP_Error(
+				'import_batch_failed',
+				__( 'Temporary import error. The import can be retried from the last saved position.', 'jelly-catalog' ),
+				array( 'retryable' => true )
+			);
+		}
+
+		if ( absint( $job['processed'] ) >= absint( $job['total'] ) ) {
+			$job['status']  = 'complete';
+			$job['message'] = sprintf(
+				/* translators: 1: imported count, 2: error count */
+				__( 'Import completed. Imported: %1$d, Errors: %2$d.', 'jelly-catalog' ),
+				absint( $job['imported'] ),
+				absint( $job['errors'] )
+			);
+
+			set_transient(
+				'jc_import_result',
+				array(
+					'imported'            => absint( $job['imported'] ),
+					'errors'              => absint( $job['errors'] ),
+					'categories_imported' => absint( $job['categories_imported'] ?? 0 ),
+					'category_errors'     => absint( $job['category_errors'] ?? 0 ),
+				),
+				60
+			);
+
+			$this->log( '导入过程结束，清理临时文件' );
+			if ( ! empty( $job['temp_dir'] ) && is_dir( $job['temp_dir'] ) ) {
+				$this->rrmdir( $job['temp_dir'] );
+			}
+			$this->log( "导入完成 - 成功: {$job['imported']}, 失败: {$job['errors']}", 'notice' );
+		} else {
+			$job['status']  = 'running';
+			$job['message'] = sprintf(
+				/* translators: 1: processed count, 2: total count */
+				__( 'Processed %1$d of %2$d products...', 'jelly-catalog' ),
+				absint( $job['processed'] ),
+				absint( $job['total'] )
+			);
+		}
+
+		unset( $job['locked_at'], $job['lock_token'] );
+		$job['updated_at'] = time();
+		$this->save_import_job( $job );
+
+		return $job;
+	}
+
+	/**
+	 * 处理过期导入锁，必要时跳过导致请求中断的当前行。
+	 */
+	private function handle_expired_import_lock( $job ) {
+		unset( $job['locked_at'], $job['lock_token'] );
+		$this->log( '导入锁已过期，接管任务继续处理', 'warning' );
+
+		if ( empty( $job['current_row'] ) || ! is_array( $job['current_row'] ) ) {
+			return $job;
+		}
+
+		$current_row  = $job['current_row'];
+		$started_at   = absint( $current_row['started_at'] ?? 0 );
+		$grace_period = max( 300, absint( apply_filters( 'jc_import_fatal_row_grace_period', 900 ) ) );
+		if ( $started_at && time() - $started_at < $grace_period ) {
+			$job['status']     = 'waiting';
+			$job['message']    = __( 'The current row is still within the safe wait window. Checking again...', 'jelly-catalog' );
+			$job['next_delay'] = max( 1000, absint( apply_filters( 'jc_import_lock_wait_delay', 2000 ) ) );
+			$this->save_import_job( $job );
+
+			return $job;
+		}
+
+		$max_fatal_retries             = max( 0, absint( apply_filters( 'jc_import_fatal_row_max_retries', 0 ) ) );
+		$fatal_attempts                = absint( $current_row['fatal_attempts'] ?? 0 ) + 1;
+		$current_row['fatal_attempts'] = $fatal_attempts;
+		$job['current_row']            = $current_row;
+
+		if ( $fatal_attempts <= $max_fatal_retries ) {
+			$this->log_import_current_row_failure(
+				$current_row,
+				sprintf(
+					/* translators: 1: attempt count, 2: max retry count */
+					__( 'The previous request stopped while importing this row. Retrying it (%1$d/%2$d).', 'jelly-catalog' ),
+					$fatal_attempts,
+					$max_fatal_retries
+				)
+			);
+			$this->save_import_job( $job );
+
+			return $job;
+		}
+
+		$end_offset = absint( $current_row['end_offset'] ?? 0 );
+		if ( $end_offset <= 0 ) {
+			$this->log_import_current_row_failure(
+				$current_row,
+				__( 'The previous request stopped on this row, but no safe CSV offset was saved. Retrying from the last stable position.', 'jelly-catalog' )
+			);
+			unset( $job['current_row'] );
+			$this->save_import_job( $job );
+
+			return $job;
+		}
+
+		$job['offset']     = $end_offset;
+		$job['processed']  = absint( $job['processed'] ) + 1;
+		$job['errors']     = absint( $job['errors'] ) + 1;
+		$job['updated_at'] = time();
+		$job['status']     = 'running';
+		$job['message']    = sprintf(
+			/* translators: 1: processed count, 2: total count */
+			__( 'Processed %1$d of %2$d products...', 'jelly-catalog' ),
+			absint( $job['processed'] ),
+			absint( $job['total'] )
+		);
+		unset( $job['current_row'] );
+
+		$this->log_import_current_row_failure(
+			$current_row,
+			__( 'The previous request stopped while importing this row. Skipping this product and continuing.', 'jelly-catalog' )
+		);
+		$this->save_import_job( $job );
+
+		return $job;
+	}
+
+	/**
+	 * 保存当前正在处理的 CSV 行信息，便于请求中断后定位问题行。
+	 */
+	private function prepare_import_current_row( $job, $row, $row_number, $row_start_offset, $row_end_offset ) {
+		$row_key        = $this->get_import_row_key( $job, $row, $row_number );
+		$summary        = $this->get_import_row_summary( $row, $job['headers'] ?? array() );
+		$fatal_attempts = 0;
+
+		if ( ! empty( $job['current_row']['key'] ) && hash_equals( (string) $job['current_row']['key'], $row_key ) ) {
+			$fatal_attempts = absint( $job['current_row']['fatal_attempts'] ?? 0 );
+		}
+
+		return array(
+			'key'            => $row_key,
+			'row_number'     => absint( $row_number ),
+			'start_offset'   => absint( $row_start_offset ),
+			'end_offset'     => absint( $row_end_offset ),
+			'source_id'      => $summary['source_id'],
+			'title'          => $summary['title'],
+			'fatal_attempts' => $fatal_attempts,
+			'started_at'     => time(),
+		);
+	}
+
+	/**
+	 * 获取行摘要。
+	 */
+	private function get_import_row_summary( $row, $headers ) {
+		$data = array();
+		if ( is_array( $headers ) && count( $headers ) === count( $row ) ) {
+			$combined = array_combine( $headers, $row );
+			$data     = is_array( $combined ) ? $combined : array();
+		}
+
+		return array(
+			'source_id' => isset( $data['ID'] ) ? sanitize_text_field( (string) $data['ID'] ) : '',
+			'title'     => isset( $data['Title'] ) ? sanitize_text_field( (string) $data['Title'] ) : '',
+		);
+	}
+
+	/**
+	 * 记录具体失败产品。
+	 */
+	private function log_import_current_row_failure( $current_row, $reason ) {
+		if ( ! is_array( $current_row ) ) {
+			$this->log( $reason, 'warning' );
+			return;
+		}
+
+		$parts = array();
+		if ( ! empty( $current_row['row_number'] ) ) {
+			$parts[] = 'CSV行: ' . absint( $current_row['row_number'] );
+		}
+
+		if ( ! empty( $current_row['source_id'] ) ) {
+			$parts[] = '原ID: ' . $current_row['source_id'];
+		}
+
+		if ( ! empty( $current_row['title'] ) ) {
+			$parts[] = '标题: ' . $current_row['title'];
+		}
+
+		if ( ! empty( $current_row['start_offset'] ) || ! empty( $current_row['end_offset'] ) ) {
+			$parts[] = 'offset: ' . absint( $current_row['start_offset'] ?? 0 ) . '-' . absint( $current_row['end_offset'] ?? 0 );
+		}
+
+		$message = $parts ? implode( '，', $parts ) . '，原因: ' . $reason : $reason;
+		$this->log( $message, 'warning' );
+	}
+
+	/**
+	 * 带重试处理单行产品数据。
+	 */
+	private function process_import_row_with_retries( $row, $headers, $faq_count, $attribute_count, $images_path, $image_index, $job, $row_number ) {
+		$max_retries = isset( $job['max_retries'] ) ? max( 0, absint( $job['max_retries'] ) ) : max( 0, absint( apply_filters( 'jc_import_row_max_retries', 2 ) ) );
+		$retry_delay = max( 0, absint( apply_filters( 'jc_import_row_retry_delay', 250 ) ) );
+		$row_key     = $this->get_import_row_key( $job, $row, $row_number );
+		$attempt     = 0;
+		$last_error  = '';
+
+		while ( $attempt <= $max_retries ) {
+			++$attempt;
+
+			try {
+				$result = $this->process_import_row(
+					$row,
+					$headers,
+					$faq_count,
+					$attribute_count,
+					$images_path,
+					$image_index,
+					$row_key
+				);
+
+				if ( $result ) {
+					return true;
+				}
+
+				$last_error = 'row returned false';
+				$this->log( '第 ' . $row_number . ' 行导入失败，尝试次数: ' . $attempt . '/' . ( $max_retries + 1 ) );
+			} catch ( Throwable $error ) {
+				$last_error = $error->getMessage();
+				$this->log( '第 ' . $row_number . ' 行导入异常: ' . $last_error . '，尝试次数: ' . $attempt . '/' . ( $max_retries + 1 ) );
+			}
+
+			if ( $attempt <= $max_retries && $retry_delay > 0 ) {
+				usleep( $retry_delay * 1000 * min( $attempt, 5 ) );
+			}
+		}
+
+		if ( $last_error ) {
+			$this->log( '第 ' . $row_number . ' 行重试结束，仍然失败: ' . $last_error, 'warning' );
+		}
+
+		return false;
+	}
+
+	/**
+	 * 获取导入行的幂等标记。
+	 */
+	private function get_import_row_key( $job, $row, $row_number ) {
+		return md5( ( $job['id'] ?? '' ) . '|' . absint( $row_number ) . '|' . wp_json_encode( $row ) );
+	}
+
+	/**
+	 * 处理单行产品数据。
+	 */
+	private function process_import_row( $row, $headers, $faq_count, $attribute_count, $images_path, $image_index, $row_key = '' ) {
+		$data = array_combine( $headers, $row );
+		if ( false === $data ) {
+			$this->log( 'CSV列数不匹配，跳过该行。Headers: ' . count( $headers ) . ' Row: ' . count( $row ), 'warning' );
+			return false;
+		}
+
+		$row_key = $row_key ? sanitize_key( $row_key ) : '';
+		$post_id = $this->save_import_post( $data, $row_key );
+		if ( ! $post_id ) {
+			return false;
+		}
+
+		if ( $row_key ) {
+			update_post_meta( $post_id, '_jc_import_row_key', $row_key );
+		}
+
+		$this->maybe_import_featured_image( $post_id, $data, $images_path, $image_index );
+		$this->maybe_import_gallery_images( $post_id, $data, $images_path, $image_index );
+		$this->maybe_update_import_product_categories( $post_id, $data );
+		$this->maybe_update_import_terms( $post_id, $data, 'Tags', 'product_tag' );
+		$this->maybe_update_import_collection_meta( $post_id, '_product_faqs', $this->parse_import_faqs( $data, $faq_count ), 'FAQ数据' );
+		$this->maybe_update_import_collection_meta( $post_id, '_product_attributes', $this->parse_import_attributes( $data, $attribute_count ), '属性数据' );
+		$this->maybe_update_import_product_meta( $post_id, $data );
+		$this->maybe_update_import_rank_math_meta( $post_id, $data );
+
+		$title = array_key_exists( 'Title', $data ) ? (string) $data['Title'] : '';
+		$this->log( '产品处理完成: ' . $title . "\n---" );
+
+		return true;
+	}
+
+	/**
+	 * 创建或更新产品基础字段。缺列时跳过对应字段。
+	 */
+	private function save_import_post( $data, $row_key ) {
+		$title = array_key_exists( 'Title', $data ) ? (string) $data['Title'] : '';
+		$this->log( '处理产品: ' . ( $title !== '' ? $title : '(未提供标题字段)' ) . ' (ID: ' . ( $data['ID'] ?? 'new' ) . ')' );
+
+		$existing_post_id = $this->find_existing_import_post_id( $data, $row_key );
+		$is_update        = $existing_post_id > 0;
+		$post_data        = array( 'post_type' => 'product' );
+
+		if ( $is_update ) {
+			$post_data['ID'] = $existing_post_id;
+		}
+
+		$field_map = array(
+			'Title'             => array( 'post_title', 'sanitize_text_field' ),
+			'Short Description' => array( 'post_excerpt', 'wp_kses_post' ),
+			'Description'       => array( 'post_content', 'wp_kses_post' ),
+		);
+
+		foreach ( $field_map as $csv_key => $field_config ) {
+			if ( array_key_exists( $csv_key, $data ) ) {
+				$post_data[ $field_config[0] ] = call_user_func( $field_config[1], $data[ $csv_key ] ?? '' );
+			}
+		}
+
+		if ( array_key_exists( 'Slug', $data ) ) {
+			$post_slug = $this->sanitize_import_post_slug( $data['Slug'] ?? '' );
+			if ( '' !== $post_slug ) {
+				$post_data['post_name'] = $post_slug;
+			}
+		}
+
+		$post_status = $this->get_import_post_status( $data, $is_update ? '' : 'publish' );
+		if ( '' !== $post_status ) {
+			$post_data['post_status'] = $post_status;
+		}
+
+		$post_field_updates = array_diff( array_keys( $post_data ), array( 'ID', 'post_type' ) );
+		if ( $is_update && empty( $post_field_updates ) ) {
+			$this->log( 'CSV未提供基础字段，跳过产品基础字段更新，ID: ' . $existing_post_id );
+			return $existing_post_id;
+		}
+
+		$post_id = $is_update ? wp_update_post( $post_data, true ) : wp_insert_post( $post_data, true );
+		if ( is_wp_error( $post_id ) ) {
+			$this->log( '创建/更新产品失败: ' . $post_id->get_error_message(), 'warning' );
+			return 0;
+		}
+
+		if ( ! $post_id ) {
+			$this->log( '创建/更新产品失败: 未返回有效产品ID', 'warning' );
+			return 0;
+		}
+
+		$this->log( '产品保存成功，ID: ' . $post_id );
+
+		return absint( $post_id );
+	}
+
+	/**
+	 * 获取导入产品状态。
+	 *
+	 * 当 CSV 存在 Status 列时，允许新建和更新都使用该状态
+	 *
+	 * @param array $data CSV 行数据
+	 * @param string $default_status 默认状态
+	 * @return string
+	 */
+	private function get_import_post_status( $data, $default_status = '' ) {
+		if ( ! array_key_exists( 'Status', $data ) ) {
+			return (string) $default_status;
+		}
+
+		$post_status = sanitize_key( (string) $data['Status'] );
+		if ( in_array( $post_status, array( 'publish', 'draft', 'pending', 'private' ), true ) ) {
+			return $post_status;
+		}
+
+		return (string) $default_status;
+	}
+
+	/**
+	 * 查找 CSV 指定的现有产品，或当前导入任务已创建过的产品。
+	 */
+	private function find_existing_import_post_id( $data, $row_key ) {
+		if ( ! empty( $data['ID'] ) ) {
+			$existing_post_id = absint( $data['ID'] );
+			$existing_post    = get_post( $existing_post_id );
+			if ( $existing_post && $existing_post->post_type === 'product' ) {
+				$this->log( '更新现有产品 ID: ' . $existing_post_id );
+				return $existing_post_id;
+			}
+
+			$this->log( '指定的产品ID不存在，将创建新产品: ' . $data['ID'] );
+		}
+
+		if ( $row_key ) {
+			$imported_post_id = $this->find_imported_post_by_row_key( $row_key );
+			if ( $imported_post_id ) {
+				$this->log( '从断点记录恢复已创建产品 ID: ' . $imported_post_id );
+				return $imported_post_id;
+			}
+		}
+
+		$existing_post_id = $this->find_existing_import_post_id_by_slug( $data );
+		if ( $existing_post_id ) {
+			$this->log( '根据 Slug 匹配到现有产品 ID: ' . $existing_post_id );
+			return $existing_post_id;
+		}
+
+		return 0;
+	}
+
+	/**
+	 * 根据 CSV 中的 Slug 查找现有产品。
+	 *
+	 * @param array $data CSV 行数据
+	 * @return int
+	 */
+	private function find_existing_import_post_id_by_slug( $data ) {
+		if ( ! array_key_exists( 'Slug', $data ) ) {
+			return 0;
+		}
+
+		$post_slug = $this->sanitize_import_post_slug( $data['Slug'] ?? '' );
+		if ( '' === $post_slug ) {
+			return 0;
+		}
+
+		$existing_post = get_page_by_path( $post_slug, OBJECT, 'product' );
+		if ( ! $existing_post instanceof \WP_Post ) {
+			return 0;
+		}
+
+		return absint( $existing_post->ID );
+	}
+
+	/**
+	 * 规范化导入的产品 Slug。
+	 *
+	 * @param string $post_slug 产品 slug
+	 * @return string
+	 */
+	private function sanitize_import_post_slug( $post_slug ) {
+		return sanitize_title( (string) $post_slug );
+	}
+
+	/**
+	 * 按 CSV 特色图列导入或清空特色图。缺列时跳过。
+	 */
+	private function maybe_import_featured_image( $post_id, $data, $images_path, $image_index ) {
+		if ( ! array_key_exists( 'Featured Image', $data ) ) {
+			return;
+		}
+
+		$image_reference = trim( (string) $data['Featured Image'] );
+		if ( '' === $image_reference ) {
+			delete_post_thumbnail( $post_id );
+			$this->log( '特色图像已清空' );
+			return;
+		}
+
+		$attachment_id = $this->import_image_reference( $image_reference, $post_id, $images_path, $image_index );
+		if ( $attachment_id ) {
+			set_post_thumbnail( $post_id, $attachment_id );
+			$this->log( '特色图像设置成功，附件ID: ' . $attachment_id );
+		} else {
+			$this->log( '特色图像导入失败: ' . $image_reference, 'warning' );
+		}
+	}
+
+	/**
+	 * 按 CSV 画廊列导入或清空画廊图。缺列时跳过。
+	 */
+	private function maybe_import_gallery_images( $post_id, $data, $images_path, $image_index ) {
+		if ( ! array_key_exists( 'Gallery Images', $data ) ) {
+			return;
+		}
+
+		$gallery_value = trim( (string) $data['Gallery Images'] );
+		if ( '' === $gallery_value ) {
+			delete_post_meta( $post_id, '_product_image_gallery' );
+			$this->log( '画廊图像已清空' );
+			return;
+		}
+
+		$gallery_ids    = array();
+		$gallery_images = array_filter( array_map( 'trim', explode( ',', $gallery_value ) ), 'strlen' );
+		$this->log( '处理画廊图像，共 ' . count( $gallery_images ) . ' 张图片' );
+
+		foreach ( $gallery_images as $image_reference ) {
+			$attachment_id = $this->import_image_reference( $image_reference, $post_id, $images_path, $image_index );
+			if ( $attachment_id ) {
+				$gallery_ids[] = $attachment_id;
+				$this->log( '画廊图像导入成功，附件ID: ' . $attachment_id );
+			} else {
+				$this->log( '画廊图像导入失败: ' . $image_reference, 'warning' );
+			}
+		}
+
+		if ( ! empty( $gallery_ids ) ) {
+			update_post_meta( $post_id, '_product_image_gallery', implode( ',', array_values( array_unique( $gallery_ids ) ) ) );
+			$this->log( '画廊图像元数据已保存，IDs: ' . implode( ',', $gallery_ids ) );
+		}
+	}
+
+	/**
+	 * 导入图片引用，并返回附件 ID。
+	 */
+	private function import_image_reference( $image_reference, $post_id, $images_path, $image_index ) {
+		$image_reference = $this->sanitize_import_image_reference( $image_reference );
+		if ( ! $image_reference ) {
+			return 0;
+		}
+
+		$image_path = $this->resolve_import_image_path( $images_path, $image_reference, $image_index );
+		$this->log( '处理导入图像: ' . $image_reference );
+		$this->log( '图像路径: ' . ( $image_path ?: '' ) );
+
+		if ( ! $image_path ) {
+			$this->log( '图像文件不存在: ' . $image_reference, 'warning' );
+			return 0;
+		}
+
+		return absint( $this->import_image_as_attachment( $image_path, $post_id, basename( $image_reference ), $image_reference ) );
+	}
+
+	/**
+	 * 更新分类或标签。缺列时跳过，列存在但为空时清空。
+	 */
+	private function maybe_update_import_terms( $post_id, $data, $column, $taxonomy ) {
+		if ( ! array_key_exists( $column, $data ) ) {
+			return;
+		}
+
+		$term_names = array_filter( array_map( 'trim', explode( '|', (string) $data[ $column ] ) ), 'strlen' );
+		$term_ids   = array();
+
+		foreach ( $term_names as $term_name ) {
+			$term_name = sanitize_text_field( $term_name );
+			if ( '' === $term_name ) {
+				continue;
+			}
+
+			$term = get_term_by( 'name', $term_name, $taxonomy );
+			if ( ! $term ) {
+				$new_term = wp_insert_term( $term_name, $taxonomy );
+				if ( is_wp_error( $new_term ) ) {
+					$this->log( '创建术语失败: ' . $term_name . ' (' . $new_term->get_error_message() . ')', 'warning' );
+					continue;
+				}
+
+				$term_ids[] = absint( $new_term['term_id'] );
+				$this->log( '创建新术语: ' . $term_name . ' (ID: ' . $new_term['term_id'] . ')' );
+				continue;
+			}
+
+			$term_ids[] = absint( $term->term_id );
+			$this->log( '使用现有术语: ' . $term_name . ' (ID: ' . $term->term_id . ')' );
+		}
+
+		$result = wp_set_post_terms( $post_id, array_values( array_unique( $term_ids ) ), $taxonomy );
+		if ( is_wp_error( $result ) ) {
+			$this->log( '设置术语失败: ' . $result->get_error_message(), 'warning' );
+			return;
+		}
+
+		$this->log( '产品术语已设置，taxonomy: ' . $taxonomy . '，IDs: ' . implode( ',', $term_ids ) );
+	}
+
+	/**
+	 * 更新产品分类。
+	 *
+	 * 支持名称路径与 slug 路径，优先使用 slug 路径创建和匹配层级分类
+	 *
+	 * @param int $post_id 产品 ID
+	 * @param array $data CSV 行数据
+	 * @return void
+	 */
+	private function maybe_update_import_product_categories( $post_id, $data ) {
+		$has_name_column = array_key_exists( 'Categories', $data );
+		$has_slug_column = array_key_exists( 'Category Slugs', $data );
+
+		if ( ! $has_name_column && ! $has_slug_column ) {
+			return;
+		}
+
+		$name_paths = $has_name_column ? $this->parse_import_multi_value_list( $data['Categories'] ?? '' ) : array();
+		$slug_paths = $has_slug_column ? $this->parse_import_multi_value_list( $data['Category Slugs'] ?? '' ) : array();
+
+		if ( empty( $name_paths ) && empty( $slug_paths ) ) {
+			wp_set_post_terms( $post_id, array(), 'product_cat' );
+			$this->log( '产品分类已清空' );
+			return;
+		}
+
+		$term_ids  = array();
+		$max_items = max( count( $name_paths ), count( $slug_paths ) );
+
+		for ( $index = 0; $index < $max_items; $index++ ) {
+			$name_path = $name_paths[ $index ] ?? '';
+			$slug_path = $slug_paths[ $index ] ?? '';
+			$term_id   = $this->resolve_import_product_category_term( $slug_path, $name_path );
+
+			if ( $term_id ) {
+				$term_ids[] = $term_id;
+			}
+		}
+
+		$result = wp_set_post_terms( $post_id, array_values( array_unique( $term_ids ) ), 'product_cat' );
+		if ( is_wp_error( $result ) ) {
+			$this->log( '设置产品分类失败: ' . $result->get_error_message(), 'warning' );
+			return;
+		}
+
+		$this->log( '产品分类已设置，IDs: ' . implode( ',', array_values( array_unique( $term_ids ) ) ) );
+	}
+
+	/**
+	 * 解析多值列表。
+	 *
+	 * @param string $value 原始值
+	 * @return array
+	 */
+	private function parse_import_multi_value_list( $value ) {
+		return array_values( array_filter( array_map( 'trim', explode( '|', (string) $value ) ), 'strlen' ) );
+	}
+
+	/**
+	 * 解析分类名称路径。
+	 *
+	 * @param string $path 分类路径
+	 * @return array
+	 */
+	private function parse_import_category_name_path( $path ) {
+		return array_values( array_filter( array_map( 'sanitize_text_field', preg_split( '/\s*>\s*/', (string) $path ) ), 'strlen' ) );
+	}
+
+	/**
+	 * 解析分类 slug 路径。
+	 *
+	 * @param string $path 分类 slug 路径
+	 * @return array
+	 */
+	private function parse_import_category_slug_path( $path ) {
+		return array_values( array_filter( array_map( 'sanitize_title', explode( '/', trim( (string) $path, '/' ) ) ), 'strlen' ) );
+	}
+
+	/**
+	 * 解析或创建产品分类层级。
+	 *
+	 * @param string $slug_path 分类 slug 路径
+	 * @param string $name_path 分类名称路径
+	 * @return int
+	 */
+	private function resolve_import_product_category_term( $slug_path, $name_path ) {
+		$slug_segments = $this->parse_import_category_slug_path( $slug_path );
+		$name_segments = $this->parse_import_category_name_path( $name_path );
+		$depth         = max( count( $slug_segments ), count( $name_segments ) );
+		$parent_id     = 0;
+
+		if ( $depth < 1 ) {
+			return 0;
+		}
+
+		for ( $index = 0; $index < $depth; $index++ ) {
+			$slug = $slug_segments[ $index ] ?? sanitize_title( $name_segments[ $index ] ?? '' );
+			$name = $name_segments[ $index ] ?? $this->format_import_category_name_from_slug( $slug );
+
+			if ( '' === $slug ) {
+				continue;
+			}
+
+			$term = get_term_by( 'slug', $slug, 'product_cat' );
+			if ( $term && ! is_wp_error( $term ) ) {
+				$term_id = absint( $term->term_id );
+
+				if ( $parent_id && (int) $term->parent !== $parent_id ) {
+					wp_update_term( $term_id, 'product_cat', array( 'parent' => $parent_id ) );
+				}
+
+				$parent_id = $term_id;
+				continue;
+			}
+
+			$result = wp_insert_term(
+				$name,
+				'product_cat',
+				array(
+					'slug'   => $slug,
+					'parent' => $parent_id,
+				)
+			);
+
+			if ( is_wp_error( $result ) ) {
+				if ( 'term_exists' === $result->get_error_code() ) {
+					$parent_id = absint( $result->get_error_data() );
+					continue;
+				}
+
+				$this->log( '创建层级分类失败: ' . $slug . ' (' . $result->get_error_message() . ')', 'warning' );
+				return 0;
+			}
+
+			$parent_id = absint( $result['term_id'] );
+			$this->log( '创建层级分类成功: ' . $name . ' (ID: ' . $parent_id . ')' );
+		}
+
+		return $parent_id;
+	}
+
+	/**
+	 * 根据 slug 生成兜底分类名称。
+	 *
+	 * @param string $slug 分类 slug
+	 * @return string
+	 */
+	private function format_import_category_name_from_slug( $slug ) {
+		$slug = (string) $slug;
+		if ( '' === $slug ) {
+			return '';
+		}
+
+		return ucwords( str_replace( array( '-', '_' ), ' ', $slug ) );
+	}
+
+	/**
+	 * 从分类 CSV 导入产品分类。
+	 *
+	 * @param string $csv_file 分类 CSV 文件路径
+	 * @return array|\WP_Error
+	 */
+	private function import_product_categories_from_csv( $csv_file ) {
+		$handle = fopen( $csv_file, 'r' );
+		if ( ! $handle ) {
+			$this->log( '无法打开分类CSV文件', 'error' );
+			return new WP_Error( 'cannot_read_file', __( 'Cannot read uploaded file.', 'jelly-catalog' ) );
+		}
+
+		$this->skip_csv_bom( $handle );
+		$headers = fgetcsv( $handle );
+		if ( empty( $headers ) || ! is_array( $headers ) ) {
+			fclose( $handle );
+			$this->log( '分类CSV表头为空或格式无效', 'error' );
+			return new WP_Error( 'invalid_csv_file', __( 'Invalid CSV file.', 'jelly-catalog' ) );
+		}
+
+		$headers = array_map(
+			function ( $header ) {
+				return trim( (string) $header );
+			},
+			$headers
+		);
+
+		if ( isset( $headers[0] ) ) {
+			$headers[0] = preg_replace( '/^\xEF\xBB\xBF/', '', $headers[0] );
+		}
+
+		$rows = array();
+		while ( false !== ( $row = fgetcsv( $handle ) ) ) {
+			$data = array_combine( $headers, $row );
+			if ( false === $data ) {
+				continue;
+			}
+
+			$rows[] = $data;
+		}
+
+		fclose( $handle );
+
+		$result = array(
+			'total'    => count( $rows ),
+			'imported' => 0,
+			'errors'   => 0,
+		);
+
+		if ( empty( $rows ) ) {
+			return $result;
+		}
+
+		$pending_rows = array_values( $rows );
+		$max_passes   = max( 1, count( $pending_rows ) );
+
+		for ( $pass = 0; $pass < $max_passes && ! empty( $pending_rows ); $pass++ ) {
+			$next_pending_rows = array();
+			$progress_made     = false;
+
+			foreach ( $pending_rows as $row_data ) {
+				$row_result = $this->import_product_category_row( $row_data );
+
+				if ( 'defer' === $row_result ) {
+					$next_pending_rows[] = $row_data;
+					continue;
+				}
+
+				$progress_made = true;
+
+				if ( $row_result ) {
+					++$result['imported'];
+				} else {
+					++$result['errors'];
+				}
+			}
+
+			if ( ! $progress_made ) {
+				break;
+			}
+
+			$pending_rows = $next_pending_rows;
+		}
+
+		if ( ! empty( $pending_rows ) ) {
+			foreach ( $pending_rows as $row_data ) {
+				$title = sanitize_text_field( (string) ( $row_data['Title'] ?? '' ) );
+				$slug  = sanitize_title( (string) ( $row_data['Slug'] ?? '' ) );
+				$this->log( '分类导入失败，未能解析父级关系: ' . ( $title ?: $slug ), 'warning' );
+				++$result['errors'];
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * 导入单个分类 CSV 行。
+	 *
+	 * @param array $data CSV 行数据
+	 * @return int|string
+	 */
+	private function import_product_category_row( $data ) {
+		$title       = sanitize_text_field( (string) ( $data['Title'] ?? '' ) );
+		$slug        = sanitize_title( (string) ( $data['Slug'] ?? '' ) );
+		$description = wp_kses_post( (string) ( $data['Description'] ?? '' ) );
+		$parent_slug = sanitize_title( (string) ( $data['Parent Slug'] ?? '' ) );
+		$parent_id   = 0;
+
+		if ( '' === $slug ) {
+			$slug = sanitize_title( $title );
+		}
+
+		if ( '' === $title ) {
+			$title = $this->format_import_category_name_from_slug( $slug );
+		}
+
+		if ( '' === $slug || '' === $title ) {
+			$this->log( '分类CSV缺少有效标题或 slug，已跳过', 'warning' );
+			return 0;
+		}
+
+		if ( '' !== $parent_slug ) {
+			$parent_term = get_term_by( 'slug', $parent_slug, 'product_cat' );
+			if ( ! $parent_term || is_wp_error( $parent_term ) ) {
+				return 'defer';
+			}
+
+			$parent_id = absint( $parent_term->term_id );
+		}
+
+		$term = get_term_by( 'slug', $slug, 'product_cat' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			$term_id       = absint( $term->term_id );
+			$update_result = wp_update_term(
+				$term_id,
+				'product_cat',
+				array(
+					'name'        => $title,
+					'description' => $description,
+					'parent'      => $parent_id,
+					'slug'        => $slug,
+				)
+			);
+
+			if ( is_wp_error( $update_result ) ) {
+				$this->log( '更新分类失败: ' . $slug . ' (' . $update_result->get_error_message() . ')', 'warning' );
+				return 0;
+			}
+		} else {
+			$insert_result = wp_insert_term(
+				$title,
+				'product_cat',
+				array(
+					'slug'        => $slug,
+					'description' => $description,
+					'parent'      => $parent_id,
+				)
+			);
+
+			if ( is_wp_error( $insert_result ) ) {
+				$this->log( '创建分类失败: ' . $slug . ' (' . $insert_result->get_error_message() . ')', 'warning' );
+				return 0;
+			}
+
+			$term_id = absint( $insert_result['term_id'] );
+		}
+
+		$this->maybe_update_import_product_category_meta( $term_id, $data );
+		$this->log( '分类已导入: ' . $title . ' (ID: ' . $term_id . ')' );
+
+		return $term_id;
+	}
+
+	/**
+	 * 更新分类 Rank Math 元数据。
+	 *
+	 * @param int $term_id 分类 ID
+	 * @param array $data CSV 行数据
+	 * @return void
+	 */
+	private function maybe_update_import_product_category_meta( $term_id, $data ) {
+		$meta_map = array(
+			'rank_math_focus_keyword' => array(
+				'Focus Keyword',
+				'rank_math_focus_keyword',
+			),
+			'rank_math_title'         => array(
+				'SEO Title',
+				'rank_math_title',
+			),
+			'rank_math_description'   => array(
+				'Meta Description',
+				'rank_math_description',
+			),
+		);
+
+		foreach ( $meta_map as $meta_key => $column_names ) {
+			$matched_column = '';
+
+			foreach ( $column_names as $column_name ) {
+				if ( array_key_exists( $column_name, $data ) ) {
+					$matched_column = $column_name;
+					break;
+				}
+			}
+
+			if ( '' === $matched_column ) {
+				continue;
+			}
+
+			$meta_value = sanitize_text_field( (string) ( $data[ $matched_column ] ?? '' ) );
+
+			if ( '' === $meta_value ) {
+				delete_term_meta( $term_id, $meta_key );
+				continue;
+			}
+
+			update_term_meta( $term_id, $meta_key, $meta_value );
+		}
+	}
+
+	/**
+	 * 解析 FAQ 数据。返回 null 表示缺列跳过。
+	 */
+	private function parse_import_faqs( $data, $faq_count ) {
+		$faqs        = array();
+		$has_columns = false;
+
+		for ( $i = 1; $i <= $faq_count; $i++ ) {
+			$question_key = 'FAQ_Q_' . $i;
+			$answer_key   = 'FAQ_A_' . $i;
+			if ( ! array_key_exists( $question_key, $data ) && ! array_key_exists( $answer_key, $data ) ) {
+				continue;
+			}
+
+			$has_columns = true;
+			if ( ! empty( $data[ $question_key ] ) || ! empty( $data[ $answer_key ] ) ) {
+				$faqs[] = array(
+					'name'  => sanitize_text_field( $data[ $question_key ] ?? '' ),
+					'value' => sanitize_textarea_field( $data[ $answer_key ] ?? '' ),
+				);
+			}
+		}
+
+		if ( $has_columns ) {
+			return $faqs;
+		}
+
+		if ( ! array_key_exists( 'FAQs', $data ) ) {
+			return null;
+		}
+
+		return $this->decode_import_collection( $data['FAQs'] );
+	}
+
+	/**
+	 * 解析属性数据。返回 null 表示缺列跳过。
+	 */
+	private function parse_import_attributes( $data, $attribute_count ) {
+		$attributes  = array();
+		$has_columns = false;
+
+		for ( $i = 1; $i <= $attribute_count; $i++ ) {
+			$name_key  = 'Attribute_Name_' . $i;
+			$value_key = 'Attribute_Value_' . $i;
+			if ( ! array_key_exists( $name_key, $data ) && ! array_key_exists( $value_key, $data ) ) {
+				continue;
+			}
+
+			$has_columns = true;
+			if ( ! empty( $data[ $name_key ] ) || ! empty( $data[ $value_key ] ) ) {
+				$attributes[] = array(
+					'name'  => sanitize_text_field( $data[ $name_key ] ?? '' ),
+					'value' => sanitize_text_field( $data[ $value_key ] ?? '' ),
+				);
+			}
+		}
+
+		if ( $has_columns ) {
+			return $attributes;
+		}
+
+		if ( ! array_key_exists( 'Attributes', $data ) ) {
+			return null;
+		}
+
+		return $this->decode_import_collection( $data['Attributes'] );
+	}
+
+	/**
+	 * 解析 base64 JSON 集合字段。
+	 */
+	private function decode_import_collection( $value ) {
+		$value = trim( (string) $value );
+		if ( '' === $value ) {
+			return array();
+		}
+
+		$decoded = base64_decode( $value, true );
+		$parsed  = $decoded ? json_decode( $decoded, true ) : null;
+
+		return is_array( $parsed ) ? $parsed : array();
+	}
+
+	/**
+	 * 更新集合型元数据。null 表示缺列跳过，空数组表示清空。
+	 */
+	private function maybe_update_import_collection_meta( $post_id, $meta_key, $items, $label ) {
+		if ( null === $items ) {
+			return;
+		}
+
+		if ( empty( $items ) ) {
+			delete_post_meta( $post_id, $meta_key );
+			$this->log( $label . '已清空' );
+			return;
+		}
+
+		update_post_meta( $post_id, $meta_key, $items );
+		$this->log( $label . '已保存，共 ' . count( $items ) . ' 条' );
+	}
+
+	/**
+	 * 更新产品基础元数据。
+	 *
+	 * 当前用于导入 SKU，兼容字段名 product_sku 与 SKU
+	 *
+	 * @param int $post_id 产品 ID
+	 * @param array $data CSV 行数据
+	 * @return void
+	 */
+	private function maybe_update_import_product_meta( $post_id, $data ) {
+		$meta_map = array(
+			'product_sku' => array(
+				'product_sku',
+				'SKU',
+			),
+		);
+
+		foreach ( $meta_map as $meta_key => $column_names ) {
+			$matched_column = '';
+
+			foreach ( $column_names as $column_name ) {
+				if ( array_key_exists( $column_name, $data ) ) {
+					$matched_column = $column_name;
+					break;
+				}
+			}
+
+			if ( '' === $matched_column ) {
+				continue;
+			}
+
+			$meta_value = sanitize_text_field( (string) ( $data[ $matched_column ] ?? '' ) );
+
+			if ( '' === $meta_value ) {
+				delete_post_meta( $post_id, $meta_key );
+				$this->log( '产品字段已清空: ' . $meta_key );
+				continue;
+			}
+
+			update_post_meta( $post_id, $meta_key, $meta_value );
+			$this->log( '产品字段已保存: ' . $meta_key );
+		}
+	}
+
+	/**
+	 * 更新 Rank Math SEO 元数据。
+	 *
+	 * 支持导入导出页面生成的英文列名，也兼容直接使用原始 meta key
+	 *
+	 * @param int $post_id 产品 ID
+	 * @param array $data CSV 行数据
+	 * @return void
+	 */
+	private function maybe_update_import_rank_math_meta( $post_id, $data ) {
+		$meta_map = $this->get_import_rank_math_meta_map();
+
+		foreach ( $meta_map as $meta_key => $column_names ) {
+			$matched_column = '';
+
+			foreach ( $column_names as $column_name ) {
+				if ( array_key_exists( $column_name, $data ) ) {
+					$matched_column = $column_name;
+					break;
+				}
+			}
+
+			if ( '' === $matched_column ) {
+				continue;
+			}
+
+			$meta_value = sanitize_text_field( (string) ( $data[ $matched_column ] ?? '' ) );
+
+			if ( '' === $meta_value ) {
+				delete_post_meta( $post_id, $meta_key );
+				$this->log( 'SEO 字段已清空: ' . $meta_key );
+				continue;
+			}
+
+			update_post_meta( $post_id, $meta_key, $meta_value );
+			$this->log( 'SEO 字段已保存: ' . $meta_key );
+		}
+	}
+
+	/**
+	 * 获取 Rank Math 导入字段映射。
+	 *
+	 * @return array
+	 */
+	private function get_import_rank_math_meta_map() {
+		return array(
+			'rank_math_focus_keyword' => array(
+				'Focus Keyword',
+				'rank_math_focus_keyword',
+			),
+			'rank_math_title'         => array(
+				'SEO Title',
+				'rank_math_title',
+			),
+			'rank_math_description'   => array(
+				'Meta Description',
+				'rank_math_description',
+			),
+		);
+	}
+
+	/**
+	 * 查找当前导入任务已经创建过的产品。
+	 */
+	private function find_imported_post_by_row_key( $row_key ) {
+		if ( ! $row_key ) {
+			return 0;
+		}
+
+		$posts = get_posts(
+			array(
+				'post_type'        => 'product',
+				'post_status'      => 'any',
+				'numberposts'      => 1,
+				'fields'           => 'ids',
+				'meta_key'         => '_jc_import_row_key',
+				'meta_value'       => $row_key,
+				'suppress_filters' => true,
+			)
+		);
+
+		return ! empty( $posts ) ? absint( $posts[0] ) : 0;
+	}
+
+	/**
+	 * 将上传文件保存到指定路径。
+	 */
+	private function move_uploaded_file_to_path( $source, $destination ) {
+		if ( ! $source || ! $destination ) {
+			return false;
+		}
+
+		if ( @move_uploaded_file( $source, $destination ) ) {
+			return true;
+		}
+
+		return $this->copy_file_with_retries( $source, $destination, '上传文件复制' );
+	}
+
+	/**
+	 * 解压并定位导入图片目录。
+	 */
+	private function prepare_import_images( $temp_dir ) {
+		$images_path = '';
+
+		if ( isset( $_FILES['images_zip'] ) && $_FILES['images_zip']['error'] === UPLOAD_ERR_OK ) {
+			$zip_name = sanitize_file_name( $_FILES['images_zip']['name'] );
+			$this->log( '开始解压图片ZIP文件: ' . $zip_name );
+
+			if ( 'zip' !== strtolower( pathinfo( $zip_name, PATHINFO_EXTENSION ) ) || ! class_exists( 'ZipArchive' ) ) {
+				$this->log( '图片ZIP文件无效或当前环境不支持ZipArchive', 'warning' );
+				return $images_path;
+			}
+
+			$zip = new ZipArchive();
+			if ( $zip->open( $_FILES['images_zip']['tmp_name'] ) !== true ) {
+				$this->log( '无法打开图片ZIP文件', 'warning' );
+				return $images_path;
+			}
+
+			$extract_dir = trailingslashit( $temp_dir ) . 'images/';
+			wp_mkdir_p( $extract_dir );
+
+			if ( ! $this->zip_has_safe_paths( $zip ) ) {
+				$this->log( '图片ZIP文件包含不安全路径，已跳过解压', 'warning' );
+				$zip->close();
+				return $images_path;
+			}
+
+			if ( $zip->extractTo( $extract_dir ) ) {
+				$zip->close();
+				$images_path = $extract_dir;
+				$this->log( '图片ZIP文件解压成功到: ' . $images_path );
+
+				if ( false === $this->find_images_directory( $images_path ) ) {
+					$this->log( '警告：未找到有效的图片目录', 'warning' );
+				}
+			} else {
+				$this->log( '图片ZIP文件解压失败', 'warning' );
+				$zip->close();
+			}
+		} else {
+			$this->log( '未提供图片ZIP文件或上传失败，错误代码: ' . ( $_FILES['images_zip']['error'] ?? '无文件' ) );
+		}
+
+		return $images_path;
+	}
+
+	/**
+	 * 读取CSV表头并统计总行数。
+	 */
+	private function inspect_import_csv( $csv_file ) {
+		$handle = fopen( $csv_file, 'r' );
+
+		if ( ! $handle ) {
+			$this->log( '无法打开CSV文件进行读取', 'error' );
+			return new WP_Error( 'cannot_read_file', __( 'Cannot read uploaded file.', 'jelly-catalog' ) );
+		}
+
+		$this->log( '开始读取CSV文件' );
+		$this->skip_csv_bom( $handle );
+
+		$headers = fgetcsv( $handle );
+		if ( empty( $headers ) || ! is_array( $headers ) ) {
+			$this->log( 'CSV表头为空或格式无效', 'error' );
+			fclose( $handle );
+			return new WP_Error( 'cannot_read_file', __( 'Cannot read uploaded file.', 'jelly-catalog' ) );
+		}
+
+		$headers = array_map(
+			function ( $header ) {
+				return trim( (string) $header );
+			},
+			$headers
+		);
+		if ( isset( $headers[0] ) ) {
+			$headers[0] = preg_replace( '/^\xEF\xBB\xBF/', '', $headers[0] );
+		}
+
+		$data_offset = ftell( $handle );
+		$total       = 0;
+		while ( false !== fgetcsv( $handle ) ) {
+			++$total;
+		}
+
+		fclose( $handle );
+
+		$counts = $this->get_import_dynamic_column_counts( $headers );
+
+		$this->log( '读取到表头: ' . implode( ', ', $headers ) );
+		$this->log( '检测到FAQ数量: ' . $counts['faq_count'] );
+		$this->log( '检测到属性数量: ' . $counts['attribute_count'] );
+		$this->log( '检测到产品行数: ' . $total );
+
+		return array(
+			'headers'         => $headers,
+			'faq_count'       => $counts['faq_count'],
+			'attribute_count' => $counts['attribute_count'],
+			'data_offset'     => $data_offset,
+			'total'           => $total,
+		);
+	}
+
+	/**
+	 * 跳过CSV UTF-8 BOM。
+	 */
+	private function skip_csv_bom( $handle ) {
+		$bom = fread( $handle, 3 );
+		if ( $bom !== chr( 0xEF ) . chr( 0xBB ) . chr( 0xBF ) ) {
+			rewind( $handle );
+		}
+	}
+
+	/**
+	 * 统计动态FAQ和属性列数量。
+	 */
+	private function get_import_dynamic_column_counts( $headers ) {
+		$faq_count       = 0;
+		$attribute_count = 0;
+
+		foreach ( $headers as $header ) {
+			if ( strpos( $header, 'FAQ_Q_' ) === 0 || strpos( $header, 'FAQ_A_' ) === 0 ) {
+				$faq_num = (int) substr( $header, 6 );
+				if ( $faq_num > $faq_count ) {
+					$faq_count = $faq_num;
+				}
+			} elseif ( strpos( $header, 'Attribute_Name_' ) === 0 || strpos( $header, 'Attribute_Value_' ) === 0 ) {
+				$attr_num = (int) preg_replace( '/^\D+/', '', $header );
+				if ( $attr_num > $attribute_count ) {
+					$attribute_count = $attr_num;
+				}
+			}
+		}
+
+		return array(
+			'faq_count'       => $faq_count,
+			'attribute_count' => $attribute_count,
+		);
+	}
+
+	/**
+	 * 为图片文件创建文件名索引，避免每个产品重复递归扫描。
+	 */
+	private function build_image_index( $images_path ) {
+		$index = array();
+
+		if ( ! $images_path || ! is_dir( $images_path ) ) {
+			return $index;
+		}
+
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator( $images_path, \RecursiveDirectoryIterator::SKIP_DOTS ),
+			\RecursiveIteratorIterator::LEAVES_ONLY
+		);
+
+		$root_path = rtrim( str_replace( '\\', '/', $images_path ), '/' ) . '/';
+
+		foreach ( $iterator as $file ) {
+			if ( ! $file->isFile() ) {
+				continue;
+			}
+
+			$filename            = $file->getFilename();
+			$path                = $file->getPathname();
+			$normalized_path     = str_replace( '\\', '/', $path );
+			$relative_path       = 0 === strpos( $normalized_path, $root_path )
+				? substr( $normalized_path, strlen( $root_path ) )
+				: $filename;
+			$lower_filename      = strtolower( $filename );
+			$lower_relative_path = strtolower( $relative_path );
+
+			if ( $relative_path && ! isset( $index[ $relative_path ] ) ) {
+				$index[ $relative_path ] = $path;
+			}
+
+			if ( $lower_relative_path && ! isset( $index[ $lower_relative_path ] ) ) {
+				$index[ $lower_relative_path ] = $path;
+			}
+
+			if ( ! isset( $index[ $filename ] ) ) {
+				$index[ $filename ] = $path;
+			}
+
+			if ( ! isset( $index[ $lower_filename ] ) ) {
+				$index[ $lower_filename ] = $path;
+			}
+		}
+
+		$this->log( '图片索引创建完成，文件名数量: ' . count( $index ) );
+
+		return $index;
+	}
+
+	/**
+	 * 读取图片索引。
+	 */
+	private function load_image_index( $image_index_file ) {
+		if ( ! $image_index_file || ! file_exists( $image_index_file ) ) {
+			return array();
+		}
+
+		$contents = file_get_contents( $image_index_file );
+		$index    = json_decode( $contents, true );
+
+		return is_array( $index ) ? $index : array();
+	}
+
+	/**
+	 * 根据文件名查找待导入图片路径。
+	 */
+	private function resolve_import_image_path( $images_path, $image_reference, $image_index ) {
+		$image_reference = $this->sanitize_import_image_reference( $image_reference );
+		if ( ! $images_path || ! is_dir( $images_path ) || ! $image_reference ) {
+			$this->log( '未提供可用的图片目录，跳过图像: ' . $image_reference );
+			return false;
+		}
+
+		$direct_path = trailingslashit( $images_path ) . $image_reference;
+		if ( file_exists( $direct_path ) ) {
+			return $direct_path;
+		}
+
+		if ( isset( $image_index[ $image_reference ] ) && file_exists( $image_index[ $image_reference ] ) ) {
+			return $image_index[ $image_reference ];
+		}
+
+		$lower_reference = strtolower( $image_reference );
+		if ( isset( $image_index[ $lower_reference ] ) && file_exists( $image_index[ $lower_reference ] ) ) {
+			return $image_index[ $lower_reference ];
+		}
+
+		$filename = basename( $image_reference );
+		if ( isset( $image_index[ $filename ] ) && file_exists( $image_index[ $filename ] ) ) {
+			return $image_index[ $filename ];
+		}
+
+		$lower_name = strtolower( $filename );
+		if ( isset( $image_index[ $lower_name ] ) && file_exists( $image_index[ $lower_name ] ) ) {
+			return $image_index[ $lower_name ];
+		}
+
+		return $this->find_file_in_subdirectories( $images_path, $filename );
+	}
+
+	/**
+	 * 规范化 CSV 中的图片引用，允许相对路径，拒绝绝对路径和目录穿越。
+	 */
+	private function sanitize_import_image_reference( $image_reference ) {
+		$image_reference = str_replace( '\\', '/', trim( (string) $image_reference ) );
+		$image_reference = ltrim( $image_reference, '/' );
+
+		if (
+			'' === $image_reference ||
+			preg_match( '/^[a-zA-Z]:/', $image_reference ) ||
+			preg_match( '#(^|/)\.\.(/|$)#', $image_reference )
+		) {
+			return sanitize_file_name( basename( $image_reference ) );
+		}
+
+		$parts = array_filter( explode( '/', $image_reference ), 'strlen' );
+		$parts = array_map( 'sanitize_file_name', $parts );
+
+		return implode( '/', $parts );
+	}
+
+	/**
+	 * 保存导入任务状态。
+	 */
+	private function save_import_job( $job ) {
+		set_transient( $this->get_import_job_transient_key( $job['id'] ), $job, DAY_IN_SECONDS );
+	}
+
+	/**
+	 * 获取导入任务状态。
+	 */
+	private function get_import_job( $job_id ) {
+		if ( ! $job_id ) {
+			return new WP_Error( 'missing_job', __( 'Import job not found.', 'jelly-catalog' ) );
+		}
+
+		$job = get_transient( $this->get_import_job_transient_key( $job_id ) );
+		if ( ! $job || ! is_array( $job ) ) {
+			return new WP_Error( 'missing_job', __( 'Import job not found.', 'jelly-catalog' ) );
+		}
+
+		if ( ! empty( $job['user_id'] ) && (int) $job['user_id'] !== get_current_user_id() ) {
+			return new WP_Error( 'missing_job', __( 'Import job not found.', 'jelly-catalog' ) );
+		}
+
+		return $job;
+	}
+
+	/**
+	 * 导入任务 transient key。
+	 */
+	private function get_import_job_transient_key( $job_id ) {
+		return 'jc_import_job_' . sanitize_key( $job_id );
+	}
+
+	/**
+	 * 格式化导入任务响应。
+	 */
+	private function format_import_job_response( $job, $message = '' ) {
+		$response = array(
+			'job_id'    => $job['id'] ?? '',
+			'status'    => $job['status'] ?? 'pending',
+			'total'     => absint( $job['total'] ?? 0 ),
+			'processed' => absint( $job['processed'] ?? 0 ),
+			'imported'  => absint( $job['imported'] ?? 0 ),
+			'errors'    => absint( $job['errors'] ?? 0 ),
+			'message'   => $message ?: ( $job['message'] ?? '' ),
+		);
+
+		if ( isset( $job['next_delay'] ) ) {
+			$response['next_delay'] = absint( $job['next_delay'] );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * 获取前端可识别的导入错误代码。
+	 */
+	private function get_import_error_code( $error ) {
+		$code          = $error instanceof WP_Error ? $error->get_error_code() : '';
+		$allowed_codes = array(
+			'file_upload_failed',
+			'missing_import_file',
+			'invalid_csv_file',
+			'cannot_read_file',
+			'import_batch_failed',
+		);
+
+		return in_array( $code, $allowed_codes, true ) ? $code : 'unknown';
+	}
+
+	/**
+	 * 判断导入错误是否适合自动重试。
+	 */
+	private function is_import_error_retryable( $error ) {
+		if ( ! $error instanceof WP_Error ) {
+			return false;
+		}
+
+		$data = $error->get_error_data();
+
+		return is_array( $data ) && ! empty( $data['retryable'] );
+	}
+
+	/**
+	 * 在目录及其子目录中查找图片文件
+	 */
+	private function find_file_in_subdirectories( $root_path, $filename ) {
+		$this->log( "在目录 {$root_path} 及其子目录中搜索文件: {$filename}" );
+
+		if ( ! $root_path || ! is_dir( $root_path ) || ! $filename ) {
+			$this->log( '图片目录或文件名无效' );
+			return false;
+		}
+
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator( $root_path, \RecursiveDirectoryIterator::SKIP_DOTS ),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ( $iterator as $file ) {
+			if ( $file->isFile() && $file->getFilename() === $filename ) {
+				$this->log( '找到文件: ' . $file->getPathname() );
+				return $file->getPathname();
+			}
+		}
+
+		$this->log( "未找到文件: {$filename}" );
+		return false;
+	}
+
+	/**
+	 * 校验 ZIP 内路径，避免解压到目标目录外。
+	 *
+	 * @param ZipArchive $zip ZIP 对象。
+	 * @return bool
+	 */
+	private function zip_has_safe_paths( $zip ) {
+		for ( $i = 0; $i < $zip->numFiles; $i++ ) {
+			$name       = $zip->getNameIndex( $i );
+			$normalized = str_replace( '\\', '/', (string) $name );
+
+			if (
+				'' === $normalized ||
+				'/' === $normalized[0] ||
+				preg_match( '/^[a-zA-Z]:/', $normalized ) ||
+				preg_match( '#(^|/)\.\.(/|$)#', $normalized )
+			) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * 查找图片目录
+	 */
+	private function find_images_directory( $path ) {
+		$this->log( '查找图片目录: ' . $path );
+
+		if ( ! $path || ! is_dir( $path ) ) {
+			$this->log( '图片目录不存在' );
+			return false;
+		}
+
+		// 检查当前目录是否包含图片文件
+		$files = glob( $path . '*.{jpg,jpeg,png,gif,webp,JPG,JPEG,PNG,GIF,WEBP}', GLOB_BRACE );
+		if ( ! empty( $files ) ) {
+			$this->log( '在当前目录找到图片文件' );
+			return $path;
+		}
+
+		// 搜索子目录
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator( $path, \RecursiveDirectoryIterator::SKIP_DOTS ),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ( $iterator as $file ) {
+			if ( $file->isDir() ) {
+				$sub_path = $file->getPathname() . DIRECTORY_SEPARATOR;
+				$files    = glob( $sub_path . '*.{jpg,jpeg,png,gif,webp,JPG,JPEG,PNG,GIF,WEBP}', GLOB_BRACE );
+				if ( ! empty( $files ) ) {
+					$this->log( '在子目录找到图片文件: ' . $sub_path );
+					return $sub_path;
+				}
+			}
+		}
+
+		$this->log( '未在目录及其子目录中找到图片文件' );
+		return false;
+	}
+
+	/**
+	 * 带重试复制文件。
+	 */
+	private function copy_file_with_retries( $source, $destination, $context = '文件复制' ) {
+		$max_retries = max( 0, absint( apply_filters( 'jc_import_file_copy_retries', 2 ) ) );
+		$retry_delay = max( 0, absint( apply_filters( 'jc_import_file_copy_retry_delay', 250 ) ) );
+
+		for ( $attempt = 1; $attempt <= $max_retries + 1; $attempt++ ) {
+			if ( @copy( $source, $destination ) ) {
+				return true;
+			}
+
+			$this->log( $context . '失败，尝试次数: ' . $attempt . '/' . ( $max_retries + 1 ) );
+
+			if ( $attempt <= $max_retries && $retry_delay > 0 ) {
+				usleep( $retry_delay * 1000 * min( $attempt, 5 ) );
+			}
+		}
+
+		$this->log( $context . '失败，已重试 ' . $max_retries . ' 次', 'warning' );
+
+		return false;
+	}
+
+	/**
+	 * 清理过期的导入临时目录，避免中断任务长期占用上传目录。
+	 */
+	private function cleanup_stale_import_temp_dirs() {
+		$upload_dir = wp_upload_dir();
+		$base_dir   = $upload_dir['basedir'] ?? '';
+		if ( ! $base_dir || ! is_dir( $base_dir ) ) {
+			return;
+		}
+
+		$ttl       = max( DAY_IN_SECONDS, absint( apply_filters( 'jc_import_temp_dir_ttl', 2 * DAY_IN_SECONDS ) ) );
+		$base_real = realpath( $base_dir );
+		if ( ! $base_real ) {
+			return;
+		}
+
+		$dirs = glob( trailingslashit( $base_dir ) . 'jc_import_*', GLOB_ONLYDIR );
+		if ( empty( $dirs ) ) {
+			return;
+		}
+
+		foreach ( $dirs as $dir ) {
+			$dir_real = realpath( $dir );
+			if ( ! $dir_real || 0 !== strpos( $dir_real, $base_real ) || time() - filemtime( $dir ) < $ttl ) {
+				continue;
+			}
+
+			$this->rrmdir( $dir_real );
+		}
+	}
+
+	/**
+	 * 将图片导入为附件
+	 */
+	private function import_image_as_attachment( $image_path, $post_id, $filename, $source_reference = '' ) {
+		$filename = sanitize_file_name( basename( $filename ) );
+		$this->log( '开始导入图像为附件: ' . $filename );
+
+		if ( ! $filename || ! file_exists( $image_path ) ) {
+			$this->log( '图像文件不存在: ' . $image_path, 'warning' );
+			return false;
+		}
+
+		$file_hash = @md5_file( $image_path );
+		if ( $file_hash ) {
+			$existing_attachment_id = $this->find_imported_attachment_by_hash( $file_hash );
+			if ( $existing_attachment_id ) {
+				$this->log( '复用已导入附件，ID: ' . $existing_attachment_id );
+				return $existing_attachment_id;
+			}
+		}
+
+		$allowed_mimes = array(
+			'jpg|jpeg|jpe' => 'image/jpeg',
+			'gif'          => 'image/gif',
+			'png'          => 'image/png',
+			'webp'         => 'image/webp',
+		);
+		$wp_filetype   = wp_check_filetype( $filename, $allowed_mimes );
+		$image_size    = @getimagesize( $image_path );
+
+		if ( empty( $wp_filetype['type'] ) || false === $image_size || empty( $image_size['mime'] ) || 0 !== strpos( $image_size['mime'], 'image/' ) ) {
+			$this->log( '图像文件类型无效: ' . $filename, 'warning' );
+			return false;
+		}
+
+		$upload_dir = wp_upload_dir();
+
+		// 创建唯一的文件名
+		$unique_filename = wp_unique_filename( $upload_dir['path'], $filename );
+		$new_filepath    = $upload_dir['path'] . '/' . $unique_filename;
+
+		$this->log( '目标文件路径: ' . $new_filepath );
+
+		// 复制文件到上传目录
+		if ( $this->copy_file_with_retries( $image_path, $new_filepath, '图像文件复制' ) ) {
+			$this->log( '文件复制成功' );
+
+			$this->log( '文件类型: ' . $wp_filetype['type'] );
+
+			// 创建附件元数据
+			$attachment = array(
+				'post_mime_type' => $wp_filetype['type'],
+				'post_title'     => sanitize_file_name( pathinfo( $filename, PATHINFO_FILENAME ) ),
+				'post_content'   => '',
+				'post_status'    => 'inherit',
+			);
+
+			// 插入附件
+			$attach_id = wp_insert_attachment( $attachment, $new_filepath, $post_id );
+
+			if ( is_wp_error( $attach_id ) ) {
+				$this->log( '附件插入失败: ' . $attach_id->get_error_message(), 'warning' );
+				unlink( $new_filepath );
+				return false;
+			}
+
+			$this->log( '附件插入成功，ID: ' . $attach_id );
+
+			if ( $file_hash ) {
+				update_post_meta( $attach_id, '_jc_import_file_hash', $file_hash );
+			}
+
+			if ( $source_reference ) {
+				update_post_meta( $attach_id, '_jc_import_source_reference', $source_reference );
+			}
+
+			// 生成并更新附件元数据
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+			$attach_data = wp_generate_attachment_metadata( $attach_id, $new_filepath );
+			wp_update_attachment_metadata( $attach_id, $attach_data );
+
+			$this->log( '附件元数据更新完成' );
+
+			return $attach_id;
+		} else {
+			$this->log( '文件复制失败', 'warning' );
+		}
+
+		return false;
+	}
+
+	/**
+	 * 根据文件 hash 查找已导入附件，减少重复媒体文件。
+	 */
+	private function find_imported_attachment_by_hash( $file_hash ) {
+		static $cache = array();
+
+		if ( ! $file_hash ) {
+			return 0;
+		}
+
+		if ( isset( $cache[ $file_hash ] ) ) {
+			return $cache[ $file_hash ];
+		}
+
+		$attachments = get_posts(
+			array(
+				'post_type'        => 'attachment',
+				'post_status'      => 'inherit',
+				'numberposts'      => 1,
+				'fields'           => 'ids',
+				'meta_key'         => '_jc_import_file_hash',
+				'meta_value'       => $file_hash,
+				'suppress_filters' => true,
+			)
+		);
+
+		if ( empty( $attachments ) ) {
+			return 0;
+		}
+
+		$cache[ $file_hash ] = absint( $attachments[0] );
+
+		return $cache[ $file_hash ];
+	}
+
+	/**
+	 * 递归删除目录
+	 */
+	private function rrmdir( $dir ) {
+		if ( is_dir( $dir ) ) {
+			$objects = scandir( $dir );
+			foreach ( $objects as $object ) {
+				if ( $object != '.' && $object != '..' ) {
+					if ( is_dir( $dir . '/' . $object ) ) {
+						$this->rrmdir( $dir . '/' . $object );
+					} else {
+						unlink( $dir . '/' . $object );
+					}
+				}
+			}
+			rmdir( $dir );
+		}
+	}
+
+	/**
+	 * 显示导入结果通知
+	 */
+	public function import_notices() {
+		if ( isset( $_GET['import_success'] ) ) {
+			$result = get_transient( 'jc_import_result' );
+			if ( $result ) {
+				$messages = array();
+
+				if ( ! empty( $result['categories_only'] ) ) {
+					$messages[] = sprintf(
+						'%s %d %s',
+						esc_html__( 'Successfully imported', 'jelly-catalog' ),
+						absint( $result['categories_imported'] ?? 0 ),
+						esc_html__( 'categories', 'jelly-catalog' )
+					);
+				} else {
+					$messages[] = sprintf(
+						'%s %d %s',
+						esc_html__( 'Successfully imported', 'jelly-catalog' ),
+						absint( $result['imported'] ?? 0 ),
+						esc_html__( 'products', 'jelly-catalog' )
+					);
+				}
+
+				if ( ! empty( $result['categories_imported'] ) || ! empty( $result['category_errors'] ) ) {
+					$messages[] = sprintf(
+						'%d %s, %d %s',
+						absint( $result['categories_imported'] ?? 0 ),
+						esc_html__( 'categories imported', 'jelly-catalog' ),
+						absint( $result['category_errors'] ?? 0 ),
+						esc_html__( 'category errors', 'jelly-catalog' )
+					);
+				}
+
+				$messages[] = sprintf(
+					'%d %s',
+					absint( $result['errors'] ?? 0 ),
+					esc_html__( 'errors', 'jelly-catalog' )
+				);
+
+				printf(
+					'<div class="notice notice-success is-dismissible"><p>%s. <a href="%s">%s</a></p></div>',
+					esc_html( implode( ', ', $messages ) ),
+					esc_url( admin_url( 'edit.php?post_type=product&page=products-port' ) ),
+					esc_html__( 'View detailed log', 'jelly-catalog' )
+				);
+				delete_transient( 'jc_import_result' );
+			}
+		}
+
+		if ( isset( $_GET['import_error'] ) ) {
+			$error_msg = '';
+			switch ( sanitize_key( wp_unslash( $_GET['import_error'] ) ) ) {
+				case 'file_upload_failed':
+					$error_msg = __( 'File upload failed.', 'jelly-catalog' );
+					break;
+				case 'missing_import_file':
+					$error_msg = __( 'Please upload a product CSV or a category CSV.', 'jelly-catalog' );
+					break;
+				case 'invalid_csv_file':
+					$error_msg = __( 'Invalid CSV file.', 'jelly-catalog' );
+					break;
+				case 'cannot_read_file':
+					$error_msg = __( 'Cannot read uploaded file.', 'jelly-catalog' );
+					break;
+				default:
+					$error_msg = __( 'An unknown error occurred during import.', 'jelly-catalog' );
+			}
+
+			printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html( $error_msg ) );
+		}
+	}
 }

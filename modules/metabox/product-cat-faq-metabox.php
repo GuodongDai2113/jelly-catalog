@@ -12,101 +12,103 @@ namespace Jelly_Catalog\Modules\Metabox;
 
 use Jelly_Catalog\Utils;
 
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 } // 禁止直接访问
 
-class Product_Cat_FAQ_Metabox
-{
-    public function __construct()
-    {
-        add_action('product_cat_edit_form_fields', [$this, 'edit_category_faq_field']);
-        add_action('edited_product_cat', [$this, 'save_category_faq_field']);
-    }
+class Product_Cat_FAQ_Metabox {
 
-    /**
-     * 在编辑产品分类页面添加 FAQ 字段
-     */
-    public function edit_category_faq_field($term)
-    {
-        $faqs = get_term_meta($term->term_id, 'product_cat_faqs', true);
-        $faqs = is_array($faqs) ? $faqs : [];
+	public function __construct() {
+		add_action( 'product_cat_edit_form_fields', array( $this, 'edit_category_faq_field' ) );
+		add_action( 'edited_product_cat', array( $this, 'save_category_faq_field' ) );
+	}
 
-        echo wp_nonce_field('jc_save_product_cat_faq', 'jc_product_cat_faq_nonce', true, false);
+	/**
+	 * 在编辑产品分类页面添加 FAQ 字段
+	 */
+	public function edit_category_faq_field( $term ) {
+		$faqs = get_term_meta( $term->term_id, 'product_cat_faqs', true );
+		$faqs = is_array( $faqs ) ? $faqs : array();
 
-        echo '<tr class="form-field">';
-        echo '<th scope="row" valign="top">';
-        echo '<label for="product_cat_faqs">' . __('Category FAQ', 'jelly-catalog') . '</label>';
-        echo '</th>';
-        echo '<td>';
-        echo '<div id="product_cat_faqs_container">';
-        // 使用通用 repeater 函数生成 FAQ 表单
-        Utils::render_repeater_field([
-            'id' => 'product_cat_faqs',
-            'name' => 'product_cat_faqs',
-            'title' => __('Category FAQ', 'jelly-catalog'),
-            'item_label' => __('FAQ', 'jelly-catalog'),
-            'variant' => 'faq',
-            'items' => $faqs,
-            'fields' => [
-                [
-                    'type' => 'text',
-                    'name' => 'name',
-                    'label' => __('Question:', 'jelly-catalog'),
-                    'class' => 'repeater-item__key-input'
-                ],
-                [
-                    'type' => 'textarea',
-                    'name' => 'value',
-                    'label' => __('Answer:', 'jelly-catalog'),
-                    'class' => 'repeater-item__value-input'
-                ]
-            ]
-        ]);
-        echo '</div>';
-        echo '<p class="description">' . __('Add frequently asked questions for this product category.', 'jelly-catalog') . '</p>';
-        echo '</td>';
-        echo '</tr>';
-    }
+		echo wp_nonce_field( 'jc_save_product_cat_faq', 'jc_product_cat_faq_nonce', true, false );
 
-    /**
-     * 保存产品分类 FAQ 字段
-     */
-    public function save_category_faq_field($term_id)
-    {
-        if (!current_user_can('manage_categories')) {
-            return;
-        }
+		echo '<tr class="form-field">';
+		echo '<th scope="row" valign="top">';
+		echo '<label for="product_cat_faqs">' . __( 'Category FAQ', 'jelly-catalog' ) . '</label>';
+		echo '</th>';
+		echo '<td>';
+		echo '<div id="product_cat_faqs_container">';
+		// 使用通用 repeater 函数生成 FAQ 表单
+		Utils::render_repeater_field(
+			array(
+				'id'         => 'product_cat_faqs',
+				'name'       => 'product_cat_faqs',
+				'title'      => __( 'Category FAQ', 'jelly-catalog' ),
+				'item_label' => __( 'FAQ', 'jelly-catalog' ),
+				'variant'    => 'faq',
+				'items'      => $faqs,
+				'fields'     => array(
+					array(
+						'type'  => 'text',
+						'name'  => 'name',
+						'label' => __( 'Question:', 'jelly-catalog' ),
+						'class' => 'repeater-item__key-input',
+					),
+					array(
+						'type'  => 'textarea',
+						'name'  => 'value',
+						'label' => __( 'Answer:', 'jelly-catalog' ),
+						'class' => 'repeater-item__value-input',
+					),
+				),
+			)
+		);
+		echo '</div>';
+		echo '<p class="description">' . __( 'Add frequently asked questions for this product category.', 'jelly-catalog' ) . '</p>';
+		echo '</td>';
+		echo '</tr>';
+	}
 
-        if (
-            !isset($_POST['jc_product_cat_faq_nonce']) ||
-            !wp_verify_nonce($_POST['jc_product_cat_faq_nonce'], 'jc_save_product_cat_faq')
-        ) {
-            return;
-        }
+	/**
+	 * 保存产品分类 FAQ 字段
+	 */
+	public function save_category_faq_field( $term_id ) {
+		if ( ! current_user_can( 'manage_categories' ) ) {
+			return;
+		}
 
-        // 保存数据
-        if (isset($_POST['product_cat_faqs'])) {
-            $raw = $_POST['product_cat_faqs'] ?? [];
-            $clean = [];
+		if (
+			! isset( $_POST['jc_product_cat_faq_nonce'] ) ||
+			! wp_verify_nonce( $_POST['jc_product_cat_faq_nonce'], 'jc_save_product_cat_faq' )
+		) {
+			return;
+		}
 
-            foreach ($raw as $item) {
-                $q = sanitize_text_field($item['name'] ?? '');
-                $a = sanitize_textarea_field($item['value'] ?? '');
-                if ($q || $a) {
-                    $clean[] = ['name' => $q, 'value' => $a];
-                }
-            }
+		// 保存数据
+		if ( isset( $_POST['product_cat_faqs'] ) ) {
+			$raw   = $_POST['product_cat_faqs'] ?? array();
+			$clean = array();
 
-            if (!empty($clean)) {
-                update_term_meta($term_id, 'product_cat_faqs', $clean);
-                return;
-            }
+			foreach ( $raw as $item ) {
+				$q = sanitize_text_field( $item['name'] ?? '' );
+				$a = sanitize_textarea_field( $item['value'] ?? '' );
+				if ( $q || $a ) {
+					$clean[] = array(
+						'name'  => $q,
+						'value' => $a,
+					);
+				}
+			}
 
-            delete_term_meta($term_id, 'product_cat_faqs');
-        } else {
-            // 如果没有收到数据，说明用户可能删除了所有条目，需要清除元数据
-            delete_term_meta($term_id, 'product_cat_faqs');
-        }
-    }
+			if ( ! empty( $clean ) ) {
+				update_term_meta( $term_id, 'product_cat_faqs', $clean );
+				return;
+			}
+
+			delete_term_meta( $term_id, 'product_cat_faqs' );
+		} else {
+			// 如果没有收到数据，说明用户可能删除了所有条目，需要清除元数据
+			delete_term_meta( $term_id, 'product_cat_faqs' );
+		}
+	}
 }

@@ -10,133 +10,138 @@
 
 namespace Jelly_Catalog\Modules\Metabox;
 
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 } // 禁止直接访问
 
-class Product_Cat_Fields_Metabox
-{
-    public function __construct()
-    {
-        add_action('product_cat_edit_form_fields', [$this, 'edit_category_fields']);
-        add_action('edited_product_cat', [$this, 'save_category_fields']);
-    }
+class Product_Cat_Fields_Metabox {
 
-    /**
-     * 在编辑产品分类页面添加字段
-     */
-    public function edit_category_fields($term)
-    {
-        $category_h1_title = get_term_meta($term->term_id, 'category_h1_title', true);
-        $category_why_choose_title = get_term_meta($term->term_id, 'category_why_choose_title', true);
-        $category_why_choose = get_term_meta($term->term_id, 'category_why_choose', true);
-        $category_advantages = get_term_meta($term->term_id, 'category_advantages', true);
+	public function __construct() {
+		add_action( 'product_cat_edit_form_fields', array( $this, 'edit_category_fields' ) );
+		add_action( 'edited_product_cat', array( $this, 'save_category_fields' ) );
+	}
 
-        echo wp_nonce_field('jc_save_product_cat_fields', 'jc_product_cat_fields_nonce', true, false);
+	/**
+	 * 在编辑产品分类页面添加字段
+	 */
+	public function edit_category_fields( $term ) {
+		$category_h1_title         = get_term_meta( $term->term_id, 'category_h1_title', true );
+		$category_why_choose_title = get_term_meta( $term->term_id, 'category_why_choose_title', true );
+		$category_why_choose       = get_term_meta( $term->term_id, 'category_why_choose', true );
+		$category_advantages       = get_term_meta( $term->term_id, 'category_advantages', true );
 
-        // Category H1 Title
-        echo '<tr class="form-field">';
-        echo '<th scope="row" valign="top">';
-        echo '<label for="category_h1_title">' . esc_html__('Category H1 Title', 'jelly-catalog') . '</label>';
-        echo '</th>';
-        echo '<td>';
-        echo '<input type="text" name="category_h1_title" id="category_h1_title" value="' . esc_attr($category_h1_title) . '">';
-        echo '<p class="description">' . esc_html__('Enter the H1 title for this category.', 'jelly-catalog') . '</p>';
-        echo '</td>';
-        echo '</tr>';
+		echo wp_nonce_field( 'jc_save_product_cat_fields', 'jc_product_cat_fields_nonce', true, false );
 
-        // Category Why Choose Us Title
-        echo '<tr class="form-field">';
-        echo '<th scope="row" valign="top">';
-        echo '<label for="category_why_choose_title">' . esc_html__('Why Choose Us Title', 'jelly-catalog') . '</label>';
-        echo '</th>';
-        echo '<td>';
-        echo '<input type="text" name="category_why_choose_title" id="category_why_choose_title" value="' . esc_attr($category_why_choose_title) . '">';
-        echo '<p class="description">' . esc_html__('Enter the why choose us title for this category.', 'jelly-catalog') . '</p>';
-        echo '</td>';
-        echo '</tr>';
+		// Category H1 Title
+		echo '<tr class="form-field">';
+		echo '<th scope="row" valign="top">';
+		echo '<label for="category_h1_title">' . esc_html__( 'Category H1 Title', 'jelly-catalog' ) . '</label>';
+		echo '</th>';
+		echo '<td>';
+		echo '<input type="text" name="category_h1_title" id="category_h1_title" value="' . esc_attr( $category_h1_title ) . '">';
+		echo '<p class="description">' . esc_html__( 'Enter the H1 title for this category.', 'jelly-catalog' ) . '</p>';
+		echo '</td>';
+		echo '</tr>';
 
-        // Category Why Choose Content
-        echo '<tr class="form-field">';
-        echo '<th scope="row" valign="top">';
-        echo '<label for="category_why_choose">' . esc_html__('Category Why Choose', 'jelly-catalog') . '</label>';
-        echo '</th>';
-        echo '<td>';
-        wp_editor($category_why_choose, 'category_why_choose', [
-            'textarea_name' => 'category_why_choose',
-            'textarea_rows' => 10,
-            'media_buttons' => false,
-            'quicktags' => ['buttons' => 'em,strong,link'],
-            'tinymce' => [
-                'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
-                'theme_advanced_buttons2' => '',
-            ],
-            'quicktags' => true
-        ]);
-        echo '<p class="description">' . esc_html__('Enter the why choose content for this category.', 'jelly-catalog') . '</p>';
-        echo '</td>';
-        echo '</tr>';
+		// Category Why Choose Us Title
+		echo '<tr class="form-field">';
+		echo '<th scope="row" valign="top">';
+		echo '<label for="category_why_choose_title">' . esc_html__( 'Why Choose Us Title', 'jelly-catalog' ) . '</label>';
+		echo '</th>';
+		echo '<td>';
+		echo '<input type="text" name="category_why_choose_title" id="category_why_choose_title" value="' . esc_attr( $category_why_choose_title ) . '">';
+		echo '<p class="description">' . esc_html__( 'Enter the why choose us title for this category.', 'jelly-catalog' ) . '</p>';
+		echo '</td>';
+		echo '</tr>';
 
-        // Category Advantages
-        echo '<tr class="form-field">';
-        echo '<th scope="row" valign="top">';
-        echo '<label for="category_advantages">' . esc_html__('Category Advantages', 'jelly-catalog') . '</label>';
-        echo '</th>';
-        echo '<td>';
-        wp_editor($category_advantages, 'category_advantages', [
-            'textarea_name' => 'category_advantages',
-            'textarea_rows' => 10,
-            'media_buttons' => false,
-            'quicktags' => ['buttons' => 'em,strong,link'],
-            'tinymce' => [
-                'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
-                'theme_advanced_buttons2' => '',
-            ],
-            'quicktags' => true
-        ]);
-        echo '<p class="description">' . esc_html__('Enter the advantages for this category.', 'jelly-catalog') . '</p>';
-        echo '</td>';
-        echo '</tr>';
-    }
+		// Category Why Choose Content
+		echo '<tr class="form-field">';
+		echo '<th scope="row" valign="top">';
+		echo '<label for="category_why_choose">' . esc_html__( 'Category Why Choose', 'jelly-catalog' ) . '</label>';
+		echo '</th>';
+		echo '<td>';
+		wp_editor(
+			$category_why_choose,
+			'category_why_choose',
+			array(
+				'textarea_name' => 'category_why_choose',
+				'textarea_rows' => 10,
+				'media_buttons' => false,
+				'quicktags'     => array( 'buttons' => 'em,strong,link' ),
+				'tinymce'       => array(
+					'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
+					'theme_advanced_buttons2' => '',
+				),
+				'quicktags'     => true,
+			)
+		);
+		echo '<p class="description">' . esc_html__( 'Enter the why choose content for this category.', 'jelly-catalog' ) . '</p>';
+		echo '</td>';
+		echo '</tr>';
 
-    /**
-     * 保存产品分类字段
-     */
-    public function save_category_fields($term_id)
-    {
-        if (!current_user_can('manage_categories')) {
-            return;
-        }
+		// Category Advantages
+		echo '<tr class="form-field">';
+		echo '<th scope="row" valign="top">';
+		echo '<label for="category_advantages">' . esc_html__( 'Category Advantages', 'jelly-catalog' ) . '</label>';
+		echo '</th>';
+		echo '<td>';
+		wp_editor(
+			$category_advantages,
+			'category_advantages',
+			array(
+				'textarea_name' => 'category_advantages',
+				'textarea_rows' => 10,
+				'media_buttons' => false,
+				'quicktags'     => array( 'buttons' => 'em,strong,link' ),
+				'tinymce'       => array(
+					'theme_advanced_buttons1' => 'bold,italic,strikethrough,separator,bullist,numlist,separator,blockquote,separator,justifyleft,justifycenter,justifyright,separator,link,unlink,separator,undo,redo,separator',
+					'theme_advanced_buttons2' => '',
+				),
+				'quicktags'     => true,
+			)
+		);
+		echo '<p class="description">' . esc_html__( 'Enter the advantages for this category.', 'jelly-catalog' ) . '</p>';
+		echo '</td>';
+		echo '</tr>';
+	}
 
-        if (
-            !isset($_POST['jc_product_cat_fields_nonce']) ||
-            !wp_verify_nonce($_POST['jc_product_cat_fields_nonce'], 'jc_save_product_cat_fields')
-        ) {
-            return;
-        }
+	/**
+	 * 保存产品分类字段
+	 */
+	public function save_category_fields( $term_id ) {
+		if ( ! current_user_can( 'manage_categories' ) ) {
+			return;
+		}
 
-        // Save Category H1 Title
-        if (isset($_POST['category_h1_title'])) {
-            $category_h1_title = sanitize_text_field($_POST['category_h1_title']);
-            update_term_meta($term_id, 'category_h1_title', $category_h1_title);
-        }
+		if (
+			! isset( $_POST['jc_product_cat_fields_nonce'] ) ||
+			! wp_verify_nonce( $_POST['jc_product_cat_fields_nonce'], 'jc_save_product_cat_fields' )
+		) {
+			return;
+		}
 
-        // Save Category Why Choose Title
-        if (isset($_POST['category_why_choose_title'])) {
-            $category_why_choose_title = sanitize_text_field($_POST['category_why_choose_title']);
-            update_term_meta($term_id, 'category_why_choose_title', $category_why_choose_title);
-        }
+		// Save Category H1 Title
+		if ( isset( $_POST['category_h1_title'] ) ) {
+			$category_h1_title = sanitize_text_field( $_POST['category_h1_title'] );
+			update_term_meta( $term_id, 'category_h1_title', $category_h1_title );
+		}
 
-        // Save Category Why Choose Content
-        if (isset($_POST['category_why_choose'])) {
-            $category_why_choose = wp_kses_post($_POST['category_why_choose']);
-            update_term_meta($term_id, 'category_why_choose', $category_why_choose);
-        }
+		// Save Category Why Choose Title
+		if ( isset( $_POST['category_why_choose_title'] ) ) {
+			$category_why_choose_title = sanitize_text_field( $_POST['category_why_choose_title'] );
+			update_term_meta( $term_id, 'category_why_choose_title', $category_why_choose_title );
+		}
 
-        // Save Category Advantages
-        if (isset($_POST['category_advantages'])) {
-            $category_advantages = wp_kses_post($_POST['category_advantages']);
-            update_term_meta($term_id, 'category_advantages', $category_advantages);
-        }
-    }
+		// Save Category Why Choose Content
+		if ( isset( $_POST['category_why_choose'] ) ) {
+			$category_why_choose = wp_kses_post( $_POST['category_why_choose'] );
+			update_term_meta( $term_id, 'category_why_choose', $category_why_choose );
+		}
+
+		// Save Category Advantages
+		if ( isset( $_POST['category_advantages'] ) ) {
+			$category_advantages = wp_kses_post( $_POST['category_advantages'] );
+			update_term_meta( $term_id, 'category_advantages', $category_advantages );
+		}
+	}
 }

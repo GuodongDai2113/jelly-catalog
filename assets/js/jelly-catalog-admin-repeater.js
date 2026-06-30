@@ -138,7 +138,7 @@
       if (!text) {
         this.showNotice(
           jc_product_i18n.no_content_error || "Please enter content.",
-          "error"
+          "error",
         );
         return false;
       }
@@ -162,7 +162,7 @@
       if (items.length === 0) {
         this.showNotice(
           jc_product_i18n.no_valid_items_error || "No valid items found.",
-          "error"
+          "error",
         );
         return false;
       }
@@ -206,7 +206,7 @@
           jc_product_i18n.success_created_items ||
           "Successfully created {count} items."
         ).replace("{count}", items.length),
-        "success"
+        "success",
       );
       return true;
     }
@@ -318,7 +318,7 @@
 
       $textArea.attr(
         "placeholder",
-        this.getBulkPlaceholder(this.currentWrapper)
+        this.getBulkPlaceholder(this.currentWrapper),
       );
     }
 
@@ -452,8 +452,8 @@
             type="button"
             class="remove-repeater"
             data-jelly-tooltip="${
-            jc_product_i18n.delete_item_tooltip || "Delete item"
-          }"
+              jc_product_i18n.delete_item_tooltip || "Delete item"
+            }"
           >
             <span class="dashicons dashicons-no-alt"></span>
           </div>
@@ -483,8 +483,9 @@
             type="button"
             class="jelly-button bulk-create"
             data-jelly-tooltip="${
-            jc_product_i18n.bulk_create_tooltip || "Bulk Create Items from Text"
-          }"
+              jc_product_i18n.bulk_create_tooltip ||
+              "Bulk Create Items from Text"
+            }"
           >
             <span class="dashicons dashicons-editor-ul"></span>
             ${jc_product_i18n.bulk_create_btn || "Bulk Create"}
@@ -502,7 +503,7 @@
       const $newItem = this.buildRepeaterItem(
         repeaterWrapper,
         key,
-        itemCount + 1
+        itemCount + 1,
       );
 
       if (!$newItem) return;
@@ -538,8 +539,8 @@
             type="button"
             class="remove-repeater"
             data-jelly-tooltip="${
-            jc_product_i18n.delete_item_tooltip || "Delete item"
-          }"
+              jc_product_i18n.delete_item_tooltip || "Delete item"
+            }"
           >
             <span class="dashicons dashicons-no-alt"></span>
           </div>
@@ -559,14 +560,14 @@
         <div class="repeater-item__field-group">
           <div class="repeater-item__key repeater-item__field repeater-item__field--question">
             <label for="product_faqs[${index}][name]">${
-        jc_product_i18n.faq_question_label || "Question"
-      }:</label>
+              jc_product_i18n.faq_question_label || "Question"
+            }:</label>
             <input class="repeater-item__key-input" type="text" id="product_faqs[${index}][name]" name="product_faqs[${index}][name]" value="" />
           </div>
           <div class="repeater-item__value repeater-item__field repeater-item__field--answer">
             <label for="product_faqs[${index}][value]">${
-        jc_product_i18n.faq_answer_label || "Answer"
-      }:</label>
+              jc_product_i18n.faq_answer_label || "Answer"
+            }:</label>
             <textarea class="repeater-item__value-input" id="product_faqs[${index}][value]" name="product_faqs[${index}][value]"></textarea>
           </div>
         </div>
@@ -581,14 +582,14 @@
         <div class="repeater-item__field-group">
           <div class="repeater-item__key repeater-item__field repeater-item__field--name">
             <label for="product_attributes[${index}][name]">${
-        jc_product_i18n.attribute_name_label || "Name"
-      }:</label>
+              jc_product_i18n.attribute_name_label || "Name"
+            }:</label>
             <input class="repeater-item__key-input" type="text" id="product_attributes[${index}][name]" name="product_attributes[${index}][name]" value="" />
           </div>
           <div class="repeater-item__value repeater-item__field repeater-item__field--value">
             <label for="product_attributes[${index}][value]">${
-        jc_product_i18n.attribute_value_label || "Value"
-      }:</label>
+              jc_product_i18n.attribute_value_label || "Value"
+            }:</label>
             <input class="repeater-item__value-input" type="text" id="product_attributes[${index}][value]" name="product_attributes[${index}][value]" value="" />
           </div>
         </div>
@@ -603,14 +604,14 @@
         <div class="repeater-item__field-group">
           <div class="repeater-item__key repeater-item__field repeater-item__field--question">
             <label for="product_cat_faqs[${index}][name]">${
-        jc_product_i18n.faq_question_label || "Question"
-      }:</label>
+              jc_product_i18n.faq_question_label || "Question"
+            }:</label>
             <input class="repeater-item__key-input" type="text" id="product_cat_faqs[${index}][name]" name="product_cat_faqs[${index}][name]" value="" />
           </div>
           <div class="repeater-item__value repeater-item__field repeater-item__field--answer">
             <label for="product_cat_faqs[${index}][value]">${
-        jc_product_i18n.faq_answer_label || "Answer"
-      }:</label>
+              jc_product_i18n.faq_answer_label || "Answer"
+            }:</label>
             <textarea class="repeater-item__value-input" id="product_cat_faqs[${index}][value]" name="product_cat_faqs[${index}][value]"></textarea>
           </div>
         </div>

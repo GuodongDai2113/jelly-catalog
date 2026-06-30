@@ -62,7 +62,9 @@
   opacity: 0;
   transform: scaleX(0);
   transform-origin: center;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .jc-product-detail__tab:hover {

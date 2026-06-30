@@ -1,12 +1,37 @@
 {
-    "name": "jelly-dai/jelly-catalog",
-    "description": "WordPress 产品目录",
-    "type": "project",
-    "authors": [
-        {
-            "name": "JellyDai",
-            "email": "daiguo1003@gmail.com"
-        }
+  "name": "jelly-dai/jelly-catalog",
+  "description": "WordPress 产品目录",
+  "type": "project",
+  "authors": [
+    {
+      "name": "JellyDai",
+      "email": "daiguo1003@gmail.com"
+    }
+  ],
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
+    "squizlabs/php_codesniffer": "^3.13",
+    "wp-coding-standards/wpcs": "^3.2"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "check:php:style": "phpcs",
+    "format:php": "phpcbf",
+    "format:assets": "npm run format",
+    "format:assets:check": "npm run format:check",
+    "format": [
+      "@format:php",
+      "@format:assets"
     ],
-    "require": {}
+    "format:check": [
+      "@check:php:style",
+      "@format:assets:check"
+    ],
+    "fix": "@format",
+    "fix-check": "@format:check"
+  }
 }
